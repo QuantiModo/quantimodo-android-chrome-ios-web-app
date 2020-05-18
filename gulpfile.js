@@ -200,7 +200,7 @@ var qmLog = {
         if(process.env.QUANTIMODO_CLIENT_SECRET){message = message.replace(process.env.QUANTIMODO_CLIENT_SECRET, 'HIDDEN');}
         if(AWS_SECRET_ACCESS_KEY){message = message.replace(AWS_SECRET_ACCESS_KEY, 'HIDDEN');}
         if(process.env.ENCRYPTION_SECRET){message = message.replace(process.env.ENCRYPTION_SECRET, 'HIDDEN');}
-        if(process.env.QUANTIMODO_ACCESS_TOKEN){message = message.replace(process.env.QUANTIMODO_ACCESS_TOKEN, 'HIDDEN');}
+        if(qmGulp.getQMAccessToken()){message = message.replace(qmGulp.getQMAccessToken(), 'HIDDEN');}
         message = qmLog.obfuscateString(message);
         return message;
     },
@@ -744,6 +744,12 @@ var qmGulp = {
         /** @namespace qm.getAppSettings().appStatus.buildStatus */
         qmGulp.getBuildStatus()[convertFilePathToPropertyName(filePath)] = "READY";
         return uploadToS3(filePath);
+    },
+    getQMAccessToken: function() {
+        if(process.env.QUANTIMODO_ACCESS_TOKEN){return process.env.QUANTIMODO_ACCESS_TOKEN;}
+        qmLog.info("Please add QUANTIMODO_ACCESS_TOKEN to .env file in root of project!  "+
+            "Your token can be obtained at "+qmGulp.getAppHostName() + "/api/v2/account");
+        return null;
     }
 };
 qmGulp.buildInfoHelper.setVersionNumbers();
@@ -751,7 +757,7 @@ var Quantimodo = require('quantimodo');
 /** @namespace Quantimodo.ApiClient */
 var defaultClient = Quantimodo.ApiClient.instance;
 var quantimodo_oauth2 = defaultClient.authentications.quantimodo_oauth2;
-quantimodo_oauth2.accessToken = process.env.QUANTIMODO_ACCESS_TOKEN;
+quantimodo_oauth2.accessToken = qmGulp.getQMAccessToken();
 console.log("process.platform is " + process.platform + " and process.env.OS is " + process.env.OS);
 qmGit.outputCommitMessageAndBranch();
 function setClientId(callback) {
@@ -1125,11 +1131,9 @@ function getRequestOptions(path) {
         headers: {'User-Agent': 'Request-Promise', 'Content-Type': 'application/json'},
         json: true // Automatically parses the JSON string in the response
     };
-    if(process.env.QUANTIMODO_ACCESS_TOKEN){
-        options.qs.access_token = process.env.QUANTIMODO_ACCESS_TOKEN;
+    if(qmGulp.getQMAccessToken()){
+        options.qs.access_token = qmGulp.getQMAccessToken();
         qmLog.info("Using QUANTIMODO_ACCESS_TOKEN: " + options.qs.access_token.substring(0,4)+'...');
-    } else {
-        qmLog.error("Please add your QUANTIMODO_ACCESS_TOKEN environmental variable from " + qmGulp.getAppHostName() + "/api/v2/account");
     }
     return options;
 }
@@ -1192,7 +1196,7 @@ function downloadEncryptedFile(url, outputFileName) {
     var decryptedFilename = getFileNameFromUrl(url).replace('.enc', '');
     var downloadUrl = qmGulp.getAppHostName() + '/api/v2/download?client_id=' + QUANTIMODO_CLIENT_ID + '&filename=' + encodeURIComponent(url);
     qmLog.info("Downloading " + downloadUrl + ' to ' + decryptedFilename);
-    return request(downloadUrl + '&accessToken=' + process.env.QUANTIMODO_ACCESS_TOKEN, defaultRequestOptions)
+    return request(downloadUrl + '&accessToken=' + qmGulp.getQMAccessToken(), defaultRequestOptions)
         .pipe(fs.createWriteStream(outputFileName));
 }
 function unzipFile(pathToZipFile, pathToOutputFolder) {
