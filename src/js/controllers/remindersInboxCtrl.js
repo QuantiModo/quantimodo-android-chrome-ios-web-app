@@ -248,9 +248,8 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
             closeWindowIfNecessary();
             return trackingReminderNotification;
         };
-        $scope.track = function(notification, value, $event, trackAll){
+        $scope.track = function(notification, value, $event){
             if(isGhostClick($event)){return false;}
-            if(trackAll){return $scope.trackAll(notification, value, $event);}
             notification.modifiedValue = value;
             var valueUnit = notification.modifiedValue + ' ' + notification.unitAbbreviatedName;
             var variableName = notification.variableName;
