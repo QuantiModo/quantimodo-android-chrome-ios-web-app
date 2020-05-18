@@ -260,18 +260,18 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
             qm.notifications.trackNotification(body);
             refreshIfRunningOutOfNotifications();
             if($scope.state.showTrackAllButtons){
-                qm.toast.showQuestionToast('Want to record ' + valueUnit + " for all remaining " + variableName + " notifications?",
-                'Recorded ' + valueUnit + " for all remaining " + variableName + " notifications!", function () {
+                qm.toast.showQuestionToast('Want to record ' + valueUnit + " for ALL remaining " + variableName + " notifications?",
+                'Recorded ' + valueUnit + " for ALL remaining " + variableName + " notifications!", function () {
                     $scope.trackAll(notification, value);
                 })
             }
         };
-        $scope.trackAll = function(trackingReminderNotification, modifiedReminderValue, ev){
-            trackingReminderNotification.modifiedValue = modifiedReminderValue;
-            var lastAction = 'Recorded ' + modifiedReminderValue + ' ' + trackingReminderNotification.unitAbbreviatedName;
-            qm.notifications.lastAction = qm.stringHelper.formatValueUnitDisplayText(lastAction) + ' for all '+trackingReminderNotification.variableName;
-            var body = notificationAction(trackingReminderNotification);
-            qmService.notifications.trackAll(body, modifiedReminderValue, ev);
+        $scope.trackAll = function(notification, value, ev){
+            notification.modifiedValue = value;
+            var lastAction = 'Recorded ' + value + ' ' + notification.unitAbbreviatedName;
+            qm.notifications.lastAction = qm.stringHelper.formatValueUnitDisplayText(lastAction) + ' for all '+notification.variableName;
+            var body = notificationAction(notification);
+            qmService.notifications.trackAll(body, value, ev);
             getTrackingReminderNotifications();
         }
         $scope.trackAllWithConfirmation = function(trackingReminderNotification, modifiedReminderValue, ev){

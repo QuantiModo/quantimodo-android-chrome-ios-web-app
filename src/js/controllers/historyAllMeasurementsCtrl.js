@@ -3,15 +3,16 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
                                                                            $ionicActionSheet, qmService, qmLogService){
         $scope.controller_name = "historyAllMeasurementsCtrl";
         $scope.state = {
-            limit: 50,
-            history: [],
-            units: [],
-            showLocationToggle: false,
-            noHistory: false,
             helpCardTitle: "Past Measurements",
-            title: "History",
+            history: [],
+            limit: 50,
             loadingText: "Fetching measurements...",
-            moreDataCanBeLoaded: true
+            moreDataCanBeLoaded: true,
+            noHistory: false,
+            showLocationToggle: false,
+            sort: "-startTime",
+            title: "History",
+            units: [],
         };
         $scope.$on('$ionicView.beforeEnter', function(e){
             if (document.title !== $scope.state.title) {document.title = $scope.state.title;}
@@ -27,27 +28,24 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
             $scope.state.moreDataCanBeLoaded = true;
             // Need to use rootScope here for some reason
             qmService.rootScope.setProperty('hideHistoryPageInstructionsCard', qm.storage.getItem('hideHistoryPageInstructionsCard'));
-            updateMeasurementIfNecessary();
+            if($stateParams.updatedMeasurementHistory){
+                $scope.state.history = $stateParams.updatedMeasurementHistory;
+            }
         });
         $scope.$on('$ionicView.enter', function(e){
             qmLogService.debug($state.current.name + ': ' + 'Entering state ' + $state.current.name);
             qmService.navBar.showNavigationMenuIfHideUrlParamNotSet();
-            if($stateParams.variableCategoryName && $stateParams.variableCategoryName !== 'Anything'){
-                document.title = $scope.state.title = $stateParams.variableCategoryName + ' History';
-                $scope.state.showLocationToggle = $stateParams.variableCategoryName === "Location";
+            var cat = $stateParams.variableCategoryName;
+            if(cat && cat!== 'Anything'){
+                document.title = $scope.state.title = cat + ' History';
+                $scope.state.showLocationToggle = cat === "Location";
             }
-            if($stateParams.variableCategoryName){
+            if(cat){
                 setupVariableCategoryActionSheet();
             }
             getScopedVariableObject();
             if(getVariableName()){$scope.state.title = getVariableName() + ' History';}
-            if(false && getVariableName()){
-                qmService.rootScope.setShowActionSheetMenu(function setActionSheet(){
-                    return qmService.actionSheets.showVariableObjectActionSheet(getVariableName(), getScopedVariableObject());
-                });
-            }else{
-                updateNavigationMenuButton();
-            }
+            updateNavigationMenuButton();
             if(!$scope.state.history || !$scope.state.history.length){ // Otherwise it keeps add more measurements whenever we edit one
                 $scope.getHistory();
             }
@@ -59,6 +57,7 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
             if(recentlyPosted){history = qm.arrayHelper.addToOrReplaceByIdAndMoveToFront(history, recentlyPosted);}
             var queue = qm.measurements.getMeasurementsFromQueue(getRequestParams());
             if(queue){history = qm.arrayHelper.addToOrReplaceByIdAndMoveToFront(history, queue);}
+            history = qm.arrayHelper.sortByProperty(history, $scope.state.sort)
             return history;
         }
         function updateNavigationMenuButton(){
@@ -92,10 +91,10 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
                                 changeSortAndGetHistory('value');
                             }
                             if(button.text === qmService.actionSheets.actionSheetButtons.sortDescendingTime.text){
-                                changeSortAndGetHistory('-startTimeEpoch');
+                                changeSortAndGetHistory('-startTime');
                             }
                             if(button.text === qmService.actionSheets.actionSheetButtons.sortAscendingTime.text){
-                                changeSortAndGetHistory('startTimeEpoch');
+                                changeSortAndGetHistory('startTime');
                             }
                             return true;
                         }
@@ -104,14 +103,9 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
             }, 1);
         }
         function changeSortAndGetHistory(sort){
-            $scope.state.history = [];
+            $scope.state.history = qm.arrayHelper.sortByProperty($scope.state.history, sort)
             $scope.state.sort = sort;
             $scope.getHistory();
-        }
-        function updateMeasurementIfNecessary(){
-            if($stateParams.updatedMeasurementHistory){
-                $scope.state.history = $stateParams.updatedMeasurementHistory;
-            }
         }
         function hideLoader(){
             //Stop the ion-refresher from spinning
@@ -200,6 +194,7 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
             if(getVariableCategoryName()){
                 params.variableCategoryName = getVariableCategoryName();
             }
+            params.sort = $scope.state.sort;
             return params;
         }
         $scope.getHistory = function(){
@@ -217,7 +212,7 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
             var params = {
                 offset: $scope.state.history.length,
                 limit: $scope.state.limit,
-                sort: $scope.state.sort || "-startTimeEpoch",
+                sort: $scope.state.sort,
                 doNotProcess: true
             };
             params = getRequestParams(params);
