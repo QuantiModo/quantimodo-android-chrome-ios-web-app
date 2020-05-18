@@ -248,17 +248,24 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
             closeWindowIfNecessary();
             return trackingReminderNotification;
         };
-        $scope.track = function(trackingReminderNotification, modifiedReminderValue, $event, trackAll){
-            if(isGhostClick($event)){
-                return false;
-            }
-            trackingReminderNotification.modifiedValue = modifiedReminderValue;
-            var lastAction = 'Recorded ' + trackingReminderNotification.modifiedValue + ' ' + trackingReminderNotification.unitAbbreviatedName;
-            qm.notifications.lastAction = qm.stringHelper.formatValueUnitDisplayText(lastAction) + ' for '+ trackingReminderNotification.variableName;
-            var body = notificationAction(trackingReminderNotification);
-            if(modifiedReminderValue !== null){body.modifiedValue = modifiedReminderValue;}
-            qm.notifications.trackNotification(body, trackAll);
+        $scope.track = function(notification, value, $event, trackAll){
+            if(isGhostClick($event)){return false;}
+            if(trackAll){return $scope.trackAll(notification, value, $event);}
+            notification.modifiedValue = value;
+            var valueUnit = notification.modifiedValue + ' ' + notification.unitAbbreviatedName;
+            var variableName = notification.variableName;
+            valueUnit = qm.stringHelper.formatValueUnitDisplayText(valueUnit);
+            qm.notifications.lastAction = 'Recorded ' + valueUnit + ' for '+ variableName;
+            var body = notificationAction(notification);
+            if(value !== null){body.modifiedValue = value;}
+            qm.notifications.trackNotification(body);
             refreshIfRunningOutOfNotifications();
+            if($scope.state.showTrackAllButtons){
+                qm.toast.showQuestionToast('Want to record ' + valueUnit + " for all remaining " + variableName + " notifications?",
+                'Recorded ' + valueUnit + " for all remaining " + variableName + " notifications!", function () {
+                    $scope.trackAll(notification, value);
+                })
+            }
         };
         $scope.trackAll = function(trackingReminderNotification, modifiedReminderValue, ev){
             trackingReminderNotification.modifiedValue = modifiedReminderValue;

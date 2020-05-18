@@ -8312,6 +8312,33 @@ var qm = {
             return obj;
         }
     },
+    toast: {
+        showQuestionToast: function(question, successMessage, callback){
+            var Toast = Swal.mixin({
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: true,
+                timer: 15000,
+                timerProgressBar: true,
+                onOpen: (toast) => {
+                    toast.addEventListener('mouseenter', Swal.stopTimer)
+                    toast.addEventListener('mouseleave', Swal.resumeTimer)
+                }
+            })
+            Toast.fire({
+                icon: 'success',
+                title: question
+            }).then(function(result){
+                if (result.value) {
+                    callback(result);
+                    Toast.fire({
+                        icon: 'success',
+                        title: successMessage
+                    })
+                }
+            })
+        }
+    },
     trackingReminderNotifications: [],
     ui: {
         preventDragAfterAlert: function(ev){
