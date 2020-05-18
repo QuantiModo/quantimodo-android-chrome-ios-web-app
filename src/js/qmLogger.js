@@ -248,7 +248,8 @@ var qmLog = {
         for(var i = 0; i < qmLog.secretAliases.length; i++){
             var secretAlias = qmLog.secretAliases[i];
             if(lowerCase.indexOf(secretAlias) !== -1){
-                censoredString = qmLog.qm.stringHelper.getStringBeforeSubstring(secretAlias, censoredString) + " " + secretAlias + "[redacted]";
+                censoredString = qmLog.qm.stringHelper.getStringBeforeSubstring(secretAlias, censoredString) +
+                    " " + secretAlias + "[redacted]";
             }
         }
         if(censoredString !== lowerCase){
