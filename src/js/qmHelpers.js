@@ -250,6 +250,9 @@ var qm = {
             }else{
                 if(data && params){
                     qm.api.cacheSet(params, data, functionName);
+                    if(data.measurements){
+                        qm.measurements.addMeasurementsToMemory(data.measurements)
+                    }
                 }
                 if(successHandler){
                     successHandler(data, response);
@@ -1088,6 +1091,9 @@ var qm = {
                     return secondaryItem.id !== preferredItem.id;
                 })
             }
+            if(!preferred.concat){
+                qmLog.error("preferred not an array but is "+JSON.stringify(preferred))
+            }
             var combined = preferred.concat(secondary);
             return combined;
         },
@@ -1280,7 +1286,7 @@ var qm = {
             }
             return array;
         },
-        sortByProperty: function(arrayToSort, propertyName){
+        sortByProperty: function(arrayToSort, propertyName, direction){
             qm.qmLog.info("Sorting by " + propertyName + "...");
             if(!qm.arrayHelper.variableIsArray(arrayToSort)){
                 qm.qmLog.info("Cannot sort by " + propertyName + " because it's not an array!");
@@ -1289,7 +1295,7 @@ var qm = {
             if(arrayToSort.length < 2){
                 return arrayToSort;
             }
-            if(propertyName.indexOf('-') > -1){
+            if(propertyName.indexOf('-') > -1 || direction === 'desc'){
                 arrayToSort.sort(function(a, b){
                     return b[propertyName.replace('-', '')] - a[propertyName.replace('-', '')];
                 });
@@ -4109,6 +4115,22 @@ var qm = {
         }
     },
     measurements: {
+        addMeasurementsToMemory: function(measurements){
+            var measurementArray = measurements;
+            if(!Array.isArray(measurementArray)){
+                measurementArray = [];
+                for (var variableName in measurements) {
+                    if(!measurements.hasOwnProperty(variableName)){continue;}
+                    var measurementObject = measurements[variableName];
+                    for (var date in measurementObject) {
+                        measurementArray.push(measurementObject[date]);
+                    }
+                }
+            }
+            var existing  = qm.measurements.recentlyPostedMeasurements;
+            var combined = qm.arrayHelper.concatenateUniqueId(measurementArray, existing);
+            qm.measurements.recentlyPostedMeasurements = combined;
+        },
         getMeasurementsFromApi: function(params, successHandler, errorHandler){
             params = qm.api.addGlobalParams(params);
             var cachedData = qm.api.cacheGet(params, 'getMeasurementsFromApi');
@@ -4119,7 +4141,9 @@ var qm = {
             qm.api.configureClient(arguments.callee.name, null, params);
             var apiInstance = new qm.Quantimodo.MeasurementsApi();
             function callback(error, data, response){
-                qm.api.generalResponseHandler(error, data, response, successHandler, errorHandler, params, 'getMeasurementsFromApi');
+                qm.measurements.addMeasurementsToMemory(data);
+                qm.api.generalResponseHandler(error, data, response, successHandler, errorHandler, params,
+                    'getMeasurementsFromApi');
             }
             apiInstance.getMeasurements(params, callback);
         },
@@ -4145,7 +4169,8 @@ var qm = {
         addToMeasurementsQueue: function(measurementObject){
             qm.qmLog.info("Adding to measurements queue: ", measurementObject);
             measurementObject = qm.measurements.addLocationAndSourceDataToMeasurement(measurementObject);
-            qm.storage.appendToArray('measurementsQueue', measurementObject);
+            qm.measurements.addMeasurementsToMemory([measurementObject])
+            qm.storage.appendToArray(qm.items.measurementsQueue, measurementObject);
         },
         updateMeasurementInQueue: function(measurementInfo){
             var measurementsQueue = qm.storage.getItem(qm.items.measurementsQueue);
@@ -4162,6 +4187,7 @@ var qm = {
                 i++;
             }
             qm.storage.setItem(qm.items.measurementsQueue, measurementsQueue);
+            qm.measurements.addMeasurementsToMemory(measurementsQueue)
         },
         getMeasurementsFromQueue: function(params){
             var measurements = qm.storage.getElementsWithRequestParams(qm.items.measurementsQueue, params);
@@ -4195,13 +4221,16 @@ var qm = {
                         qm.qmLog.error("Unrecognized note format", "Could not properly format JSON note", {note: m.note});
                     }
                 }
+                var unit = qm.unitHelper.getByNameAbbreviatedNameOrId(m.unitId || m.unitAbbreviatedName);
+                if(!m.unitAbbreviatedName){m.unitAbbreviatedName = unit.abbreviatedName;}
                 if(!m.variableName){m.variableName = m.variable;}
                 if(m.variableName === qm.getPrimaryOutcomeVariable().name){m.valence = qm.getPrimaryOutcomeVariable().valence;}
-                if(m.unitAbbreviatedName === '/5'){m.roundedValue = Math.round(m.value);}
-                if(m.displayValueAndUnitString){
-                    m.valueUnitVariableName = m.displayValueAndUnitString + " " + m.variableName;
-                }else{
-                    m.valueUnitVariableName = m.value + " " + m.unitAbbreviatedName + " " + m.variableName;
+                if(unit.abbreviatedName === '/5'){m.roundedValue = Math.round(m.value);}
+                m.displayValueAndUnitString = m.displayValueAndUnitString || m.value + " " + unit.abbreviatedName;
+                m.displayValueAndUnitString = qm.stringHelper.formatValueUnitDisplayText(m.displayValueAndUnitString)
+                m.valueUnitVariableName = m.displayValueAndUnitString + " " + m.variableName;
+                if(!m.variableCategoryName){
+                    m.variableCategoryName = qm.variableCategoryHelper.getByNameOrId(m.variableCategoryId).name;
                 }
                 if(!m.image && m.roundedValue && ratingInfo[m.roundedValue]){
                     m.image = ratingInfo[m.roundedValue].numericImage;
@@ -4220,14 +4249,12 @@ var qm = {
         },
         recentlyPostedMeasurements: [],
         getRecentlyPostedMeasurements: function(params){
-            var measurements = qm.arrayHelper.filterByRequestParams(qm.measurements.recentlyPostedMeasurements, params);
+            var all = qm.measurements.addInfoAndImagesToMeasurements(qm.measurements.recentlyPostedMeasurements);
+            var filtered = qm.arrayHelper.filterByRequestParams(all, params);
             var count = 0;
-            if(measurements){
-                count = measurements.length;
-                measurements = qm.measurements.addInfoAndImagesToMeasurements(measurements);
-            }
-            qm.qmLog.info("Got " + count + " measurements from recentlyPostedMeasurements with params: " + JSON.stringify(params), measurements);
-            return measurements;
+            if(filtered){count = filtered.length;}
+            qm.qmLog.info("Got " + count + " measurements from recentlyPostedMeasurements with params: " + JSON.stringify(params));
+            return filtered;
         },
     },
     manualTrackingVariableCategoryNames: [,
@@ -5536,28 +5563,27 @@ var qm = {
                 }
             }, errorHandler);
         },
-        scheduleNotificationSync: function(delayBeforePostingNotificationsInMilliseconds){
-            if(!delayBeforePostingNotificationsInMilliseconds){
-                delayBeforePostingNotificationsInMilliseconds = 3 * 60 * 1000;
+        scheduleNotificationSync: function(delayInMilliseconds){
+            if(!delayInMilliseconds){
+                delayInMilliseconds = 3 * 60 * 1000;
                 //delayBeforePostingNotificationsInMilliseconds = 15 * 1000;
             }
-            var trackingReminderNotificationSyncScheduled = qm.storage.getItem(qm.items.trackingReminderNotificationSyncScheduled);
-            if(!trackingReminderNotificationSyncScheduled ||
-                parseInt(trackingReminderNotificationSyncScheduled) < qm.timeHelper.getUnixTimestampInMilliseconds() - delayBeforePostingNotificationsInMilliseconds){
-                qm.storage.setItem('trackingReminderNotificationSyncScheduled', qm.timeHelper.getUnixTimestampInMilliseconds());
+            var scheduledAtMillis = qm.storage.getItem(qm.items.trackingReminderNotificationSyncScheduled);
+            var currentMillis = qm.timeHelper.getUnixTimestampInMilliseconds();
+            if(!scheduledAtMillis || parseInt(scheduledAtMillis) < currentMillis - delayInMilliseconds){
+                qm.storage.setItem(qm.items.trackingReminderNotificationSyncScheduled, currentMillis);
                 if(!qm.platform.isMobile()){ // Better performance
-                    qm.qmLog.info("Scheduling notifications sync for " + delayBeforePostingNotificationsInMilliseconds / 1000 + " seconds from now..");
+                    qm.qmLog.info("Scheduling notifications sync for " + delayInMilliseconds / 1000 + " seconds from now..");
                 }
                 setTimeout(function(){
                     qm.qmLog.info("Notifications sync countdown completed.  Syncing now... ");
-                    qm.storage.removeItem('trackingReminderNotificationSyncScheduled');
+                    qm.storage.removeItem(qm.items.trackingReminderNotificationSyncScheduled);
                     // Post notification queue in 5 minutes if it's still there
                     qm.notifications.postNotifications();
-                }, delayBeforePostingNotificationsInMilliseconds);
+                }, delayInMilliseconds);
             }else{
                 if(!qm.platform.isMobile()){ // Better performance
-                    qm.qmLog.info("Not scheduling sync because one is already scheduled " +
-                        qm.timeHelper.getTimeSinceString(trackingReminderNotificationSyncScheduled));
+                    qm.qmLog.info("Not scheduling sync because one is already scheduled " + qm.timeHelper.getTimeSinceString(scheduledAtMillis));
                 }
             }
         },
@@ -5615,7 +5641,13 @@ var qm = {
                     {trackingReminderNotificationsArray: trackingReminderNotificationsArray});
             }
             trackingReminderNotificationsArray[0] = qm.timeHelper.addTimeZoneOffsetProperty(trackingReminderNotificationsArray[0]);
-            qm.api.postToQuantiModo(trackingReminderNotificationsArray, 'v3/trackingReminderNotifications', successHandler, function(error){
+            qm.api.postToQuantiModo(trackingReminderNotificationsArray, 'v3/trackingReminderNotifications',
+                function(response){
+                    var measurements = response.measurements;
+                    if(!measurements && response.data){measurements = response.data.measurements;}
+                    if(measurements){qm.measurements.addMeasurementsToMemory(measurements);}
+                    if(successHandler){successHandler(response);}
+                }, function(error){
                 qm.qmLog.info("Called postTrackingReminderNotificationsToApi...");
                 var newNotificationsSyncQueue = qm.storage.getItem(qm.items.notificationsSyncQueue);
                 if(newNotificationsSyncQueue){
@@ -7500,6 +7532,11 @@ var qm = {
             qm.storage.clear();
             qm.storage.setItem(qm.items.units, units);
             qm.localForage.clear();
+        },
+        addToGlobalUnique(key, arr) {
+            var existing  = qm.storage.getGlobal(key);
+            var combined = qm.arrayHelper.concatenateUniqueId(arr, existing);
+            qm.storage.setGlobal(key, combined);
         }
     },
     stringHelper: {
@@ -8335,20 +8372,6 @@ var qm = {
             }).then(function(result){
                 if (result.value) {
                     callback(result);
-                    Swal.update({
-                        icon: 'success',
-                        title: successMessage,
-                        toast: true,
-                        position: 'top-end',
-                        showConfirmButton: false,
-                        showCloseButton: true,
-                        timer: 3000,
-                        timerProgressBar: true,
-                        onOpen: (toast) => {
-                            toast.addEventListener('mouseenter', Swal.stopTimer)
-                            toast.addEventListener('mouseleave', Swal.resumeTimer)
-                        }
-                    })
                 }
             })
         }
@@ -9454,6 +9477,17 @@ var qm = {
                 });
                 successHandler(match);
             });
+        },
+        getByNameOrId: function(nameOrId){
+            var cats = qm.variableCategoryHelper.getVariableCategoriesFromGlobals();
+            if(isNaN(nameOrId)){
+                return cats.find(function(c){
+                    // noinspection EqualityComparisonWithCoercionJS
+                    return c.id == nameOrId || c.name.toLowerCase() === nameOrId.toLowerCase();
+                });
+            } else {
+                return cats.find(function(c){return c.id === nameOrId;});
+            }
         }
     },
     visualizer: {
