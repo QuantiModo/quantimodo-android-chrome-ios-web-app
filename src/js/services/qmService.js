@@ -2309,24 +2309,24 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     });
                 },
             },
-            showVariableSearchDialog: function(dialogParameters, successHandler, errorHandler, ev){
+            showVariableSearchDialog: function(dialogParams, successHandler, errorHandler, ev){
                 var SelectVariableDialogController = function($scope, $state, $rootScope, $stateParams, $filter, qmService,
-                                                              qmLogService, $q, $log, dialogParameters, $timeout){
+                                                              qmLogService, $q, $log, dialogParams, $timeout){
                     var self = this;
-                    if(!dialogParameters.placeholder){
-                        dialogParameters.placeholder = "Enter a variable";
+                    if(!dialogParams.placeholder){
+                        dialogParams.placeholder = "Enter a variable";
                     }
-                    if(dialogParameters.requestParams && dialogParameters.requestParams.variableCategoryName){
-                        var variableCategory = qm.variableCategoryHelper.getVariableCategory(dialogParameters.requestParams.variableCategoryName);
+                    if(dialogParams.requestParams && dialogParams.requestParams.variableCategoryName){
+                        var variableCategory = qm.variableCategoryHelper.getVariableCategory(dialogParams.requestParams.variableCategoryName);
                         if(variableCategory){
-                            dialogParameters.title = 'Select ' + variableCategory.variableCategoryNameSingular.toLowerCase();
-                            dialogParameters.placeholder = dialogParameters.placeholder.replace('variable', variableCategory.variableCategoryNameSingular.toLowerCase());
-                            dialogParameters.helpText = dialogParameters.helpText.replace('variable', variableCategory.variableCategoryNameSingular.toLowerCase());
+                            dialogParams.title = 'Select ' + variableCategory.variableCategoryNameSingular.toLowerCase();
+                            dialogParams.placeholder = dialogParams.placeholder.replace('variable', variableCategory.variableCategoryNameSingular.toLowerCase());
+                            dialogParams.helpText = dialogParams.helpText.replace('variable', variableCategory.variableCategoryNameSingular.toLowerCase());
                         }
                     }
                     if(qm.platform.isMobile()){
-                        dialogParameters.placeholder += ' or press camera to scan';
-                        dialogParameters.helpText += '. Press the camera button to scan a barcode.';
+                        dialogParams.placeholder += ' or press camera to scan';
+                        dialogParams.helpText += '. Press the camera button to scan a barcode.';
                     }
                     $timeout(function(){
                         showVariableList();
@@ -2341,8 +2341,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                         querySearch(tag);
                         self.searchText = tag;
                     };
-                    self.minLength = dialogParameters.minLength || 0;
-                    self.dialogParameters = dialogParameters;
+                    self.minLength = dialogParams.minLength || 0;
+                    self.dialogParameters = dialogParams;
                     self.querySearch = querySearch;
                     self.selectedItemChange = selectedItemChange;
                     self.searchTextChange = searchTextChange;
@@ -2350,9 +2350,9 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     self.platform.isMobile = $rootScope.platform.isMobile;
                     //self.showHelp = !($rootScope.platform.isMobile);
                     self.showHelp = true;
-                    self.title = dialogParameters.title;
-                    self.helpText = dialogParameters.helpText;
-                    self.placeholder = dialogParameters.placeholder;
+                    self.title = dialogParams.title;
+                    self.helpText = dialogParams.helpText;
+                    self.placeholder = dialogParams.placeholder;
                     self.createNewVariable = createNewVariable;
                     self.getHelp = function(){
                         if(self.helpText && !self.showHelp){
@@ -2379,8 +2379,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                             self.helpText = userErrorMessage;
                             self.title = "No matches found";
                             self.searchText = "";
-                            delete dialogParameters.requestParams.upc;
-                            delete dialogParameters.requestParams.barcodeFormat;
+                            delete dialogParams.requestParams.upc;
+                            delete dialogParams.requestParams.barcodeFormat;
                             deferred.reject(self.title);
                             querySearch();
                             qmLog.error(userErrorMessage);
@@ -2390,7 +2390,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                             qmService.barcodeScanner.quaggaScan();
                             return;
                         }
-                        qmService.barcodeScanner.scanBarcode(dialogParameters.requestParams, function(variables){
+                        qmService.barcodeScanner.scanBarcode(dialogParams.requestParams, function(variables){
                             if(variables && variables.length){
                                 self.helpText = "If you don't see what you're looking for, click the x and try a manual search";
                                 self.lastResults = variables;
@@ -2465,25 +2465,25 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                             self.dialogParameters.excludeLocal = true;
                         }
                         if(self.dialogParameters.excludeLocal){
-                            dialogParameters.requestParams.excludeLocal = self.dialogParameters.excludeLocal;
+                            dialogParams.requestParams.excludeLocal = self.dialogParameters.excludeLocal;
                         }
                         if(query && query !== ""){
-                            dialogParameters.requestParams.searchPhrase = query;
+                            dialogParams.requestParams.searchPhrase = query;
                             self.lastApiQuery = query;
                         }
-                        if(query === "" && dialogParameters.requestParams.searchPhrase){
-                            delete dialogParameters.requestParams.searchPhrase;
+                        if(query === "" && dialogParams.requestParams.searchPhrase){
+                            delete dialogParams.requestParams.searchPhrase;
                         } // This happens after clicking x clear button
-                        logDebug("getFromLocalStorageOrApi in querySearch with params: " + JSON.stringify(dialogParameters.requestParams), query);
+                        logDebug("getFromLocalStorageOrApi in querySearch with params: " + JSON.stringify(dialogParams.requestParams), query);
 
                         // Debounce in the template doesn't seem to work so we wait 500ms before searching here
                         clearTimeout(qmService.searchTimeout);
                         qmService.searchTimeout = setTimeout(function(){
-                            qm.variablesHelper.getFromLocalStorageOrApi(dialogParameters.requestParams, function(variables){
+                            qm.variablesHelper.getFromLocalStorageOrApi(dialogParams.requestParams, function(variables){
                                 logDebug('Got ' + variables.length + ' results matching ', query);
                                 showVariableList();
                                 var list = convertVariablesToToResultsList(variables);
-                                if(!dialogParameters.requestParams.excludeLocal){
+                                if(!dialogParams.requestParams.excludeLocal){
                                     list.push({
                                         value: "search-more",
                                         name: "Not seeing what you're looking for?",
@@ -2522,7 +2522,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                         if(!item){
                             return;
                         }
-                        if(item.value === "search-more" && !dialogParameters.requestParams.excludeLocal){
+                        if(item.value === "search-more" && !dialogParams.requestParams.excludeLocal){
                             self.selectedItem = null;
                             //dialogParameters.requestParams.excludeLocal = true;
                             //querySearch(self.searchText);
@@ -2582,7 +2582,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     targetEvent: ev,
                     clickOutsideToClose: false,
                     fullscreen: qm.platform.isMobile() || qm.windowHelper.isSmallHeight(),
-                    locals: {dialogParameters: dialogParameters}
+                    locals: {dialogParameters: dialogParams}
                 }).then(function(variable){
                     successHandler(variable);
                 }, function(error){
