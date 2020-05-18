@@ -9295,7 +9295,7 @@ var qm = {
                 qm.commonVariablesHelper.getFromLocalStorage(requestParams, function(commonVariables){
                     commonVariables = commonVariables || [];
                     var both = userVariables.concat(commonVariables);
-                    both = qm.arrayHelper.getUnique(both, 'id');
+                    both = qm.arrayHelper.getUnique(both, 'variableId');
                     successHandler(both);
                 });
             }, errorHandler);
