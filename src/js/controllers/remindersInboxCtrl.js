@@ -8,6 +8,7 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
         qmLog.debug('Loading ' + $scope.controller_name);
         qmService.navBar.setFilterBarSearchIcon(false);
         $scope.state = {
+            maximumNotificationsToDisplay: 20,
             showMeasurementBox: false,
             selectedReminder: false,
             reminderDefaultValue: "",
@@ -207,8 +208,7 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
                     }, function(response){
                         qmLog.info('getTrackingReminderNotificationsFromApi response for ' + getVariableCategoryName() +
                             ': ' + JSON.stringify(response));
-                        $scope.notificationDividers = qmService.groupTrackingReminderNotificationsByDateRange(response.data);
-                        logNotificationDividers($scope.notificationDividers)
+                        addNotificationsToScope(response.data)
                     });
                 }
                 getFavorites();
@@ -260,7 +260,7 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
             qm.notifications.trackNotification(body, trackAll);
             refreshIfRunningOutOfNotifications();
         };
-        function trackAll(trackingReminderNotification, modifiedReminderValue, ev){
+        $scope.trackAll = function(trackingReminderNotification, modifiedReminderValue, ev){
             trackingReminderNotification.modifiedValue = modifiedReminderValue;
             var lastAction = 'Recorded ' + modifiedReminderValue + ' ' + trackingReminderNotification.unitAbbreviatedName;
             qm.notifications.lastAction = qm.stringHelper.formatValueUnitDisplayText(lastAction) + ' for all '+trackingReminderNotification.variableName;
@@ -274,7 +274,7 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
             var textContent = "Do you want to record " + qm.stringHelper.formatValueUnitDisplayText(modifiedReminderValue + " " + trackingReminderNotification.unitAbbreviatedName) +
                 " for all remaining past " + trackingReminderNotification.variableName + " reminder notifications?";
             function yesCallback(ev){
-                trackAll(trackingReminderNotification, modifiedReminderValue, ev);
+                $scope.trackAll(trackingReminderNotification, modifiedReminderValue, ev);
             }
             function noCallback(){
             }
@@ -331,21 +331,13 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
             })
         }
         var getFilteredTrackingReminderNotificationsFromLocalStorage = function(){
-            var trackingReminderNotifications = qm.storage.getTrackingReminderNotifications(getVariableCategoryName(), 20);
-            for(var i = 0; i < trackingReminderNotifications.length; i++){
-                trackingReminderNotifications[i].showZeroButton = shouldWeShowZeroButton(trackingReminderNotifications[i]);
-            }
-            qmLog.debug('Just got ' + trackingReminderNotifications.length + ' trackingReminderNotifications from local storage');
-            $scope.state.numberOfDisplayedNotifications = trackingReminderNotifications.length;
-            //if($scope.state.numberOfDisplayedNotifications){hideInboxLoader();}  // TODO: Why was did we only do this if we had notifications?  It loads forever if category inbox has no notifications
+            var notifications = qm.storage.getTrackingReminderNotifications(getVariableCategoryName(),
+                $scope.state.maximumNotificationsToDisplay);
+            qmLog.debug('Just got ' + notifications.length + ' trackingReminderNotifications from local storage');
             if($state.current.name === "app.remindersInboxCompact"){
-                $scope.trackingReminderNotifications = trackingReminderNotifications;
+                $scope.trackingReminderNotifications = notifications;
             }else{
-                $scope.safeApply(function () { // For som reason these are not visible to Ghost Inspector sometimes
-                    $scope.notificationDividers =
-                        qmService.groupTrackingReminderNotificationsByDateRange(trackingReminderNotifications);
-                    logNotificationDividers($scope.notificationDividers);
-                })
+                addNotificationsToScope(notifications)
             }
             hideInboxLoader();
         };
@@ -355,12 +347,34 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
             $scope.state.loading = false;
             qmService.hideLoader();
         };
+        function addNotificationsToScope(trackingReminderNotifications) {
+            for(var i = 0; i < trackingReminderNotifications.length; i++){
+                var n = trackingReminderNotifications[i]
+                n.showZeroButton = shouldWeShowZeroButton(trackingReminderNotifications[i]);
+                n.trackAllActions.forEach(function (a) {
+                    if(a.callback === "skipAction"){
+                        a.valueUnit = "Skip"
+                        a.longTitle = "Skip all remaining un-tracked past notifications"
+                        a.titleHtml = "<p>Skip All</p>"
+                    } else{
+                        a.valueUnit = a.title.replace(" for all", "");
+                        a.longTitle = "Record "+a.valueUnit + " for all remaining un-tracked past notifications"
+                        a.titleHtml = "<p>"+a.valueUnit+"</p>"+"<p><small>for all</small></p>"
+                    }
+                })
+            }
+            var dividers = qmService.groupTrackingReminderNotificationsByDateRange(trackingReminderNotifications)
+            $scope.safeApply(function () { // For som reason these are not visible to Ghost Inspector sometimes
+                $scope.notificationDividers = dividers;
+                $scope.state.numberOfDisplayedNotifications = trackingReminderNotifications.length;
+                $scope.state.showTrackAllButtons = trackingReminderNotifications.length >= $scope.state.maximumNotificationsToDisplay;
+                logNotificationDividers($scope.notificationDividers);
+            })
+        }
         var getFilteredTodayTrackingReminderNotifications = function(){
             qmService.getTodayTrackingReminderNotificationsDeferred(getVariableCategoryName())
                 .then(function(trackingReminderNotifications){
-                    $scope.state.numberOfDisplayedNotifications = trackingReminderNotifications.length;
-                    $scope.notificationDividers = qmService.groupTrackingReminderNotificationsByDateRange(trackingReminderNotifications);
-                    logNotificationDividers($scope.notificationDividers)
+                    addNotificationsToScope(trackingReminderNotifications)
                     getFallbackInboxContentIfNecessary();
                     hideInboxLoader();
                 }, function(error){
@@ -385,7 +399,8 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
             }
         };
         function shouldWeShowZeroButton(trackingReminderNotification){
-            return trackingReminderNotification.inputType === 'defaultValue' || (trackingReminderNotification.inputType === 'value' && trackingReminderNotification.defaultValue !== null);
+            return trackingReminderNotification.inputType === 'defaultValue' ||
+                (trackingReminderNotification.inputType === 'value' && trackingReminderNotification.defaultValue !== null);
         }
         var showLoader = function(){
             $scope.state.loading = true;
@@ -493,7 +508,7 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
                         return false; // Don't hide
                     }
                     if(typeof button.trackAllIndex !== "undefined"){
-                        trackAll(trackingReminderNotification, trackingReminderNotification.trackAllActions[button.trackAllIndex].modifiedValue);
+                        $scope.trackAll(trackingReminderNotification, trackingReminderNotification.trackAllActions[button.trackAllIndex].modifiedValue);
                         return true; // Hide sheet
                     }
                     if(button.state){
