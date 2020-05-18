@@ -6271,6 +6271,10 @@ var qm = {
             var ids = [];
             var toKeep = [];
             notifications.forEach(function(n){
+                if(n.id !== n.trackingReminderNotificationId){
+                    qmLog.errorAndExceptionTestingOrDevelopment("notification id: "+n.id +
+                        " does not match trackingReminderNotificationId: "+n.trackingReminderNotificationId, null, n);
+                }
                 var id = n.trackingReminderNotificationId || n.id;
                 if(ids.indexOf(id) !== -1) {
                     qmLog.errorAndExceptionTestingOrDevelopment("Duplicate notification id: "+id, null, n);
