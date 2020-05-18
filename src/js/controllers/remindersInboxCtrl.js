@@ -326,7 +326,8 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
             dividers.forEach(function (divider) {
                 qmLog.debug('Notification Divider '+divider.name);
                 divider.trackingReminderNotifications.forEach(function (notification) {
-                    qmLog.debug("notification title: " + notification.title);
+                    qmLog.debug("notification title: " + notification.title+ "| id: "+notification.id+")"+
+                        " | trackingReminderNotificationId: "+notification.trackingReminderNotificationId+")");
                 })
             })
         }
@@ -363,6 +364,7 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
                     }
                 })
             }
+            trackingReminderNotifications = qm.reminderHelper.removeDuplicateNotifications(trackingReminderNotifications);
             var dividers = qmService.groupTrackingReminderNotificationsByDateRange(trackingReminderNotifications)
             $scope.safeApply(function () { // For som reason these are not visible to Ghost Inspector sometimes
                 $scope.notificationDividers = dividers;
