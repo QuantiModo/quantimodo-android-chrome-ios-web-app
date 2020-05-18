@@ -201,4 +201,20 @@
         </button>
     </div>
 </div>
-
+<div id="track-all-button-section"
+     ng-if="state.showTrackAllButtons">
+    <p style="text-align: center; padding: 2px;">Record same value for all remaining past notifications</p>
+    <span id="track-all-buttons"
+          style="display: flex; justify-content: center;">
+        <span class="buttons" ng-repeat="a in trackingReminderNotification.trackAllActions">
+            &nbsp;
+            <button class="button button-calm"
+                    on-hold="trackAll(trackingReminderNotification, a.modifiedValue, $event)"
+                    ng-click="trackAll(trackingReminderNotification, a.modifiedValue, $event)">
+                <md-tooltip md-direction="down" ng-if="!platform.isMobile" class="hide-xs">{{a.longTitle}}</md-tooltip>
+                {{a.valueUnit}}
+            </button>
+        </span>
+    </span>
+    <p style="text-align: center; padding: 2px;">FOR ALL REMAINING</p>
+</div>
