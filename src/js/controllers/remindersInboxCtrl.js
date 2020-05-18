@@ -1,14 +1,14 @@
 angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", "$stateParams", "$rootScope", "$filter",
-    "$ionicPlatform", "$ionicActionSheet", "$timeout", "qmService", "qmLogService",
-    function($scope, $state, $stateParams, $rootScope, $filter, $ionicPlatform, $ionicActionSheet, $timeout, qmService,
-             qmLogService){
+    "$ionicPlatform", "$ionicActionSheet", "$timeout", "qmService",
+    function($scope, $state, $stateParams, $rootScope, $filter, $ionicPlatform, $ionicActionSheet, $timeout, qmService){
         if(!$rootScope.appSettings){
             qmService.rootScope.setProperty('appSettings', window.qm.getAppSettings());
         }
         $scope.controller_name = "RemindersInboxCtrl";
-        qmLogService.debug('Loading ' + $scope.controller_name);
+        qmLog.debug('Loading ' + $scope.controller_name);
         qmService.navBar.setFilterBarSearchIcon(false);
         $scope.state = {
+            maximumNotificationsToDisplay: 20,
             showMeasurementBox: false,
             selectedReminder: false,
             reminderDefaultValue: "",
@@ -38,7 +38,7 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
         //createWordCloudFromNotes();
         $scope.$on('$ionicView.beforeEnter', function(e){
             if (document.title !== $scope.state.title) {document.title = $scope.state.title;}
-            qmLogService.info('RemindersInboxCtrl beforeEnter: ' + window.location.href);
+            qmLog.info('RemindersInboxCtrl beforeEnter: ' + window.location.href);
             $scope.state.loading = true;
             if(qmService.login.sendToLoginIfNecessaryAndComeBack("beforeEnter in " + $state.current.name)){
                 return;
@@ -51,7 +51,7 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
             // setPageTitle(); // Setting title beforeEnter doesn't fix cutoff on Android
         });
         $scope.$on('$ionicView.enter', function(e){
-            qmLogService.info('RemindersInboxCtrl enter: ' + window.location.href);
+            qmLog.info('RemindersInboxCtrl enter: ' + window.location.href);
             $scope.defaultHelpCards = qmService.setupHelpCards($rootScope.appSettings);
             readHelpCards();
             getTrackingReminderNotifications();
@@ -63,7 +63,7 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
             });
             $scope.stateParams = $stateParams;
             qmService.actionSheet.setDefaultActionSheet(function(){
-                    $scope.refreshTrackingReminderNotifications(3);
+                    $scope.refreshTrackingReminderNotifications();
                 },
                 getVariableCategoryName(), 'Clear All Notifications',
                 function(){
@@ -80,7 +80,7 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
             qmService.splash.hideSplashScreen();
         });
         $scope.$on('$ionicView.afterEnter', function(){
-            qmLogService.info('RemindersInboxCtrl afterEnter: ' + window.location.href);
+            qmLog.info('RemindersInboxCtrl afterEnter: ' + window.location.href);
             setPageTitle(); // Setting title afterEnter doesn't fix cutoff on Android
             if(needToRefresh()){
                 $scope.refreshTrackingReminderNotifications();
@@ -123,7 +123,7 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
             }, 30 * 60 * 1000);
         }
         $scope.$on('$ionicView.afterLeave', function(){
-            qmLogService.debug('RemindersInboxCtrl afterLeave', null);
+            qmLog.debug('RemindersInboxCtrl afterLeave', null);
             $rootScope.hideHomeButton = false;
             $rootScope.hideBackButton = false;
         });
@@ -153,14 +153,14 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
                 return false;
             }
             if($event && $scope.state.lastButtonPressTimeStamp > $event.timeStamp - 3000 && $scope.state.lastClientX === $event.clientX && $scope.state.lastClientY === $event.clientY){
-                qmLogService.debug('This event is probably a ghost click so not registering.', null, $event);
+                qmLog.debug('This event is probably a ghost click so not registering.', null, $event);
                 return true;
             }else{
                 if(!$event){
-                    qmLogService.error('No event provided to isGhostClick!');
+                    qmLog.error('No event provided to isGhostClick!');
                     return false;
                 }
-                qmLogService.debug('This Track event is not a ghost click so registering.', null, $event);
+                qmLog.debug('This Track event is not a ghost click so registering.', null, $event);
                 $scope.state.lastButtonPressTimeStamp = $event.timeStamp;
                 $scope.state.lastClientX = $event.clientX;
                 $scope.state.lastClientY = $event.clientY;
@@ -190,20 +190,6 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
             qm.notifications.trackNotification(trackingReminderNotification);
             refreshIfRunningOutOfNotifications();
         };
-        function getWeekdayCharts(){
-            if(false && !$scope.weekdayChartConfig){
-                qmService.syncPrimaryOutcomeVariableMeasurements(60 * 60);
-                qmService.getWeekdayChartConfigForPrimaryOutcome($scope.state.primaryOutcomeMeasurements, qm.getPrimaryOutcomeVariable())
-                    .then(function(chartConfig){
-                        $scope.weekdayChartConfig = chartConfig;
-                    });
-            }
-            if(!$scope.state.variableObject || !$scope.state.variableObject.charts){
-                qmService.getVariableWithCharts(qm.getPrimaryOutcomeVariable().name, false, function(variableObject){
-                    $scope.state.variableObject = variableObject;
-                });
-            }
-        }
         function getFavorites(){
             if(!$scope.state.favoritesArray){
                 qmService.storage.getFavorites(getVariableCategoryName())
@@ -215,17 +201,17 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
         var getFallbackInboxContentIfNecessary = function(){
             if(!$scope.state.numberOfDisplayedNotifications){
                 if(getVariableCategoryName()){
-                    qmLogService.info('Falling back to getTrackingReminderNotificationsFromApi request for category ' + getVariableCategoryName());
-                    qmService.refreshTrackingReminderNotifications(3, {
+                    qmLog.info('Falling back to getTrackingReminderNotificationsFromApi request for category ' + getVariableCategoryName());
+                    qmService.refreshTrackingReminderNotifications({
                         variableCategoryName: getVariableCategoryName(),
                         onlyPast: true
                     }, function(response){
-                        qmLogService.info('getTrackingReminderNotificationsFromApi response for ' + getVariableCategoryName() + ': ' + JSON.stringify(response));
-                        $scope.filteredTrackingReminderNotifications = qmService.groupTrackingReminderNotificationsByDateRange(response.data);
+                        qmLog.info('getTrackingReminderNotificationsFromApi response for ' + getVariableCategoryName() +
+                            ': ' + JSON.stringify(response));
+                        addNotificationsToScope(response.data)
                     });
                 }
                 getFavorites();
-                getWeekdayCharts();
                 getDiscoveries();
             }
         };
@@ -274,7 +260,7 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
             qm.notifications.trackNotification(body, trackAll);
             refreshIfRunningOutOfNotifications();
         };
-        function trackAll(trackingReminderNotification, modifiedReminderValue, ev){
+        $scope.trackAll = function(trackingReminderNotification, modifiedReminderValue, ev){
             trackingReminderNotification.modifiedValue = modifiedReminderValue;
             var lastAction = 'Recorded ' + modifiedReminderValue + ' ' + trackingReminderNotification.unitAbbreviatedName;
             qm.notifications.lastAction = qm.stringHelper.formatValueUnitDisplayText(lastAction) + ' for all '+trackingReminderNotification.variableName;
@@ -288,7 +274,7 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
             var textContent = "Do you want to record " + qm.stringHelper.formatValueUnitDisplayText(modifiedReminderValue + " " + trackingReminderNotification.unitAbbreviatedName) +
                 " for all remaining past " + trackingReminderNotification.variableName + " reminder notifications?";
             function yesCallback(ev){
-                trackAll(trackingReminderNotification, modifiedReminderValue, ev);
+                $scope.trackAll(trackingReminderNotification, modifiedReminderValue, ev);
             }
             function noCallback(){
             }
@@ -326,19 +312,32 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
                 $scope.words = response;
             });
         }
-        var getFilteredTrackingReminderNotificationsFromLocalStorage = function(){
-            var trackingReminderNotifications = qm.storage.getTrackingReminderNotifications(getVariableCategoryName(), 20);
-            for(var i = 0; i < trackingReminderNotifications.length; i++){
-                trackingReminderNotifications[i].showZeroButton = shouldWeShowZeroButton(trackingReminderNotifications[i]);
+        function logNotificationDividers(dividers) {
+            if(!dividers){
+                qmLog.info("No notification dividers!")
+                return;
             }
-            qmLogService.debug('Just got ' + trackingReminderNotifications.length + ' trackingReminderNotifications from local storage');
-            $scope.state.numberOfDisplayedNotifications = trackingReminderNotifications.length;
-            //if($scope.state.numberOfDisplayedNotifications){hideInboxLoader();}  // TODO: Why was did we only do this if we had notifications?  It loads forever if category inbox has no notifications
+            qmLog.debug('Just added ' + dividers.length +' notification dividers to $scope.notificationDividers. \n' +
+                'state.numberOfDisplayedNotifications is '+$scope.state.numberOfDisplayedNotifications);
+            if(typeof dividers.forEach !== "function"){
+                qmLog.error("typeof dividers.forEach !== \"function\"")
+                return;
+            }
+            dividers.forEach(function (divider) {
+                qmLog.debug('Notification Divider '+divider.name);
+                divider.trackingReminderNotifications.forEach(function (notification) {
+                    qmLog.debug("notification title: " + notification.title);
+                })
+            })
+        }
+        var getFilteredTrackingReminderNotificationsFromLocalStorage = function(){
+            var notifications = qm.storage.getTrackingReminderNotifications(getVariableCategoryName(),
+                $scope.state.maximumNotificationsToDisplay);
+            qmLog.debug('Just got ' + notifications.length + ' trackingReminderNotifications from local storage');
             if($state.current.name === "app.remindersInboxCompact"){
-                $scope.trackingReminderNotifications = trackingReminderNotifications;
+                $scope.trackingReminderNotifications = notifications;
             }else{
-                $scope.filteredTrackingReminderNotifications = qmService.groupTrackingReminderNotificationsByDateRange(trackingReminderNotifications);
-                qmLogService.debug('Just added ' + trackingReminderNotifications.length + ' to $scope.filteredTrackingReminderNotifications');
+                addNotificationsToScope(notifications)
             }
             hideInboxLoader();
         };
@@ -348,28 +347,51 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
             $scope.state.loading = false;
             qmService.hideLoader();
         };
+        function addNotificationsToScope(trackingReminderNotifications) {
+            for(var i = 0; i < trackingReminderNotifications.length; i++){
+                var n = trackingReminderNotifications[i]
+                n.showZeroButton = shouldWeShowZeroButton(trackingReminderNotifications[i]);
+                n.trackAllActions.forEach(function (a) {
+                    if(a.callback === "skipAction"){
+                        a.valueUnit = "Skip"
+                        a.longTitle = "Skip all remaining un-tracked past notifications"
+                        a.titleHtml = "<p>Skip All</p>"
+                    } else{
+                        a.valueUnit = a.title.replace(" for all", "");
+                        a.longTitle = "Record "+a.valueUnit + " for all remaining un-tracked past notifications"
+                        a.titleHtml = "<p>"+a.valueUnit+"</p>"+"<p><small>for all</small></p>"
+                    }
+                })
+            }
+            var dividers = qmService.groupTrackingReminderNotificationsByDateRange(trackingReminderNotifications)
+            $scope.safeApply(function () { // For som reason these are not visible to Ghost Inspector sometimes
+                $scope.notificationDividers = dividers;
+                $scope.state.numberOfDisplayedNotifications = trackingReminderNotifications.length;
+                $scope.state.showTrackAllButtons = trackingReminderNotifications.length >= $scope.state.maximumNotificationsToDisplay;
+                logNotificationDividers($scope.notificationDividers);
+            })
+        }
         var getFilteredTodayTrackingReminderNotifications = function(){
             qmService.getTodayTrackingReminderNotificationsDeferred(getVariableCategoryName())
                 .then(function(trackingReminderNotifications){
-                    $scope.state.numberOfDisplayedNotifications = trackingReminderNotifications.length;
-                    $scope.filteredTrackingReminderNotifications = qmService.groupTrackingReminderNotificationsByDateRange(trackingReminderNotifications);
+                    addNotificationsToScope(trackingReminderNotifications)
                     getFallbackInboxContentIfNecessary();
                     hideInboxLoader();
                 }, function(error){
                     getFallbackInboxContentIfNecessary();
-                    qmLogService.error(error);
-                    qmLogService.error('failed to get reminder notifications!');
+                    qmLog.error(error);
+                    qmLog.error('failed to get reminder notifications!');
                     hideInboxLoader();
                 });
         };
         $rootScope.$on('broadcastGetTrackingReminderNotifications', function(){
-            qmLogService.info('getTrackingReminderNotifications broadcast received..');
+            qmLog.info('getTrackingReminderNotifications broadcast received..');
             if(!$stateParams.today){
                 getFilteredTrackingReminderNotificationsFromLocalStorage();
             }
         });
         var getTrackingReminderNotifications = function(){
-            qmLogService.info('RemindersInboxCtrl called getTrackingReminderNotifications: ' + window.location.href);
+            qmLog.info('RemindersInboxCtrl called getTrackingReminderNotifications: ' + window.location.href);
             if($stateParams.today){
                 getFilteredTodayTrackingReminderNotifications();
             }else{
@@ -377,7 +399,8 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
             }
         };
         function shouldWeShowZeroButton(trackingReminderNotification){
-            return trackingReminderNotification.inputType === 'defaultValue' || (trackingReminderNotification.inputType === 'value' && trackingReminderNotification.defaultValue !== null);
+            return trackingReminderNotification.inputType === 'defaultValue' ||
+                (trackingReminderNotification.inputType === 'value' && trackingReminderNotification.defaultValue !== null);
         }
         var showLoader = function(){
             $scope.state.loading = true;
@@ -387,9 +410,9 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
                 }
             }, 10000);
         };
-        $scope.refreshTrackingReminderNotifications = function(minimumSecondsBetweenRequests){
+        $scope.refreshTrackingReminderNotifications = function(params){
             showLoader();
-            qmService.refreshTrackingReminderNotifications(minimumSecondsBetweenRequests).then(function(){
+            qmService.refreshTrackingReminderNotifications(params).then(function(){
                 getTrackingReminderNotifications();
                 if(!qm.notifications.getNumberInGlobalsOrLocalStorage(getVariableCategoryName())){
                     getFallbackInboxContentIfNecessary();
@@ -404,7 +427,7 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
         };
         $scope.editMeasurement = function(trackingReminderNotification){
             enlargeChromePopupIfNecessary();
-            //$scope.filteredTrackingReminderNotifications[dividerIndex].trackingReminderNotifications[trackingReminderNotificationIndex].hide = true;
+            //$scope.notificationDividers[dividerIndex].trackingReminderNotifications[trackingReminderNotificationIndex].hide = true;
             trackingReminderNotification.hide = true;
             qm.notifications.numberOfPendingNotifications--;
             $scope.state.numberOfDisplayedNotifications--;
@@ -416,7 +439,7 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
         };
         $scope.editReminderSettingsByNotification = function(trackingReminderNotification){
             enlargeChromePopupIfNecessary();
-            //$scope.filteredTrackingReminderNotifications[dividerIndex].trackingReminderNotifications[trackingReminderNotificationIndex].hide = true;
+            //$scope.notificationDividers[dividerIndex].trackingReminderNotifications[trackingReminderNotificationIndex].hide = true;
             trackingReminderNotification.hide = true;
             qm.notifications.numberOfPendingNotifications--;
             $scope.state.numberOfDisplayedNotifications--;
@@ -476,16 +499,16 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
                 destructiveText: '<i class="icon ion-trash-a"></i>Skip All ',
                 cancelText: '<i class="icon ion-ios-close"></i>Cancel',
                 cancel: function(){
-                    qmLogService.debug('CANCELLED', null);
+                    qmLog.debug('CANCELLED', null);
                 },
                 buttonClicked: function(index, button){
-                    qmLogService.debug('BUTTON CLICKED', null, index);
+                    qmLog.debug('BUTTON CLICKED', null, index);
                     if(index === 0){
                         qmLog.debug('clicked variable name');
                         return false; // Don't hide
                     }
                     if(typeof button.trackAllIndex !== "undefined"){
-                        trackAll(trackingReminderNotification, trackingReminderNotification.trackAllActions[button.trackAllIndex].modifiedValue);
+                        $scope.trackAll(trackingReminderNotification, trackingReminderNotification.trackAllActions[button.trackAllIndex].modifiedValue);
                         return true; // Hide sheet
                     }
                     if(button.state){
