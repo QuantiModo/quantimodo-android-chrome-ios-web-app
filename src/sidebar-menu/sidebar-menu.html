@@ -7,193 +7,1062 @@
 <body>
 <form action="#" method="get" class="sidebar-form" _lpchecked="1">
     <div class="input-group">
-        <input id="sidebar-menu"
+        <input id="sidebar-menu-input"
                onkeyup="filterMenu()"
                type="text"
                name="q"
                placeholder="Search..." class="form-control"> <span
-            class="input-group-btn">
+        class="input-group-btn">
         <button type="submit" name="search" id="search-btn" class="btn btn-flat"><i
             class="fa fa-search"></i></button>
     </span></div>
 </form>
-<ul id="sidebar-list" data-widget="tree" class="sidebar-menu tree">
+
+<div id="searchable-menu" class="hidden treeview-menu">
+    <ul id="searchable-list">
+        <li><a href="health/panel">Pragmarx Health Panel</a></li>
+        <li><a href="health/check">Pragmarx Health Check</a></li>
+        <li><a href="health/string">Pragmarx Health String</a></li>
+        <li><a href="resources">Pragmarx Health Resources All</a></li>
+        <li><a href="resources/{slug}">Pragmarx Health Resources Get</a></li>
+        <li><a href="health/assets/css/app.css">Pragmarx Health Assets Css</a></li>
+        <li><a href="health/assets/js/app.js">Pragmarx Health Assets Js</a></li>
+        <li><a href="health/config">Pragmarx Health Config</a></li>
+        <li><a href="laravelwebconsole/execute">Laravel Webconsole Execute</a></li>
+        <li><a href="docs/{page?}">Swaggervel Definitions</a></li>
+        <li><a href="api/docs">Swaggervel Ui</a></li>
+        <li><a href="arrilot/load-widget">Arrilot/load-Widget</a></li>
+        <li><a href="api/v2/_debugbar/open">Debugbar Openhandler</a></li>
+        <li><a href="api/v2/_debugbar/clockwork/{id}">Debugbar Clockwork</a></li>
+        <li><a href="api/v2/_debugbar/telescope/{id}">Debugbar Telescope</a></li>
+        <li><a href="api/v2/_debugbar/assets/stylesheets">Debugbar Assets Css</a></li>
+        <li><a href="api/v2/_debugbar/assets/javascript">Debugbar Assets Js</a></li>
+        <li><a href="api/v2/_debugbar/cache/{key}/{tags?}">Debugbar Cache Delete</a></li>
+        <li><a href="api/v2/elfinder">Elfinder Index</a></li>
+        <li><a href="api/v2/elfinder/connector">Elfinder Connector</a></li>
+        <li><a href="api/v2/elfinder/popup/{input_id}">Elfinder Popup</a></li>
+        <li><a href="api/v2/elfinder/filepicker/{input_id}">Elfinder Filepicker</a></li>
+        <li><a href="api/v2/elfinder/tinymce">Elfinder Tinymce</a></li>
+        <li><a href="api/v2/elfinder/tinymce4">Elfinder Tinymce4</a></li>
+        <li><a href="api/v2/elfinder/tinymce5">Elfinder Tinymce5</a></li>
+        <li><a href="api/v2/elfinder/ckeditor">Elfinder Ckeditor</a></li>
+        <li><a href="niceartisan/{option?}">Niceartisan</a></li>
+        <li><a href="niceartisan/item/{class}">Niceartisan Exec</a></li>
+        <li><a href="_ignition/health-check">Ignition healthCheck</a></li>
+        <li><a href="_ignition/execute-solution">Ignition executeSolution</a></li>
+        <li><a href="_ignition/share-report">Ignition shareReport</a></li>
+        <li><a href="_ignition/scripts/{script}">Ignition Scripts</a></li>
+        <li><a href="_ignition/styles/{style}">Ignition Styles</a></li>
+        <li><a href="horizon/api/stats">Horizon Stats Index</a></li>
+        <li><a href="horizon/api/workload">Horizon Workload Index</a></li>
+        <li><a href="horizon/api/masters">Horizon Masters Index</a></li>
+        <li><a href="horizon/api/monitoring">Horizon Monitoring Index</a></li>
+        <li><a href="horizon/api/monitoring">Horizon Monitoring Store</a></li>
+        <li><a href="horizon/api/monitoring/{tag}">Horizon Monitoring-Tag Paginate</a></li>
+        <li><a href="horizon/api/monitoring/{tag}">Horizon Monitoring-Tag Destroy</a></li>
+        <li><a href="horizon/api/metrics/jobs">Horizon Jobs-Metrics Index</a></li>
+        <li><a href="horizon/api/metrics/jobs/{id}">Horizon Jobs-Metrics Show</a></li>
+        <li><a href="horizon/api/metrics/queues">Horizon Queues-Metrics Index</a></li>
+        <li><a href="horizon/api/metrics/queues/{id}">Horizon Queues-Metrics Show</a></li>
+        <li><a href="horizon/api/jobs/recent">Horizon Recent-Jobs Index</a></li>
+        <li><a href="horizon/api/jobs/recent/{id}">Horizon Recent-Jobs Show</a></li>
+        <li><a href="horizon/api/jobs/failed">Horizon Failed-Jobs Index</a></li>
+        <li><a href="horizon/api/jobs/failed/{id}">Horizon Failed-Jobs Show</a></li>
+        <li><a href="horizon/api/jobs/retry/{id}">Horizon Retry-Jobs Show</a></li>
+        <li><a href="horizon/{view?}">Horizon Index</a></li>
+        <li><a href="livewire/livewire.js">Livewire/livewire Js</a></li>
+        <li><a href="livewire/livewire.js.map">Livewire/livewire Js Map</a></li>
+        <li><a href="livewire/message/{name}">Livewire/message/{name}</a></li>
+        <li><a href="api/v2/terminal/{view?}">Terminal Index</a></li>
+        <li><a href="api/v2/terminal/endpoint">Terminal Endpoint</a></li>
+        <li><a href="api/v2/terminal/media/{file}">Terminal Media</a></li>
+        <li><a href="tinker">Tinker</a></li>
+        <li><a href="tinker">Tinker</a></li>
+        <li><a href="filemanager">Unisharp Lfm Show</a></li>
+        <li><a href="filemanager/errors">Unisharp Lfm getErrors</a></li>
+        <li><a href="filemanager/upload">Unisharp Lfm Upload</a></li>
+        <li><a href="filemanager/jsonitems">Unisharp Lfm getItems</a></li>
+        <li><a href="filemanager/move">Unisharp Lfm Move</a></li>
+        <li><a href="filemanager/domove">Unisharp Lfm Domove</a></li>
+        <li><a href="filemanager/newfolder">Unisharp Lfm getAddfolder</a></li>
+        <li><a href="filemanager/folders">Unisharp Lfm getFolders</a></li>
+        <li><a href="filemanager/crop">Unisharp Lfm getCrop</a></li>
+        <li><a href="filemanager/cropimage">Unisharp Lfm getCropimage</a></li>
+        <li><a href="filemanager/cropnewimage">Unisharp Lfm getCropnewimage</a></li>
+        <li><a href="filemanager/rename">Unisharp Lfm getRename</a></li>
+        <li><a href="filemanager/resize">Unisharp Lfm getResize</a></li>
+        <li><a href="filemanager/doresize">Unisharp Lfm performResize</a></li>
+        <li><a href="filemanager/download">Unisharp Lfm getDownload</a></li>
+        <li><a href="filemanager/delete">Unisharp Lfm getDelete</a></li>
+        <li><a href="filemanager/demo">Unisharp Lfm</a></li>
+        <li><a href="_dusk/login/{userId}/{guard?}">dusk/login/{userId}/{guard?}</a></li>
+        <li><a href="_dusk/logout/{guard?}">Dusk/logout/{guard?}</a></li>
+        <li><a href="_dusk/user/{guard?}">Dusk/user/{guard?}</a></li>
+        <li><a href="oauth/authorize">Passport Authorizations Authorize</a></li>
+        <li><a href="oauth/authorize">Passport Authorizations Approve</a></li>
+        <li><a href="oauth/authorize">Passport Authorizations Deny</a></li>
+        <li><a href="oauth/token">Passport Token</a></li>
+        <li><a href="oauth/tokens">Passport Tokens Index</a></li>
+        <li><a href="oauth/tokens/{token_id}">Passport Tokens Destroy</a></li>
+        <li><a href="oauth/token/refresh">Passport Token Refresh</a></li>
+        <li><a href="oauth/clients">Passport Clients Index</a></li>
+        <li><a href="oauth/clients">Passport Clients Store</a></li>
+        <li><a href="oauth/clients/{client_id}">Passport Clients Update</a></li>
+        <li><a href="oauth/clients/{client_id}">Passport Clients Destroy</a></li>
+        <li><a href="oauth/scopes">Passport Scopes Index</a></li>
+        <li><a href="oauth/personal-access-tokens">Passport Personal Tokens Index</a></li>
+        <li><a href="oauth/personal-access-tokens">Passport Personal Tokens Store</a></li>
+        <li><a href="oauth/personal-access-tokens/{token_id}">Passport Personal Tokens Destroy</a></li>
+        <li><a href="broadcasting/auth">Broadcasting/auth</a></li>
+        <li><a href="api/v6/variables">Variables Index</a></li>
+        <li><a href="api/v6/variables/create">Variables Create</a></li>
+        <li><a href="api/v6/variables">Variables Store</a></li>
+        <li><a href="api/v6/variables/{variable}">Variables Show</a></li>
+        <li><a href="api/v6/variables/{variable}/edit">Variables Edit</a></li>
+        <li><a href="api/v6/variables/{variable}">Variables Update</a></li>
+        <li><a href="api/v6/variables/{variable}">Variables Destroy</a></li>
+        <li><a href="api/v6/connectors">Connectors Index</a></li>
+        <li><a href="api/v6/connectors/create">Connectors Create</a></li>
+        <li><a href="api/v6/connectors">Connectors Store</a></li>
+        <li><a href="api/v6/connectors/{connector}">Connectors Show</a></li>
+        <li><a href="api/v6/connectors/{connector}/edit">Connectors Edit</a></li>
+        <li><a href="api/v6/connectors/{connector}">Connectors Update</a></li>
+        <li><a href="api/v6/connectors/{connector}">Connectors Destroy</a></li>
+        <li><a href="api/v6/aggregate_correlations">Aggregate Correlations Index</a></li>
+        <li><a href="api/v6/aggregate_correlations/create">Aggregate Correlations Create</a></li>
+        <li><a href="api/v6/aggregate_correlations">Aggregate Correlations Store</a></li>
+        <li><a href="api/v6/aggregate_correlations/{aggregate_correlation}">Aggregate Correlations Show</a></li>
+        <li><a href="api/v6/aggregate_correlations/{aggregate_correlation}/edit">Aggregate Correlations Edit</a>
+        </li>
+        <li><a href="api/v6/aggregate_correlations/{aggregate_correlation}">Aggregate Correlations Update</a></li>
+        <li><a href="api/v6/aggregate_correlations/{aggregate_correlation}">Aggregate Correlations Destroy</a></li>
+        <li><a href="api/v6/applications">Applications Index</a></li>
+        <li><a href="api/v6/applications/create">Applications Create</a></li>
+        <li><a href="api/v6/applications">Applications Store</a></li>
+        <li><a href="api/v6/applications/{application}">Applications Show</a></li>
+        <li><a href="api/v6/applications/{application}/edit">Applications Edit</a></li>
+        <li><a href="api/v6/applications/{application}">Applications Update</a></li>
+        <li><a href="api/v6/applications/{application}">Applications Destroy</a></li>
+        <li><a href="api/v6/bshaffer_oauth_access_tokens">Bshaffer Oauth Access Tokens Index</a></li>
+        <li><a href="api/v6/bshaffer_oauth_access_tokens/create">Bshaffer Oauth Access Tokens Create</a></li>
+        <li><a href="api/v6/bshaffer_oauth_access_tokens">Bshaffer Oauth Access Tokens Store</a></li>
+        <li><a href="api/v6/bshaffer_oauth_access_tokens/{bshaffer_oauth_access_token}">Bshaffer Oauth Access Tokens
+                                                                                        Show</a></li>
+        <li><a href="api/v6/bshaffer_oauth_access_tokens/{bshaffer_oauth_access_token}/edit">Bshaffer Oauth Access
+                                                                                             Tokens Edit</a></li>
+        <li><a href="api/v6/bshaffer_oauth_access_tokens/{bshaffer_oauth_access_token}">Bshaffer Oauth Access Tokens
+                                                                                        Update</a></li>
+        <li><a href="api/v6/bshaffer_oauth_access_tokens/{bshaffer_oauth_access_token}">Bshaffer Oauth Access Tokens
+                                                                                        Destroy</a></li>
+        <li><a href="api/v6/bshaffer_oauth_clients">Bshaffer Oauth Clients Index</a></li>
+        <li><a href="api/v6/bshaffer_oauth_clients/create">Bshaffer Oauth Clients Create</a></li>
+        <li><a href="api/v6/bshaffer_oauth_clients">Bshaffer Oauth Clients Store</a></li>
+        <li><a href="api/v6/bshaffer_oauth_clients/{bshaffer_oauth_client}">Bshaffer Oauth Clients Show</a></li>
+        <li><a href="api/v6/bshaffer_oauth_clients/{bshaffer_oauth_client}/edit">Bshaffer Oauth Clients Edit</a>
+        </li>
+        <li><a href="api/v6/bshaffer_oauth_clients/{bshaffer_oauth_client}">Bshaffer Oauth Clients Update</a></li>
+        <li><a href="api/v6/bshaffer_oauth_clients/{bshaffer_oauth_client}">Bshaffer Oauth Clients Destroy</a></li>
+        <li><a href="api/v6/collaborators">Collaborators Index</a></li>
+        <li><a href="api/v6/collaborators/create">Collaborators Create</a></li>
+        <li><a href="api/v6/collaborators">Collaborators Store</a></li>
+        <li><a href="api/v6/collaborators/{collaborator}">Collaborators Show</a></li>
+        <li><a href="api/v6/collaborators/{collaborator}/edit">Collaborators Edit</a></li>
+        <li><a href="api/v6/collaborators/{collaborator}">Collaborators Update</a></li>
+        <li><a href="api/v6/collaborators/{collaborator}">Collaborators Destroy</a></li>
+        <li><a href="api/v6/common_tags">Common Tags Index</a></li>
+        <li><a href="api/v6/common_tags/create">Common Tags Create</a></li>
+        <li><a href="api/v6/common_tags">Common Tags Store</a></li>
+        <li><a href="api/v6/common_tags/{common_tag}">Common Tags Show</a></li>
+        <li><a href="api/v6/common_tags/{common_tag}/edit">Common Tags Edit</a></li>
+        <li><a href="api/v6/common_tags/{common_tag}">Common Tags Update</a></li>
+        <li><a href="api/v6/common_tags/{common_tag}">Common Tags Destroy</a></li>
+        <li><a href="api/v6/connections">Connections Index</a></li>
+        <li><a href="api/v6/connections/create">Connections Create</a></li>
+        <li><a href="api/v6/connections">Connections Store</a></li>
+        <li><a href="api/v6/connections/{connection}">Connections Show</a></li>
+        <li><a href="api/v6/connections/{connection}/edit">Connections Edit</a></li>
+        <li><a href="api/v6/connections/{connection}">Connections Update</a></li>
+        <li><a href="api/v6/connections/{connection}">Connections Destroy</a></li>
+        <li><a href="api/v6/connector_imports">Connector Imports Index</a></li>
+        <li><a href="api/v6/connector_imports/create">Connector Imports Create</a></li>
+        <li><a href="api/v6/connector_imports">Connector Imports Store</a></li>
+        <li><a href="api/v6/connector_imports/{connector_import}">Connector Imports Show</a></li>
+        <li><a href="api/v6/connector_imports/{connector_import}/edit">Connector Imports Edit</a></li>
+        <li><a href="api/v6/connector_imports/{connector_import}">Connector Imports Update</a></li>
+        <li><a href="api/v6/connector_imports/{connector_import}">Connector Imports Destroy</a></li>
+        <li><a href="api/v6/connector_requests">Connector Requests Index</a></li>
+        <li><a href="api/v6/connector_requests/create">Connector Requests Create</a></li>
+        <li><a href="api/v6/connector_requests">Connector Requests Store</a></li>
+        <li><a href="api/v6/connector_requests/{connector_request}">Connector Requests Show</a></li>
+        <li><a href="api/v6/connector_requests/{connector_request}/edit">Connector Requests Edit</a></li>
+        <li><a href="api/v6/connector_requests/{connector_request}">Connector Requests Update</a></li>
+        <li><a href="api/v6/connector_requests/{connector_request}">Connector Requests Destroy</a></li>
+        <li><a href="api/v6/correlations">Correlations Index</a></li>
+        <li><a href="api/v6/correlations/create">Correlations Create</a></li>
+        <li><a href="api/v6/correlations">Correlations Store</a></li>
+        <li><a href="api/v6/correlations/{correlation}">Correlations Show</a></li>
+        <li><a href="api/v6/correlations/{correlation}/edit">Correlations Edit</a></li>
+        <li><a href="api/v6/correlations/{correlation}">Correlations Update</a></li>
+        <li><a href="api/v6/correlations/{correlation}">Correlations Destroy</a></li>
+        <li><a href="api/v6/measurement_exports">Measurement Exports Index</a></li>
+        <li><a href="api/v6/measurement_exports/create">Measurement Exports Create</a></li>
+        <li><a href="api/v6/measurement_exports">Measurement Exports Store</a></li>
+        <li><a href="api/v6/measurement_exports/{measurement_export}">Measurement Exports Show</a></li>
+        <li><a href="api/v6/measurement_exports/{measurement_export}/edit">Measurement Exports Edit</a></li>
+        <li><a href="api/v6/measurement_exports/{measurement_export}">Measurement Exports Update</a></li>
+        <li><a href="api/v6/measurement_exports/{measurement_export}">Measurement Exports Destroy</a></li>
+        <li><a href="api/v6/measurement_imports">Measurement Imports Index</a></li>
+        <li><a href="api/v6/measurement_imports/create">Measurement Imports Create</a></li>
+        <li><a href="api/v6/measurement_imports">Measurement Imports Store</a></li>
+        <li><a href="api/v6/measurement_imports/{measurement_import}">Measurement Imports Show</a></li>
+        <li><a href="api/v6/measurement_imports/{measurement_import}/edit">Measurement Imports Edit</a></li>
+        <li><a href="api/v6/measurement_imports/{measurement_import}">Measurement Imports Update</a></li>
+        <li><a href="api/v6/measurement_imports/{measurement_import}">Measurement Imports Destroy</a></li>
+        <li><a href="api/v6/measurements">Measurements Index</a></li>
+        <li><a href="api/v6/measurements/create">Measurements Create</a></li>
+        <li><a href="api/v6/measurements">Measurements Store</a></li>
+        <li><a href="api/v6/measurements/{measurement}">Measurements Show</a></li>
+        <li><a href="api/v6/measurements/{measurement}/edit">Measurements Edit</a></li>
+        <li><a href="api/v6/measurements/{measurement}">Measurements Update</a></li>
+        <li><a href="api/v6/measurements/{measurement}">Measurements Destroy</a></li>
+        <li><a href="api/v6/notifications">Notifications Index</a></li>
+        <li><a href="api/v6/notifications/create">Notifications Create</a></li>
+        <li><a href="api/v6/notifications">Notifications Store</a></li>
+        <li><a href="api/v6/notifications/{notification}">Notifications Show</a></li>
+        <li><a href="api/v6/notifications/{notification}/edit">Notifications Edit</a></li>
+        <li><a href="api/v6/notifications/{notification}">Notifications Update</a></li>
+        <li><a href="api/v6/notifications/{notification}">Notifications Destroy</a></li>
+        <li><a href="api/v6/oauth_access_tokens">Oauth Access Tokens Index</a></li>
+        <li><a href="api/v6/oauth_access_tokens/create">Oauth Access Tokens Create</a></li>
+        <li><a href="api/v6/oauth_access_tokens">Oauth Access Tokens Store</a></li>
+        <li><a href="api/v6/oauth_access_tokens/{oauth_access_token}">Oauth Access Tokens Show</a></li>
+        <li><a href="api/v6/oauth_access_tokens/{oauth_access_token}/edit">Oauth Access Tokens Edit</a></li>
+        <li><a href="api/v6/oauth_access_tokens/{oauth_access_token}">Oauth Access Tokens Update</a></li>
+        <li><a href="api/v6/oauth_access_tokens/{oauth_access_token}">Oauth Access Tokens Destroy</a></li>
+        <li><a href="api/v6/oauth_clients">Oauth Clients Index</a></li>
+        <li><a href="api/v6/oauth_clients/create">Oauth Clients Create</a></li>
+        <li><a href="api/v6/oauth_clients">Oauth Clients Store</a></li>
+        <li><a href="api/v6/oauth_clients/{oauth_client}">Oauth Clients Show</a></li>
+        <li><a href="api/v6/oauth_clients/{oauth_client}/edit">Oauth Clients Edit</a></li>
+        <li><a href="api/v6/oauth_clients/{oauth_client}">Oauth Clients Update</a></li>
+        <li><a href="api/v6/oauth_clients/{oauth_client}">Oauth Clients Destroy</a></li>
+        <li><a href="api/v6/purchases">Purchases Index</a></li>
+        <li><a href="api/v6/purchases/create">Purchases Create</a></li>
+        <li><a href="api/v6/purchases">Purchases Store</a></li>
+        <li><a href="api/v6/purchases/{purchase}">Purchases Show</a></li>
+        <li><a href="api/v6/purchases/{purchase}/edit">Purchases Edit</a></li>
+        <li><a href="api/v6/purchases/{purchase}">Purchases Update</a></li>
+        <li><a href="api/v6/purchases/{purchase}">Purchases Destroy</a></li>
+        <li><a href="api/v6/sent_emails">Sent Emails Index</a></li>
+        <li><a href="api/v6/sent_emails/create">Sent Emails Create</a></li>
+        <li><a href="api/v6/sent_emails">Sent Emails Store</a></li>
+        <li><a href="api/v6/sent_emails/{sent_email}">Sent Emails Show</a></li>
+        <li><a href="api/v6/sent_emails/{sent_email}/edit">Sent Emails Edit</a></li>
+        <li><a href="api/v6/sent_emails/{sent_email}">Sent Emails Update</a></li>
+        <li><a href="api/v6/sent_emails/{sent_email}">Sent Emails Destroy</a></li>
+        <li><a href="api/v6/studies">Studies Index</a></li>
+        <li><a href="api/v6/studies/create">Studies Create</a></li>
+        <li><a href="api/v6/studies">Studies Store</a></li>
+        <li><a href="api/v6/studies/{study}">Studies Show</a></li>
+        <li><a href="api/v6/studies/{study}/edit">Studies Edit</a></li>
+        <li><a href="api/v6/studies/{study}">Studies Update</a></li>
+        <li><a href="api/v6/studies/{study}">Studies Destroy</a></li>
+        <li><a href="api/v6/subscriptions">Subscriptions Index</a></li>
+        <li><a href="api/v6/subscriptions/create">Subscriptions Create</a></li>
+        <li><a href="api/v6/subscriptions">Subscriptions Store</a></li>
+        <li><a href="api/v6/subscriptions/{subscription}">Subscriptions Show</a></li>
+        <li><a href="api/v6/subscriptions/{subscription}/edit">Subscriptions Edit</a></li>
+        <li><a href="api/v6/subscriptions/{subscription}">Subscriptions Update</a></li>
+        <li><a href="api/v6/subscriptions/{subscription}">Subscriptions Destroy</a></li>
+        <li><a href="api/v6/user_tags">User Tags Index</a></li>
+        <li><a href="api/v6/user_tags/create">User Tags Create</a></li>
+        <li><a href="api/v6/user_tags">User Tags Store</a></li>
+        <li><a href="api/v6/user_tags/{user_tag}">User Tags Show</a></li>
+        <li><a href="api/v6/user_tags/{user_tag}/edit">User Tags Edit</a></li>
+        <li><a href="api/v6/user_tags/{user_tag}">User Tags Update</a></li>
+        <li><a href="api/v6/user_tags/{user_tag}">User Tags Destroy</a></li>
+        <li><a href="api/v6/user_variables">User Variables Index</a></li>
+        <li><a href="api/v6/user_variables/create">User Variables Create</a></li>
+        <li><a href="api/v6/user_variables">User Variables Store</a></li>
+        <li><a href="api/v6/user_variables/{user_variable}">User Variables Show</a></li>
+        <li><a href="api/v6/user_variables/{user_variable}/edit">User Variables Edit</a></li>
+        <li><a href="api/v6/user_variables/{user_variable}">User Variables Update</a></li>
+        <li><a href="api/v6/user_variables/{user_variable}">User Variables Destroy</a></li>
+        <li><a href="api/v6/users">Users Index</a></li>
+        <li><a href="api/v6/users/create">Users Create</a></li>
+        <li><a href="api/v6/users">Users Store</a></li>
+        <li><a href="api/v6/users/{user}">Users Show</a></li>
+        <li><a href="api/v6/users/{user}/edit">Users Edit</a></li>
+        <li><a href="api/v6/users/{user}">Users Update</a></li>
+        <li><a href="api/v6/users/{user}">Users Destroy</a></li>
+        <li><a href="api/v6/variable_user_sources">Variable User Sources Index</a></li>
+        <li><a href="api/v6/variable_user_sources/create">Variable User Sources Create</a></li>
+        <li><a href="api/v6/variable_user_sources">Variable User Sources Store</a></li>
+        <li><a href="api/v6/variable_user_sources/{variable_user_source}">Variable User Sources Show</a></li>
+        <li><a href="api/v6/variable_user_sources/{variable_user_source}/edit">Variable User Sources Edit</a></li>
+        <li><a href="api/v6/variable_user_sources/{variable_user_source}">Variable User Sources Update</a></li>
+        <li><a href="api/v6/variable_user_sources/{variable_user_source}">Variable User Sources Destroy</a></li>
+        <li><a href="api/v6/votes">Votes Index</a></li>
+        <li><a href="api/v6/votes/create">Votes Create</a></li>
+        <li><a href="api/v6/votes">Votes Store</a></li>
+        <li><a href="api/v6/votes/{vote}">Votes Show</a></li>
+        <li><a href="api/v6/votes/{vote}/edit">Votes Edit</a></li>
+        <li><a href="api/v6/votes/{vote}">Votes Update</a></li>
+        <li><a href="api/v6/votes/{vote}">Votes Destroy</a></li>
+        <li><a href="api/v6/wp_bp_messages_messages">Wp Bp Messages Messages Index</a></li>
+        <li><a href="api/v6/wp_bp_messages_messages/create">Wp Bp Messages Messages Create</a></li>
+        <li><a href="api/v6/wp_bp_messages_messages">Wp Bp Messages Messages Store</a></li>
+        <li><a href="api/v6/wp_bp_messages_messages/{wp_bp_messages_message}">Wp Bp Messages Messages Show</a></li>
+        <li><a href="api/v6/wp_bp_messages_messages/{wp_bp_messages_message}/edit">Wp Bp Messages Messages Edit</a>
+        </li>
+        <li><a href="api/v6/wp_bp_messages_messages/{wp_bp_messages_message}">Wp Bp Messages Messages Update</a>
+        </li>
+        <li><a href="api/v6/wp_bp_messages_messages/{wp_bp_messages_message}">Wp Bp Messages Messages Destroy</a>
+        </li>
+        <li><a href="api/v6/wp_bp_notifications">Wp Bp Notifications Index</a></li>
+        <li><a href="api/v6/wp_bp_notifications/create">Wp Bp Notifications Create</a></li>
+        <li><a href="api/v6/wp_bp_notifications">Wp Bp Notifications Store</a></li>
+        <li><a href="api/v6/wp_bp_notifications/{wp_bp_notification}">Wp Bp Notifications Show</a></li>
+        <li><a href="api/v6/wp_bp_notifications/{wp_bp_notification}/edit">Wp Bp Notifications Edit</a></li>
+        <li><a href="api/v6/wp_bp_notifications/{wp_bp_notification}">Wp Bp Notifications Update</a></li>
+        <li><a href="api/v6/wp_bp_notifications/{wp_bp_notification}">Wp Bp Notifications Destroy</a></li>
+        <li><a href="api/v6/wp_posts">Wp Posts Index</a></li>
+        <li><a href="api/v6/wp_posts/create">Wp Posts Create</a></li>
+        <li><a href="api/v6/wp_posts">Wp Posts Store</a></li>
+        <li><a href="api/v6/wp_posts/{wp_post}">Wp Posts Show</a></li>
+        <li><a href="api/v6/wp_posts/{wp_post}/edit">Wp Posts Edit</a></li>
+        <li><a href="api/v6/wp_posts/{wp_post}">Wp Posts Update</a></li>
+        <li><a href="api/v6/wp_posts/{wp_post}">Wp Posts Destroy</a></li>
+        <li><a href="api/v6/variable_categories">Variable Categories Index</a></li>
+        <li><a href="api/v6/variable_categories/create">Variable Categories Create</a></li>
+        <li><a href="api/v6/variable_categories">Variable Categories Store</a></li>
+        <li><a href="api/v6/variable_categories/{variable_category}">Variable Categories Show</a></li>
+        <li><a href="api/v6/variable_categories/{variable_category}/edit">Variable Categories Edit</a></li>
+        <li><a href="api/v6/variable_categories/{variable_category}">Variable Categories Update</a></li>
+        <li><a href="api/v6/variable_categories/{variable_category}">Variable Categories Destroy</a></li>
+        <li><a href="admin">Admin</a></li>
+        <li><a href="admin/adminer">Admin/adminer</a></li>
+        <li><a href="admin/user-management">User-Management Index</a></li>
+        <li><a href="admin/user-management/create">User-Management Create</a></li>
+        <li><a href="admin/user-management">User-Management Store</a></li>
+        <li><a href="admin/user-management/{user_management}/edit">User-Management Edit</a></li>
+        <li><a href="admin/user-management/{user_management}">User-Management Update</a></li>
+        <li><a href="admin/user-management/{user_management}">User-Management Destroy</a></li>
+        <li><a href="admin/ssh">Ssh</a></li>
+        <li><a href="admin/invalid-measurements">Admin/invalid-Measurements</a></li>
+        <li><a href="admin/issues">Admin/issues</a></li>
+        <li><a href="admin/slow-queries">Slow-Queries</a></li>
+        <li><a href="admin/over-time">Over-Time</a></li>
+        <li><a href="admin/cleanup">Cleanup</a></li>
+        <li><a href="admin/cleanup-select">Cleanup-Select</a></li>
+        <li><a href="admin/cleanup-update">Cleanup-Update</a></li>
+        <li><a href="admin/variables/generateCode/{nameOrId}">Admin Variables generateCode</a></li>
+        <li><a href="admin/search">Admin/search</a></li>
+        <li><a href="admin/variable-search">Admin/variable-Search</a></li>
+        <li><a href="admin/generateScaffold">Admin generateScaffold</a></li>
+        <li><a href="admin/accessTokens">Admin accessTokens Index</a></li>
+        <li><a href="admin/accessTokens/create">Admin accessTokens Create</a></li>
+        <li><a href="admin/accessTokens">Admin accessTokens Store</a></li>
+        <li><a href="admin/accessTokens/{accessToken}">Admin accessTokens Show</a></li>
+        <li><a href="admin/accessTokens/{accessToken}/edit">Admin accessTokens Edit</a></li>
+        <li><a href="admin/accessTokens/{accessToken}">Admin accessTokens Update</a></li>
+        <li><a href="admin/accessTokens/{accessToken}">Admin accessTokens Destroy</a></li>
+        <li><a href="admin/aggregateCorrelations">Admin aggregateCorrelations Index</a></li>
+        <li><a href="admin/aggregateCorrelations/create">Admin aggregateCorrelations Create</a></li>
+        <li><a href="admin/aggregateCorrelations">Admin aggregateCorrelations Store</a></li>
+        <li><a href="admin/aggregateCorrelations/{aggregateCorrelation}">Admin aggregateCorrelations Show</a></li>
+        <li><a href="admin/aggregateCorrelations/{aggregateCorrelation}/edit">Admin aggregateCorrelations Edit</a>
+        </li>
+        <li><a href="admin/aggregateCorrelations/{aggregateCorrelation}">Admin aggregateCorrelations Update</a></li>
+        <li><a href="admin/aggregateCorrelations/{aggregateCorrelation}">Admin aggregateCorrelations Destroy</a>
+        </li>
+        <li><a href="admin/applications">Admin Applications Index</a></li>
+        <li><a href="admin/applications/create">Admin Applications Create</a></li>
+        <li><a href="admin/applications">Admin Applications Store</a></li>
+        <li><a href="admin/applications/{application}">Admin Applications Show</a></li>
+        <li><a href="admin/applications/{application}/edit">Admin Applications Edit</a></li>
+        <li><a href="admin/applications/{application}">Admin Applications Update</a></li>
+        <li><a href="admin/applications/{application}">Admin Applications Destroy</a></li>
+        <li><a href="admin/bshafferOauthAccessTokens">Admin bshafferOauthAccessTokens Index</a></li>
+        <li><a href="admin/bshafferOauthAccessTokens/create">Admin bshafferOauthAccessTokens Create</a></li>
+        <li><a href="admin/bshafferOauthAccessTokens">Admin bshafferOauthAccessTokens Store</a></li>
+        <li><a href="admin/bshafferOauthAccessTokens/{bshafferOauthAccessToken}">Admin bshafferOauthAccessTokens
+                                                                                 Show</a></li>
+        <li><a href="admin/bshafferOauthAccessTokens/{bshafferOauthAccessToken}/edit">Admin
+                                                                                      bshafferOauthAccessTokens Edit</a></li>
+        <li><a href="admin/bshafferOauthAccessTokens/{bshafferOauthAccessToken}">Admin bshafferOauthAccessTokens
+                                                                                 Update</a></li>
+        <li><a href="admin/bshafferOauthAccessTokens/{bshafferOauthAccessToken}">Admin bshafferOauthAccessTokens
+                                                                                 Destroy</a></li>
+        <li><a href="admin/bshafferOauthClients">Admin bshafferOauthClients Index</a></li>
+        <li><a href="admin/bshafferOauthClients/create">Admin bshafferOauthClients Create</a></li>
+        <li><a href="admin/bshafferOauthClients">Admin bshafferOauthClients Store</a></li>
+        <li><a href="admin/bshafferOauthClients/{bshafferOauthClient}">Admin bshafferOauthClients Show</a></li>
+        <li><a href="admin/bshafferOauthClients/{bshafferOauthClient}/edit">Admin bshafferOauthClients Edit</a></li>
+        <li><a href="admin/bshafferOauthClients/{bshafferOauthClient}">Admin bshafferOauthClients Update</a></li>
+        <li><a href="admin/bshafferOauthClients/{bshafferOauthClient}">Admin bshafferOauthClients Destroy</a></li>
+        <li><a href="admin/clients">Admin Clients Index</a></li>
+        <li><a href="admin/clients/create">Admin Clients Create</a></li>
+        <li><a href="admin/clients">Admin Clients Store</a></li>
+        <li><a href="admin/clients/{client}">Admin Clients Show</a></li>
+        <li><a href="admin/clients/{client}/edit">Admin Clients Edit</a></li>
+        <li><a href="admin/clients/{client}">Admin Clients Update</a></li>
+        <li><a href="admin/clients/{client}">Admin Clients Destroy</a></li>
+        <li><a href="admin/collaborators">Admin Collaborators Index</a></li>
+        <li><a href="admin/collaborators/create">Admin Collaborators Create</a></li>
+        <li><a href="admin/collaborators">Admin Collaborators Store</a></li>
+        <li><a href="admin/collaborators/{collaborator}">Admin Collaborators Show</a></li>
+        <li><a href="admin/collaborators/{collaborator}/edit">Admin Collaborators Edit</a></li>
+        <li><a href="admin/collaborators/{collaborator}">Admin Collaborators Update</a></li>
+        <li><a href="admin/collaborators/{collaborator}">Admin Collaborators Destroy</a></li>
+        <li><a href="admin/commonTags">Admin commonTags Index</a></li>
+        <li><a href="admin/commonTags/create">Admin commonTags Create</a></li>
+        <li><a href="admin/commonTags">Admin commonTags Store</a></li>
+        <li><a href="admin/commonTags/{commonTag}">Admin commonTags Show</a></li>
+        <li><a href="admin/commonTags/{commonTag}/edit">Admin commonTags Edit</a></li>
+        <li><a href="admin/commonTags/{commonTag}">Admin commonTags Update</a></li>
+        <li><a href="admin/commonTags/{commonTag}">Admin commonTags Destroy</a></li>
+        <li><a href="admin/connections">Admin Connections Index</a></li>
+        <li><a href="admin/connections/create">Admin Connections Create</a></li>
+        <li><a href="admin/connections">Admin Connections Store</a></li>
+        <li><a href="admin/connections/{connection}">Admin Connections Show</a></li>
+        <li><a href="admin/connections/{connection}/edit">Admin Connections Edit</a></li>
+        <li><a href="admin/connections/{connection}">Admin Connections Update</a></li>
+        <li><a href="admin/connections/{connection}">Admin Connections Destroy</a></li>
+        <li><a href="admin/connectorImports">Admin connectorImports Index</a></li>
+        <li><a href="admin/connectorImports/create">Admin connectorImports Create</a></li>
+        <li><a href="admin/connectorImports">Admin connectorImports Store</a></li>
+        <li><a href="admin/connectorImports/{connectorImport}">Admin connectorImports Show</a></li>
+        <li><a href="admin/connectorImports/{connectorImport}/edit">Admin connectorImports Edit</a></li>
+        <li><a href="admin/connectorImports/{connectorImport}">Admin connectorImports Update</a></li>
+        <li><a href="admin/connectorImports/{connectorImport}">Admin connectorImports Destroy</a></li>
+        <li><a href="admin/connectorRequests">Admin connectorRequests Index</a></li>
+        <li><a href="admin/connectorRequests/create">Admin connectorRequests Create</a></li>
+        <li><a href="admin/connectorRequests">Admin connectorRequests Store</a></li>
+        <li><a href="admin/connectorRequests/{connectorRequest}">Admin connectorRequests Show</a></li>
+        <li><a href="admin/connectorRequests/{connectorRequest}/edit">Admin connectorRequests Edit</a></li>
+        <li><a href="admin/connectorRequests/{connectorRequest}">Admin connectorRequests Update</a></li>
+        <li><a href="admin/connectorRequests/{connectorRequest}">Admin connectorRequests Destroy</a></li>
+        <li><a href="admin/connectors">Admin Connectors Index</a></li>
+        <li><a href="admin/connectors/create">Admin Connectors Create</a></li>
+        <li><a href="admin/connectors">Admin Connectors Store</a></li>
+        <li><a href="admin/connectors/{connector}">Admin Connectors Show</a></li>
+        <li><a href="admin/connectors/{connector}/edit">Admin Connectors Edit</a></li>
+        <li><a href="admin/connectors/{connector}">Admin Connectors Update</a></li>
+        <li><a href="admin/connectors/{connector}">Admin Connectors Destroy</a></li>
+        <li><a href="admin/correlations">Admin Correlations Index</a></li>
+        <li><a href="admin/correlations/create">Admin Correlations Create</a></li>
+        <li><a href="admin/correlations">Admin Correlations Store</a></li>
+        <li><a href="admin/correlations/{correlation}">Admin Correlations Show</a></li>
+        <li><a href="admin/correlations/{correlation}/edit">Admin Correlations Edit</a></li>
+        <li><a href="admin/correlations/{correlation}">Admin Correlations Update</a></li>
+        <li><a href="admin/correlations/{correlation}">Admin Correlations Destroy</a></li>
+        <li><a href="admin/measurementExports">Admin measurementExports Index</a></li>
+        <li><a href="admin/measurementExports/create">Admin measurementExports Create</a></li>
+        <li><a href="admin/measurementExports">Admin measurementExports Store</a></li>
+        <li><a href="admin/measurementExports/{measurementExport}">Admin measurementExports Show</a></li>
+        <li><a href="admin/measurementExports/{measurementExport}/edit">Admin measurementExports Edit</a></li>
+        <li><a href="admin/measurementExports/{measurementExport}">Admin measurementExports Update</a></li>
+        <li><a href="admin/measurementExports/{measurementExport}">Admin measurementExports Destroy</a></li>
+        <li><a href="admin/measurementImports">Admin measurementImports Index</a></li>
+        <li><a href="admin/measurementImports/create">Admin measurementImports Create</a></li>
+        <li><a href="admin/measurementImports">Admin measurementImports Store</a></li>
+        <li><a href="admin/measurementImports/{measurementImport}">Admin measurementImports Show</a></li>
+        <li><a href="admin/measurementImports/{measurementImport}/edit">Admin measurementImports Edit</a></li>
+        <li><a href="admin/measurementImports/{measurementImport}">Admin measurementImports Update</a></li>
+        <li><a href="admin/measurementImports/{measurementImport}">Admin measurementImports Destroy</a></li>
+        <li><a href="admin/measurements">Admin Measurements Index</a></li>
+        <li><a href="admin/measurements/create">Admin Measurements Create</a></li>
+        <li><a href="admin/measurements">Admin Measurements Store</a></li>
+        <li><a href="admin/measurements/{measurement}">Admin Measurements Show</a></li>
+        <li><a href="admin/measurements/{measurement}/edit">Admin Measurements Edit</a></li>
+        <li><a href="admin/measurements/{measurement}">Admin Measurements Update</a></li>
+        <li><a href="admin/measurements/{measurement}">Admin Measurements Destroy</a></li>
+        <li><a href="admin/messages">Admin Messages Index</a></li>
+        <li><a href="admin/messages/create">Admin Messages Create</a></li>
+        <li><a href="admin/messages">Admin Messages Store</a></li>
+        <li><a href="admin/messages/{message}">Admin Messages Show</a></li>
+        <li><a href="admin/messages/{message}/edit">Admin Messages Edit</a></li>
+        <li><a href="admin/messages/{message}">Admin Messages Update</a></li>
+        <li><a href="admin/messages/{message}">Admin Messages Destroy</a></li>
+        <li><a href="admin/notifications">Admin Notifications Index</a></li>
+        <li><a href="admin/notifications/create">Admin Notifications Create</a></li>
+        <li><a href="admin/notifications">Admin Notifications Store</a></li>
+        <li><a href="admin/notifications/{notification}">Admin Notifications Show</a></li>
+        <li><a href="admin/notifications/{notification}/edit">Admin Notifications Edit</a></li>
+        <li><a href="admin/notifications/{notification}">Admin Notifications Update</a></li>
+        <li><a href="admin/notifications/{notification}">Admin Notifications Destroy</a></li>
+        <li><a href="admin/oAuthClients">Admin oAuthClients Index</a></li>
+        <li><a href="admin/oAuthClients/create">Admin oAuthClients Create</a></li>
+        <li><a href="admin/oAuthClients">Admin oAuthClients Store</a></li>
+        <li><a href="admin/oAuthClients/{oAuthClient}">Admin oAuthClients Show</a></li>
+        <li><a href="admin/oAuthClients/{oAuthClient}/edit">Admin oAuthClients Edit</a></li>
+        <li><a href="admin/oAuthClients/{oAuthClient}">Admin oAuthClients Update</a></li>
+        <li><a href="admin/oAuthClients/{oAuthClient}">Admin oAuthClients Destroy</a></li>
+        <li><a href="admin/oAuthAccessTokens">Admin oAuthAccessTokens Index</a></li>
+        <li><a href="admin/oAuthAccessTokens/create">Admin oAuthAccessTokens Create</a></li>
+        <li><a href="admin/oAuthAccessTokens">Admin oAuthAccessTokens Store</a></li>
+        <li><a href="admin/oAuthAccessTokens/{oAuthAccessToken}">Admin oAuthAccessTokens Show</a></li>
+        <li><a href="admin/oAuthAccessTokens/{oAuthAccessToken}/edit">Admin oAuthAccessTokens Edit</a></li>
+        <li><a href="admin/oAuthAccessTokens/{oAuthAccessToken}">Admin oAuthAccessTokens Update</a></li>
+        <li><a href="admin/oAuthAccessTokens/{oAuthAccessToken}">Admin oAuthAccessTokens Destroy</a></li>
+        <li><a href="admin/posts">Admin Posts Index</a></li>
+        <li><a href="admin/posts/create">Admin Posts Create</a></li>
+        <li><a href="admin/posts">Admin Posts Store</a></li>
+        <li><a href="admin/posts/{post}">Admin Posts Show</a></li>
+        <li><a href="admin/posts/{post}/edit">Admin Posts Edit</a></li>
+        <li><a href="admin/posts/{post}">Admin Posts Update</a></li>
+        <li><a href="admin/posts/{post}">Admin Posts Destroy</a></li>
+        <li><a href="admin/purchases">Admin Purchases Index</a></li>
+        <li><a href="admin/purchases/create">Admin Purchases Create</a></li>
+        <li><a href="admin/purchases">Admin Purchases Store</a></li>
+        <li><a href="admin/purchases/{purchase}">Admin Purchases Show</a></li>
+        <li><a href="admin/purchases/{purchase}/edit">Admin Purchases Edit</a></li>
+        <li><a href="admin/purchases/{purchase}">Admin Purchases Update</a></li>
+        <li><a href="admin/purchases/{purchase}">Admin Purchases Destroy</a></li>
+        <li><a href="admin/sentEmails">Admin sentEmails Index</a></li>
+        <li><a href="admin/sentEmails/create">Admin sentEmails Create</a></li>
+        <li><a href="admin/sentEmails">Admin sentEmails Store</a></li>
+        <li><a href="admin/sentEmails/{sentEmail}">Admin sentEmails Show</a></li>
+        <li><a href="admin/sentEmails/{sentEmail}/edit">Admin sentEmails Edit</a></li>
+        <li><a href="admin/sentEmails/{sentEmail}">Admin sentEmails Update</a></li>
+        <li><a href="admin/sentEmails/{sentEmail}">Admin sentEmails Destroy</a></li>
+        <li><a href="admin/studies">Admin Studies Index</a></li>
+        <li><a href="admin/studies/create">Admin Studies Create</a></li>
+        <li><a href="admin/studies">Admin Studies Store</a></li>
+        <li><a href="admin/studies/{study}">Admin Studies Show</a></li>
+        <li><a href="admin/studies/{study}/edit">Admin Studies Edit</a></li>
+        <li><a href="admin/studies/{study}">Admin Studies Update</a></li>
+        <li><a href="admin/studies/{study}">Admin Studies Destroy</a></li>
+        <li><a href="admin/subscriptions">Admin Subscriptions Index</a></li>
+        <li><a href="admin/subscriptions/create">Admin Subscriptions Create</a></li>
+        <li><a href="admin/subscriptions">Admin Subscriptions Store</a></li>
+        <li><a href="admin/subscriptions/{subscription}">Admin Subscriptions Show</a></li>
+        <li><a href="admin/subscriptions/{subscription}/edit">Admin Subscriptions Edit</a></li>
+        <li><a href="admin/subscriptions/{subscription}">Admin Subscriptions Update</a></li>
+        <li><a href="admin/subscriptions/{subscription}">Admin Subscriptions Destroy</a></li>
+        <li><a href="admin/trackingReminderNotifications">Admin trackingReminderNotifications Index</a></li>
+        <li><a href="admin/trackingReminderNotifications/create">Admin trackingReminderNotifications Create</a></li>
+        <li><a href="admin/trackingReminderNotifications">Admin trackingReminderNotifications Store</a></li>
+        <li><a href="admin/trackingReminderNotifications/{trackingReminderNotification}">Admin
+                                                                                         trackingReminderNotifications Show</a></li>
+        <li><a href="admin/trackingReminderNotifications/{trackingReminderNotification}/edit">Admin
+                                                                                              trackingReminderNotifications Edit</a></li>
+        <li><a href="admin/trackingReminderNotifications/{trackingReminderNotification}">Admin
+                                                                                         trackingReminderNotifications Update</a></li>
+        <li><a href="admin/trackingReminderNotifications/{trackingReminderNotification}">Admin
+                                                                                         trackingReminderNotifications Destroy</a></li>
+        <li><a href="admin/trackingReminders">Admin trackingReminders Index</a></li>
+        <li><a href="admin/trackingReminders/create">Admin trackingReminders Create</a></li>
+        <li><a href="admin/trackingReminders">Admin trackingReminders Store</a></li>
+        <li><a href="admin/trackingReminders/{trackingReminder}">Admin trackingReminders Show</a></li>
+        <li><a href="admin/trackingReminders/{trackingReminder}/edit">Admin trackingReminders Edit</a></li>
+        <li><a href="admin/trackingReminders/{trackingReminder}">Admin trackingReminders Update</a></li>
+        <li><a href="admin/trackingReminders/{trackingReminder}">Admin trackingReminders Destroy</a></li>
+        <li><a href="admin/users">Admin Users Index</a></li>
+        <li><a href="admin/users/create">Admin Users Create</a></li>
+        <li><a href="admin/users">Admin Users Store</a></li>
+        <li><a href="admin/users/{user}">Admin Users Show</a></li>
+        <li><a href="admin/users/{user}/edit">Admin Users Edit</a></li>
+        <li><a href="admin/users/{user}">Admin Users Update</a></li>
+        <li><a href="admin/users/{user}">Admin Users Destroy</a></li>
+        <li><a href="admin/userTags">Admin userTags Index</a></li>
+        <li><a href="admin/userTags/create">Admin userTags Create</a></li>
+        <li><a href="admin/userTags">Admin userTags Store</a></li>
+        <li><a href="admin/userTags/{userTag}">Admin userTags Show</a></li>
+        <li><a href="admin/userTags/{userTag}/edit">Admin userTags Edit</a></li>
+        <li><a href="admin/userTags/{userTag}">Admin userTags Update</a></li>
+        <li><a href="admin/userTags/{userTag}">Admin userTags Destroy</a></li>
+        <li><a href="admin/userVariables">Admin userVariables Index</a></li>
+        <li><a href="admin/userVariables/create">Admin userVariables Create</a></li>
+        <li><a href="admin/userVariables">Admin userVariables Store</a></li>
+        <li><a href="admin/userVariables/{userVariable}">Admin userVariables Show</a></li>
+        <li><a href="admin/userVariables/{userVariable}/edit">Admin userVariables Edit</a></li>
+        <li><a href="admin/userVariables/{userVariable}">Admin userVariables Update</a></li>
+        <li><a href="admin/userVariables/{userVariable}">Admin userVariables Destroy</a></li>
+        <li><a href="admin/variableCategories">Admin variableCategories Index</a></li>
+        <li><a href="admin/variableCategories/create">Admin variableCategories Create</a></li>
+        <li><a href="admin/variableCategories">Admin variableCategories Store</a></li>
+        <li><a href="admin/variableCategories/{variableCategory}">Admin variableCategories Show</a></li>
+        <li><a href="admin/variableCategories/{variableCategory}/edit">Admin variableCategories Edit</a></li>
+        <li><a href="admin/variableCategories/{variableCategory}">Admin variableCategories Update</a></li>
+        <li><a href="admin/variableCategories/{variableCategory}">Admin variableCategories Destroy</a></li>
+        <li><a href="admin/variables">Admin Variables Index</a></li>
+        <li><a href="admin/variables/create">Admin Variables Create</a></li>
+        <li><a href="admin/variables">Admin Variables Store</a></li>
+        <li><a href="admin/variables/{variable}">Admin Variables Show</a></li>
+        <li><a href="admin/variables/{variable}/edit">Admin Variables Edit</a></li>
+        <li><a href="admin/variables/{variable}">Admin Variables Update</a></li>
+        <li><a href="admin/variables/{variable}">Admin Variables Destroy</a></li>
+        <li><a href="admin/variableUserSources">Admin variableUserSources Index</a></li>
+        <li><a href="admin/variableUserSources/create">Admin variableUserSources Create</a></li>
+        <li><a href="admin/variableUserSources">Admin variableUserSources Store</a></li>
+        <li><a href="admin/variableUserSources/{variableUserSource}">Admin variableUserSources Show</a></li>
+        <li><a href="admin/variableUserSources/{variableUserSource}/edit">Admin variableUserSources Edit</a></li>
+        <li><a href="admin/variableUserSources/{variableUserSource}">Admin variableUserSources Update</a></li>
+        <li><a href="admin/variableUserSources/{variableUserSource}">Admin variableUserSources Destroy</a></li>
+        <li><a href="admin/votes">Admin Votes Index</a></li>
+        <li><a href="admin/votes/create">Admin Votes Create</a></li>
+        <li><a href="admin/votes">Admin Votes Store</a></li>
+        <li><a href="admin/votes/{vote}">Admin Votes Show</a></li>
+        <li><a href="admin/votes/{vote}/edit">Admin Votes Edit</a></li>
+        <li><a href="admin/votes/{vote}">Admin Votes Update</a></li>
+        <li><a href="admin/votes/{vote}">Admin Votes Destroy</a></li>
+        <li><a href="admin/wpBpMessagesMessages">Admin wpBpMessagesMessages Index</a></li>
+        <li><a href="admin/wpBpMessagesMessages/create">Admin wpBpMessagesMessages Create</a></li>
+        <li><a href="admin/wpBpMessagesMessages">Admin wpBpMessagesMessages Store</a></li>
+        <li><a href="admin/wpBpMessagesMessages/{wpBpMessagesMessage}">Admin wpBpMessagesMessages Show</a></li>
+        <li><a href="admin/wpBpMessagesMessages/{wpBpMessagesMessage}/edit">Admin wpBpMessagesMessages Edit</a></li>
+        <li><a href="admin/wpBpMessagesMessages/{wpBpMessagesMessage}">Admin wpBpMessagesMessages Update</a></li>
+        <li><a href="admin/wpBpMessagesMessages/{wpBpMessagesMessage}">Admin wpBpMessagesMessages Destroy</a></li>
+        <li><a href="admin/wpBpNotifications">Admin wpBpNotifications Index</a></li>
+        <li><a href="admin/wpBpNotifications/create">Admin wpBpNotifications Create</a></li>
+        <li><a href="admin/wpBpNotifications">Admin wpBpNotifications Store</a></li>
+        <li><a href="admin/wpBpNotifications/{wpBpNotification}">Admin wpBpNotifications Show</a></li>
+        <li><a href="admin/wpBpNotifications/{wpBpNotification}/edit">Admin wpBpNotifications Edit</a></li>
+        <li><a href="admin/wpBpNotifications/{wpBpNotification}">Admin wpBpNotifications Update</a></li>
+        <li><a href="admin/wpBpNotifications/{wpBpNotification}">Admin wpBpNotifications Destroy</a></li>
+        <li><a href="admin/wpPosts">Admin wpPosts Index</a></li>
+        <li><a href="admin/wpPosts/create">Admin wpPosts Create</a></li>
+        <li><a href="admin/wpPosts">Admin wpPosts Store</a></li>
+        <li><a href="admin/wpPosts/{wpPost}">Admin wpPosts Show</a></li>
+        <li><a href="admin/wpPosts/{wpPost}/edit">Admin wpPosts Edit</a></li>
+        <li><a href="admin/wpPosts/{wpPost}">Admin wpPosts Update</a></li>
+        <li><a href="admin/wpPosts/{wpPost}">Admin wpPosts Destroy</a></li>
+        <li><a href="admin/wpUsers">Admin wpUsers Index</a></li>
+        <li><a href="admin/wpUsers/create">Admin wpUsers Create</a></li>
+        <li><a href="admin/wpUsers">Admin wpUsers Store</a></li>
+        <li><a href="admin/wpUsers/{wpUser}">Admin wpUsers Show</a></li>
+        <li><a href="admin/wpUsers/{wpUser}/edit">Admin wpUsers Edit</a></li>
+        <li><a href="admin/wpUsers/{wpUser}">Admin wpUsers Update</a></li>
+        <li><a href="admin/wpUsers/{wpUser}">Admin wpUsers Destroy</a></li>
+        <li><a href="open/charts">Open/charts</a></li>
+        <li><a href="open/echo">Open/echo</a></li>
+        <li><a href="open/search">Open/search</a></li>
+        <li><a href="chat">Chat</a></li>
+        <li><a href="test">Test</a></li>
+        <li><a href="notification-test">Notification-Test</a></li>
+        <li><a href="users">Users</a></li>
+        <li><a href="users/{user}/follow">Follow</a></li>
+        <li><a href="users/{user}/unfollow">Unfollow</a></li>
+        <li><a href="aggregateCorrelations">aggregateCorrelations Index</a></li>
+        <li><a href="aggregateCorrelations/create">aggregateCorrelations Create</a></li>
+        <li><a href="aggregateCorrelations">aggregateCorrelations Store</a></li>
+        <li><a href="aggregateCorrelations/{aggregateCorrelation}">aggregateCorrelations Show</a></li>
+        <li><a href="aggregateCorrelations/{aggregateCorrelation}/edit">aggregateCorrelations Edit</a></li>
+        <li><a href="aggregateCorrelations/{aggregateCorrelation}">aggregateCorrelations Update</a></li>
+        <li><a href="aggregateCorrelations/{aggregateCorrelation}">aggregateCorrelations Destroy</a></li>
+        <li><a href="connectors">Connectors Index</a></li>
+        <li><a href="connectors/create">Connectors Create</a></li>
+        <li><a href="connectors">Connectors Store</a></li>
+        <li><a href="connectors/{connector}">Connectors Show</a></li>
+        <li><a href="connectors/{connector}/edit">Connectors Edit</a></li>
+        <li><a href="connectors/{connector}">Connectors Update</a></li>
+        <li><a href="connectors/{connector}">Connectors Destroy</a></li>
+        <li><a href="aggregate-correlations-list">Aggregate-Correlations-List</a></li>
+        <li><a href="food/{query}">Food/{query}</a></li>
+        <li><a href="user/dashboard">User-Dashboard</a></li>
+        <li><a href="user/profile">User Profile Edit</a></li>
+        <li><a href="user/profile">User Profile Update</a></li>
+        <li><a href="user/profile/password">User Profile Password</a></li>
+        <li><a href="dev/phpstorm">Dev/phpstorm</a></li>
+        <li><a href="dev/test">Dev/test</a></li>
+        <li><a href="dev/reports/email/{shortClassName}">dev/reports/email/{shortClassName}</a></li>
+        <li><a href="dev/view/{viewPath}">dev/view/{viewPath}</a></li>
+        <li><a href="dev/pdf">Dev/pdf</a></li>
+        <li><a href="dev/dompdf">Dev/dompdf</a></li>
+        <li><a href="dev/html">Dev/html</a></li>
+        <li><a href="dev/buttons">Dev/buttons</a></li>
+        <li><a href="examples/study">Example-Study</a></li>
+        <li><a href="examples/mailable">Examples/mailable</a></li>
+        <li><a href="examples/email">Examples/email</a></li>
+        <li><a href="examples/dashboard">Example-Dashboard</a></li>
+        <li><a href="examples/table-list">Table</a></li>
+        <li><a href="examples/typography">Typography</a></li>
+        <li><a href="examples/icons">Icons</a></li>
+        <li><a href="examples/map">Map</a></li>
+        <li><a href="examples/notifications">Notifications</a></li>
+        <li><a href="examples/rtl-support">Language</a></li>
+        <li><a href="examples/upgrade">Upgrade</a></li>
+        <li><a href="examples/blade">Examples/blade</a></li>
+        <li><a href="api/v2/password/reset">Password Request</a></li>
+        <li><a href="api/v2/password/email">Password Email</a></li>
+        <li><a href="api/v2/password/reset/{token}">Password Reset</a></li>
+        <li><a href="api/v2/password/reset">Password Update</a></li>
+        <li><a href="api/v2/file">Api/v2/file</a></li>
+        <li><a href="api/v2/file">Api/v2/file</a></li>
+        <li><a href="api/v2/file">getDelete</a></li>
+        <li><a href="api/v2/test">Api/v2/test</a></li>
+        <li><a href="api/v2/email/fitbit">Api/v2/email/fitbit</a></li>
+        <li><a href="api/v2/security">Api/v2/security</a></li>
+        <li><a href="api/v2/privacy">Api/v2/privacy</a></li>
+        <li><a href="api/v2/image-credits">Api/v2/image-Credits</a></li>
+        <li><a href="api/v2/platform-terms-of-service">Api/v2/platform-Terms-of-Service</a></li>
+        <li><a href="api/v2/end-user-terms-of-service">Api/v2/end-User-Terms-of-Service</a></li>
+        <li><a href="api/v2/tos">Api/v2/tos</a></li>
+        <li><a href="api/v2/tracking-reminder-notifications">Api/v2/tracking-Reminder-Notifications</a></li>
+        <li><a href="api/v2/tracking-reminder-notifications-faces">Api/v2/tracking-Reminder-Notifications-Faces</a>
+        </li>
+        <li><a href="api/v2/study">Account Predictors</a></li>
+        <li><a href="api/v2/charts">Charts</a></li>
+        <li><a href="api/v2/predictors">Api/v2/predictors</a></li>
+        <li><a href="api/v2/study-instructions-email">Api/v2/study-Instructions-Email</a></li>
+        <li><a href="api/v2/coupon-instructions">Api/v2/coupon-Instructions</a></li>
+        <li><a href="api/v2/correlations-list">Account Predictors</a></li>
+        <li><a href="api/v2/aggregated-correlations-email">Account Predictors</a></li>
+        <li><a href="api/v2/home">Api/v2/home</a></li>
+        <li><a href="api/v2/correlations">Api/v2/correlations</a></li>
+        <li><a href="api/v2/correlations/{id}">Api/v2/correlations/{id}</a></li>
+        <li><a href="api/v2/measurements/export">Api/v2/measurements/export</a></li>
+        <li><a href="api/v2/measurements/csv">Api/v2/measurements/csv</a></li>
+        <li><a href="api/v2/measurements">Api/v2/measurements</a></li>
+        <li><a href="api/v2/measurements/{id}">Api/v2/measurements/{id}</a></li>
+        <li><a href="api/v2/userVariables">api/v2/userVariables</a></li>
+        <li><a href="api/v2/userVariables/{id}">api/v2/userVariables/{id}</a></li>
+        <li><a href="api/v2/votes">Api/v2/votes</a></li>
+        <li><a href="api/v2/votes/{id}">Api/v2/votes/{id}</a></li>
+        <li><a href="api/v2/aggregatedCorrelations">api/v2/aggregatedCorrelations</a></li>
+        <li><a href="api/v2/aggregatedCorrelations/{id}">api/v2/aggregatedCorrelations/{id}</a></li>
+        <li><a href="api/v2/unitCategories">api/v2/unitCategories</a></li>
+        <li><a href="api/v2/unitCategories/{id}">api/v2/unitCategories/{id}</a></li>
+        <li><a href="api/v2/units">Api/v2/units</a></li>
+        <li><a href="api/v2/units/{id}">Api/v2/units/{id}</a></li>
+        <li><a href="api/v2/variableCategories">api/v2/variableCategories</a></li>
+        <li><a href="api/v2/variableCategories/{id}">api/v2/variableCategories/{id}</a></li>
+        <li><a href="api/v2/variables">Api/v2/variables</a></li>
+        <li><a href="api/v2/variables/{id}">Api/v2/variables/{id}</a></li>
+        <li><a href="api/v2/public/variables">Api/v2/public/variables</a></li>
+        <li><a href="api/v2/correlations">Api/v2/correlations</a></li>
+        <li><a href="api/v2/correlations/{id}">Api/v2/correlations/{id}</a></li>
+        <li><a href="api/v2/correlations/{id}">Api/v2/correlations/{id}</a></li>
+        <li><a href="api/v2/email">Api/v2/email</a></li>
+        <li><a href="api/v2/measurements/request_csv">Api/v2/measurements/request Csv</a></li>
+        <li><a href="api/v2/measurements/request_pdf">Api/v2/measurements/request Pdf</a></li>
+        <li><a href="api/v2/measurements/request_xls">Api/v2/measurements/request Xls</a></li>
+        <li><a href="api/v2/measurements">Api/v2/measurements</a></li>
+        <li><a href="api/v2/measurements/{id}">Api/v2/measurements/{id}</a></li>
+        <li><a href="api/v2/measurements/{id}">Api/v2/measurements/{id}</a></li>
+        <li><a href="api/v2/userVariables">api/v2/userVariables</a></li>
+        <li><a href="api/v2/userVariables/{id}">api/v2/userVariables/{id}</a></li>
+        <li><a href="api/v2/userVariables/{id}">api/v2/userVariables/{id}</a></li>
+        <li><a href="api/v2/votes">Api/v2/votes</a></li>
+        <li><a href="api/v2/votes/{id}">Api/v2/votes/{id}</a></li>
+        <li><a href="api/v2/votes/{id}">Api/v2/votes/{id}</a></li>
+        <li><a href="api/v2/spreadsheetUpload">api/v2/spreadsheetUpload</a></li>
+        <li><a href="api/v2/upload">Api/v2/upload</a></li>
+        <li><a href="api/v2/download">Api/v2/download</a></li>
+        <li><a href="api/v2/variables">Api/v2/variables</a></li>
+        <li><a href="api/v2/units">Api/v2/units</a></li>
+        <li><a href="api/v2/account">Account</a></li>
+        <li><a href="api/v2/account/subscription">Account Subscription</a></li>
+        <li><a href="api/v2/account/predictors">Account Predictors</a></li>
+        <li><a href="api/v2/account/edit">Account Edit</a></li>
+        <li><a href="api/v2/account/edit">Account Edit Post</a></li>
+        <li><a href="api/v2/account/upload-spreadsheet">Account Upload Spreadsheet</a></li>
+        <li><a href="api/v2/account/update-card">Account Update Card</a></li>
+        <li><a href="api/v2/account/update-card">Account Update Card Post</a></li>
+        <li><a href="api/v2/account/subscribe">Account Update Card Post</a></li>
+        <li><a href="api/v2/account/upgrade">Account Upgrade</a></li>
+        <li><a href="api/v2/account/upgrade">Account Upgrade Post</a></li>
+        <li><a href="api/v2/account/unsubscribe">Account Upgrade Post</a></li>
+        <li><a href="api/v2/account/downgrade">Account Downgrade</a></li>
+        <li><a href="api/v2/account/downgrade">Account Downgrade Post</a></li>
+        <li><a href="api/v2/account/autocomplete/user-variable">Account Edit Autocomplete</a></li>
+        <li><a href="api/v2/account/autocomplete/public-variable">Public Variable Autocomplete</a></li>
+        <li><a href="api/v2/account/password">Account Password</a></li>
+        <li><a href="api/v2/account/password">Account Password Post</a></li>
+        <li><a href="api/v2/account/export-data">Account Export Data</a></li>
+        <li><a href="api/v2/account/request-export-data/{output}">Account Export Request</a></li>
+        <li><a href="api/v2/account/applications">Account Authorized Apps</a></li>
+        <li><a href="api/v2/account/delete">Account Delete</a></li>
+        <li><a href="api/v2/account/revoke-access">Account Revoke Access</a></li>
+        <li><a href="api/v2/account/common-relationships">Account commonRelationships</a></li>
+        <li><a href="api/v2/account/user-relationships">Account userRelationships</a></li>
+        <li><a href="api/v2/account/reminders">Account Reminders</a></li>
+        <li><a href="api/v2/account/reminders-manage">Account Manage Reminders</a></li>
+        <li><a href="api/v2/account/api-explorer">Account apiExplorer</a></li>
+        <li><a href="api/v2/account/variables">Account Variables</a></li>
+        <li><a href="api/v2/account/connectors">Account Connectors</a></li>
+        <li><a href="api/v2/account/track">Account Track</a></li>
+        <li><a href="api/v2/account/track/category/{category}">Account Track Category</a></li>
+        <li><a href="api/v2/account/history">Account History</a></li>
+        <li><a href="api/v2/account/history/moods">Account History Moods</a></li>
+        <li><a href="api/v2/account/back">Account Back</a></li>
+        <li><a href="api/v2/qmwp/bargraph">Qmwp Bargraph</a></li>
+        <li><a href="api/v2/qmwp/timeline">Qmwp Timeline</a></li>
+        <li><a href="api/v2/groups">Groups</a></li>
+        <li><a href="api/v2/groups/create">Create/group</a></li>
+        <li><a href="api/v2/groups/create">Api/v2/groups/create</a></li>
+        <li><a href="api/v2/groups/{groupId}/edit">Update/group</a></li>
+        <li><a href="api/v2/groups/{groupId}/edit">api/v2/groups/{groupId}/edit</a></li>
+        <li><a href="api/v2/groups/{groupId}/delete">Delete/group</a></li>
+        <li><a href="api/v2/groups/{groupId}/confirm-delete">Confirm-Delete/group</a></li>
+        <li><a href="api/v2/groups/{groupId}/restore">Restore/group</a></li>
+        <li><a href="api/v2/apps">Apps</a></li>
+        <li><a href="api/v2/apps/create">Create/app</a></li>
+        <li><a href="api/v2/apps/create">Api/v2/apps/create</a></li>
+        <li><a href="api/v2/apps/{clientOrAppId}/edit">Update/app</a></li>
+        <li><a href="api/v2/apps/{clientOrAppId}/integration">Integration/app</a></li>
+        <li><a href="api/v2/apps/{clientOrAppId}/edit">api/v2/apps/{clientOrAppId}/edit</a></li>
+        <li><a href="api/v2/apps/{clientOrAppId}/delete">Delete/app</a></li>
+        <li><a href="api/v2/apps/{clientOrAppId}/confirm-delete">Confirm-Delete/app</a></li>
+        <li><a href="api/v2/apps/{clientOrAppId}/restore">Restore/app</a></li>
+        <li><a href="api/v2/apps/{clientOrAppId}/add-collaborator">Collaborator/app</a></li>
+        <li><a href="api/v2/apps/delete-collaborator">Collaborator-Delete/app</a></li>
+        <li><a href="api/v2/apps/{clientOrAppId}/delete-collaborator">Collaborator-Delete/app</a></li>
+        <li><a href="api/v2/studies">Studies</a></li>
+        <li><a href="api/v2/studies/create">Create/study</a></li>
+        <li><a href="api/v2/studies/create">Api/v2/studies/create</a></li>
+        <li><a href="api/v2/studies/{clientOrAppId}/edit">Update/study</a></li>
+        <li><a href="api/v2/studies/{clientOrAppId}/edit">api/v2/studies/{clientOrAppId}/edit</a></li>
+        <li><a href="api/v2/studies/{clientOrAppId}/delete">Delete/study</a></li>
+        <li><a href="api/v2/studies/{clientOrAppId}/confirm-delete">Confirm-Delete/study</a></li>
+        <li><a href="api/v2/studies/{clientOrAppId}/restore">Restore/study</a></li>
+        <li><a href="api/v2/studies/{clientOrAppId}/add-collaborator">Collaborator/study</a></li>
+        <li><a href="api/v2/studies/delete-collaborator">Collaborator-Delete/study</a></li>
+        <li><a href="api/v2/physicians">Physicians</a></li>
+        <li><a href="api/v2/physicians/share">Api/v2/physicians/share</a></li>
+        <li><a href="api/v2/physicians/create">Create/physician</a></li>
+        <li><a href="api/v2/physicians/create">Api/v2/physicians/create</a></li>
+        <li><a href="api/v2/physicians/{clientOrAppId}/edit">Update/physician</a></li>
+        <li><a href="api/v2/physicians/{clientOrAppId}/edit">api/v2/physicians/{clientOrAppId}/edit</a></li>
+        <li><a href="api/v2/physicians/{clientOrAppId}/delete">Delete/physician</a></li>
+        <li><a href="api/v2/physicians/{clientOrAppId}/confirm-delete">Confirm-Delete/physician</a></li>
+        <li><a href="api/v2/physicians/{clientOrAppId}/restore">Restore/physician</a></li>
+        <li><a href="api/v2/physicians/{clientOrAppId}/add-collaborator">Collaborator/physician</a></li>
+        <li><a href="api/v2/physicians/delete-collaborator">Collaborator-Delete/physician</a></li>
+        <li><a href="api/v2/physicians/{clientOrAppId}/act-as/{userId}">Act-As/physician</a></li>
+        <li><a href="api/v2/payment/plans">Plans</a></li>
+        <li><a href="api/v2/payment/subscribe">Subscribe</a></li>
+        <li><a href="api/v2/application/connections">Api/v2/application/connections</a></li>
+        <li><a href="api/v2/application/correlations">Api/v2/application/correlations</a></li>
+        <li><a href="api/v2/application/userVariables">api/v2/application/userVariables</a></li>
+        <li><a href="api/v2/application/measurements">Api/v2/application/measurements</a></li>
+        <li><a href="api/v2/application/votes">Api/v2/application/votes</a></li>
+        <li><a href="api/v2/study/{clientId}">Study Landing</a></li>
+        <li><a href="api/v2/auth/login">Auth Login</a></li>
+        <li><a href="api/v2/auth/login">Api/v2/auth/login</a></li>
+        <li><a href="api/v2/auth/logout">Api/v2/auth/logout</a></li>
+        <li><a href="api/v2/auth/register">Auth Register</a></li>
+        <li><a href="api/v2/auth/register">Api/v2/auth/register</a></li>
+        <li><a href="api/v2/login">Login</a></li>
+        <li><a href="api/v2/login">Api/v2/login</a></li>
+        <li><a href="api/v2/logout">Logout</a></li>
+        <li><a href="api/v2/auth/social/login">Auth Social Login</a></li>
+        <li><a href="api/v2/auth/social/webLogin">Auth Social webLogin</a></li>
+        <li><a href="api/v2/auth/social/authorizeCode">Auth Social Authorize</a></li>
+        <li><a href="api/v2/auth/social/googleIdToken">Auth Social googleIdToken</a></li>
+        <li><a href="api/v2/auth/social/authorizeToken">Auth Social Token</a></li>
+        <li><a href="api/v2/auth/social/webCallback/{provider}">Auth Social Callback</a></li>
+        <li><a href="api/v2/oauth/authorize">Api/v2/oauth/authorize</a></li>
+        <li><a href="api/v2/oauth/authorize">Api/v2/oauth/authorize</a></li>
+        <li><a href="api/v2/oauth/access_token">Api/v2/oauth/access Token</a></li>
+        <li><a href="api/v2/bshaffer/oauth/authorize">Api/v2/bshaffer/oauth/authorize</a></li>
+        <li><a href="api/v2/bshaffer/oauth/authorize">Api/v2/bshaffer/oauth/authorize</a></li>
+        <li><a href="api/v2/bshaffer/oauth/access_token">Api/v2/bshaffer/oauth/access Token</a></li>
+        <li><a href="api/v2/api-docs">Api/v2/api-Docs</a></li>
+        <li><a href="api/v2/sitemap">Api/v2/sitemap</a></li>
+        <li><a href="_debugbar/assets/stylesheets">Debugbar/assets/stylesheets</a></li>
+        <li><a href="_debugbar/assets/javascript">Debugbar/assets/javascript</a></li>
+        <li><a href="_debugbar/open">Debugbar-Open</a></li>
+        <li><a href="/">/</a></li>
+        <li><a href="login">Login</a></li>
+        <li><a href="login">Login</a></li>
+        <li><a href="logout">Logout</a></li>
+        <li><a href="register">Register</a></li>
+        <li><a href="register">Register</a></li>
+        <li><a href="password/reset">Password Request</a></li>
+        <li><a href="password/email">Password Email</a></li>
+        <li><a href="password/reset/{token}">Password Reset</a></li>
+        <li><a href="password/reset">Password Update</a></li>
+        <li><a href="static/{localOrS3BucketPath}">static/{localOrS3BucketPath}</a></li>
+        <li><a href="errors/{errorCode}">errors/{errorCode}</a></li>
+        <li><a href="logout">Logout</a></li>
+        <li><a href="search">Search</a></li>
+        <li><a href="popup">Popup</a></li>
+        <li><a href="button">Button</a></li>
+        <li><a href="dashboard">Dashboard</a></li>
+        <li><a href="chart">Chart</a></li>
+    </ul>
+</div>
+<ul id="sidebar-menu" data-widget="tree" class="sidebar-menu tree">
     <li id="analyze-menu" class="treeview"><a href="#"><i class="fa fa-line-chart"></i> <span>Analyze</span> <span
-            class="pull-right-container"><i class="fa fa-angle-left pull-right"></i></span></a>
+        class="pull-right-container"><i class="fa fa-angle-left pull-right"></i></span></a>
         <ul class="treeview-menu">
-            <li><a href="https://testing.quantimo.do/admin/aggregateCorrelations"><i class="fa fa-line-chart"></i><span>Aggregate Correlations</span></a>
+            <li><a href="https://local.quantimo.do/admin/aggregateCorrelations"><i class="fa fa-line-chart"></i><span>Aggregate Correlations</span></a>
             </li>
-            <li><a href="https://testing.quantimo.do/admin/commonTags"><i
-                    class="fa fa-tags"></i><span>Common Tags</span></a></li>
-            <li><a href="https://testing.quantimo.do/admin/correlations"><i class="fa fa-line-chart"></i><span>Correlations</span></a>
+            <li><a href="https://local.quantimo.do/admin/commonTags"><i class="fa fa-tags"></i><span>Common Tags</span></a>
             </li>
-            <li class="active"><a href="https://testing.quantimo.do/admin/measurements"><i class="fa fa-edit"></i><span>Measurements</span></a>
+            <li class="active"><a href="https://local.quantimo.do/admin/correlations"><i
+                class="fa fa-line-chart"></i><span>Correlations</span></a></li>
+            <li><a href="https://local.quantimo.do/admin/measurements"><i
+                class="fa fa-edit"></i><span>Measurements</span></a></li>
+            <li><a href="https://local.quantimo.do/admin/wpPosts"><i class="fa fa-edit"></i><span>Posts</span></a></li>
+            <li><a href="https://local.quantimo.do/admin/studies"><i class="fa fa-book"></i><span>Studies</span></a>
             </li>
-            <li><a href="https://testing.quantimo.do/admin/wpPosts"><i class="fa fa-edit"></i><span>Posts</span></a>
+            <li><a href="https://local.quantimo.do/admin/userTags"><i class="fa fa-tags"></i><span>User Tags</span></a>
             </li>
-            <li><a href="https://testing.quantimo.do/admin/studies"><i class="fa fa-book"></i><span>Studies</span></a>
+            <li><a href="https://local.quantimo.do/admin/userVariables"><i class="fa fa-line-chart"></i><span>User Variables</span></a>
             </li>
-            <li><a href="https://testing.quantimo.do/admin/userTags"><i
-                    class="fa fa-tags"></i><span>User Tags</span></a></li>
-            <li><a href="https://testing.quantimo.do/admin/userVariables"><i class="fa fa-line-chart"></i><span>User Variables</span></a>
-            </li>
-            <li><a href="https://testing.quantimo.do/admin/users"><i class="fa fa-users"></i><span>Users</span></a></li>
-            <li><a href="https://testing.quantimo.do/admin/variables"><i
-                    class="fa fa-line-chart"></i><span>Variables</span></a></li>
+            <li><a href="https://local.quantimo.do/admin/users"><i class="fa fa-users"></i><span>Users</span></a></li>
+            <li><a href="https://local.quantimo.do/admin/variables"><i
+                class="fa fa-line-chart"></i><span>Variables</span></a></li>
         </ul>
     </li>
-    <li id="import-menu" class="treeview menu-open"><a href="#"><i class="fa fa-cloud-download"></i> <span>Import</span>
-        <span class="pull-right-container"><i class="fa fa-angle-left pull-right"></i></span></a>
-        <ul class="treeview-menu" style="display: block;">
-            <li><a href="https://testing.quantimo.do/admin/applications"><i
-                    class="fa fa-mobile"></i><span>Applications</span></a></li>
-            <li><a href="https://testing.quantimo.do/admin/connections"><i
-                    class="fa fa-download"></i><span>Connections</span></a></li>
-            <li><a href="https://testing.quantimo.do/admin/connectorImports"><i class="fa fa-cloud-download"></i><span>Connector Imports</span></a>
+    <li id="import-menu" class="treeview"><a href="#"><i class="fa fa-cloud-download"></i> <span>Import</span> <span
+        class="pull-right-container"><i class="fa fa-angle-left pull-right"></i></span></a>
+        <ul class="treeview-menu">
+            <li><a href="https://local.quantimo.do/admin/applications"><i
+                class="fa fa-mobile"></i><span>Applications</span></a></li>
+            <li><a href="https://local.quantimo.do/admin/connections"><i
+                class="fa fa-download"></i><span>Connections</span></a></li>
+            <li><a href="https://local.quantimo.do/admin/connectorImports"><i class="fa fa-cloud-download"></i><span>Connector Imports</span></a>
             </li>
-            <li><a href="https://testing.quantimo.do/admin/connectors"><i class="fa fa-cloud-upload"></i><span>Connectors</span></a>
+            <li><a href="https://local.quantimo.do/admin/connectors"><i
+                class="fa fa-cloud-upload"></i><span>Connectors</span></a></li>
+            <li><a href="https://local.quantimo.do/admin/connectorRequests"><i class="fa fa-edit"></i><span>Connector Requests</span></a>
             </li>
-            <li><a href="https://testing.quantimo.do/admin/connectorRequests"><i class="fa fa-edit"></i><span>Connector Requests</span></a>
-            </li>
-            <li><a href="https://testing.quantimo.do/admin/measurementImports"><i class="fa fa-upload"></i><span>Measurement Imports</span></a>
+            <li><a href="https://local.quantimo.do/admin/measurementImports"><i class="fa fa-upload"></i><span>Measurement Imports</span></a>
             </li>
         </ul>
     </li>
     <li id="models-menu" class="treeview"><a href="#"><i class="fa fa-link"></i> <span>Models</span> <span
-            class="pull-right-container"><i class="fa fa-angle-left pull-right"></i></span></a>
+        class="pull-right-container"><i class="fa fa-angle-left pull-right"></i></span></a>
         <ul class="treeview-menu">
-            <li><a href="https://testing.quantimo.do/admin/aggregateCorrelations"><i class="fa fa-line-chart"></i><span>Aggregate Correlations</span></a>
+            <li><a href="https://local.quantimo.do/admin/aggregateCorrelations"><i class="fa fa-line-chart"></i><span>Aggregate Correlations</span></a>
             </li>
-            <li><a href="https://testing.quantimo.do/admin/applications"><i
-                    class="fa fa-mobile"></i><span>Applications</span></a></li>
-            <li><a href="https://testing.quantimo.do/admin/collaborators"><i
-                    class="fa fa-users"></i><span>Collaborators</span></a></li>
-            <li><a href="https://testing.quantimo.do/admin/commonTags"><i
-                    class="fa fa-tags"></i><span>Common Tags</span></a></li>
-            <li><a href="https://testing.quantimo.do/admin/connections"><i
-                    class="fa fa-download"></i><span>Connections</span></a></li>
-            <li><a href="https://testing.quantimo.do/admin/connectorImports"><i class="fa fa-cloud-download"></i><span>Connector Imports</span></a>
+            <li><a href="https://local.quantimo.do/admin/applications"><i
+                class="fa fa-mobile"></i><span>Applications</span></a></li>
+            <li><a href="https://local.quantimo.do/admin/collaborators"><i
+                class="fa fa-users"></i><span>Collaborators</span></a></li>
+            <li><a href="https://local.quantimo.do/admin/commonTags"><i class="fa fa-tags"></i><span>Common Tags</span></a>
             </li>
-            <li><a href="https://testing.quantimo.do/admin/connectors"><i class="fa fa-cloud-upload"></i><span>Connectors</span></a>
+            <li><a href="https://local.quantimo.do/admin/connections"><i
+                class="fa fa-download"></i><span>Connections</span></a></li>
+            <li><a href="https://local.quantimo.do/admin/connectorImports"><i class="fa fa-cloud-download"></i><span>Connector Imports</span></a>
             </li>
-            <li><a href="https://testing.quantimo.do/admin/correlations"><i class="fa fa-line-chart"></i><span>Correlations</span></a>
+            <li><a href="https://local.quantimo.do/admin/connectors"><i
+                class="fa fa-cloud-upload"></i><span>Connectors</span></a></li>
+            <li class="active"><a href="https://local.quantimo.do/admin/correlations"><i
+                class="fa fa-line-chart"></i><span>Correlations</span></a></li>
+            <li><a href="https://local.quantimo.do/admin/measurements"><i
+                class="fa fa-edit"></i><span>Measurements</span></a></li>
+            <li><a href="https://local.quantimo.do/admin/measurementExports"><i class="fa fa-download"></i><span>Measurement Exports</span></a>
             </li>
-            <li class="active"><a href="https://testing.quantimo.do/admin/measurements"><i class="fa fa-edit"></i><span>Measurements</span></a>
+            <li><a href="https://local.quantimo.do/admin/measurementImports"><i class="fa fa-upload"></i><span>Measurement Imports</span></a>
             </li>
-            <li><a href="https://testing.quantimo.do/admin/measurementExports"><i class="fa fa-download"></i><span>Measurement Exports</span></a>
+            <li><a href="https://local.quantimo.do/admin/wpBpMessagesMessages"><i class="fa fa-envelope"></i><span>Messages</span></a>
             </li>
-            <li><a href="https://testing.quantimo.do/admin/measurementImports"><i class="fa fa-upload"></i><span>Measurement Imports</span></a>
+            <li><a href="https://local.quantimo.do/admin/notifications"><i
+                class="fa fa-bell"></i><span>Notifications</span></a></li>
+            <li><a href="https://local.quantimo.do/admin/wpPosts"><i class="fa fa-edit"></i><span>Posts</span></a></li>
+            <li><a href="https://local.quantimo.do/admin/purchases"><i
+                class="fa fa-cart-plus"></i><span>Purchases</span></a></li>
+            <li><a href="https://local.quantimo.do/admin/sentEmails"><i
+                class="fa fa-mail-forward"></i><span>Sent Emails</span></a></li>
+            <li><a href="https://local.quantimo.do/admin/studies"><i class="fa fa-book"></i><span>Studies</span></a>
             </li>
-            <li><a href="https://testing.quantimo.do/admin/wpBpMessagesMessages"><i class="fa fa-envelope"></i><span>Messages</span></a>
+            <li><a href="https://local.quantimo.do/admin/subscriptions"><i class="fa fa-cart-plus"></i><span>Subscriptions</span></a>
             </li>
-            <li><a href="https://testing.quantimo.do/admin/notifications"><i
-                    class="fa fa-bell"></i><span>Notifications</span></a></li>
-            <li><a href="https://testing.quantimo.do/admin/wpPosts"><i class="fa fa-edit"></i><span>Posts</span></a>
+            <li><a href="https://local.quantimo.do/admin/trackingReminders"><i class="fa fa-edit"></i><span>Tracking Reminders</span></a>
             </li>
-            <li><a href="https://testing.quantimo.do/admin/purchases"><i
-                    class="fa fa-cart-plus"></i><span>Purchases</span></a></li>
-            <li><a href="https://testing.quantimo.do/admin/sentEmails"><i class="fa fa-mail-forward"></i><span>Sent Emails</span></a>
+            <li><a href="https://local.quantimo.do/admin/trackingReminderNotifications"><i class="fa fa-edit"></i><span>Tracking Reminder Notifications</span></a>
             </li>
-            <li><a href="https://testing.quantimo.do/admin/studies"><i class="fa fa-book"></i><span>Studies</span></a>
+            <li><a href="https://local.quantimo.do/admin/userTags"><i class="fa fa-tags"></i><span>User Tags</span></a>
             </li>
-            <li><a href="https://testing.quantimo.do/admin/subscriptions"><i class="fa fa-cart-plus"></i><span>Subscriptions</span></a>
+            <li><a href="https://local.quantimo.do/admin/userVariables"><i class="fa fa-line-chart"></i><span>User Variables</span></a>
             </li>
-            <li><a href="https://testing.quantimo.do/admin/trackingReminders"><i class="fa fa-edit"></i><span>Tracking Reminders</span></a>
+            <li><a href="https://local.quantimo.do/admin/users"><i class="fa fa-users"></i><span>Users</span></a></li>
+            <li><a href="https://local.quantimo.do/admin/variables"><i
+                class="fa fa-line-chart"></i><span>Variables</span></a></li>
+            <li><a href="https://local.quantimo.do/admin/variableCategories"><i class="fa fa-tags"></i><span>Variable Categories</span></a>
             </li>
-            <li><a href="https://testing.quantimo.do/admin/trackingReminderNotifications"><i
-                    class="fa fa-edit"></i><span>Tracking Reminder Notifications</span></a></li>
-            <li><a href="https://testing.quantimo.do/admin/userTags"><i
-                    class="fa fa-tags"></i><span>User Tags</span></a></li>
-            <li><a href="https://testing.quantimo.do/admin/userVariables"><i class="fa fa-line-chart"></i><span>User Variables</span></a>
+            <li><a href="https://local.quantimo.do/admin/variableUserSources"><i class="fa fa-upload"></i><span>Variable User Sources</span></a>
             </li>
-            <li><a href="https://testing.quantimo.do/admin/users"><i class="fa fa-users"></i><span>Users</span></a></li>
-            <li><a href="https://testing.quantimo.do/admin/variables"><i
-                    class="fa fa-line-chart"></i><span>Variables</span></a></li>
-            <li><a href="https://testing.quantimo.do/admin/variableCategories"><i class="fa fa-tags"></i><span>Variable Categories</span></a>
+            <li><a href="https://local.quantimo.do/admin/votes"><i class="fa fa-thumbs-up"></i><span>Votes</span></a>
             </li>
-            <li><a href="https://testing.quantimo.do/admin/variableUserSources"><i class="fa fa-upload"></i><span>Variable User Sources</span></a>
-            </li>
-            <li><a href="https://testing.quantimo.do/admin/votes"><i class="fa fa-thumbs-up"></i><span>Votes</span></a>
-            </li>
-            <li><a href="https://testing.quantimo.do/admin/wpBpNotifications"><i class="fa fa-bell"></i><span>BP Notifications</span></a>
+            <li><a href="https://local.quantimo.do/admin/wpBpNotifications"><i class="fa fa-bell"></i><span>BP Notifications</span></a>
             </li>
         </ul>
     </li>
     <li id="devops-menu" class="treeview"><a href="#"><i class="fab fa-jenkins"></i> <span>Dev Ops</span> <span
-            class="pull-right-container"><i class="fa fa-angle-left pull-right"></i></span></a>
+        class="pull-right-container"><i class="fa fa-angle-left pull-right"></i></span></a>
         <ul class="treeview-menu">
             <li><a href="http://quantimodo2.asuscomm.com:8082/view/Deploy/" target="_blank"><i
-                    class="fab fa-jenkins"></i> <span>Deploy</span></a></li>
+                class="fab fa-jenkins"></i> <span>Deploy</span></a></li>
             <li><a href="http://quantimodo2.asuscomm.com:8082/view/Jobs/" target="_blank"><i class="fab fa-jenkins"></i>
                 <span>Jobs</span></a></li>
-            <li>
-                <a href="https://cloud.digitalocean.com/projects/e5920904-c953-4fcd-af1e-a3fa92575477/resources?i=14a8d8"
-                   target="_blank"><i class="fab fa-digital-ocean"></i> <span>Digital Ocean</span></a></li>
-            <li class="nav-item"><a href="https://testing.quantimo.do/admin/ssh" class="nav-link"><i
-                    class="material-icons">computer</i> <span class="sidebar-normal"> SSH </span></a></li>
+            <li><a
+                href="https://cloud.digitalocean.com/projects/e5920904-c953-4fcd-af1e-a3fa92575477/resources?i=14a8d8"
+                target="_blank"><i class="fab fa-digital-ocean"></i> <span>Digital Ocean</span></a></li>
+            <li class="nav-item"><a href="https://local.quantimo.do/admin/ssh" class="nav-link"><i
+                class="material-icons">computer</i> <span class="sidebar-normal"> SSH </span></a></li>
             <li><a href="http://quantimodo2.asuscomm.com:8082/" target="_blank"><i class="fab fa-searchengin"></i>
                 <span>Nginx Amplify</span></a></li>
         </ul>
     </li>
     <li id="database-menu" class="treeview"><a href="#"><i class="fa fa-database"></i> <span>DB</span> <span
-            class="pull-right-container"><i class="fa fa-angle-left pull-right"></i></span></a>
+        class="pull-right-container"><i class="fa fa-angle-left pull-right"></i></span></a>
         <ul class="treeview-menu">
             <li><a href="http://quantimodo2.asuscomm.com:8082/" target="_blank"><i class="fab fa-digital-ocean"></i>
                 <span>Digital Ocean</span></a></li>
             <li><a href="http://134.209.130.63/phpmyadmin/server_status_processes.php" target="_blank"><i
-                    class="fas fa-database"></i> <span>Production DB</span></a></li>
+                class="fas fa-database"></i> <span>Production DB</span></a></li>
             <li><a href="http://167.172.15.169/phpmyadmin/server_status_processes.php" target="_blank"><i
-                    class="fas fa-database"></i> <span>Staging DB</span></a></li>
-            <li class="nav-item"><a href="https://testing.quantimo.do/admin/slow-queries" class="nav-link"><i
-                    class="material-icons">hourglass_empty</i> <span class="sidebar-normal"> Slow Queries </span></a>
-            </li>
+                class="fas fa-database"></i> <span>Staging DB</span></a></li>
+            <li class="nav-item"><a href="https://local.quantimo.do/admin/slow-queries" class="nav-link"><i
+                class="material-icons">hourglass_empty</i> <span class="sidebar-normal"> Slow Queries </span></a></li>
             <li><a href="http://quantimodo2.asuscomm.com:8082/" target="_blank"><i class="fab fa-searchengin"></i>
                 <span>Nginx Amplify</span></a></li>
         </ul>
     </li>
     <li id="design-menu" class="treeview"><a href="#"><i class="fa fa-paint-brush"></i> <span>Design</span> <span
-            class="pull-right-container"><i class="fa fa-angle-left pull-right"></i></span></a>
+        class="pull-right-container"><i class="fa fa-angle-left pull-right"></i></span></a>
         <ul class="treeview-menu">
             <li><a href="https://adminlte.io/themes/AdminLTE/pages/examples/profile.html" target="_blank"><i
-                    class="fa fa-shield"></i> <span>AdminLTE Demo</span></a></li>
+                class="fa fa-shield"></i> <span>AdminLTE Demo</span></a></li>
             <li><a href="https://staging.quantimo.do/examples/dashboard" target="_blank"><i
-                    class="fab fa-paint-brush"></i> <span>Material Demo</span></a></li>
+                class="fab fa-paint-brush"></i> <span>Material Demo</span></a></li>
             <li><a href="https://getmdl.io/" target="_blank"><img src="https://getmdl.io/assets/favicon.png" alt="">
                 <span>Material Lite</span></a></li>
         </ul>
     </li>
     <li id="account-menu" class="treeview"><a href="#"><i class="fa fa-user"></i> <span>Account</span> <span
-            class="pull-right-container"><i class="fa fa-angle-left pull-right"></i></span></a>
+        class="pull-right-container"><i class="fa fa-angle-left pull-right"></i></span></a>
         <ul class="treeview-menu">
-            <li><a href="https://testing.quantimo.do/api/v2/account/subscription"><i
-                    class="menu-icon fa fa-fw fa-credit-card"></i> <span class="mm-text ">Subscription</span></a></li>
-            <li><a href="https://testing.quantimo.do/api/v2/account/password"><i class="menu-icon fa fa-fw fa-key"></i>
+            <li><a href="https://local.quantimo.do/api/v2/account/subscription"><i
+                class="menu-icon fa fa-fw fa-credit-card"></i> <span class="mm-text ">Subscription</span></a></li>
+            <li><a href="https://local.quantimo.do/api/v2/account/password"><i class="menu-icon fa fa-fw fa-key"></i>
                 <span class="mm-text ">Change Password</span></a></li>
-            <li><a href="https://testing.quantimo.do/api/v2/account/edit"><i
-                    class="menu-icon fa fa-fw fa-pencil-square-o"></i> <span
-                    class="mm-text ">Edit Your Profile</span></a></li>
+            <li><a href="https://local.quantimo.do/api/v2/account/edit"><i
+                class="menu-icon fa fa-fw fa-pencil-square-o"></i> <span class="mm-text ">Edit Your Profile</span></a>
+            </li>
             <li data-container="body" data-toggle="popover" data-placement="right"
                 data-content="Manage which applications or studies are allowed to access your QuantiModo data"
-                data-trigger="hover"><a href="https://testing.quantimo.do/api/v2/account/applications"><i
-                    class="menu-icon fa fa-fw fa-lock"></i> <span class="mm-text ">Data Sharing</span></a></li>
-            <li><a href="https://testing.quantimo.do/api/v2/account/export-data"><i
-                    class="menu-icon fa fa-fw fa-download"></i> <span class="mm-text ">Export Your Data</span></a></li>
+                data-trigger="hover"><a href="https://local.quantimo.do/api/v2/account/applications"><i
+                class="menu-icon fa fa-fw fa-lock"></i> <span class="mm-text ">Data Sharing</span></a></li>
+            <li><a href="https://local.quantimo.do/api/v2/account/export-data"><i
+                class="menu-icon fa fa-fw fa-download"></i> <span class="mm-text ">Export Your Data</span></a></li>
         </ul>
     </li>
     <li id="developer-menu" class="treeview"><a href="#"><i class="fa fa-code"></i> <span>Developers</span> <span
-            class="pull-right-container"><i class="fa fa-angle-left pull-right"></i></span></a>
+        class="pull-right-container"><i class="fa fa-angle-left pull-right"></i></span></a>
         <ul class="treeview-menu">
             <li data-container="body" data-toggle="popover" data-placement="right"
                 data-content="Create your own app and take advantage of QuantiModo's data aggregation, storage, and analytical capabilities"
-                data-trigger="hover"><a href="https://testing.quantimo.do/api/v2/apps"><i
-                    class="menu-icon fa fa-fw fa-mobile"></i> <span class="mm-text ">Your Apps</span></a></li>
-            <li><a href="https://testing.quantimo.do/api/v2/account/api-explorer"><i
-                    class="menu-icon fa fa-fw fa-exchange"></i> <span class="mm-text ">API Explorer</span></a></li>
+                data-trigger="hover"><a href="https://local.quantimo.do/api/v2/apps"><i
+                class="menu-icon fa fa-fw fa-mobile"></i> <span class="mm-text ">Your Apps</span></a></li>
+            <li><a href="https://local.quantimo.do/api/v2/account/api-explorer"><i
+                class="menu-icon fa fa-fw fa-exchange"></i> <span class="mm-text ">API Explorer</span></a></li>
             <li><a target="_blank" href="http://github.com/quantimodo"><i class="menu-icon fa fa-fw fa-code-fork"></i>
                 <span class="mm-text ">SDK's</span></a></li>
+            <li><a href="https://local.quantimo.do/admin/bshafferOauthClients"><i class="fa fa-edit"></i><span>Oauth Clients</span></a>
+            </li>
+            <li><a href="https://local.quantimo.do/admin/bshafferOauthAccessTokens"><i class="fa fa-edit"></i><span>Oauth Access Tokens</span></a>
+            </li>
         </ul>
     </li>
 </ul>
-<script src="js/sidebar-menu-filter.js"></script>
+<script src="sidebar-menu-filter.js"></script>
 </body>
 </html>

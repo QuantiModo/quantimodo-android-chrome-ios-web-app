@@ -1,9 +1,15 @@
 function filterMenu() {
     // Declare variables
     var input, filter, ul, li, a, i, txtValue;
-    input = document.getElementById('sidebar-menu');
+    input = document.getElementById('sidebar-menu-input');
     filter = input.value.toUpperCase();
-    ul = document.getElementById("sidebar-list");
+    ul = document.getElementById("searchable-list");
+    if(filter && filter.length){
+        ul.style.display = "";
+    } else {
+        ul.style.display = "none";
+        return;
+    }
     li = ul.getElementsByTagName('li');
 
     // Loop through all list items, and hide those who don't match the search query
