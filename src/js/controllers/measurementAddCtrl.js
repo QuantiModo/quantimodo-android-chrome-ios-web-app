@@ -225,7 +225,25 @@ angular.module('starter').controller('MeasurementAddCtrl', ["$scope", "$q", "$ti
                 setupTrackingByMeasurement(measurementObject);
             }
         };
-        var setupFromVariable = function(v){
+        function isYesNo() {
+            var yesNo = qm.unitHelper.getYesNo();
+            return $scope.state.measurement.unitAbbreviatedName === yesNo.unitAbbreviatedName;
+        }
+        function setDefaultValue(v) {
+            var unitAbbreviatedName = $scope.state.measurement.unitAbbreviatedName;
+            if (v &&
+                unitAbbreviatedName !== '/5' &&
+                !$scope.state.measurement.value &&
+                typeof v.lastValue !== "undefined") {
+                $scope.state.measurement.value = Number((v.lastValueInUserUnit) ? v.lastValueInUserUnit : v.lastValue);
+            }
+            if(isYesNo()){
+                if(typeof $scope.state.measurement.value === "undefined"){
+                    $scope.state.measurement.value = 1;
+                }
+            }
+        }
+        function setupFromVariable(v){
             $stateParams.variableObject = v;
             // Gets version from local storage in case we just updated unit in variable settings
             var userVariables = qm.storage.getElementsWithRequestParams(qm.items.userVariables, {name: v.name});
@@ -257,10 +275,8 @@ angular.module('starter').controller('MeasurementAddCtrl', ["$scope", "$q", "$ti
             $scope.state.measurementIsSetup = true;
             // Fill in default value as last value if not /5
             /** @namespace variableObject.lastValue */
-            if($scope.state.measurement.unitAbbreviatedName !== '/5' && !$scope.state.measurement.value && typeof v.lastValue !== "undefined"){
-                $scope.state.measurement.value = Number((v.lastValueInUserUnit) ? v.lastValueInUserUnit : v.lastValue);
-            }
-        };
+            setDefaultValue(v);
+        }
         var setupFromVariableName = function(variableName){
             qmService.showBlackRingLoader();
             qm.userVariables.getByName(variableName, {}, null, function(variable){
