@@ -107,7 +107,7 @@ function variableSearchV6(query) {
 function updateSearchResults(result) {
     searchCache[query] = result;
     function generateLineSearchItem(one) {
-        var url = one.url || one.link || "https://app.quantimo.do/admin/variables/"+one.id;
+        var url = one.url || one.link || "https://app.quantimo.do/datalab/variables/"+one.id;
         var title = one.title || one.displayName || one.name;
         var subTitle = one.subTitle || one.description || one.variableCategoryName;
         var image = one.imageUrl || one.image || one.avatar;
