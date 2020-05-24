@@ -3668,7 +3668,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 ], userVariable, successHandler, errorHandler);
         };
         qmService.deleteUserVariableMeasurements = function(variableName, successHandler, errorHandler){
-            qmService.storage.deleteByProperty(qm.items.userVariables, 'variableName', variableName);
+            qm.storage.deleteByProperty(qm.items.userVariables, 'variableName', variableName);
             qmService.post('api/v3/userVariables/delete', ['variableName'], {variableName: variableName}, successHandler, errorHandler);
         };
         qmService.disconnectConnectorToApi = function(name, successHandler, errorHandler){
@@ -3865,7 +3865,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 qmLog.error('No reminder id to delete with!  Maybe it has only been stored locally and has not updated from server yet.');
                 return;
             }
-            qmService.storage.deleteByProperty(qm.items.trackingReminderNotifications, 'trackingReminderId', trackingReminderId);
+            qm.storage.deleteByProperty(qm.items.trackingReminderNotifications, 'trackingReminderId', trackingReminderId);
             qmService.post('api/v3/trackingReminders/delete', ['id'], {id: trackingReminderId}, successHandler, errorHandler);
         };
         // skip tracking reminder
@@ -4539,17 +4539,21 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             });
             return deferred.promise;
         };
-        qmService.deleteMeasurementFromServer = function(measurement){
+        qmService.deleteMeasurementFromServer = function(toDelete){
             var deferred = $q.defer();
-            qm.localForage.deleteById(qm.items.primaryOutcomeVariableMeasurements, measurement.id);
-            qmService.storage.deleteByProperty('measurementsQueue', 'startTimeEpoch', measurement.startTimeEpoch);
+            qm.localForage.deleteById(qm.items.primaryOutcomeVariableMeasurements, toDelete.id);
+            qm.storage.deleteByProperty(qm.items.measurementsQueue,
+                'startTimeEpoch', toDelete.startTimeEpoch);
             if(qm.measurements.recentlyPostedMeasurements){
                 qm.measurements.recentlyPostedMeasurements = qm.measurements.recentlyPostedMeasurements.filter(function(recent){
-                    return recent.startTimeEpoch !== measurement.startTimeEpoch;
+                    return recent.startTimeEpoch !== toDelete.startTimeEpoch;
+                });
+                qm.measurements.recentlyPostedMeasurements = qm.measurements.recentlyPostedMeasurements.filter(function(recent){
+                    return recent.id !== toDelete.id;
                 });
             }
-            qmService.showInfoToast("Deleted " + measurement.variableName + " measurement");
-            qmService.deleteV1Measurements(measurement, function(response){
+            qmService.showInfoToast("Deleted " + toDelete.variableName + " measurement");
+            qmService.deleteV1Measurements(toDelete, function(response){
                 deferred.resolve(response);
                 qmLog.debug('deleteMeasurementFromServer success ', response, null);
             }, function(response){
@@ -6336,7 +6340,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             var deferred = $q.defer();
             qmService.deleteUserVariableMeasurements(variableName, function(){
                 // Delete user variable from local storage
-                qmService.storage.deleteByProperty(qm.items.userVariables, 'variableName', variableName);
+                qm.storage.deleteByProperty(qm.items.userVariables, 'variableName', variableName);
                 deferred.resolve();
             }, function(error){
                 qmLog.error(error);
@@ -6560,12 +6564,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         qmService.storage.deleteById = function(localStorageItemName, elementId){
             var deferred = $q.defer();
             deferred.resolve(window.qm.storage.deleteById(localStorageItemName, elementId));
-            return deferred.promise;
-        };
-        qmService.storage.deleteByProperty = function(localStorageItemName, propertyName, propertyValue){
-            var deferred = $q.defer();
-            qm.storage.deleteByProperty(localStorageItemName, propertyName, propertyValue);
-            deferred.resolve();
             return deferred.promise;
         };
         qmService.storage.setItem = function(key, value){
