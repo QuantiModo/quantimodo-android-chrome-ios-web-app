@@ -130,7 +130,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
             $rootScope.setLocalStorageFlagTrue = function(flagName){
                 qmLogService.debug('Set ' + flagName + ' to true', null);
                 qmService.rootScope.setProperty(flagName, true);
-                qmService.storage.setItem(flagName, true);
+                qm.storage.setItem(flagName, true);
             };
             $scope.showHelpInfoPopup = function(explanationId, ev, modelName){
                 qmService.help.showExplanationsPopup(explanationId, ev, modelName);
