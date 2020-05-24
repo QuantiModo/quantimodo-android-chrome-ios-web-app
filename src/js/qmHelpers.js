@@ -8503,6 +8503,9 @@ var qm = {
                 }
             }
             return object;
+        },
+        getYesNo() {
+            return qm.unitHelper.getByNameAbbreviatedNameOrId("yes/no");
         }
     },
     urlHelper: {
