@@ -8181,7 +8181,6 @@ var qm = {
                     "params": {
                         "showAds": true,
                         "variableCategoryName": null,
-                        "updatedMeasurementHistory": null,
                         "refresh": null,
                         "title": "History",
                         "ionIcon": "ion-ios-list-outline"
@@ -8217,7 +8216,6 @@ var qm = {
                     "params": {
                         "showAds": true,
                         "variableCategoryName": null,
-                        "updatedMeasurementHistory": null,
                         "refresh": null,
                         "title": "History",
                         "ionIcon": "ion-ios-list-outline"
