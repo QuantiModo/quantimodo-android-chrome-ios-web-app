@@ -27,10 +27,8 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
             $scope.state.history = addRecentlyPostedAndQueuedMeasurements($scope.state.history);
             $scope.state.moreDataCanBeLoaded = true;
             // Need to use rootScope here for some reason
-            qmService.rootScope.setProperty('hideHistoryPageInstructionsCard', qm.storage.getItem('hideHistoryPageInstructionsCard'));
-            if($stateParams.updatedMeasurementHistory){
-                $scope.state.history = $stateParams.updatedMeasurementHistory;
-            }
+            qmService.rootScope.setProperty('hideHistoryPageInstructionsCard',
+                qm.storage.getItem('hideHistoryPageInstructionsCard'));
         });
         $scope.$on('$ionicView.enter', function(e){
             qmLogService.debug($state.current.name + ': ' + 'Entering state ' + $state.current.name);
@@ -176,7 +174,7 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
             //measurement.hide = true;  // Hiding when we go to edit so we don't see the old value when we come back
             qmService.goToState('app.measurementAdd', {
                 measurement: measurement, fromState: $state.current.name,
-                fromUrl: window.location.href, currentMeasurementHistory: $scope.state.history
+                fromUrl: window.location.href
             });
         };
         $scope.refreshHistory = function(){
