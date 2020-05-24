@@ -1296,12 +1296,17 @@ var qm = {
                 return arrayToSort;
             }
             if(propertyName.indexOf('-') > -1 || direction === 'desc'){
+                propertyName = propertyName.replace('-', '');
                 arrayToSort.sort(function(a, b){
-                    return b[propertyName.replace('-', '')] - a[propertyName.replace('-', '')];
+                    var aVal = a[propertyName];
+                    var bVal = b[propertyName];
+                    return bVal - aVal;
                 });
             }else{
                 arrayToSort.sort(function(a, b){
-                    return a[propertyName] - b[propertyName];
+                    var aVal = a[propertyName];
+                    var bVal = b[propertyName];
+                    return aVal - bVal;
                 });
             }
             return arrayToSort;
@@ -4115,18 +4120,61 @@ var qm = {
         }
     },
     measurements: {
+        getUniqueKey: function(m){
+            if(m.id){return m.id.toString();}
+            var startTime = m.startTime || m.startTimeEpoch;
+            return startTime.toString()+":"+m.variableId;
+        },
+        getLocalMeasurements: function(params, cb){
+            var queue = qm.measurements.getMeasurementsFromQueue(params);
+            var recent = qm.measurements.getRecentlyPostedMeasurements(params);
+            qm.measurements.getPrimaryOutcomeMeasurements(function (measurements) {
+                var indexed = {};
+                measurements.forEach(function(m){
+                    indexed[qm.measurements.getUniqueKey(m)] = m;
+                });
+                recent.forEach(function(m){
+                    indexed[qm.measurements.getUniqueKey(m)] = m;
+                });
+                queue.forEach(function(m){
+                    indexed[qm.measurements.getUniqueKey(m)] = m;
+                });
+                cb(qm.measurements.filterAndSort(indexed, params));
+            });
+        },
+        getPrimaryOutcomeMeasurements: function(cb){
+            qm.localForage.getItem(qm.items.primaryOutcomeVariableMeasurements, cb);
+        },
+        filterAndSort: function(measurements, params){
+            if(!Array.isArray(measurements)){measurements = Object.values(measurements);}
+            measurements = qm.measurements.addInfoAndImagesToMeasurements(measurements);
+            measurements = qm.arrayHelper.filterByRequestParams(measurements, params);
+            return measurements;
+        },
+        addLocalMeasurements: function(arr, params, cb){
+            qm.measurements.getLocalMeasurements(params, function(local){
+                var indexed = {};
+                arr.forEach(function(m){
+                    indexed[qm.measurements.getUniqueKey(m)] = m;
+                });
+                local.forEach(function(m){
+                    indexed[qm.measurements.getUniqueKey(m)] = m;
+                });
+                cb(qm.measurements.filterAndSort(indexed, params))
+            })
+        },
         deleteLocally: function(toDelete){
-            qm.localForage.deleteById(qm.items.primaryOutcomeVariableMeasurements, toDelete.id);
-            qm.storage.deleteByProperty(qm.items.measurementsQueue,
-                'startTimeEpoch', toDelete.startTimeEpoch);
-            if(qm.measurements.recentlyPostedMeasurements){
-                qm.measurements.recentlyPostedMeasurements = qm.measurements.recentlyPostedMeasurements.filter(function(recent){
-                    return recent.startTimeEpoch !== toDelete.startTimeEpoch;
-                });
-                qm.measurements.recentlyPostedMeasurements = qm.measurements.recentlyPostedMeasurements.filter(function(recent){
-                    return recent.id !== toDelete.id;
-                });
+            var startTime = toDelete.startTimeEpoch || toDelete.startTime;
+            var id = toDelete.id;
+            if(startTime){
+                qm.storage.deleteByProperty(qm.items.measurementsQueue, 'startTimeEpoch', startTime);
+                qm.storage.deleteByProperty(qm.items.measurementsQueue, 'startTime', startTime);
             }
+            if(id){qm.localForage.deleteById(qm.items.primaryOutcomeVariableMeasurements, id);}
+            var recent = qm.measurements.recentlyPostedMeasurements || [];
+            recent = recent.filter(function(m){return m.startTimeEpoch !== startTime && m.startTime !== startTime;});
+            if(id){recent = recent.filter(function(m){return m.id !== id;});}
+            qm.measurements.recentlyPostedMeasurements = recent;
         },
         addMeasurementsToMemory: function(measurements){
             var measurementArray = measurements;
@@ -4234,6 +4282,8 @@ var qm = {
                         qm.qmLog.error("Unrecognized note format", "Could not properly format JSON note", {note: m.note});
                     }
                 }
+                m.startTime = m.startTime || m.startTimeEpoch;
+                m.startAt = m.startAt || m.startTimeString;
                 var unit = qm.unitHelper.getByNameAbbreviatedNameOrId(m.unitId || m.unitAbbreviatedName);
                 if(!m.unitAbbreviatedName){m.unitAbbreviatedName = unit.abbreviatedName;}
                 if(!m.variableName){m.variableName = m.variable;}
