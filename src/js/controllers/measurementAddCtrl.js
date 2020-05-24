@@ -420,15 +420,8 @@ angular.module('starter').controller('MeasurementAddCtrl', ["$scope", "$q", "$ti
             }, 20000);
         });
         function getVariableCategoryName(object){
-            var name;
-            if(object && object.variableCategoryName){name = object.variableCategoryName;}
-            if(!name && $scope.state && $scope.state.measurement && $scope.state.measurement.variableCategoryName){
-                name = $scope.state.measurement.variableCategoryName;
-            }
-            if(!name){name = $stateParams.variableCategoryName;}
-            if(!name){name = qm.urlHelper.getParam('variableCategoryName');}
-            if(!name && $stateParams.variableObject){name = $stateParams.variableObject.variableCategoryName;}
-            return name;
+            return qm.variableCategoryHelper.getVariableCategoryNameFromStateParamsOrUrl(
+                object, $scope.state.measurement, $stateParams, $stateParams.variableObject);
         }
         function getVariableCategory(){
             return qmService.getVariableCategoryInfo(getVariableCategoryName());

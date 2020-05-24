@@ -1793,7 +1793,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                         return false;
                     }
                     if(!measurement.variableCategoryName){
-                        measurement.variableCategoryName = qm.urlHelper.getParam('variableCategoryName');
+                        measurement.variableCategoryName =
+                            qm.variableCategoryHelper.getVariableCategoryNameFromStateParamsOrUrl();
                     }
                     if(!measurement.variableCategoryName){
                         message = 'Please select a variable category';
@@ -3875,18 +3876,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 params,
                 successHandler,
                 errorHandler);
-        };
-        qmService.getVariableCategoryNameFromStateParamsOrUrl = function($stateParams){
-            var variableCategoryName;
-            if($stateParams && $stateParams.variableCategoryName){
-                variableCategoryName = $stateParams.variableCategoryName;
-            }else if(qm.urlHelper.getParam('variableCategoryName')){
-                variableCategoryName = qm.urlHelper.getParam('variableCategoryName');
-            }
-            if(variableCategoryName && variableCategoryName !== "Anything"){
-                return variableCategoryName;
-            }
-            return null;
         };
         qmService.goToState = function(to, params, options){
             //qmLog.info('Called goToState: ' + to, null, qmLog.getStackTrace());

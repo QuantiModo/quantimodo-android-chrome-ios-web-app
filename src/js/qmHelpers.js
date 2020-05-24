@@ -1357,6 +1357,9 @@ var qm = {
             return a;
         },
         filterByRequestParams: function(provided, params){
+            if(params && params.variableCategoryName){
+                params.variableCategoryName = qm.variableCategoryHelper.replaceCategoryAliasWithActualNameIfNecessary(params.variableCategoryName);
+            }
             if(!provided){
                 qm.qmLog.error("Nothing provided to filterByRequestParams");
                 return provided;
@@ -9440,6 +9443,14 @@ var qm = {
         },
     },
     variableCategoryHelper: {
+        replaceCategoryAliasWithActualNameIfNecessary: function(provided){
+            if(provided === "Anything"){return null;}
+            var category = qm.variableCategoryHelper.getByNameOrId(provided);
+            if(!category){
+                qmLog.errorAndExceptionTestingOrDevelopment("Category "+provided+" not found!");
+            }
+            return category.name;
+        },
         getVariableCategoriesFromApi: function(successHandler, errorHandler){
             qm.qmLog.info("Getting variable categories from API...");
             function globalSuccessHandler(variableCategories){
@@ -9498,12 +9509,28 @@ var qm = {
                 successHandler(match);
             });
         },
+        getVariableCategoryNameFromStateParamsOrUrl: function(obj1, obj2, obj3){
+            var name = qm.urlHelper.getParam('variableCategoryName');
+            if(obj1 && obj1.variableCategoryName){name = obj1.variableCategoryName;}
+            if(obj2 && obj2.variableCategoryName){name = obj2.variableCategoryName;}
+            if(obj3 && obj3.variableCategoryName){name = obj3.variableCategoryName;}
+            if(name){name = qm.variableCategoryHelper.replaceCategoryAliasWithActualNameIfNecessary(name);}
+            return name;
+        },
         getByNameOrId: function(nameOrId){
             var cats = qm.variableCategoryHelper.getVariableCategoriesFromGlobals();
             if(isNaN(nameOrId)){
+                nameOrId = nameOrId.toLowerCase();
+                nameOrId = nameOrId.replace("+", " ")
                 return cats.find(function(c){
                     // noinspection EqualityComparisonWithCoercionJS
-                    return c.id == nameOrId || c.name.toLowerCase() === nameOrId.toLowerCase();
+                    if(c.id == nameOrId){return true;}
+                    if(c.name.toLowerCase() === nameOrId){return true;}
+                    for (let i = 0; i < c.synonyms.length; i++) {
+                        var syn = c.synonyms[i];
+                        if(nameOrId === syn.toLowerCase()){return true;}
+                    }
+                    return false;
                 });
             } else {
                 return cats.find(function(c){return c.id === nameOrId;});
