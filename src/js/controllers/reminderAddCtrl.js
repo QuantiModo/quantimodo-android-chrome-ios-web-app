@@ -368,7 +368,7 @@ angular.module('starter').controller('ReminderAddCtrl', ["$scope", "$state", "$s
                 return;
             }
             if(r.id){
-                qmService.storage.deleteById('trackingReminders', r.id);
+                qm.storage.deleteById('trackingReminders', r.id);
             }
             qmService.showBasicLoader();
             qmService.addToTrackingReminderSyncQueue(remindersArray);

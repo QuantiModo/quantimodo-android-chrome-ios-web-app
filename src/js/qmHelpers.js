@@ -4115,6 +4115,19 @@ var qm = {
         }
     },
     measurements: {
+        deleteLocally: function(toDelete){
+            qm.localForage.deleteById(qm.items.primaryOutcomeVariableMeasurements, toDelete.id);
+            qm.storage.deleteByProperty(qm.items.measurementsQueue,
+                'startTimeEpoch', toDelete.startTimeEpoch);
+            if(qm.measurements.recentlyPostedMeasurements){
+                qm.measurements.recentlyPostedMeasurements = qm.measurements.recentlyPostedMeasurements.filter(function(recent){
+                    return recent.startTimeEpoch !== toDelete.startTimeEpoch;
+                });
+                qm.measurements.recentlyPostedMeasurements = qm.measurements.recentlyPostedMeasurements.filter(function(recent){
+                    return recent.id !== toDelete.id;
+                });
+            }
+        },
         addMeasurementsToMemory: function(measurements){
             var measurementArray = measurements;
             if(!Array.isArray(measurementArray)){
@@ -5387,7 +5400,8 @@ var qm = {
             }
             notificationsSyncQueue[0].hide = false;
             qm.storage.addToOrReplaceByIdAndMoveToFront(qm.items.trackingReminderNotifications, notificationsSyncQueue[0]);
-            qm.storage.deleteByProperty(qm.items.notificationsSyncQueue, 'trackingReminderNotificationId', notificationsSyncQueue[0].trackingReminderNotificationId);
+            qm.storage.deleteByProperty(qm.items.notificationsSyncQueue, 'trackingReminderNotificationId',
+                notificationsSyncQueue[0].trackingReminderNotificationId);
         },
         getMostRecentRatingNotification: function(){
             var ratingNotifications = qm.storage.getWithFilters(qm.items.trackingReminderNotifications, 'unitAbbreviatedName', '/5');
