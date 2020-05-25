@@ -1426,11 +1426,11 @@ var qm = {
             }
             if(params.searchPhrase && params.searchPhrase !== ""){
                 filtered = qm.arrayHelper.getWithNameContainingEveryWord(params.searchPhrase, filtered);
-                qm.qmLog.info(filtered.length+" after getWithNameContainingEveryWord with searchPhrase"+params.searchPhrase)
+                qm.qmLog.info(filtered.length+" after getWithNameContainingEveryWord with searchPhrase: "+params.searchPhrase)
             }
             if(params && params.sort){
                 filtered = qm.arrayHelper.sortByProperty(filtered, params.sort);
-                qm.qmLog.info(filtered.length+" after sortBy "+params.sort)
+                qm.qmLog.info(filtered.length+" after sortBy: "+params.sort)
             }
             filtered = qm.arrayHelper.removeArrayElementsWithDuplicateIds(filtered);
             qm.qmLog.info(filtered.length+" after removeArrayElementsWithDuplicateIds")
