@@ -4263,11 +4263,9 @@ var qm = {
         },
         recentlyPostedMeasurements: [],
         getRecentlyPostedMeasurements: function(params){
-            var all = qm.measurements.addInfoAndImagesToMeasurements(qm.measurements.recentlyPostedMeasurements);
+            var all = qm.measurements.addInfoAndImagesToMeasurements(qm.measurements.recentlyPostedMeasurements || []);
             var filtered = qm.arrayHelper.filterByRequestParams(all, params);
-            var count = 0;
-            if(filtered){count = filtered.length;}
-            qm.qmLog.info("Got " + count + " measurements from recentlyPostedMeasurements with params: " + JSON.stringify(params));
+            qm.qmLog.info("Got " + filtered.length + " measurements from recentlyPostedMeasurements with params: " + JSON.stringify(params));
             return filtered;
         },
     },
