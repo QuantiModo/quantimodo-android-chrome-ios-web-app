@@ -68,12 +68,7 @@ angular.module('starter').controller('ReminderAddCtrl', ["$scope", "$state", "$s
             });
             qmService.navBar.showNavigationMenuIfHideUrlParamNotSet();
             qmService.login.sendToLoginIfNecessaryAndComeBack("beforeEnter in " + $state.current.name);
-            if($stateParams.variableObject){
-                $stateParams.variableCategoryName = $stateParams.variableObject.variableCategoryName;
-            }
-            if($scope.state.trackingReminder && $scope.state.trackingReminder.variableCategoryName){
-                $stateParams.variableCategoryName = $scope.state.trackingReminder.variableCategoryName;
-            }
+            $stateParams.variableCategoryName = getVariableCategoryName();
             $scope.stateParams = $stateParams;
             setTitle();
             var reminderIdUrlParameter = qm.urlHelper.getParam('reminderId');
@@ -87,9 +82,9 @@ angular.module('starter').controller('ReminderAddCtrl', ["$scope", "$state", "$s
                 setupReminderEditingFromVariableId(variableIdUrlParameter);
             }else if($stateParams.variableName){
                 setupByVariableObject({variableName: $stateParams.variableName});
-            }else if($stateParams.variableCategoryName){
-                $scope.state.trackingReminder.variableCategoryName = $stateParams.variableCategoryName;
-                setupVariableCategory($scope.state.trackingReminder.variableCategoryName);
+            }else if(getVariableCategoryName()){
+                $scope.state.trackingReminder.variableCategoryName = getVariableCategoryName();
+                setupVariableCategory(getVariableCategoryName());
             }else if(qm.getPrimaryOutcomeVariable()){
                 $scope.state.variableObject = qm.getPrimaryOutcomeVariable();
                 setupByVariableObject(qm.getPrimaryOutcomeVariable());
@@ -120,6 +115,10 @@ angular.module('starter').controller('ReminderAddCtrl', ["$scope", "$state", "$s
             $scope.state.firstReminderStartTimeMoment = moment($scope.state.firstReminderStartTimeEpochTime * 1000);
         }else{
             qmLog.error($state.current.name + ': $rootScope.user is not defined!');
+        }
+        function getVariableCategoryName(){
+            return qm.variableCategoryHelper.getVariableCategoryNameFromStateParamsOrUrl(
+                $scope.state.trackingReminder, $stateParams, $stateParams.variableObject);
         }
         $scope.openReminderStartTimePicker = function(order){
             var a = new Date();
@@ -499,13 +498,13 @@ angular.module('starter').controller('ReminderAddCtrl', ["$scope", "$state", "$s
             if($stateParams.favorite){
                 $scope.state.selectedFrequencyName = 'As-Needed';
                 if($stateParams.reminder){
-                    if($stateParams.variableCategoryName === 'Treatments'){
+                    if(getVariableCategoryName() === 'Treatments'){
                         $scope.state.title = "Modify As-Needed Med";
                     }else{
                         $scope.state.title = "Edit Favorite";
                     }
                 }else{
-                    if($stateParams.variableCategoryName === 'Treatments'){
+                    if(getVariableCategoryName() === 'Treatments'){
                         $scope.state.title = "Add As-Needed Med";
                     }else{
                         $scope.state.title = "Add Favorite";
