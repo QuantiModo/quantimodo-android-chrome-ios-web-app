@@ -82,16 +82,12 @@ angular.module('starter').controller('MeasurementAddCtrl', ["$scope", "$q", "$ti
             $scope.goBack();
         };
         $scope.cancel = function(){
-            $scope.goBack({updatedMeasurementHistory: $stateParams.currentMeasurementHistory});
+            $scope.goBack();
         };
         $scope.deleteMeasurementFromMeasurementAddCtrl = function(){
-            var backStateParams = {};
-            if($stateParams.currentMeasurementHistory){
-                backStateParams.updatedMeasurementHistory = qm.arrayHelper.deleteById($scope.state.measurement.id, $stateParams.currentMeasurementHistory);
-            }
             qmService.showInfoToast('Deleting ' + $scope.state.measurement.variableName + ' measurement');
             qmService.deleteMeasurementFromServer($scope.state.measurement);
-            $scope.goBack(backStateParams);
+            $scope.goBack({});
         };
         $scope.done = function(){
             if($rootScope.bloodPressure.show){
@@ -129,11 +125,6 @@ angular.module('starter').controller('MeasurementAddCtrl', ["$scope", "$q", "$ti
             qmService.showInfoToast(toastMessage);
             // Measurement only - post measurement. This is for adding or editing
             var backStateParams = {};
-            if($stateParams.currentMeasurementHistory){
-                var updateMeasurement = qm.measurements.addInfoAndImagesToMeasurements([$scope.state.measurement])[0];
-                backStateParams.updatedMeasurementHistory =
-                    qm.arrayHelper.replaceElementInArrayById($stateParams.currentMeasurementHistory, updateMeasurement);
-            }
             qmService.postMeasurementDeferred(m, function(){
                 if(unitChanged){
                     qmLog.error("Syncing reminders because unit changed");
