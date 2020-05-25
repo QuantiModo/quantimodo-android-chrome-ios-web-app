@@ -4116,6 +4116,49 @@ var qm = {
         }
     },
     measurements: {
+        getUniqueKey: function(m){
+            if(m.id){return m.id.toString();}
+            var startTime = m.startTime || m.startTimeEpoch;
+            return startTime.toString()+":"+m.variableId;
+        },
+        getLocalMeasurements: function(params, cb){
+            var queue = qm.measurements.getMeasurementsFromQueue(params);
+            var recent = qm.measurements.getRecentlyPostedMeasurements(params);
+            qm.measurements.getPrimaryOutcomeMeasurements(function (measurements) {
+                var indexed = {};
+                measurements.forEach(function(m){
+                    indexed[qm.measurements.getUniqueKey(m)] = m;
+                });
+                recent.forEach(function(m){
+                    indexed[qm.measurements.getUniqueKey(m)] = m;
+                });
+                queue.forEach(function(m){
+                    indexed[qm.measurements.getUniqueKey(m)] = m;
+                });
+                cb(qm.measurements.filterAndSort(indexed, params));
+            });
+        },
+        getPrimaryOutcomeMeasurements: function(cb){
+            qm.localForage.getItem(qm.items.primaryOutcomeVariableMeasurements, cb);
+        },
+        filterAndSort: function(measurements, params){
+            if(!Array.isArray(measurements)){measurements = Object.values(measurements);}
+            measurements = qm.measurements.addInfoAndImagesToMeasurements(measurements);
+            measurements = qm.arrayHelper.filterByRequestParams(measurements, params);
+            return measurements;
+        },
+        addLocalMeasurements: function(arr, params, cb){
+            qm.measurements.getLocalMeasurements(params, function(local){
+                var indexed = {};
+                arr.forEach(function(m){
+                    indexed[qm.measurements.getUniqueKey(m)] = m;
+                });
+                local.forEach(function(m){
+                    indexed[qm.measurements.getUniqueKey(m)] = m;
+                });
+                cb(qm.measurements.filterAndSort(indexed, params))
+            })
+        },
         deleteLocally: function(toDelete){
             qm.localForage.deleteById(qm.items.primaryOutcomeVariableMeasurements, toDelete.id);
             qm.storage.deleteByProperty(qm.items.measurementsQueue,
