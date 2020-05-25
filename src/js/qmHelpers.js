@@ -4251,13 +4251,10 @@ var qm = {
             qm.measurements.addMeasurementsToMemory(measurementsQueue)
         },
         getMeasurementsFromQueue: function(params){
-            var measurements = qm.storage.getElementsWithRequestParams(qm.items.measurementsQueue, params);
-            var count = 0;
-            if(measurements){
-                count = measurements.length;
-                measurements = qm.measurements.addInfoAndImagesToMeasurements(measurements);
-            }
-            qm.qmLog.info("Got " + count + " measurements from queue with params: " + JSON.stringify(params), measurements);
+            var measurements = qm.storage.getElementsWithRequestParams(qm.items.measurementsQueue, params) || []
+            measurements = qm.measurements.addInfoAndImagesToMeasurements(measurements);
+            qm.qmLog.info("Got " + measurements.length + " measurements from queue with params: " +
+                JSON.stringify(params), measurements);
             return measurements;
         },
         addInfoAndImagesToMeasurements: function(measurements){
@@ -4312,11 +4309,9 @@ var qm = {
         },
         recentlyPostedMeasurements: [],
         getRecentlyPostedMeasurements: function(params){
-            var all = qm.measurements.addInfoAndImagesToMeasurements(qm.measurements.recentlyPostedMeasurements);
+            var all = qm.measurements.addInfoAndImagesToMeasurements(qm.measurements.recentlyPostedMeasurements || []);
             var filtered = qm.arrayHelper.filterByRequestParams(all, params);
-            var count = 0;
-            if(filtered){count = filtered.length;}
-            qm.qmLog.info("Got " + count + " measurements from recentlyPostedMeasurements with params: " + JSON.stringify(params));
+            qm.qmLog.info("Got " + filtered.length + " measurements from recentlyPostedMeasurements with params: " + JSON.stringify(params));
             return filtered;
         },
     },
