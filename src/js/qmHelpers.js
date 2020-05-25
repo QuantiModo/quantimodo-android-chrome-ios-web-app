@@ -4284,6 +4284,8 @@ var qm = {
                         qm.qmLog.error("Unrecognized note format", "Could not properly format JSON note", {note: m.note});
                     }
                 }
+                m.startTime = m.startTime || m.startTimeEpoch;
+                m.startAt = m.startAt || m.startTimeString;
                 var unit = qm.unitHelper.getByNameAbbreviatedNameOrId(m.unitId || m.unitAbbreviatedName);
                 if(!m.unitAbbreviatedName){m.unitAbbreviatedName = unit.abbreviatedName;}
                 if(!m.variableName){m.variableName = m.variable;}
