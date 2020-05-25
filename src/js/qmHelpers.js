@@ -1296,12 +1296,17 @@ var qm = {
                 return arrayToSort;
             }
             if(propertyName.indexOf('-') > -1 || direction === 'desc'){
+                propertyName = propertyName.replace('-', '');
                 arrayToSort.sort(function(a, b){
-                    return b[propertyName.replace('-', '')] - a[propertyName.replace('-', '')];
+                    var aVal = a[propertyName];
+                    var bVal = b[propertyName];
+                    return bVal - aVal;
                 });
             }else{
                 arrayToSort.sort(function(a, b){
-                    return a[propertyName] - b[propertyName];
+                    var aVal = a[propertyName];
+                    var bVal = b[propertyName];
+                    return aVal - bVal;
                 });
             }
             return arrayToSort;
@@ -1406,12 +1411,13 @@ var qm = {
                     if(allowedFilterParams.indexOf(key) === -1){
                         qm.qmLog.error(key + " is not in allowed filter params");
                     }
-                    qm.qmLog.info("filtering by " + key);
+                    qm.qmLog.info("filtering by " + key+": "+value);
                     filterPropertyValues.push(value);
                     filterPropertyNames.push(key);
                 }
             }
-            var filtered = qm.arrayHelper.filterByPropertyOrSize(provided, null, null, lessThanPropertyName, lessThanPropertyValue,
+            var filtered = qm.arrayHelper.filterByPropertyOrSize(provided, null, null,
+                lessThanPropertyName, lessThanPropertyValue,
                 greaterThanPropertyName, greaterThanPropertyValue);
             if(filtered){
                 for(var i = 0; i < filterPropertyNames.length; i++){
@@ -1423,11 +1429,14 @@ var qm = {
             }
             if(params.searchPhrase && params.searchPhrase !== ""){
                 filtered = qm.arrayHelper.getWithNameContainingEveryWord(params.searchPhrase, filtered);
+                qm.qmLog.info(filtered.length+" after getWithNameContainingEveryWord with searchPhrase: "+params.searchPhrase)
             }
             if(params && params.sort){
                 filtered = qm.arrayHelper.sortByProperty(filtered, params.sort);
+                qm.qmLog.info(filtered.length+" after sortBy: "+params.sort)
             }
             filtered = qm.arrayHelper.removeArrayElementsWithDuplicateIds(filtered);
+            qm.qmLog.info(filtered.length+" after removeArrayElementsWithDuplicateIds")
             return filtered;
         },
         getUnique: function(array, propertyName){
@@ -4119,18 +4128,61 @@ var qm = {
         }
     },
     measurements: {
+        getUniqueKey: function(m){
+            if(m.id){return m.id.toString();}
+            var startTime = m.startTime || m.startTimeEpoch;
+            return startTime.toString()+":"+m.variableId;
+        },
+        getLocalMeasurements: function(params, cb){
+            var queue = qm.measurements.getMeasurementsFromQueue(params);
+            var recent = qm.measurements.getRecentlyPostedMeasurements(params);
+            qm.measurements.getPrimaryOutcomeMeasurements(function (measurements) {
+                var indexed = {};
+                measurements.forEach(function(m){
+                    indexed[qm.measurements.getUniqueKey(m)] = m;
+                });
+                recent.forEach(function(m){
+                    indexed[qm.measurements.getUniqueKey(m)] = m;
+                });
+                queue.forEach(function(m){
+                    indexed[qm.measurements.getUniqueKey(m)] = m;
+                });
+                cb(qm.measurements.filterAndSort(indexed, params));
+            });
+        },
+        getPrimaryOutcomeMeasurements: function(cb){
+            qm.localForage.getItem(qm.items.primaryOutcomeVariableMeasurements, cb);
+        },
+        filterAndSort: function(measurements, params){
+            if(!Array.isArray(measurements)){measurements = Object.values(measurements);}
+            measurements = qm.measurements.addInfoAndImagesToMeasurements(measurements);
+            measurements = qm.arrayHelper.filterByRequestParams(measurements, params);
+            return measurements;
+        },
+        addLocalMeasurements: function(arr, params, cb){
+            qm.measurements.getLocalMeasurements(params, function(local){
+                var indexed = {};
+                arr.forEach(function(m){
+                    indexed[qm.measurements.getUniqueKey(m)] = m;
+                });
+                local.forEach(function(m){
+                    indexed[qm.measurements.getUniqueKey(m)] = m;
+                });
+                cb(qm.measurements.filterAndSort(indexed, params))
+            })
+        },
         deleteLocally: function(toDelete){
-            qm.localForage.deleteById(qm.items.primaryOutcomeVariableMeasurements, toDelete.id);
-            qm.storage.deleteByProperty(qm.items.measurementsQueue,
-                'startTimeEpoch', toDelete.startTimeEpoch);
-            if(qm.measurements.recentlyPostedMeasurements){
-                qm.measurements.recentlyPostedMeasurements = qm.measurements.recentlyPostedMeasurements.filter(function(recent){
-                    return recent.startTimeEpoch !== toDelete.startTimeEpoch;
-                });
-                qm.measurements.recentlyPostedMeasurements = qm.measurements.recentlyPostedMeasurements.filter(function(recent){
-                    return recent.id !== toDelete.id;
-                });
+            var startTime = toDelete.startTimeEpoch || toDelete.startTime;
+            var id = toDelete.id;
+            if(startTime){
+                qm.storage.deleteByProperty(qm.items.measurementsQueue, 'startTimeEpoch', startTime);
+                qm.storage.deleteByProperty(qm.items.measurementsQueue, 'startTime', startTime);
             }
+            if(id){qm.localForage.deleteById(qm.items.primaryOutcomeVariableMeasurements, id);}
+            var recent = qm.measurements.recentlyPostedMeasurements || [];
+            recent = recent.filter(function(m){return m.startTimeEpoch !== startTime && m.startTime !== startTime;});
+            if(id){recent = recent.filter(function(m){return m.id !== id;});}
+            qm.measurements.recentlyPostedMeasurements = recent;
         },
         addMeasurementsToMemory: function(measurements){
             var measurementArray = measurements;
@@ -4207,13 +4259,10 @@ var qm = {
             qm.measurements.addMeasurementsToMemory(measurementsQueue)
         },
         getMeasurementsFromQueue: function(params){
-            var measurements = qm.storage.getElementsWithRequestParams(qm.items.measurementsQueue, params);
-            var count = 0;
-            if(measurements){
-                count = measurements.length;
-                measurements = qm.measurements.addInfoAndImagesToMeasurements(measurements);
-            }
-            qm.qmLog.info("Got " + count + " measurements from queue with params: " + JSON.stringify(params), measurements);
+            var measurements = qm.storage.getElementsWithRequestParams(qm.items.measurementsQueue, params) || []
+            measurements = qm.measurements.addInfoAndImagesToMeasurements(measurements);
+            qm.qmLog.info("Got " + measurements.length + " measurements from queue with params: " +
+                JSON.stringify(params), measurements);
             return measurements;
         },
         addInfoAndImagesToMeasurements: function(measurements){
@@ -4266,11 +4315,9 @@ var qm = {
         },
         recentlyPostedMeasurements: [],
         getRecentlyPostedMeasurements: function(params){
-            var all = qm.measurements.addInfoAndImagesToMeasurements(qm.measurements.recentlyPostedMeasurements);
+            var all = qm.measurements.addInfoAndImagesToMeasurements(qm.measurements.recentlyPostedMeasurements || []);
             var filtered = qm.arrayHelper.filterByRequestParams(all, params);
-            var count = 0;
-            if(filtered){count = filtered.length;}
-            qm.qmLog.info("Got " + count + " measurements from recentlyPostedMeasurements with params: " + JSON.stringify(params));
+            qm.qmLog.info("Got " + filtered.length + " measurements from recentlyPostedMeasurements with params: " + JSON.stringify(params));
             return filtered;
         },
     },
@@ -7275,6 +7322,10 @@ var qm = {
         getAllLocalStorageDataWithSizes: function(summary){
             if(typeof localStorage === "undefined"){
                 qm.qmLog.debug("localStorage not defined");
+                return false;
+            }
+            if(localStorage === null){
+                qm.qmLog.error("localStorage is null!");
                 return false;
             }
             var localStorageItemsArray = [];
