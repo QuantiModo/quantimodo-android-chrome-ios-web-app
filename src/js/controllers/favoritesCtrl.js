@@ -25,15 +25,16 @@ angular.module('starter').controller('FavoritesCtrl', ["$scope", "$state", "$ion
             diastolicValue: null,
             displayTotal: "Blood Pressure"
         });
-        if($stateParams.variableCategoryName && $stateParams.variableCategoryName !== 'Anything'){
-            $scope.variableCategoryName = $stateParams.variableCategoryName;
-            $scope.state.addButtonText = "Add favorite " + $stateParams.variableCategoryName.toLowerCase();
-            $scope.state.title = 'Favorite ' + $stateParams.variableCategoryName;
+        var categoryName = qm.variableCategoryHelper.getVariableCategoryNameFromStateParamsOrUrl($stateParams);
+        if(categoryName){
+            $scope.variableCategoryName = categoryName;
+            $scope.state.addButtonText = "Add favorite " + categoryName.toLowerCase();
+            $scope.state.title = 'Favorite ' + categoryName;
             $scope.state.moreHelpText = null;
         }else{
             $scope.variableCategoryName = null;
         }
-        if($stateParams.variableCategoryName === 'Treatments'){
+        if(categoryName === 'Treatments'){
             $scope.state.addButtonText = "Add an as-needed medication";
             $scope.state.helpText = "Quickly record doses of medications taken as needed just by tapping.  Tap twice for two doses, etc.";
             $scope.state.addButtonIcon = "ion-ios-medkit-outline";
@@ -49,7 +50,8 @@ angular.module('starter').controller('FavoritesCtrl', ["$scope", "$state", "$ion
         }
     });
     var getFavoritesFromLocalStorage = function(){
-        qmService.storage.getFavorites($stateParams.variableCategoryName).then(function(favorites){
+        var categoryName = qm.variableCategoryHelper.getVariableCategoryNameFromStateParamsOrUrl($stateParams);
+        qmService.storage.getFavorites(categoryName).then(function(favorites){
             $scope.state.favoritesArray = favorites;
             qmService.showInfoToast('Got ' + favorites.length + ' favorites!');
         });
