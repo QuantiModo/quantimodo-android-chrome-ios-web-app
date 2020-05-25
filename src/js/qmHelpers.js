@@ -9505,6 +9505,7 @@ var qm = {
             var category = qm.variableCategoryHelper.getByNameOrId(provided);
             if(!category){
                 qmLog.errorAndExceptionTestingOrDevelopment("Category "+provided+" not found!");
+                return null;
             }
             return category.name;
         },
