@@ -3698,7 +3698,8 @@ var qm = {
         useSmallInbox: 'useSmallInbox',
         userCorrelations: 'userCorrelations',
         userVariables: 'userVariables',
-        variableCategories: 'variableCategories'
+        variableCategories: 'variableCategories',
+        lastUrl: 'lastUrl'
     },
     loaders: {
         robots: function(){
