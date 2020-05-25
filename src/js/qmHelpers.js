@@ -1408,12 +1408,13 @@ var qm = {
                     if(allowedFilterParams.indexOf(key) === -1){
                         qm.qmLog.error(key + " is not in allowed filter params");
                     }
-                    qm.qmLog.info("filtering by " + key);
+                    qm.qmLog.info("filtering by " + key+": "+value);
                     filterPropertyValues.push(value);
                     filterPropertyNames.push(key);
                 }
             }
-            var filtered = qm.arrayHelper.filterByPropertyOrSize(provided, null, null, lessThanPropertyName, lessThanPropertyValue,
+            var filtered = qm.arrayHelper.filterByPropertyOrSize(provided, null, null,
+                lessThanPropertyName, lessThanPropertyValue,
                 greaterThanPropertyName, greaterThanPropertyValue);
             if(filtered){
                 for(var i = 0; i < filterPropertyNames.length; i++){
@@ -1425,11 +1426,14 @@ var qm = {
             }
             if(params.searchPhrase && params.searchPhrase !== ""){
                 filtered = qm.arrayHelper.getWithNameContainingEveryWord(params.searchPhrase, filtered);
+                qm.qmLog.info(filtered.length+" after getWithNameContainingEveryWord with searchPhrase"+params.searchPhrase)
             }
             if(params && params.sort){
                 filtered = qm.arrayHelper.sortByProperty(filtered, params.sort);
+                qm.qmLog.info(filtered.length+" after sortBy "+params.sort)
             }
             filtered = qm.arrayHelper.removeArrayElementsWithDuplicateIds(filtered);
+            qm.qmLog.info(filtered.length+" after removeArrayElementsWithDuplicateIds")
             return filtered;
         },
         getUnique: function(array, propertyName){
