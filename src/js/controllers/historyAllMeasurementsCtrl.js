@@ -35,7 +35,6 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
                 qm.storage.getItem('hideHistoryPageInstructionsCard'));
         });
         $scope.$on('$ionicView.enter', function(e){
-            qmLogService.debug($state.current.name + ': ' + 'Entering state ' + $state.current.name);
             qmService.navBar.showNavigationMenuIfHideUrlParamNotSet();
             var cat = $stateParams.variableCategoryName;
             if(cat && cat!== 'Anything'){
