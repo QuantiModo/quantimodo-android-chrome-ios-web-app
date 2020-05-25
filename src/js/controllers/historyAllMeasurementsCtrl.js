@@ -25,7 +25,9 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
             }
             if($stateParams.refresh){$scope.state.history = [];}
             qm.measurements.addLocalMeasurements($scope.state.history, getRequestParams(), function(combined){
-                $scope.state.history = combined;
+                $scope.safeApply(function () {
+                    $scope.state.history = combined;
+                })
             })
             $scope.state.moreDataCanBeLoaded = true;
             // Need to use rootScope here for some reason
