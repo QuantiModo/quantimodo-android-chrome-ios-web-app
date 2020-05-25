@@ -2285,7 +2285,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                         if(typeof string !== "string"){
                             string = JSON.stringify(string);
                         }
-                        qmLog.info("Setting $rootScope." + property + " to " + string);
+                        qmLog.debug("Setting $rootScope." + property + " to " + string);
                         $rootScope[property] = value;
                         if(callback){
                             callback();
@@ -4541,17 +4541,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         };
         qmService.deleteMeasurementFromServer = function(toDelete){
             var deferred = $q.defer();
-            qm.localForage.deleteById(qm.items.primaryOutcomeVariableMeasurements, toDelete.id);
-            qm.storage.deleteByProperty(qm.items.measurementsQueue,
-                'startTimeEpoch', toDelete.startTimeEpoch);
-            if(qm.measurements.recentlyPostedMeasurements){
-                qm.measurements.recentlyPostedMeasurements = qm.measurements.recentlyPostedMeasurements.filter(function(recent){
-                    return recent.startTimeEpoch !== toDelete.startTimeEpoch;
-                });
-                qm.measurements.recentlyPostedMeasurements = qm.measurements.recentlyPostedMeasurements.filter(function(recent){
-                    return recent.id !== toDelete.id;
-                });
-            }
+            qm.measurements.deleteLocally(toDelete);
             qmService.showInfoToast("Deleted " + toDelete.variableName + " measurement");
             qmService.deleteV1Measurements(toDelete, function(response){
                 deferred.resolve(response);
@@ -4655,7 +4645,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             if(platform.isMobile){qmLog.error("isWebView is  " + platform.isWebView);}
             qmService.localNotificationsEnabled = platform.isChromeExtension;
             qmService.rootScope.setProperty('platform', platform, qmService.configurePushNotifications);
-            qmLog.info("Platform: ", platform);
+            qmLog.debug("Platform: ", platform);
         };
         qmService.getConnectorsDeferred = function(){
             var deferred = $q.defer();
