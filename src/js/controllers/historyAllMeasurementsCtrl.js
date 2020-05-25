@@ -32,8 +32,8 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
         });
         $scope.$on('$ionicView.enter', function(e){
             qmService.navBar.showNavigationMenuIfHideUrlParamNotSet();
-            var cat = $stateParams.variableCategoryName;
-            if(cat && cat!== 'Anything'){
+            var cat = getVariableCategoryName();
+            if(cat && cat !== 'Anything'){
                 document.title = $scope.state.title = cat + ' History';
                 $scope.state.showLocationToggle = cat === "Location";
             }
@@ -133,13 +133,7 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
             qmLog.info("Could not get variableName")
         }
         function getVariableCategoryName(){
-            if($stateParams.variableCategoryName){
-                return $stateParams.variableCategoryName;
-            }
-            if(qm.urlHelper.getParam('variableCategoryName')){
-                return qm.urlHelper.getParam('variableCategoryName');
-            }
-            qmLog.info("Could not get variableCategoryName")
+            return qm.variableCategoryHelper.getVariableCategoryNameFromStateParamsOrUrl($stateParams);
         }
         function getConnectorName(){
             if($stateParams.connectorName){
