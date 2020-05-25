@@ -1296,12 +1296,17 @@ var qm = {
                 return arrayToSort;
             }
             if(propertyName.indexOf('-') > -1 || direction === 'desc'){
+                propertyName = propertyName.replace('-', '');
                 arrayToSort.sort(function(a, b){
-                    return b[propertyName.replace('-', '')] - a[propertyName.replace('-', '')];
+                    var aVal = a[propertyName];
+                    var bVal = b[propertyName];
+                    return bVal - aVal;
                 });
             }else{
                 arrayToSort.sort(function(a, b){
-                    return a[propertyName] - b[propertyName];
+                    var aVal = a[propertyName];
+                    var bVal = b[propertyName];
+                    return aVal - bVal;
                 });
             }
             return arrayToSort;
