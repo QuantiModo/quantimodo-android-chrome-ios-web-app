@@ -4117,17 +4117,17 @@ var qm = {
     },
     measurements: {
         deleteLocally: function(toDelete){
-            qm.localForage.deleteById(qm.items.primaryOutcomeVariableMeasurements, toDelete.id);
-            qm.storage.deleteByProperty(qm.items.measurementsQueue,
-                'startTimeEpoch', toDelete.startTimeEpoch);
-            if(qm.measurements.recentlyPostedMeasurements){
-                qm.measurements.recentlyPostedMeasurements = qm.measurements.recentlyPostedMeasurements.filter(function(recent){
-                    return recent.startTimeEpoch !== toDelete.startTimeEpoch;
-                });
-                qm.measurements.recentlyPostedMeasurements = qm.measurements.recentlyPostedMeasurements.filter(function(recent){
-                    return recent.id !== toDelete.id;
-                });
+            var startTime = toDelete.startTimeEpoch || toDelete.startTime;
+            var id = toDelete.id;
+            if(startTime){
+                qm.storage.deleteByProperty(qm.items.measurementsQueue, 'startTimeEpoch', startTime);
+                qm.storage.deleteByProperty(qm.items.measurementsQueue, 'startTime', startTime);
             }
+            if(id){qm.localForage.deleteById(qm.items.primaryOutcomeVariableMeasurements, id);}
+            var recent = qm.measurements.recentlyPostedMeasurements || [];
+            recent = recent.filter(function(m){return m.startTimeEpoch !== startTime && m.startTime !== startTime;});
+            if(id){recent = recent.filter(function(m){return m.id !== id;});}
+            qm.measurements.recentlyPostedMeasurements = recent;
         },
         addMeasurementsToMemory: function(measurements){
             var measurementArray = measurements;
