@@ -568,11 +568,6 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
             }
         }
         function getVariableCategoryName(){
-            if($stateParams.variableCategoryName){
-                return $stateParams.variableCategoryName;
-            }
-            if(qm.urlHelper.getParam('variableCategoryName')){
-                return qm.urlHelper.getParam('variableCategoryName');
-            }
+            return qm.variableCategoryHelper.getVariableCategoryNameFromStateParamsOrUrl($stateParams);
         }
     }]);
