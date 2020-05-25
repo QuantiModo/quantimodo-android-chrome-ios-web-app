@@ -7323,6 +7323,10 @@ var qm = {
                 qm.qmLog.debug("localStorage not defined");
                 return false;
             }
+            if(localStorage === null){
+                qm.qmLog.error("localStorage is null!");
+                return false;
+            }
             var localStorageItemsArray = [];
             for(var i = 0; i < localStorage.length; i++){
                 var key = localStorage.key(i);
