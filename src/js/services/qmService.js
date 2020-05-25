@@ -2285,7 +2285,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                         if(typeof string !== "string"){
                             string = JSON.stringify(string);
                         }
-                        qmLog.info("Setting $rootScope." + property + " to " + string);
+                        qmLog.debug("Setting $rootScope." + property + " to " + string);
                         $rootScope[property] = value;
                         if(callback){
                             callback();
@@ -4655,7 +4655,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             if(platform.isMobile){qmLog.error("isWebView is  " + platform.isWebView);}
             qmService.localNotificationsEnabled = platform.isChromeExtension;
             qmService.rootScope.setProperty('platform', platform, qmService.configurePushNotifications);
-            qmLog.info("Platform: ", platform);
+            qmLog.debug("Platform: ", platform);
         };
         qmService.getConnectorsDeferred = function(){
             var deferred = $q.defer();
