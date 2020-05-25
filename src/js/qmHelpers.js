@@ -1639,7 +1639,7 @@ var qm = {
                     if(!qm.auth.accessTokenIsValid(accessToken)){
                         qm.qmLog.error("qm.userHelper.getUserFromLocalStorage().accessToken is invalid: " + accessToken);
                     }else{
-                        qm.qmLog.info("getUserFromLocalStorage().accessToken returned " + accessToken);
+                        qm.qmLog.authDebug("getUserFromLocalStorage().accessToken returned " + accessToken);
                         return accessToken;
                     }
                 }
@@ -1649,7 +1649,7 @@ var qm = {
                 if(!qm.auth.accessTokenIsValid(accessToken)){
                     qm.qmLog.error("accessTokenFromUrl is invalid: " + accessToken);
                 }else{
-                    qm.qmLog.debug("qm.storage.getItem(qm.items.accessToken)returned " + accessToken);
+                    qm.qmLog.authDebug("qm.storage.getItem(qm.items.accessToken)returned " + accessToken);
                     return accessToken;
                 }
             }
@@ -6645,7 +6645,7 @@ var qm = {
                     qm.mic.resumeListening();
                 }, duration * 1000);
             }else{
-                qm.qmLog.info("Not listening");
+                qm.qmLog.debug("Not listening");
             }
         },
         fallbackMessageIndex: 0,
@@ -7441,7 +7441,7 @@ var qm = {
             }
             var globalValue = qm.storage.getGlobal(key);
             if(qm.objectHelper.isObject(value)){
-                qm.qmLog.info("Can't compare " + key + " because changes made to the gotten object are applied to the global object");
+                qm.qmLog.debug("Can't compare " + key + " because changes made to the gotten object are applied to the global object");
             }else if(value === globalValue){
                 var valueString = JSON.stringify(value);
                 qm.qmLog.debug("Not setting " + key + " in localStorage because global is already set to " + valueString, null, value);
@@ -7582,7 +7582,12 @@ var qm = {
             return localStorageItemsArray;
         },
         getElementsWithRequestParams: function(localStorageItemName, requestParams){
-            qm.qmLog.info("Getting " + localStorageItemName + " WithRequestParams");
+            if(requestParams){
+                qm.qmLog.info("getElementsWithRequestParams: Getting " + localStorageItemName + " WithRequestParams: "+
+                    JSON.stringify(requestParams, null, 2) );
+            } else{
+                qm.qmLog.info("getElementsWithRequestParams: Getting ALL " + localStorageItemName);
+            }
             var array = qm.storage.getItem(localStorageItemName);
             if(!array){
                 return array;
@@ -10018,7 +10023,7 @@ var qm = {
             }
             // Service worker must be served from same origin with no redirect so we serve directly with nginx
             var serviceWorkerUrl = qm.urlHelper.getIonicAppBaseUrl() + 'firebase-messaging-sw.js';
-            qm.qmLog.info("Loading service worker from " + serviceWorkerUrl);
+            qm.qmLog.debug("Loading service worker from " + serviceWorkerUrl);
             if(typeof navigator.serviceWorker === "undefined"){
                 qm.qmLog.error("navigator.serviceWorker is not defined!");
                 return false;
