@@ -4134,9 +4134,10 @@ var qm = {
             return startTime.toString()+":"+m.variableId;
         },
         getLocalMeasurements: function(params, cb){
-            var queue = qm.measurements.getMeasurementsFromQueue(params);
-            var recent = qm.measurements.getRecentlyPostedMeasurements(params);
+            var queue = qm.measurements.getMeasurementsFromQueue(params) || [];
+            var recent = qm.measurements.getRecentlyPostedMeasurements(params) || [];
             qm.measurements.getPrimaryOutcomeMeasurements(function (measurements) {
+                measurements = measurements || [];
                 var indexed = {};
                 measurements.forEach(function(m){
                     indexed[qm.measurements.getUniqueKey(m)] = m;
