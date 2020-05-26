@@ -9002,25 +9002,28 @@ var qm = {
                     name: user.displayName,
                 })
             }
-            if(typeof LogRocket !== "undefined" && qm.appMode.isProduction()){
-                LogRocket.init('zi2x4l/quantimodo');
-                LogRocket.identify(user.id, {
-                    name: user.displayName,
-                    email: user.email,
-                    upgraded: user.stripeActive,
-                    // Add your own custom user variables here, ie:
-                    subscriptionType: 'pro'
-                });
-                if(typeof drift !== "undefined"){
-                    LogRocket.getSessionURL(function(sessionURL){
-                        drift.track('LogRocket', {sessionURL: sessionURL});
+            if(typeof LogRocket !== "undefined"){
+                var record = qm.appMode.isProduction() || qm.urlHelper.getParam('logrocket');
+                if(record){
+                    LogRocket.init('zi2x4l/quantimodo');
+                    LogRocket.identify(user.id, {
+                        name: user.displayName,
+                        email: user.email,
+                        upgraded: user.stripeActive,
+                        // Add your own custom user variables here, ie:
+                        subscriptionType: 'pro'
                     });
-                }
-                if(typeof Bugsnag !== "undefined"){
-                    Bugsnag.beforeNotify = function(data){
-                        data.metaData.sessionURL = LogRocket.sessionURL;
-                        return data;
-                    };
+                    if(typeof drift !== "undefined"){
+                        LogRocket.getSessionURL(function(sessionURL){
+                            drift.track('LogRocket', {sessionURL: sessionURL});
+                        });
+                    }
+                    if(typeof Bugsnag !== "undefined"){
+                        Bugsnag.beforeNotify = function(data){
+                            data.metaData.sessionURL = LogRocket.sessionURL;
+                            return data;
+                        };
+                    }
                 }
             }
         },
