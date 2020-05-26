@@ -23,8 +23,12 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
                     icon: "ion-calendar"
                 };
             }
-            if($stateParams.refresh){$scope.state.history = null;}
-            $scope.state.history = addRecentlyPostedAndQueuedMeasurements($scope.state.history);
+            if($stateParams.refresh){$scope.state.history = [];}
+            qm.measurements.addLocalMeasurements($scope.state.history, getRequestParams(), function(combined){
+                $scope.safeApply(function () {
+                    $scope.state.history = combined;
+                })
+            })
             $scope.state.moreDataCanBeLoaded = true;
             // Need to use rootScope here for some reason
             qmService.rootScope.setProperty('hideHistoryPageInstructionsCard',
@@ -37,9 +41,7 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
                 document.title = $scope.state.title = cat + ' History';
                 $scope.state.showLocationToggle = cat === "Location";
             }
-            if(cat){
-                setupVariableCategoryActionSheet();
-            }
+            if(cat){setupVariableCategoryActionSheet();}
             getScopedVariableObject();
             if(getVariableName()){$scope.state.title = getVariableName() + ' History';}
             updateNavigationMenuButton();
@@ -47,16 +49,6 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
                 $scope.getHistory();
             }
         });
-        function addRecentlyPostedAndQueuedMeasurements(history){
-            history = history || [];
-            var recentlyPosted = qm.measurements.getRecentlyPostedMeasurements(getRequestParams());
-            //qm.measurements.recentlyPostedMeasurements = [];  TODO: Why are we resetting recentlyPostedMeasurements?
-            if(recentlyPosted){history = qm.arrayHelper.addToOrReplaceByIdAndMoveToFront(history, recentlyPosted);}
-            var queue = qm.measurements.getMeasurementsFromQueue(getRequestParams());
-            if(queue){history = qm.arrayHelper.addToOrReplaceByIdAndMoveToFront(history, queue);}
-            history = qm.arrayHelper.sortByProperty(history, $scope.state.sort)
-            return history;
-        }
         function updateNavigationMenuButton(){
             $timeout(function(){
                 qmService.rootScope.setShowActionSheetMenu(function(){
@@ -223,24 +215,10 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
                 if(measurements.length < $scope.state.limit){
                     $scope.state.noHistory = measurements.length === 0;
                 }
-                measurements = addRecentlyPostedAndQueuedMeasurements(measurements);
-                measurements = qm.measurements.addInfoAndImagesToMeasurements(measurements);
-                if(!qm.arrayHelper.variableIsArray($scope.state.history)){
-                    qmLogService.error("$scope.state.history is not an array! $scope.state.history: " + JSON.stringify($scope.state.history));
-                    $scope.state.history = measurements;
-                }else{
-                    if(!$scope.state.history){
-                        $scope.state.history = [];
-                    }
-                    try{
-                        $scope.state.history = $scope.state.history.concat(measurements);
-                    }catch (error){
-                        qmLog.error(error);
-                        $scope.state.history = JSON.parse(JSON.stringify($scope.state.history));
-                        $scope.state.history = $scope.state.history.concat(measurements);
-                    }
-                }
-                hideLoader();
+                qm.measurements.addLocalMeasurements(measurements, getRequestParams(),function (combined) {
+                    $scope.state.history = combined;
+                    hideLoader();
+                })
             }
             function errorHandler(error){
                 qmLogService.error("History update error: ", error);
