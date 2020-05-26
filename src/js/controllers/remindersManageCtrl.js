@@ -36,9 +36,6 @@ angular.module('starter').controller('RemindersManageCtrl', ["$scope", "$state",
         $scope.$on('$ionicView.beforeEnter', function(e){
             if (document.title !== $scope.state.title) {document.title = $scope.state.title;}
             qmLogService.info('beforeEnter RemindersManageCtrl', null);
-            if(qm.urlHelper.getParam('variableCategoryName')){
-                $stateParams.variableCategoryName = qm.urlHelper.getParam('variableCategoryName');
-            }
             qmService.showBasicLoader();
             qmService.navBar.showNavigationMenuIfHideUrlParamNotSet();
             $scope.stateParams = $stateParams;
@@ -46,7 +43,7 @@ angular.module('starter').controller('RemindersManageCtrl', ["$scope", "$state",
                 {text: '<i class="icon ion-arrow-down-c"></i>Sort by Name'},
                 {text: '<i class="icon ion-clock"></i>Sort by Time'}
             ];
-            if(!$stateParams.variableCategoryName || $stateParams.variableCategoryName === "Anything"){
+            if(!getVariableCategoryName()){
                 if(!$scope.stateParams.title){
                     if($rootScope.platform.isMobile){
                         $scope.stateParams.title = "Reminders";
@@ -127,6 +124,11 @@ angular.module('starter').controller('RemindersManageCtrl', ["$scope", "$state",
         if(!$rootScope.reminderOrderParameter){
             $rootScope.reminderOrderParameter = 'variableName';
         }
+        function getVariableCategoryName(){
+            var categoryName = qm.variableCategoryHelper.getVariableCategoryNameFromStateParamsOrUrl($stateParams);
+            if(categoryName){$stateParams.variableCategoryName = categoryName;}
+            return categoryName;
+        }
         function showAppropriateHelpInfoCards(){
             $scope.state.showTreatmentInfoCard = (!$scope.state.trackingReminders || $scope.state.trackingReminders.length === 0) &&
                 (window.location.href.indexOf('Treatments') > -1 || $stateParams.variableCategoryName === 'Anything');
@@ -165,9 +167,8 @@ angular.module('starter').controller('RemindersManageCtrl', ["$scope", "$state",
             });
         };
         var getTrackingReminders = function(){
-            if(qm.urlHelper.getParam('variableCategoryName')){
-                $stateParams.variableCategoryName = qm.urlHelper.getParam('variableCategoryName');
-            }
+            var cat = getVariableCategoryName();
+            if(cat){$stateParams.variableCategoryName = getVariableCategoryName();}
             qmLogService.info('Getting ' + $stateParams.variableCategoryName + ' category reminders', null);
             qmService.getAllReminderTypes($stateParams.variableCategoryName).then(function(allTrackingReminderTypes){
                 addRemindersToScope(allTrackingReminderTypes);
