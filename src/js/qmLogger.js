@@ -288,6 +288,9 @@ var qmLog = {
         if(qmLog.color){
             consoleMessage = qmLog.color.red(consoleMessage);
         }
+        if(qm.appMode.isTestingOrDevelopment()){
+            qm.toast.errorAlert(consoleMessage);
+        }
         console.error(consoleMessage, errorSpecificMetaData);
         qmLog.globalMetaData = qmLog.addGlobalMetaDataAndLog(qmLog.name, qmLog.message, errorSpecificMetaData, qmLog.stackTrace);
         qmLog.bugsnagNotify(qmLog.name, qmLog.message, errorSpecificMetaData, "error", qmLog.stackTrace);
