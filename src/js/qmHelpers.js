@@ -63,6 +63,9 @@ var qm = {
             var result = qm.urlHelper.indexOfCurrentUrl("medimodo.heroku") !== -1;
             return result;
         },
+        isTestingOrDevelopment: function(){
+            return qm.appMode.isTesting() || qm.appMode.isDevelopment();
+        },
         isDevelopment: function(){
             if(qm.appMode.mode === 'development'){
                 return true;
@@ -3603,6 +3606,17 @@ var qm = {
                 qm.apiHelper.getPropertyDescription(modelName, parameterOrPropertyName, callback)
             }else{
                 qm.apiHelper.getParameterDescription(parameterOrPropertyName, callback)
+            }
+        },
+        goToHelpSite: function(){
+            qm.urlHelper.goToUrl("https://help.quantimo.do")
+        },
+        openDrift: function(){
+            if(typeof drift === "undefined"){
+                qm.qmLog.error("drift not defined!");
+                qm.help.goToHelpSite();
+            } else {
+                qm.chatButton.openDriftSidebar();
             }
         }
     },
@@ -8425,6 +8439,35 @@ var qm = {
         }
     },
     toast: {
+        errorAlert: function(errorMessage, callback){
+            var Toast = Swal.mixin({
+                toast: true,
+                icon: "error",
+                position: 'top-end',
+                confirmButtonText: "Need help?",
+                cancelButtonText: "OK",
+                showConfirmButton: true,
+                showCloseButton: true,
+                timer: 5000,
+                timerProgressBar: true,
+                onOpen: (toast) => {
+                    toast.addEventListener('mouseenter', Swal.stopTimer)
+                    toast.addEventListener('mouseleave', Swal.resumeTimer)
+                }
+            })
+            Toast.fire({
+                icon: 'error',
+                title: errorMessage
+            }).then(function(result){
+                if (result.value) {
+                    if(callback){
+                        callback(result);
+                    } else {
+                        qm.help.openDrift();
+                    }
+                }
+            })
+        },
         showQuestionToast: function(question, successMessage, callback){
             var Toast = Swal.mixin({
                 toast: true,
@@ -10173,6 +10216,9 @@ var qm = {
     qmLog: function(){
         return qm.qmLog;
     },
+    sweetAlert() {
+
+    }
 };
 if(typeof qmLog !== "undefined"){
     qm.qmLog = qmLog;
