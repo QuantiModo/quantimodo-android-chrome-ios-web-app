@@ -6309,6 +6309,7 @@ var qm = {
         },
         getTrackingRemindersFromLocalStorage: function(requestParams){
             var reminders = qm.storage.getElementsWithRequestParams(qm.items.trackingReminders, requestParams);
+            reminders = reminders || [];
             reminders = qm.arrayHelper.removeDuplicatesById(reminders);
             return reminders;
         },
