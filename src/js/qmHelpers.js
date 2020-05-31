@@ -1343,26 +1343,9 @@ var qm = {
             }
             return Object.prototype.toString.call(variable) === '[object Array]';
         },
-        removeArrayElementsWithDuplicateIds: function(array){
-            if(!array){
-                return array;
-            }
-            var a = array.concat();
-            for(var i = 0; i < a.length; i++){
-                for(var j = i + 1; j < a.length; j++){
-                    if(!a[i]){
-                        qm.qmLog.error('a[i] not defined!');
-                    }
-                    if(!a[j]){
-                        qm.qmLog.error('a[j] not defined!');
-                        return a;
-                    }
-                    if(a[i].id === a[j].id){
-                        a.splice(j--, 1);
-                    }
-                }
-            }
-            return a;
+        removeArrayElementsWithDuplicateIds: function(arr, type){
+            if(!arr){return arr;}
+            return qm.arrayHelper.removeDuplicatesById(arr, type);
         },
         filterByRequestParams: function(provided, params){
             if(params && params.variableCategoryName){
@@ -1519,6 +1502,26 @@ var qm = {
             arr.splice(new_index, 0, arr.splice(old_index, 1)[0]);
             return arr; // for testing
         },
+        removeDuplicatesById(arr, type) {
+            type = type || "[TYPE NOT PROVIDED]"
+            if(!arr){
+                qmLog.errorAndExceptionTestingOrDevelopment("No arr provided to removeDuplicatesById for type "+type)
+                arr = [];
+            }
+            var allById = {};
+            var toKeep = {};
+            arr.forEach(function(one){
+                var id = one.id;
+                if(!allById[id]){
+                    allById[id] = [];
+                } else {
+                    qmLog.error("Duplicate "+type+"with id "+id, one);
+                }
+                allById[id].push(one);
+                toKeep[id] = one;
+            })
+            return Object.values(toKeep);
+        }
     },
     assert: {
         count: function(expected, array){
@@ -6309,7 +6312,10 @@ var qm = {
             return 0;
         },
         getTrackingRemindersFromLocalStorage: function(requestParams){
-            return qm.storage.getElementsWithRequestParams(qm.items.trackingReminders, requestParams);
+            var reminders = qm.storage.getElementsWithRequestParams(qm.items.trackingReminders, requestParams);
+            reminders = reminders || [];
+            reminders = qm.arrayHelper.removeDuplicatesById(reminders);
+            return reminders;
         },
         getMostFrequentReminderIntervalInSeconds: function(trackingReminders){
             if(!trackingReminders){
@@ -6384,6 +6390,12 @@ var qm = {
         removeDuplicateNotifications:function(notifications){
             var ids = [];
             var toKeep = [];
+            if(!notifications){
+                throw "Notifications is not an array!"
+            }
+            if(typeof notifications.forEach !== "function"){
+                throw "Notifications is not an array!"
+            }
             notifications.forEach(function(n){
                 if(n.id !== n.trackingReminderNotificationId){
                     qmLog.errorAndExceptionTestingOrDevelopment("notification id: "+n.id +
@@ -6398,6 +6410,61 @@ var qm = {
             });
             return toKeep;
         },
+        separateFavoritesAndArchived: function(reminders){
+            reminders = qm.reminderHelper.validateReminderArray(reminders);
+            var separated = {allTrackingReminders: reminders};
+            qmLog.debug('separateFavoritesAndArchived: allTrackingReminders is: ', reminders);
+            try{
+                separated.favorites = reminders.filter(function(r){
+                    return r.reminderFrequency === 0;
+                });
+            }catch (error){
+                // TODO: Why is this necessary?
+                qmLog.error(error, "trying again after JSON.parse(JSON.stringify(trackingReminders)). Why is this necessary?", {trackingReminders: reminders});
+                reminders = JSON.parse(JSON.stringify(reminders));
+                separated.favorites = qm.reminderHelper.getFavorites(reminders);
+                //reminderTypesArray.favorites = [];
+            }
+            try{
+                separated.trackingReminders = qm.reminderHelper.getActive(reminders);
+            }catch (error){
+                qmLog.error(error, {trackingReminders: reminders});
+            }
+            try{
+                separated.archivedTrackingReminders = qm.reminderHelper.getArchived(reminders);
+            }catch (error){
+                qmLog.error(error, {trackingReminders: reminders});
+            }
+            return separated;
+        },
+        filterByCategoryAndSeparateFavoritesAndArchived: function(reminders, variableCategoryName){
+            reminders = qm.reminderHelper.validateReminderArray(reminders);
+            if(variableCategoryName){
+                reminders = reminders.filter(function(r){
+                    return r.variableCategoryName.toLowerCase() === variableCategoryName.toLowerCase();
+                })
+            }
+            reminders = qm.reminderHelper.validateReminderArray(reminders);
+            //if(!trackingReminders || !trackingReminders.length){return {};}
+            for(var i = 0; i < reminders.length; i++){
+                reminders[i].total = null;
+                if(typeof reminders[i].defaultValue === "undefined"){
+                    reminders[i].defaultValue = null;
+                }
+            }
+            qm.variableCategoryHelper.addVariableCategoryProperties(reminders);
+            reminders = qm.reminderHelper.validateReminderArray(reminders);
+            return qm.reminderHelper.separateFavoritesAndArchived(reminders);
+        },
+        validateReminderArray: function(reminders){
+            if(reminders && !Array.isArray(reminders) && reminders.data){reminders = reminders.data;}
+            if(!Array.isArray(reminders)){
+                console.error("Reminders should be array but is: ", reminders);
+                throw "Reminders should be array"
+            }
+            reminders = qm.arrayHelper.removeArrayElementsWithDuplicateIds(reminders, 'reminder')
+            return reminders;
+        }
     },
     ratingImages: {
         positive: [
@@ -7374,7 +7441,8 @@ var qm = {
             return matchingElements;
         },
         getTrackingReminderNotifications: function(variableCategoryName, limit){
-            var notifications = qm.storage.getWithFilters(qm.items.trackingReminderNotifications, 'variableCategoryName', variableCategoryName);
+            var notifications = qm.storage.getWithFilters(qm.items.trackingReminderNotifications,
+                'variableCategoryName', variableCategoryName);
             if(!notifications){notifications = [];}
             if(limit){
                 try{
@@ -9642,7 +9710,25 @@ var qm = {
             } else {
                 return cats.find(function(c){return c.id === nameOrId;});
             }
-        }
+        },
+        addVariableCategoryImagePaths: function(obj){
+            if(obj.variableCategoryName){
+                var path = 'img/variable_categories/' + obj.variableCategoryName.toLowerCase().replace(' ', '-');
+                if(!obj.pngPath){obj.pngPath = path + '.png';}
+                if(!obj.svgPath){obj.svgPath = path + '.svg';}
+            }
+        },
+        addVariableCategoryProperties: function(arr){
+            if(!arr){return;}
+            if(!Array.isArray(arr)){arr = [arr]}
+            for(var i = 0; i < arr.length; i++){
+                var obj = arr[i];
+                var cat = qm.variableCategoryHelper.getByNameOrId(obj.variableCategoryName);
+                obj.ionIcon = obj.ionIcon || cat.ionIcon
+                qm.variableCategoryHelper.addVariableCategoryImagePaths(obj)
+            }
+            return arr;
+        },
     },
     visualizer: {
         visualizerEnabled: true,
