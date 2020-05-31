@@ -317,10 +317,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
                             });
                         }
                         if(index === 3){
-                            qmService.goToState('app.historyAllVariable', {
-                                variableObject: variableObject,
-                                variableName: variableObject.name
-                            });
+                            qmService.goToState('app.historyAllVariable', {variableObject: variableObject});
                         }
                         if(index === 4){
                             qmService.goToVariableSettingsByName(favorite.variableName);
