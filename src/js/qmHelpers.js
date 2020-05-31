@@ -1503,9 +1503,13 @@ var qm = {
             return arr; // for testing
         },
         removeDuplicatesById(arr, type) {
+            type = type || "[TYPE NOT PROVIDED]"
+            if(!arr){
+                qmLog.errorAndExceptionTestingOrDevelopment("No arr provided to removeDuplicatesById for type "+type)
+                arr = [];
+            }
             var allById = {};
             var toKeep = {};
-            type = type || "[TYPE NOT PROVIDED]"
             arr.forEach(function(one){
                 var id = one.id;
                 if(!allById[id]){
