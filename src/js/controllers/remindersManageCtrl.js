@@ -10,7 +10,7 @@ angular.module('starter').controller('RemindersManageCtrl', ["$scope", "$state",
             searchText: '',
             search: null,
             showButtons: false,
-            variableCategory: $stateParams.variableCategoryName,
+            variableCategory: getVariableCategoryName(),
             showMeasurementBox: false,
             selectedReminder: false,
             reminderDefaultValue: "",
@@ -43,34 +43,26 @@ angular.module('starter').controller('RemindersManageCtrl', ["$scope", "$state",
                 {text: '<i class="icon ion-arrow-down-c"></i>Sort by Name'},
                 {text: '<i class="icon ion-clock"></i>Sort by Time'}
             ];
-            if(!getVariableCategoryName()){
+            var cat = getVariableCategoryName();
+            if(!cat){
                 if(!$scope.stateParams.title){
-                    if($rootScope.platform.isMobile){
-                        $scope.stateParams.title = "Reminders";
-                    }else{
-                        $scope.stateParams.title = "Manage Reminders";
-                    }
+                    $scope.stateParams.title = ($rootScope.platform.isMobile) ?  "Reminders" : "Manage Reminders";
                 }
-                if(!$scope.stateParams.addButtonText){
-                    $scope.stateParams.addButtonText = "Add a Reminder";
-                }
-                if(!$scope.stateParams.addMeasurementButtonText){
-                    $scope.stateParams.addMeasurementButtonText = "Record Measurement";
-                }
+                if(!$scope.stateParams.addButtonText){$scope.stateParams.addButtonText = "Add a Reminder";}
+                if(!$scope.stateParams.addMeasurementButtonText){$scope.stateParams.addMeasurementButtonText = "Record Measurement";}
                 actionButtons[2] = qmService.actionSheets.actionSheetButtons.historyAllCategory;
                 actionButtons[3] = qmService.actionSheets.actionSheetButtons.reminderSearch;
             }else{
-                $scope.state.noRemindersTitle = "Add " + $stateParams.variableCategoryName;
-                $scope.state.noRemindersText = "You haven't saved any " + $stateParams.variableCategoryName.toLowerCase() + " favorites or reminders here, yet.";
-                $scope.state.noRemindersIcon = qmService.getVariableCategoryInfo($stateParams.variableCategoryName).ionIcon;
-                $scope.stateParams.title = document.title = $stateParams.variableCategoryName;
+                $scope.state.noRemindersTitle = "Add " + cat;
+                $scope.state.noRemindersText = "You haven't saved any " + cat.toLowerCase() + " favorites or reminders here, yet.";
+                $scope.state.noRemindersIcon = qmService.getVariableCategoryInfo(cat).ionIcon;
+                $scope.stateParams.title = document.title = cat;
                 if(!$scope.stateParams.addButtonText){
-                    $scope.stateParams.addButtonText = 'Add New ' + pluralize($filter('wordAliases')($stateParams.variableCategoryName), 1) + " Reminder";
+                    $scope.stateParams.addButtonText = 'Add New ' + pluralize($filter('wordAliases')(cat), 1) + " Reminder";
                 }
-                $scope.stateParams.addMeasurementButtonText = "Add  " + pluralize($filter('wordAliases')($stateParams.variableCategoryName), 1) + " Measurement";
+                $scope.stateParams.addMeasurementButtonText = "Add  " + pluralize($filter('wordAliases')(cat), 1) + " Measurement";
                 actionButtons[2] = {
-                    text: '<i class="icon ' + ionIcons.history + '"></i>' +
-                        $stateParams.variableCategoryName + ' History'
+                    text: '<i class="icon ' + ionIcons.history + '"></i>' + cat + ' History'
                 };
                 actionButtons[3] = {text: '<i class="icon ' + ionIcons.reminder + '"></i>' + $scope.stateParams.addButtonText};
             }
@@ -96,16 +88,16 @@ angular.module('starter').controller('RemindersManageCtrl', ["$scope", "$state",
                             $rootScope.reminderOrderParameter = 'reminderStartTimeLocal';
                         }
                         if(index === 2){
-                            qmService.goToState('app.historyAll', {variableCategoryName: $stateParams.variableCategoryName});
+                            qmService.goToState('app.historyAll', {variableCategoryName: cat});
                         }
                         if(index === 3){
-                            qmService.goToState('app.reminderSearch', {variableCategoryName: $stateParams.variableCategoryName});
+                            qmService.goToState('app.reminderSearch', {variableCategoryName: cat});
                         }
                         if(index === 4){
-                            qmService.goToState('app.measurementAddSearch', {variableCategoryName: $stateParams.variableCategoryName});
+                            qmService.goToState('app.measurementAddSearch', {variableCategoryName: cat});
                         }
                         if(index === 5){
-                            qmService.goToState('app.chartSearch', {variableCategoryName: $stateParams.variableCategoryName});
+                            qmService.goToState('app.chartSearch', {variableCategoryName: cat});
                         }
                         if(index === 6){
                             $scope.refreshReminders();
@@ -129,35 +121,30 @@ angular.module('starter').controller('RemindersManageCtrl', ["$scope", "$state",
             if(categoryName){$stateParams.variableCategoryName = categoryName;}
             return categoryName;
         }
-        function showAppropriateHelpInfoCards(){
-            $scope.state.showTreatmentInfoCard = (!$scope.state.trackingReminders || $scope.state.trackingReminders.length === 0) &&
-                (window.location.href.indexOf('Treatments') > -1 || $stateParams.variableCategoryName === 'Anything');
-            $scope.state.showSymptomInfoCard = ((!$scope.state.trackingReminders || $scope.state.trackingReminders.length === 0) &&
-                window.location.href.indexOf('Symptom') > -1 || $stateParams.variableCategoryName === 'Anything');
-        }
         function hideLoader(){
             $scope.$broadcast('scroll.refreshComplete'); //Stop the ion-refresher from spinning
             qmService.hideLoader();
         }
-        function addRemindersToScope(allTrackingReminderTypes){
+        function addRemindersToScope(allTypes){
             hideLoader();
-            if(!allTrackingReminderTypes.allTrackingReminders || !allTrackingReminderTypes.allTrackingReminders.length){
-                qmLogService.info('No reminders!', null);
+            var favoritesActiveAndArchived = allTypes.allTrackingReminders || [];
+            var favorites = allTypes.favorites || [];
+            var active = allTypes.trackingReminders || [];
+            var archived = allTypes.archivedTrackingReminders || [];
+            var variableCategoryName = getVariableCategoryName();
+            if(!favoritesActiveAndArchived || !favoritesActiveAndArchived.length){
                 $scope.state.showNoRemindersCard = true;
                 return;
             }
-            qmLogService.info('Got ' + allTrackingReminderTypes.allTrackingReminders.length + ' ' + $stateParams.variableCategoryName +
-                " category allTrackingReminderTypes.allTrackingReminders!", null);
+            qmLogService.info('Got '+favoritesActiveAndArchived.length+" favoritesActiveAndArchived! Category: "+ variableCategoryName);
+            qmLogService.info('Got ' + active.length + ' active reminders');
             $scope.state.showNoRemindersCard = false;
-            $scope.state.favoritesArray = allTrackingReminderTypes.favorites;
-            $scope.state.trackingReminders = allTrackingReminderTypes.trackingReminders;
-            var count = 0;
-            if(allTrackingReminderTypes.trackingReminders && allTrackingReminderTypes.trackingReminders.length){
-                count = allTrackingReminderTypes.trackingReminders.length;
-            }
-            qmLogService.info('Got ' + count + ' ' + $stateParams.variableCategoryName + ' category allTrackingReminderTypes.trackingReminders', null);
-            $scope.state.archivedTrackingReminders = allTrackingReminderTypes.archivedTrackingReminders;
-            showAppropriateHelpInfoCards();
+            $scope.state.favoritesArray = favorites;
+            $scope.state.trackingReminders = active;
+            $scope.state.archivedTrackingReminders = archived;
+            var noReminders = !favoritesActiveAndArchived.length;
+            $scope.state.showTreatmentInfoCard = noReminders && variableCategoryName === 'Treatments';
+            $scope.state.showSymptomInfoCard = noReminders && variableCategoryName === 'Symptom';
         }
         $scope.refreshReminders = function(){
             qmService.showInfoToast('Syncing...');
@@ -168,9 +155,8 @@ angular.module('starter').controller('RemindersManageCtrl', ["$scope", "$state",
         };
         var getTrackingReminders = function(){
             var cat = getVariableCategoryName();
-            if(cat){$stateParams.variableCategoryName = getVariableCategoryName();}
-            qmLogService.info('Getting ' + $stateParams.variableCategoryName + ' category reminders', null);
-            qmService.getAllReminderTypes($stateParams.variableCategoryName).then(function(allTrackingReminderTypes){
+            qmLogService.info('Getting ' + cat + ' category reminders', null);
+            qmService.getAllReminderTypes(cat).then(function(allTrackingReminderTypes){
                 addRemindersToScope(allTrackingReminderTypes);
             });
         };
@@ -198,23 +184,13 @@ angular.module('starter').controller('RemindersManageCtrl', ["$scope", "$state",
             trackingReminder.fromState = $state.current.name;
             qmService.goToState('app.reminderAdd', {reminder: trackingReminder, fromUrl: window.location.href});
         };
-        $scope.addNewReminderButtonClick = function(){
-            if($stateParams.variableCategoryName && $stateParams.variableCategoryName !== 'Anything'){
-                qmService.goToState('app.reminderSearch', {
-                    variableCategoryName: $stateParams.variableCategoryName,
-                    fromUrl: window.location.href
-                });
-            }else{
-                qmService.goToState('app.reminderSearch');
-            }
-        };
-        $scope.addNewMeasurementButtonClick = function(){
-            if($stateParams.variableCategoryName && $stateParams.variableCategoryName !== 'Anything'){
-                qmService.goToState('app.measurementAddSearch', {variableCategoryName: $stateParams.variableCategoryName});
-            }else{
-                qmService.goToState('app.measurementAddSearch');
-            }
-        };
+        function goToState(stateName){
+            var params = {fromUrl: window.location.href}
+            if(getVariableCategoryName()){params.variableCategoryName = getVariableCategoryName()}
+            qmService.goToState(stateName, params);
+        }
+        $scope.addNewReminderButtonClick = function(){goToState('app.reminderSearch');};
+        $scope.addNewMeasurementButtonClick = function(){goToState('app.measurementAddSearch');};
         $scope.addMeasurementForReminder = function(trackingReminder){
             qmService.goToState('app.measurementAdd', {
                 trackingReminder: trackingReminder,
@@ -258,22 +234,13 @@ angular.module('starter').controller('RemindersManageCtrl', ["$scope", "$state",
                         $scope.edit(trackingReminder);
                     }
                     if(index === 1){
-                        qmService.goToState('app.measurementAdd', {
-                            variableObject: variableObject,
-                            variableName: variableObject.name
-                        });
+                        qmService.goToState('app.measurementAdd', {variableObject: variableObject});
                     }
                     if(index === 2){
-                        qmService.goToState('app.charts', {
-                            variableObject: variableObject,
-                            variableName: variableObject.name
-                        });
+                        qmService.goToState('app.charts', {variableObject: variableObject});
                     }
                     if(index === 3){
-                        qmService.goToState('app.historyAllVariable', {
-                            variableObject: variableObject,
-                            variableName: variableObject.name
-                        });
+                        qmService.goToState('app.historyAllVariable', {variableObject: variableObject});
                     }
                     if(index === 4){
                         qmService.goToVariableSettingsByObject(variableObject);
