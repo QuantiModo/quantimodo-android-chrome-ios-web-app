@@ -6385,6 +6385,12 @@ var qm = {
         removeDuplicateNotifications:function(notifications){
             var ids = [];
             var toKeep = [];
+            if(!notifications){
+                throw "Notifications is not an array!"
+            }
+            if(typeof notifications.forEach !== "function"){
+                throw "Notifications is not an array!"
+            }
             notifications.forEach(function(n){
                 if(n.id !== n.trackingReminderNotificationId){
                     qmLog.errorAndExceptionTestingOrDevelopment("notification id: "+n.id +
@@ -7430,7 +7436,8 @@ var qm = {
             return matchingElements;
         },
         getTrackingReminderNotifications: function(variableCategoryName, limit){
-            var notifications = qm.storage.getWithFilters(qm.items.trackingReminderNotifications, 'variableCategoryName', variableCategoryName);
+            var notifications = qm.storage.getWithFilters(qm.items.trackingReminderNotifications,
+                'variableCategoryName', variableCategoryName);
             if(!notifications){notifications = [];}
             if(limit){
                 try{
