@@ -7262,21 +7262,13 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             var deferred = $q.defer();
             qmService.getTrackingRemindersDeferred(variableCategoryName).then(function(reminders){
                 reminders = qm.reminderHelper.validateReminderArray(reminders);
-                var count = 0;
-                if(reminders && reminders.length){
-                    count = reminders.length;
-                }
-                qmLog.info('Got ' + count + ' unprocessed ' + variableCategoryName + ' category trackingReminders', null);
+                qmLog.info('Got ' + reminders.length + ' unprocessed ' + variableCategoryName + ' category trackingReminders');
                 var separated = qm.reminderHelper.filterByCategoryAndSeparateFavoritesAndArchived(reminders, variableCategoryName);
                 if(type){
-                    count = 0;
-                    if(separated[type] && separated[type].length){
-                        count = separated[type].length;
-                    }
-                    qmLog.info('Got ' + count + ' ' + variableCategoryName + ' category ' + type + 's', null);
+                    qmLog.info('Got ' + separated[type].length + ' ' + variableCategoryName + ' category ' + type + 's');
                     deferred.resolve(separated[type]);
                 }else{
-                    qmLog.info('Returning reminderTypesArray from getTrackingRemindersDeferred', null);
+                    qmLog.info('Returning reminderTypesArray from getTrackingRemindersDeferred');
                     deferred.resolve(separated);
                 }
             });
