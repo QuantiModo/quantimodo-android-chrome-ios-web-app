@@ -4253,18 +4253,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             });
             return deferred.promise;
         };
-        qmService.filterByStringProperty = function(arrayToFilter, propertyName, allowedValue){
-            if(!allowedValue || allowedValue.toLowerCase() === "anything"){
-                return arrayToFilter;
-            }
-            var filteredArray = [];
-            for(var i = 0; i < arrayToFilter.length; i++){
-                if(arrayToFilter[i][propertyName].toLowerCase() === allowedValue.toLowerCase()){
-                    filteredArray.push(arrayToFilter[i]);
-                }
-            }
-            return filteredArray;
-        };
         qmService.storage.getFavorites = function(variableCategoryName){
             var deferred = $q.defer();
             qmService.getAllReminderTypes(variableCategoryName).then(function(allTrackingReminderTypes){
