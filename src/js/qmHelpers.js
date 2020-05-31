@@ -1345,7 +1345,7 @@ var qm = {
         },
         removeArrayElementsWithDuplicateIds: function(arr, type){
             if(!arr){return arr;}
-            qm.arrayHelper.removeDuplicatesById(arr, type);
+            return qm.arrayHelper.removeDuplicatesById(arr, type);
         },
         filterByRequestParams: function(provided, params){
             if(params && params.variableCategoryName){
