@@ -197,7 +197,7 @@ angular.module('starter').controller('VariableSearchCtrl', ["$scope", "$state", 
             showNoVariablesFoundCardIfNecessary(errorHandler);
         }
         function addVariablesToScope(variables){
-            variables = qm.arrayHelper.removeArrayElementsWithDuplicateIds(variables);
+            variables = qm.arrayHelper.removeArrayElementsWithDuplicateIds(variables, 'variable');
             $scope.safeApply(function(){
                 $scope.state.noVariablesFoundCard.show = false;
                 $scope.state.showAddVariableButton = false;
