@@ -2141,21 +2141,11 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                         throw "No undo action provided to showUndoToast to refresh view!";
                     }
                     qmService.showToastWithButton(qm.notifications.lastAction, 'UNDO', function(){
-                        qm.notifications.undo();
+                        qm.notifications.removeNotificationFromSyncQueueAndUnhide();
                         if(callback){
                             callback();
                         }
                     });
-                },
-                handleNotificationAction: function(trackingReminderNotification, undoCallback){
-                    qmLog.info("Clicked " + qm.notifications.lastAction + " for " + trackingReminderNotification.variableName);
-                    trackingReminderNotification.hide = true;
-                    qm.notifications.numberOfPendingNotifications--;
-                    qmService.notifications.showUndoToast(undoCallback);
-                    if(!trackingReminderNotification.trackingReminderNotificationId){
-                        trackingReminderNotification.trackingReminderNotificationId = trackingReminderNotification.id;
-                    }
-                    return trackingReminderNotification;
                 },
                 skip: function(trackingReminderNotification){
                     qmService.notification.skip(trackingReminderNotification);

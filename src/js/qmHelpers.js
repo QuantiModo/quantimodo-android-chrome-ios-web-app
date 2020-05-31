@@ -5460,7 +5460,7 @@ var qm = {
             var lastAction = 'Recorded ' + modifiedValue + ' ' + unitAbbreviatedName;
             qm.notifications.lastAction = qm.stringHelper.formatValueUnitDisplayText(lastAction);
         },
-        undo: function(){
+        removeNotificationFromSyncQueueAndUnhide: function(){
             qm.qmLog.info("Called undo notification tracking...");
             var notificationsSyncQueue = qm.storage.getItem(qm.items.notificationsSyncQueue);
             if(!notificationsSyncQueue){
