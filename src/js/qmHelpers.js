@@ -6428,7 +6428,11 @@ var qm = {
         },
         filterByCategoryAndSeparateFavoritesAndArchived: function(reminders, variableCategoryName){
             reminders = qm.reminderHelper.validateReminderArray(reminders);
-            reminders = qmService.filterByStringProperty(reminders, 'variableCategoryName', variableCategoryName);
+            if(variableCategoryName){
+                reminders = reminders.filter(function(r){
+                    return r.variableCategoryName.toLowerCase() === variableCategoryName.toLowerCase();
+                })
+            }
             reminders = qm.reminderHelper.validateReminderArray(reminders);
             //if(!trackingReminders || !trackingReminders.length){return {};}
             for(var i = 0; i < reminders.length; i++){
@@ -9709,7 +9713,7 @@ var qm = {
                 var obj = arr[i];
                 var cat = qm.variableCategoryHelper.getByNameOrId(obj.variableCategoryName);
                 obj.ionIcon = obj.ionIcon || cat.ionIcon
-                qmService.addVariableCategoryImagePaths(obj)
+                qm.variableCategoryHelper.addVariableCategoryImagePaths(obj)
             }
             return arr;
         },
