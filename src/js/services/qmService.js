@@ -2929,7 +2929,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     qmService.trackingReminders.syncPromise = deferred.promise;
                     $timeout(function(){
                         qmService.trackingReminders.syncPromise = null;
-                    }, 30000);
+                    }, 20000);
                     return deferred.promise;
                 }
             }
@@ -3879,6 +3879,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             return null;
         };
         qmService.goToState = function(to, params, options){
+            if(params && params.variableObject && !params.variableName){params.variableName = params.variableObject.name;}
             //qmLog.info('Called goToState: ' + to, null, qmLog.getStackTrace());
             qmLog.info('Going to state ' + to);
             if(to !== "false"){
