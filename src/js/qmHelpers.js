@@ -1526,14 +1526,14 @@ var qm = {
                 throw "Array length should be " + expected + " but is " + array.length;
             }
         },
-        doesNotHaveProperty: function(array, propertyName){
-            if(typeof array !== "Array"){
-                array = [array];
+        doesNotHaveProperty: function(arr, propertyName){
+            if(!Array.isArray(arr)){
+                arr = [arr];
             }
-            for(var i = 0; i < array.length; i++){
-                var item = array[i];
+            for(var i = 0; i < arr.length; i++){
+                var item = arr[i];
                 if(typeof item[propertyName] !== "undefined"){
-                    qm.qmLog.itemAndThrowException(item, "should not have " + propertyName + " (" + item[propertyName] + ")")
+                    qm.qmLog.itemAndThrowException(item, "should not have " + propertyName + " (" + item[propertyName] + ")", [propertyName])
                 }
             }
         },

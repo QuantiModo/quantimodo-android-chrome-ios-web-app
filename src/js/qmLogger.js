@@ -113,8 +113,8 @@ var qmLog = {
         }
         return value;
     },
-    itemAndThrowException: function(item, message){
-        qmLog.itemProperties(item);
+    itemAndThrowException: function(item, message, propertiesToLog){
+        qmLog.itemProperties(item, propertiesToLog);
         throw message;
     },
     itemProperties: function(item, propertiesToLog, message){
