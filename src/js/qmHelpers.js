@@ -1345,7 +1345,51 @@ var qm = {
         },
         removeArrayElementsWithDuplicateIds: function(arr, type){
             if(!arr){return arr;}
-            return qm.arrayHelper.removeDuplicatesById(arr, type);
+            // TODO: I don't know what the hell is going on here
+            // I tried to replace with removeDuplicatesById but tests kept failing so I gave up
+            var a = arr.concat();
+            for(var i = 0; i < a.length; i++){
+                for(var j = i + 1; j < a.length; j++){
+                    if(!a[i]){
+                        qm.qmLog.error('a[i] not defined!');
+                    }
+                    if(!a[j]){
+                        qm.qmLog.error('a[j] not defined!');
+                        return a;
+                    }
+                    if(a[i].id === a[j].id){
+                        a.splice(j--, 1);
+                    }
+                }
+            }
+            return a;
+        },
+        removeDuplicatesById(arr, type) {
+            type = type || "[TYPE NOT PROVIDED]"
+            if(!arr){
+                qmLog.errorAndExceptionTestingOrDevelopment("No arr provided to removeDuplicatesById for type "+type)
+                arr = [];
+            }
+            var allById = {};
+            var toKeep = {};
+            var noId = [];
+            arr.forEach(function(one){
+                var id = one.id;
+                if(!id){
+                    qmLog.error("No id on "+type+" provided to removeDuplicatesById. Maybe a measurement not sent to API, yet?", one);
+                    noId.push(one)
+                    return;
+                }
+                if(!allById[id]){
+                    allById[id] = [];
+                } else {
+                    qmLog.error("Duplicate "+type+" with id "+id, one);
+                }
+                allById[id].push(one);
+                toKeep[id] = one;
+            })
+            var combined = noId.concat(Object.values(toKeep)) // Put no id first as they might be new measurements
+            return combined;
         },
         filterByRequestParams: function(provided, params){
             if(params && params.variableCategoryName){
@@ -1502,33 +1546,6 @@ var qm = {
             arr.splice(new_index, 0, arr.splice(old_index, 1)[0]);
             return arr; // for testing
         },
-        removeDuplicatesById(arr, type) {
-            type = type || "[TYPE NOT PROVIDED]"
-            if(!arr){
-                qmLog.errorAndExceptionTestingOrDevelopment("No arr provided to removeDuplicatesById for type "+type)
-                arr = [];
-            }
-            var allById = {};
-            var toKeep = {};
-            var noId = [];
-            arr.forEach(function(one){
-                var id = one.id;
-                if(!id){
-                    qmLog.error("No id on "+type+" provided to removeDuplicatesById. Maybe a measurement not sent to API, yet?", one);
-                    noId.push(one)
-                    return;
-                }
-                if(!allById[id]){
-                    allById[id] = [];
-                } else {
-                    qmLog.error("Duplicate "+type+" with id "+id, one);
-                }
-                allById[id].push(one);
-                toKeep[id] = one;
-            })
-            var combined = noId.concat(Object.values(toKeep)) // Put no id first as they might be new measurements
-            return combined;
-        }
     },
     assert: {
         count: function(expected, array){
