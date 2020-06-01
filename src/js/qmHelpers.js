@@ -9642,7 +9642,25 @@ var qm = {
             } else {
                 return cats.find(function(c){return c.id === nameOrId;});
             }
-        }
+        },
+        addVariableCategoryImagePaths: function(obj){
+            if(obj.variableCategoryName){
+                var path = 'img/variable_categories/' + obj.variableCategoryName.toLowerCase().replace(' ', '-');
+                if(!obj.pngPath){obj.pngPath = path + '.png';}
+                if(!obj.svgPath){obj.svgPath = path + '.svg';}
+            }
+        },
+        addVariableCategoryProperties: function(arr){
+            if(!arr){return;}
+            if(!Array.isArray(arr)){arr = [arr]}
+            for(var i = 0; i < arr.length; i++){
+                var obj = arr[i];
+                var cat = qm.variableCategoryHelper.getByNameOrId(obj.variableCategoryName);
+                obj.ionIcon = obj.ionIcon || cat.ionIcon
+                qm.variableCategoryHelper.addVariableCategoryImagePaths(obj)
+            }
+            return arr;
+        },
     },
     visualizer: {
         visualizerEnabled: true,
