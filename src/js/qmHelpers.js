@@ -1345,7 +1345,24 @@ var qm = {
         },
         removeArrayElementsWithDuplicateIds: function(arr, type){
             if(!arr){return arr;}
-            return qm.arrayHelper.removeDuplicatesById(arr, type);
+            // TODO: I don't know what the hell is going on here
+            // I tried to replace with removeDuplicatesById but tests kept failing so I gave up
+            var a = arr.concat();
+            for(var i = 0; i < a.length; i++){
+                for(var j = i + 1; j < a.length; j++){
+                    if(!a[i]){
+                        qm.qmLog.error('a[i] not defined!');
+                    }
+                    if(!a[j]){
+                        qm.qmLog.error('a[j] not defined!');
+                        return a;
+                    }
+                    if(a[i].id === a[j].id){
+                        a.splice(j--, 1);
+                    }
+                }
+            }
+            return a;
         },
         removeDuplicatesById(arr, type) {
             type = type || "[TYPE NOT PROVIDED]"
