@@ -1364,6 +1364,33 @@ var qm = {
             }
             return a;
         },
+        removeDuplicatesById(arr, type) {
+            type = type || "[TYPE NOT PROVIDED]"
+            if(!arr){
+                qmLog.errorAndExceptionTestingOrDevelopment("No arr provided to removeDuplicatesById for type "+type)
+                arr = [];
+            }
+            var allById = {};
+            var toKeep = {};
+            var noId = [];
+            arr.forEach(function(one){
+                var id = one.id;
+                if(!id){
+                    qmLog.error("No id on "+type+" provided to removeDuplicatesById. Maybe a measurement not sent to API, yet?", one);
+                    noId.push(one)
+                    return;
+                }
+                if(!allById[id]){
+                    allById[id] = [];
+                } else {
+                    qmLog.error("Duplicate "+type+" with id "+id, one);
+                }
+                allById[id].push(one);
+                toKeep[id] = one;
+            })
+            var combined = noId.concat(Object.values(toKeep)) // Put no id first as they might be new measurements
+            return combined;
+        },
         filterByRequestParams: function(provided, params){
             if(params && params.variableCategoryName){
                 params.variableCategoryName = qm.variableCategoryHelper.replaceCategoryAliasWithActualNameIfNecessary(params.variableCategoryName);
@@ -6309,7 +6336,10 @@ var qm = {
             return 0;
         },
         getTrackingRemindersFromLocalStorage: function(requestParams){
-            return qm.storage.getElementsWithRequestParams(qm.items.trackingReminders, requestParams);
+            var reminders = qm.storage.getElementsWithRequestParams(qm.items.trackingReminders, requestParams);
+            reminders = reminders || [];
+            reminders = qm.arrayHelper.removeDuplicatesById(reminders);
+            return reminders;
         },
         getMostFrequentReminderIntervalInSeconds: function(trackingReminders){
             if(!trackingReminders){
