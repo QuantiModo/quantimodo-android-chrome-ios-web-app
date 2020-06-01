@@ -1347,6 +1347,33 @@ var qm = {
             if(!arr){return arr;}
             return qm.arrayHelper.removeDuplicatesById(arr, type);
         },
+        removeDuplicatesById(arr, type) {
+            type = type || "[TYPE NOT PROVIDED]"
+            if(!arr){
+                qmLog.errorAndExceptionTestingOrDevelopment("No arr provided to removeDuplicatesById for type "+type)
+                arr = [];
+            }
+            var allById = {};
+            var toKeep = {};
+            var noId = [];
+            arr.forEach(function(one){
+                var id = one.id;
+                if(!id){
+                    qmLog.error("No id on "+type+" provided to removeDuplicatesById. Maybe a measurement not sent to API, yet?", one);
+                    noId.push(one)
+                    return;
+                }
+                if(!allById[id]){
+                    allById[id] = [];
+                } else {
+                    qmLog.error("Duplicate "+type+" with id "+id, one);
+                }
+                allById[id].push(one);
+                toKeep[id] = one;
+            })
+            var combined = noId.concat(Object.values(toKeep)) // Put no id first as they might be new measurements
+            return combined;
+        },
         filterByRequestParams: function(provided, params){
             if(params && params.variableCategoryName){
                 params.variableCategoryName = qm.variableCategoryHelper.replaceCategoryAliasWithActualNameIfNecessary(params.variableCategoryName);
