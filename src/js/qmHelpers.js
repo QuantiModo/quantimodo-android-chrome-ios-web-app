@@ -6434,6 +6434,61 @@ var qm = {
             });
             return toKeep;
         },
+        separateFavoritesAndArchived: function(reminders){
+            reminders = qm.reminderHelper.validateReminderArray(reminders);
+            var separated = {allTrackingReminders: reminders};
+            qmLog.debug('separateFavoritesAndArchived: allTrackingReminders is: ', reminders);
+            try{
+                separated.favorites = reminders.filter(function(r){
+                    return r.reminderFrequency === 0;
+                });
+            }catch (error){
+                // TODO: Why is this necessary?
+                qmLog.error(error, "trying again after JSON.parse(JSON.stringify(trackingReminders)). Why is this necessary?", {trackingReminders: reminders});
+                reminders = JSON.parse(JSON.stringify(reminders));
+                separated.favorites = qm.reminderHelper.getFavorites(reminders);
+                //reminderTypesArray.favorites = [];
+            }
+            try{
+                separated.trackingReminders = qm.reminderHelper.getActive(reminders);
+            }catch (error){
+                qmLog.error(error, {trackingReminders: reminders});
+            }
+            try{
+                separated.archivedTrackingReminders = qm.reminderHelper.getArchived(reminders);
+            }catch (error){
+                qmLog.error(error, {trackingReminders: reminders});
+            }
+            return separated;
+        },
+        filterByCategoryAndSeparateFavoritesAndArchived: function(reminders, variableCategoryName){
+            reminders = qm.reminderHelper.validateReminderArray(reminders);
+            if(variableCategoryName){
+                reminders = reminders.filter(function(r){
+                    return r.variableCategoryName.toLowerCase() === variableCategoryName.toLowerCase();
+                })
+            }
+            reminders = qm.reminderHelper.validateReminderArray(reminders);
+            //if(!trackingReminders || !trackingReminders.length){return {};}
+            for(var i = 0; i < reminders.length; i++){
+                reminders[i].total = null;
+                if(typeof reminders[i].defaultValue === "undefined"){
+                    reminders[i].defaultValue = null;
+                }
+            }
+            qm.variableCategoryHelper.addVariableCategoryProperties(reminders);
+            reminders = qm.reminderHelper.validateReminderArray(reminders);
+            return qm.reminderHelper.separateFavoritesAndArchived(reminders);
+        },
+        validateReminderArray: function(reminders){
+            if(reminders && !Array.isArray(reminders) && reminders.data){reminders = reminders.data;}
+            if(!Array.isArray(reminders)){
+                console.error("Reminders should be array but is: ", reminders);
+                throw "Reminders should be array"
+            }
+            reminders = qm.arrayHelper.removeArrayElementsWithDuplicateIds(reminders, 'reminder')
+            return reminders;
+        }
     },
     ratingImages: {
         positive: [
@@ -7410,7 +7465,8 @@ var qm = {
             return matchingElements;
         },
         getTrackingReminderNotifications: function(variableCategoryName, limit){
-            var notifications = qm.storage.getWithFilters(qm.items.trackingReminderNotifications, 'variableCategoryName', variableCategoryName);
+            var notifications = qm.storage.getWithFilters(qm.items.trackingReminderNotifications,
+                'variableCategoryName', variableCategoryName);
             if(!notifications){notifications = [];}
             if(limit){
                 try{
