@@ -1560,7 +1560,7 @@ var qm = {
             for(var i = 0; i < arr.length; i++){
                 var item = arr[i];
                 if(typeof item[propertyName] !== "undefined"){
-                    qm.qmLog.itemAndThrowException(item, "should not have " + propertyName + " (" + item[propertyName] + ")")
+                    qm.qmLog.itemAndThrowException(item, "should not have " + propertyName + " (" + item[propertyName] + ")", [propertyName])
                 }
             }
         },
