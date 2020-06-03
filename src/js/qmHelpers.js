@@ -1545,26 +1545,6 @@ var qm = {
             }
             arr.splice(new_index, 0, arr.splice(old_index, 1)[0]);
             return arr; // for testing
-        },
-        removeDuplicatesById(arr, type) {
-            type = type || "[TYPE NOT PROVIDED]"
-            if(!arr){
-                qmLog.errorAndExceptionTestingOrDevelopment("No arr provided to removeDuplicatesById for type "+type)
-                arr = [];
-            }
-            var allById = {};
-            var toKeep = {};
-            arr.forEach(function(one){
-                var id = one.id;
-                if(!allById[id]){
-                    allById[id] = [];
-                } else {
-                    qmLog.error("Duplicate "+type+"with id "+id, one);
-                }
-                allById[id].push(one);
-                toKeep[id] = one;
-            })
-            return Object.values(toKeep);
         }
     },
     assert: {
