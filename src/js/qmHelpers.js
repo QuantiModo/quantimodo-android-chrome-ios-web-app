@@ -7668,11 +7668,6 @@ var qm = {
             }
             return null;
         },
-        clearOAuthTokens: function(){
-            qm.auth.saveAccessToken(null);
-            qm.storage.setItem('refreshToken', null);
-            qm.storage.setItem('expiresAtMilliseconds', null);
-        },
         appendToArray: function(localStorageItemName, elementToAdd){
             function removeArrayElementsWithSameId(localStorageItem, elementToAdd){
                 if(elementToAdd.id){
@@ -7735,11 +7730,6 @@ var qm = {
             qm.storage.setItem(qm.items.units, units);
             qm.localForage.clear();
         },
-        addToGlobalUnique(key, arr) {
-            var existing  = qm.storage.getGlobal(key);
-            var combined = qm.arrayHelper.concatenateUniqueId(arr, existing);
-            qm.storage.setGlobal(key, combined);
-        }
     },
     stringHelper: {
         capitalizeFirstLetter: function(string){
