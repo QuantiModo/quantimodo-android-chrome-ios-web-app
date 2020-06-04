@@ -7572,12 +7572,8 @@ var qm = {
             return qm.storage.getItem(qm.api.getLocalStorageNameForRequest(type, route));
         },
         setItem: function(key, value){
-            if(!key){
-                qm.qmLog.errorAndExceptionTestingOrDevelopment("No key provided to setItem");
-            }
-            if(!qm.storage.valueIsValid(value, key)){
-                return false;
-            }
+            if(!key){qm.qmLog.errorAndExceptionTestingOrDevelopment("No key provided to setItem");}
+            if(!qm.storage.valueIsValid(value, key)){return false;}
             var globalValue = qm.storage.getGlobal(key);
             if(qm.objectHelper.isObject(value)){
                 qm.qmLog.debug("Can't compare " + key + " because changes made to the gotten object are applied to the global object");
@@ -7598,13 +7594,9 @@ var qm = {
                     return;
                 }
             }
-            if(typeof value !== "string"){
-                value = JSON.stringify(value);
-            }
+            if(typeof value !== "string"){value = JSON.stringify(value);}
             var summaryValue = value;
-            if(summaryValue){
-                summaryValue = value.substring(0, 18);
-            }
+            if(summaryValue){summaryValue = value.substring(0, 18);}
             qm.qmLog.debug('Setting localStorage.' + key + ' to ' + summaryValue + '...');
             try{
                 if(typeof localStorage === "undefined"){
