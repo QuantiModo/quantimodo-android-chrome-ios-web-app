@@ -8551,7 +8551,7 @@ var qm = {
                 showCloseButton: true,
                 timer: 5000,
                 timerProgressBar: true,
-                onOpen: (toast) => {
+                onOpen: function (toast) {
                     toast.addEventListener('mouseenter', Swal.stopTimer)
                     toast.addEventListener('mouseleave', Swal.resumeTimer)
                 }
@@ -8580,7 +8580,7 @@ var qm = {
                 showCloseButton: true,
                 timer: 15000,
                 timerProgressBar: true,
-                onOpen: (toast) => {
+                onOpen: function (toast) {
                     toast.addEventListener('mouseenter', Swal.stopTimer)
                     toast.addEventListener('mouseleave', Swal.resumeTimer)
                 }
