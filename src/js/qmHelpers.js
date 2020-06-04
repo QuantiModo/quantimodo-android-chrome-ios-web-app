@@ -797,6 +797,31 @@ var qm = {
         },
         getLocalStorageNameForRequest: function(type, route){
             return 'last_' + type + '_' + route.replace('/', '_') + '_request_at';
+        },
+        addVariableCategoryAndUnit: function(arr){
+            qm.variableCategoryHelper.addVariableCategoryProperties(arr)
+            qm.unitHelper.addUnit(arr)
+        },
+        removeVariableCategoryAndUnit: function(arr){
+            if(!arr){return arr;}
+            if(!Array.isArray(arr)){return arr;}
+            arr = JSON.parse(JSON.stringify(arr)); // Clone so we don't remove units/categories from un-tored version
+            for(var i = 0; i < arr.length; i++){
+                var obj = arr[i];
+                if(obj.unit){
+                    obj.unitId = obj.unit.id
+                    delete obj.unit
+                }
+                if(obj.defaultUnit){
+                    obj.defaultUnitId = obj.defaultUnit.id
+                    delete obj.defaultUnit
+                }
+                if(obj.variableCategory){
+                    obj.variableCategoryId = obj.variableCategory.id
+                    delete obj.variableCategory
+                }
+            }
+            return arr;
         }
     },
     appsManager: { // jshint ignore:line
@@ -1364,7 +1389,7 @@ var qm = {
             }
             return a;
         },
-        removeDuplicatesById(arr, type) {
+        removeDuplicatesById: function(arr, type) {
             type = type || "[TYPE NOT PROVIDED]"
             if(!arr){
                 qmLog.errorAndExceptionTestingOrDevelopment("No arr provided to removeDuplicatesById for type "+type)
@@ -1545,26 +1570,6 @@ var qm = {
             }
             arr.splice(new_index, 0, arr.splice(old_index, 1)[0]);
             return arr; // for testing
-        },
-        removeDuplicatesById(arr, type) {
-            type = type || "[TYPE NOT PROVIDED]"
-            if(!arr){
-                qmLog.errorAndExceptionTestingOrDevelopment("No arr provided to removeDuplicatesById for type "+type)
-                arr = [];
-            }
-            var allById = {};
-            var toKeep = {};
-            arr.forEach(function(one){
-                var id = one.id;
-                if(!allById[id]){
-                    allById[id] = [];
-                } else {
-                    qmLog.error("Duplicate "+type+"with id "+id, one);
-                }
-                allById[id].push(one);
-                toKeep[id] = one;
-            })
-            return Object.values(toKeep);
         }
     },
     assert: {
@@ -6496,7 +6501,7 @@ var qm = {
                     reminders[i].defaultValue = null;
                 }
             }
-            qm.variableCategoryHelper.addVariableCategoryProperties(reminders);
+            qm.api.addVariableCategoryAndUnit(reminders);
             reminders = qm.reminderHelper.validateReminderArray(reminders);
             return qm.reminderHelper.separateFavoritesAndArchived(reminders);
         },
@@ -7567,12 +7572,8 @@ var qm = {
             return qm.storage.getItem(qm.api.getLocalStorageNameForRequest(type, route));
         },
         setItem: function(key, value){
-            if(!key){
-                qm.qmLog.errorAndExceptionTestingOrDevelopment("No key provided to setItem");
-            }
-            if(!qm.storage.valueIsValid(value, key)){
-                return false;
-            }
+            if(!key){qm.qmLog.errorAndExceptionTestingOrDevelopment("No key provided to setItem");}
+            if(!qm.storage.valueIsValid(value, key)){return false;}
             var globalValue = qm.storage.getGlobal(key);
             if(qm.objectHelper.isObject(value)){
                 qm.qmLog.debug("Can't compare " + key + " because changes made to the gotten object are applied to the global object");
@@ -7582,6 +7583,7 @@ var qm = {
                 return value;
             }
             qm.storage.setGlobal(key, value);
+            value = qm.api.removeVariableCategoryAndUnit(value);
             var sizeInKb = qm.arrayHelper.getSizeInKiloBytes(value);
             if(sizeInKb > 2000){
                 if(qm.arrayHelper.variableIsArray(value) && value.length > 1){
@@ -7592,13 +7594,9 @@ var qm = {
                     return;
                 }
             }
-            if(typeof value !== "string"){
-                value = JSON.stringify(value);
-            }
+            if(typeof value !== "string"){value = JSON.stringify(value);}
             var summaryValue = value;
-            if(summaryValue){
-                summaryValue = value.substring(0, 18);
-            }
+            if(summaryValue){summaryValue = value.substring(0, 18);}
             qm.qmLog.debug('Setting localStorage.' + key + ' to ' + summaryValue + '...');
             try{
                 if(typeof localStorage === "undefined"){
@@ -7661,6 +7659,7 @@ var qm = {
             if(itemFromLocalStorage && typeof itemFromLocalStorage === "string"){
                 qm.qmLog.debug("Parsing " + key + " and setting in globals");
                 qm.globals[key] = qm.stringHelper.parseIfJsonString(itemFromLocalStorage, itemFromLocalStorage);
+                qm.api.addVariableCategoryAndUnit(qm.globals[key])
                 qm.qmLog.debug('Got ' + key + ' from localStorage: ' + itemFromLocalStorage.substring(0, 18) + '...');
                 return qm.globals[key];
             }else{
@@ -7668,11 +7667,6 @@ var qm = {
                 //qm.qmLog.debug(key + ' not found in localStorage');
             }
             return null;
-        },
-        clearOAuthTokens: function(){
-            qm.auth.saveAccessToken(null);
-            qm.storage.setItem('refreshToken', null);
-            qm.storage.setItem('expiresAtMilliseconds', null);
         },
         appendToArray: function(localStorageItemName, elementToAdd){
             function removeArrayElementsWithSameId(localStorageItem, elementToAdd){
@@ -7736,11 +7730,6 @@ var qm = {
             qm.storage.setItem(qm.items.units, units);
             qm.localForage.clear();
         },
-        addToGlobalUnique(key, arr) {
-            var existing  = qm.storage.getGlobal(key);
-            var combined = qm.arrayHelper.concatenateUniqueId(arr, existing);
-            qm.storage.setGlobal(key, combined);
-        }
     },
     stringHelper: {
         capitalizeFirstLetter: function(string){
@@ -8562,7 +8551,7 @@ var qm = {
                 showCloseButton: true,
                 timer: 5000,
                 timerProgressBar: true,
-                onOpen: (toast) => {
+                onOpen: function (toast) {
                     toast.addEventListener('mouseenter', Swal.stopTimer)
                     toast.addEventListener('mouseleave', Swal.resumeTimer)
                 }
@@ -8591,7 +8580,7 @@ var qm = {
                 showCloseButton: true,
                 timer: 15000,
                 timerProgressBar: true,
-                onOpen: (toast) => {
+                onOpen: function (toast) {
                     toast.addEventListener('mouseenter', Swal.stopTimer)
                     toast.addEventListener('mouseleave', Swal.resumeTimer)
                 }
@@ -8684,15 +8673,10 @@ var qm = {
         getByNameAbbreviatedNameOrId: function(unitAbbreviatedNameOrId){
             var allUnits = qm.staticData.units;
             for(var i = 0; i < allUnits.length; i++){
-                if(allUnits[i].abbreviatedName === unitAbbreviatedNameOrId){
-                    return allUnits[i];
-                }
-                if(allUnits[i].name === unitAbbreviatedNameOrId){
-                    return allUnits[i];
-                }
-                if(allUnits[i].id === unitAbbreviatedNameOrId){
-                    return allUnits[i];
-                }
+                var u = allUnits[i];
+                if(u.abbreviatedName === unitAbbreviatedNameOrId){return u;}
+                if(u.name === unitAbbreviatedNameOrId){return u;}
+                if(u.id === unitAbbreviatedNameOrId){return u;}
             }
             return null;
         },
@@ -8730,8 +8714,34 @@ var qm = {
             }
             return object;
         },
-        getYesNo() {
+        getYesNo: function() {
             return qm.unitHelper.getByNameAbbreviatedNameOrId("yes/no");
+        },
+        addUnit: function(arr) {
+            if(!arr){return arr;}
+            if(!Array.isArray(arr)){
+                if(typeof arr !== 'object'){return arr;}
+                arr = [arr]
+            }
+            for(var i = 0; i < arr.length; i++){
+                var obj = arr[i];
+                var unit = obj.unit || obj.defaultUnit;
+                if(!unit){
+                    var nameOrId = obj.unitId ||
+                        obj.defaultUnitId ||
+                        obj.unitName ||
+                        obj.unitAbbreviatedName ||
+                        obj.defaultUnitName ||
+                        null;
+                    if(nameOrId){unit = qm.unitHelper.getByNameAbbreviatedNameOrId(nameOrId);}
+                }
+                if(unit){
+                    obj.unit = obj.unit || unit
+                    obj.unitName = obj.unitName || unit.name
+                    obj.unitAbbreviatedName = obj.unitAbbreviatedName || unit.abbreviatedName
+                }
+            }
+            return arr;
         }
     },
     urlHelper: {
@@ -9745,7 +9755,7 @@ var qm = {
                     // noinspection EqualityComparisonWithCoercionJS
                     if(c.id == nameOrId){return true;}
                     if(c.name.toLowerCase() === nameOrId){return true;}
-                    for (let i = 0; i < c.synonyms.length; i++) {
+                    for (var i = 0; i < c.synonyms.length; i++) {
                         var syn = c.synonyms[i];
                         if(nameOrId === syn.toLowerCase()){return true;}
                     }
@@ -9755,21 +9765,29 @@ var qm = {
                 return cats.find(function(c){return c.id === nameOrId;});
             }
         },
-        addVariableCategoryImagePaths: function(obj){
-            if(obj.variableCategoryName){
-                var path = 'img/variable_categories/' + obj.variableCategoryName.toLowerCase().replace(' ', '-');
-                if(!obj.pngPath){obj.pngPath = path + '.png';}
-                if(!obj.svgPath){obj.svgPath = path + '.svg';}
-            }
-        },
         addVariableCategoryProperties: function(arr){
-            if(!arr){return;}
-            if(!Array.isArray(arr)){arr = [arr]}
+            if(!arr){return arr;}
+            if(!Array.isArray(arr)){
+                if(typeof arr !== 'object'){return arr;}
+                arr = [arr]
+            }
             for(var i = 0; i < arr.length; i++){
                 var obj = arr[i];
-                var cat = qm.variableCategoryHelper.getByNameOrId(obj.variableCategoryName);
-                obj.ionIcon = obj.ionIcon || cat.ionIcon
-                qm.variableCategoryHelper.addVariableCategoryImagePaths(obj)
+                var cat = obj.variableCategory;
+                if(!cat){
+                    var nameOrId = obj.variableCategoryId || obj.variableCategoryName || null;
+                    if(nameOrId){cat = qm.variableCategoryHelper.getByNameOrId(nameOrId);}
+                }
+                if(cat){
+                    obj.fontAwesome = obj.fontAwesome || cat.fontAwesome
+                    obj.imageUrl = obj.imageUrl || cat.imageUrl
+                    obj.ionIcon = obj.ionIcon || cat.ionIcon
+                    obj.pngPath = obj.pngPath || cat.pngPath
+                    obj.pngUrl = obj.pngUrl || cat.pngUrl
+                    obj.svgPath = obj.svgPath || cat.svgPath
+                    obj.svgUrl = obj.svgUrl || cat.svgUrl
+                    obj.variableCategory = obj.variableCategory || cat
+                }
             }
             return arr;
         },
@@ -10346,9 +10364,6 @@ var qm = {
     qmLog: function(){
         return qm.qmLog;
     },
-    sweetAlert() {
-
-    }
 };
 if(typeof qmLog !== "undefined"){
     qm.qmLog = qmLog;
