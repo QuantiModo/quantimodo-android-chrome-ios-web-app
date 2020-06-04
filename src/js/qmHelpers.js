@@ -9755,7 +9755,7 @@ var qm = {
                     // noinspection EqualityComparisonWithCoercionJS
                     if(c.id == nameOrId){return true;}
                     if(c.name.toLowerCase() === nameOrId){return true;}
-                    for (let i = 0; i < c.synonyms.length; i++) {
+                    for (var i = 0; i < c.synonyms.length; i++) {
                         var syn = c.synonyms[i];
                         if(nameOrId === syn.toLowerCase()){return true;}
                     }
@@ -10364,9 +10364,6 @@ var qm = {
     qmLog: function(){
         return qm.qmLog;
     },
-    sweetAlert() {
-
-    }
 };
 if(typeof qmLog !== "undefined"){
     qm.qmLog = qmLog;
