@@ -803,7 +803,7 @@ var qm = {
             qm.unitHelper.addUnit(arr)
         },
         removeVariableCategoryAndUnit: function(arr){
-            if(!arr){return;}
+            if(!arr){return arr;}
             if(!Array.isArray(arr)){return arr;}
             arr = JSON.parse(JSON.stringify(arr)); // Clone so we don't remove units/categories from un-tored version
             for(var i = 0; i < arr.length; i++){
