@@ -7611,9 +7611,6 @@ var qm = {
                     qm.qmLog.debug("localStorage not defined");
                     return false;
                 }
-                if(value && Array.isArray(value)){
-                    qm.api.addVariableCategoryAndUnit(value)
-                }
                 localStorage.setItem(key, value);
             }catch (error){
                 function deleteLargeLocalStorageItems(localStorageItemsArray){
