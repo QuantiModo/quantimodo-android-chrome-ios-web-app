@@ -1389,7 +1389,7 @@ var qm = {
             }
             return a;
         },
-        removeDuplicatesById(arr, type) {
+        removeDuplicatesById: function(arr, type) {
             type = type || "[TYPE NOT PROVIDED]"
             if(!arr){
                 qmLog.errorAndExceptionTestingOrDevelopment("No arr provided to removeDuplicatesById for type "+type)
