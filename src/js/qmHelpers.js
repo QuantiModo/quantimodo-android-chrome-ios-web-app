@@ -9735,21 +9735,25 @@ var qm = {
                 return cats.find(function(c){return c.id === nameOrId;});
             }
         },
-        addVariableCategoryImagePaths: function(obj){
-            if(obj.variableCategoryName){
-                var path = 'img/variable_categories/' + obj.variableCategoryName.toLowerCase().replace(' ', '-');
-                if(!obj.pngPath){obj.pngPath = path + '.png';}
-                if(!obj.svgPath){obj.svgPath = path + '.svg';}
-            }
-        },
         addVariableCategoryProperties: function(arr){
             if(!arr){return;}
             if(!Array.isArray(arr)){arr = [arr]}
             for(var i = 0; i < arr.length; i++){
                 var obj = arr[i];
-                var cat = qm.variableCategoryHelper.getByNameOrId(obj.variableCategoryName);
-                obj.ionIcon = obj.ionIcon || cat.ionIcon
-                qm.variableCategoryHelper.addVariableCategoryImagePaths(obj)
+                var cat = obj.variableCategory;
+                if(!cat){
+                    var nameOrId = obj.variableCategoryId || obj.variableCategoryName || null;
+                    if(nameOrId){cat = qm.variableCategoryHelper.getByNameOrId(nameOrId);}
+                }
+                if(cat){
+                    obj.fontAwesome = obj.fontAwesome || cat.fontAwesome
+                    obj.imageUrl = obj.imageUrl || cat.imageUrl
+                    obj.ionIcon = obj.ionIcon || cat.ionIcon
+                    obj.pngPath = obj.pngPath || cat.pngPath
+                    obj.pngUrl = obj.pngUrl || cat.pngUrl
+                    obj.svgPath = obj.svgPath || cat.svgPath
+                    obj.svgUrl = obj.svgUrl || cat.svgUrl
+                }
             }
             return arr;
         },
