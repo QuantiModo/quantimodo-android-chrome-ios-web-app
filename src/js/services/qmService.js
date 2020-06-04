@@ -5060,7 +5060,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         var putTrackingReminderNotificationsInLocalStorageAndUpdateInbox = function(notifications){
             qmService.storage.setItem(qm.items.lastGotNotificationsAtMilliseconds,
                 window.qm.timeHelper.getUnixTimestampInMilliseconds());
-            qm.variableCategoryHelper.addVariableCategoryProperties(notifications);
+            qm.variableCategoryHelper.addVariableCategoryAndUnit(notifications);
             qm.storage.setTrackingReminderNotifications(notifications);
             qmService.notifications.broadcastGetTrackingReminderNotifications();
             qm.notifications.numberOfPendingNotifications = notifications.length;
@@ -5365,7 +5365,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             if(queue){
                 unfiltered = unfiltered.concat(queue);
             }
-            qm.variableCategoryHelper.addVariableCategoryProperties(unfiltered);
+            qm.variableCategoryHelper.addVariableCategoryAndUnit(unfiltered);
             if(unfiltered){
                 if(variableCategoryName && variableCategoryName !== 'Anything'){
                     for(var j = 0; j < unfiltered.length; j++){

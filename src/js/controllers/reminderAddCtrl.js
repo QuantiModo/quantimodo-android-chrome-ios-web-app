@@ -461,7 +461,7 @@ angular.module('starter').controller('ReminderAddCtrl', ["$scope", "$state", "$s
             if($scope.state.variableCategoryObject.defaultValuePlaceholderText){
                 $scope.state.defaultValuePlaceholderText = $scope.state.variableCategoryObject.defaultValuePlaceholderText;
             }
-            qm.variableCategoryHelper.addVariableCategoryProperties(r)
+            qm.variableCategoryHelper.addVariableCategoryAndUnit(r)
             $scope.state.trackingReminder = r;
             showMoreUnitsIfNecessary();
             setHideDefaultValueField();
