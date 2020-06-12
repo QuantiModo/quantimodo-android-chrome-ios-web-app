@@ -191,7 +191,10 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                         if(!u){
                             return false;
                         }
-                        if(!u.stripeActive && u.id !== 230){
+                        if(u.id === 230){
+                            return true;
+                        } // Show ads for mike so he sees any issues
+                        if(u.stripeActive){
                             return false;
                         } // Show ads for mike so he sees any issues
                         if(!qm.platform.isWeb()){
