@@ -8,7 +8,7 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
         qmLog.debug('Loading ' + $scope.controller_name);
         qmService.navBar.setFilterBarSearchIcon(false);
         $scope.state = {
-            maximumNotificationsToDisplay: 20,
+            maximumNotificationsToDisplay: 10,  // I think more might slow it down?
             showMeasurementBox: false,
             selectedReminder: false,
             reminderDefaultValue: "",
