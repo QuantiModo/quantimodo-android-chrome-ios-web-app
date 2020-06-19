@@ -15,7 +15,7 @@
     "cordova-plugin-appsettings": "1.0.2",
     "cordova-plugin-datepicker": "0.9.3",
     "cordova-plugin-device": "2.0.3",
-    "cordova-plugin-inappbrowser": "3.2.0",
+    "cordova-plugin-inappbrowser": "4.0.0",
     "cordova-plugin-inapppurchase": "1.2.0",
     "cordova-plugin-splashscreen": "5.0.4",
     "cordova-plugin-statusbar": "2.4.3",
