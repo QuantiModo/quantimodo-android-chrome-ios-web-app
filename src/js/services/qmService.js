@@ -6188,10 +6188,11 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         };
         qmService.goToCorrelationsListForVariable = function(variable){
             function goToCorrelationsList(variable){
+                var name = variable.name || variable.variableName;
                 if(variable.outcome){
-                    qmService.goToPredictorsList(variable.name);
+                    qmService.goToPredictorsList(name);
                 }else{
-                    qmService.goToOutcomesList(variable.name);
+                    qmService.goToOutcomesList(name);
                 }
             }
             if(typeof variable === "string"){
