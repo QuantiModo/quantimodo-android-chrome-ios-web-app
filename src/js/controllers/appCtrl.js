@@ -9,12 +9,11 @@ angular.module('starter')// Parent Controller - This controller runs before ever
                  $locale, $mdDialog, $mdToast, $sce, wikipediaFactory, appSettingsResponse, $stateParams){
             $scope.controller_name = "AppCtrl";
             qmService.initializeApplication(appSettingsResponse);
-            qm.notifications.numberOfPendingNotifications = null;
             $scope.$on('$ionicView.enter', function(e){
                 qmLog.debug('appCtrl enter in state ' + $state.current.name + ' and url is ' + window.location.href);
             });
             $scope.$on('$ionicView.afterEnter', function(e){
-                qmLog.info($scope.controller_name + ".afterEnter so posting queued notifications if any");
+                qmLog.debug($scope.controller_name + ".afterEnter so posting queued notifications if any");
                 qm.notifications.postNotifications();
                 qmService.refreshUserUsingAccessTokenInUrlIfNecessary();
                 $rootScope.setMicAndSpeechEnabled(qm.mic.getMicEnabled());
