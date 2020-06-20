@@ -23,5 +23,8 @@
     </div> &nbsp; &nbsp;
     <div ng-click="shareStudy(study, 'studyLinkEmail', $event);" class="show-inline">
         <div class="tooltip" title="Share Study by Email"><i style="font-size: 32px;" class="ion-email"></i></div>
+    </div> &nbsp; &nbsp;
+    <div ng-click="copyToClipboard(study.studyLinks.studyLinkStatic)" class="show-inline">
+        <div class="tooltip" title="Copy Shareable Link to Clipboard"><i style="font-size: 32px;" class="ion-link"></i></div>
     </div>
 </div>

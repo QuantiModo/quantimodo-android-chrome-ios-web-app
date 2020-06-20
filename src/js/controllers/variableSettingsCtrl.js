@@ -82,28 +82,16 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
                     },
                     buttonClicked: function(index, button){
                         if(index === 0){
-                            qmService.goToState('app.measurementAddVariable', {
-                                variableObject: variableObject,
-                                variableName: variableObject.name
-                            });
+                            qmService.goToState('app.measurementAddVariable', {variableObject: variableObject});
                         }
                         if(index === 1){
-                            qmService.goToState('app.reminderAdd', {
-                                variableObject: variableObject,
-                                variableName: variableObject.name
-                            });
+                            qmService.goToState('app.reminderAdd', {variableObject: variableObject});
                         }
                         if(index === 2){
-                            qmService.goToState('app.charts', {
-                                variableObject: variableObject,
-                                variableName: variableObject.name
-                            });
+                            qmService.goToState('app.charts', {variableObject: variableObject});
                         }
                         if(index === 3){
-                            qmService.goToState('app.historyAllVariable', {
-                                variableObject: variableObject,
-                                variableName: variableObject.name
-                            });
+                            qmService.goToState('app.historyAllVariable', {variableObject: variableObject});
                         }
                         if(index === 4){
                             qmService.goToState('app.tagSearch', {
