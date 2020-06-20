@@ -3092,7 +3092,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 }
                 return false; // Don't close if clicking top variable name
             },
-            getVariableObjectActionSheet: function(name, v, extraButtons){
+            getVariableObjectActionSheet: function(name, v, extraButtons, state){
                 if(!name || typeof name !== "string"){
                     if(!v){v = name;}
                     name = v.variableName || v.name;
@@ -3161,6 +3161,9 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     if(v.trackingReminderId){
                         actionSheetParams.destructiveText = '<i class="icon ion-trash-a"></i>Delete';
                         actionSheetParams.destructiveButtonClicked = function(){
+                            if(state && state.favoritesArray){
+                                state.favoritesArray = state.favoritesArray.filter(function(one){return one.id !== one.id;});
+                            }
                             v.hide = true
                             qmService.deleteTrackingReminderDeferred(v);
                             return true;
@@ -3175,8 +3178,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     var hideSheet = $ionicActionSheet.show(actionSheetParams);
                 };
             },
-            showVariableObjectActionSheet: function(variableName, variableObject, extraButtons){
-                var showActionSheet = qmService.actionSheets.getVariableObjectActionSheet(variableName, variableObject, extraButtons);
+            showVariableObjectActionSheet: function(name, variable, extraButtons, state){
+                var showActionSheet = qmService.actionSheets.getVariableObjectActionSheet(name, variable, extraButtons, state);
                 return showActionSheet();
             },
             addActionArrayButtonsToActionSheet: function(actionArray, buttons){
