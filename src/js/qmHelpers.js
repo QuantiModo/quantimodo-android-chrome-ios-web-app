@@ -142,21 +142,6 @@ var qm = {
     },
     api: {
         requestLog: [],
-        registerHelpers: function(){
-            qm.Quantimodo.TrackingReminderNotification.prototype.track = function(trackAll){
-                qm.notifications.trackNotification(this, trackAll);
-            };
-            qm.Quantimodo.TrackingReminderNotification.prototype.getCirclePage = function(){
-                return {
-                    title: this.longQuestion,
-                    bodyText: null,
-                    image: {
-                        url: this.pngPath
-                    },
-                    hide: false
-                };
-            };
-        },
         getDefaultHeaders: function(){
             var headers = {
                 'X-Client-Id': qm.getClientId(),
@@ -1428,8 +1413,17 @@ var qm = {
                 qm.qmLog.info("No requestParams provided to filterByRequestParams");
                 return provided;
             }
-            var allowedFilterParams = ['variableCategoryName', 'id', 'name', 'manualTracking', 'outcome', 'upc',
-                'variableName', 'connectorName'];
+            var allowedFilterParams = [
+                'connectorName',
+                'id',
+                'manualTracking',
+                'name',
+                'outcome',
+                'upc',
+                'variableCategoryName',
+                'variableId',
+                'variableName',
+            ];
             var excludedFilterParams = ['includePublic', 'excludeLocal', 'minimumNumberOfResultsRequiredToAvoidAPIRequest',
                 'sort', 'limit', 'appName', 'appVersion', 'accessToken', 'clientId', 'barcodeFormat', 'searchPhrase',
                 'fallbackToAggregatedCorrelations',
@@ -5430,12 +5424,11 @@ var qm = {
             return qm.timeHelper.getUnixTimestampInSeconds() - qm.notifications.getLastNotificationsRefreshTime();
         },
         addToSyncQueue: function(n){
-            if(n.action === 'trackAll'){
-                qm.storage.deleteByProperty(qm.items.trackingReminderNotifications, "variableId", n.variableId)
-            }
             qm.notifications.deleteById(n.id);
             qm.userVariables.updateLatestMeasurementTime(n.variableName, n.modifiedValue);
-            return qm.storage.addToOrReplaceByIdAndMoveToFront(qm.items.notificationsSyncQueue, n);
+            var res = qm.storage.addToOrReplaceByIdAndMoveToFront(qm.items.notificationsSyncQueue, n);
+            qm.notifications.schedulePost();
+            return res;
         },
         refreshIfEmpty: function(successHandler, errorHandler){
             if(!qm.notifications.getNumberInGlobalsOrLocalStorage()){
@@ -5701,15 +5694,10 @@ var qm = {
                 }
             }, errorHandler);
         },
-        syncNotifications: function(){
-
-            // Post notification queue in 5 minutes if it's still there
-            qm.notifications.postNotifications();
-        },
-        scheduleNotificationPost: function(delayInMilliseconds){
+        schedulePost: function(delayInMilliseconds){
             var queue = qm.storage.getItem(qm.items.notificationsSyncQueue);
             if(queue && queue.length > 10){
-                qm.notifications.postNotifications();
+                qm.notifications.post();
                 return;
             }
             if(!delayInMilliseconds){
@@ -5725,7 +5713,7 @@ var qm = {
                 }
                 setTimeout(function(){
                     qm.qmLog.info("Notifications sync countdown completed.  Syncing now... ");
-                    qm.notifications.postNotifications();
+                    qm.notifications.post();
                 }, delayInMilliseconds);
             }else{
                 if(!qm.platform.isMobile()){ // Better performance
@@ -5734,25 +5722,27 @@ var qm = {
                 }
             }
         },
-        trackNotification: function(n, trackAll){
-            if(trackAll){n.action = 'trackAll';}
-            if(!n.action){n.action = 'track';}
+        track: function(n){
+            n.action = 'track';
             qm.qmLog.debug('trackTrackingReminderNotificationDeferred: Going to track ', n);
             qm.notifications.addToSyncQueue(n);
-            qm.notifications.scheduleNotificationPost();
         },
-        snoozeNotification: function(n){
+        trackAll: function(n, value){
+            n.action = 'trackAll';
+            qm.notifications.deleteByVariableName(n.variableName);
+            if(value !== null){n.modifiedValue = value;}
+            qm.notifications.addToSyncQueue(n);
+        },
+        snooze: function(n){
             n.action = 'snooze';
             qm.notifications.addToSyncQueue(n);
-            qm.notifications.scheduleNotificationPost();
         },
-        skipAllTrackingReminderNotifications: function(params, successHandler, errorHandler){
-            if(!params){
-                params = [];
-            }
-            qm.api.postToQuantiModo(params, 'v3/trackingReminderNotifications/skip/all', successHandler, errorHandler);
+        skipAll: function(n){
+            n.action = 'skipAll';
+            qm.notifications.deleteByVariableName(n.variableName);
+            qm.notifications.addToSyncQueue(n);
         },
-        postNotifications: function(successHandler, errorHandler){
+        post: function(successHandler, errorHandler){
             qm.qmLog.debug("Called postNotifications...");
             var notifications = qm.storage.getItem(qm.items.notificationsSyncQueue);
             qm.storage.removeItem(qm.items.notificationsSyncQueue);
@@ -5784,15 +5774,14 @@ var qm = {
         skip: function(trackingReminderNotification){
             trackingReminderNotification.action = 'skip';
             qm.notifications.addToSyncQueue(trackingReminderNotification);
-            qm.notifications.scheduleNotificationPost();
         },
         trackingReminderNotificationCommands: {
             "I don't know": function(){
-                qm.notifications.skipAllTrackingReminderNotifications(qm.feed.currentCard.parameters);
+                qm.notifications.skipAll(qm.feed.currentCard.parameters);
                 qm.feed.currentCard.followUpAction("OK. We'll skip that one.");
             },
             "I don't remember": function(){
-                qm.notifications.skipAllTrackingReminderNotifications(qm.feed.currentCard.parameters);
+                qm.notifications.skipAll(qm.feed.currentCard.parameters);
                 qm.feed.currentCard.followUpAction("OK. We'll skip that one.");
             }
         },

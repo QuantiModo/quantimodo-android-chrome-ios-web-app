@@ -1847,34 +1847,28 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 }
             },
             notifications: {
-                trackAll: function(n, value){
-                    qm.notifications.deleteByVariableName(n.variableName);
-                    if(value !== null){n.modifiedValue = value;}
-                    n.action = 'trackAll';
-                    qm.notifications.trackNotification(n);
-                },
-                showActionSheetForNotification: function(trackingReminderNotification){
-                    var trackingReminder = trackingReminderNotification;
-                    trackingReminder.id = trackingReminderNotification.trackingReminderId;
-                    var variableObject = trackingReminderNotification;
-                    variableObject.variableId = trackingReminderNotification.variableId;
-                    variableObject.name = trackingReminderNotification.variableName;
+                showActionSheetForNotification: function(n){
+                    var trackingReminder = n;
+                    trackingReminder.id = n.trackingReminderId;
+                    var variableObject = n;
+                    variableObject.variableId = n.variableId;
+                    variableObject.name = n.variableName;
                     var buttons = [
-                        {text: 'Actions for ' + trackingReminderNotification.variableName},
+                        {text: 'Actions for ' + n.variableName},
                         {text: '<i class="icon ion-android-notifications-none"></i>Edit Reminder'},
                         qmService.actionSheets.actionSheetButtons.charts,
                         qmService.actionSheets.actionSheetButtons.historyAllVariable,
                         //qmService.actionSheets.actionSheetButtons.variableSettings
                     ];
-                    if(trackingReminderNotification.outcome === true){
+                    if(n.outcome === true){
                         buttons.push(qmService.actionSheets.actionSheetButtons.predictors);
-                    }else if(trackingReminderNotification.outcome === false){
+                    }else if(n.outcome === false){
                         buttons.push(qmService.actionSheets.actionSheetButtons.outcomes);
                     }else{
-                        qmLog.error("Why is outcome not boolean in this notification!?!?!", null, trackingReminderNotification)
+                        qmLog.error("Why is outcome not boolean in this notification!?!?!", null, n)
                     }
-                    for(var i = 0; i < trackingReminderNotification.trackAllActions.length; i++){
-                        buttons.push({text: '<i class="icon ion-android-done-all"></i>' + trackingReminderNotification.trackAllActions[i].title})
+                    for(var i = 0; i < n.trackAllActions.length; i++){
+                        buttons.push({text: '<i class="icon ion-android-done-all"></i>' + n.trackAllActions[i].title})
                     }
                     buttons.push({text: '<i class="icon ion-trash-a"></i>Skip All '});
                     // Show the action sheet
@@ -1891,7 +1885,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                                 qmLog.debug('clicked variable name', null);
                             }
                             if(index === 1){
-                                qmService.notifications.editReminderSettingsByNotification(trackingReminderNotification);
+                                qmService.notifications.editReminderSettingsByNotification(n);
                             }
                             if(index === 2){
                                 qmService.goToState('app.charts', {
@@ -1906,23 +1900,23 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                                 });
                             }
                             var buttonIndex = 4;
-                            for(var i = 0; i < trackingReminderNotification.trackAllActions.length; i++){
+                            for(var i = 0; i < n.trackAllActions.length; i++){
                                 if(index === buttonIndex){
-                                    qmService.notifications.trackAll(trackingReminderNotification, trackingReminderNotification.trackAllActions[i].modifiedValue);
+                                    qm.notifications.trackAll(n, n.trackAllActions[i].modifiedValue);
                                 }
                                 buttonIndex++;
                             }
                             if(index === buttonIndex){
-                                qmService.notifications.skipAllForVariable(trackingReminderNotification);
+                                qmService.notifications.skipAll(n);
                             }
                             buttonIndex++;
                             if(index === buttonIndex){
-                                qmService.goToVariableSettingsByName(trackingReminderNotification.variableName);
+                                qmService.goToVariableSettingsByName(n.variableName);
                             }
                             return true;
                         },
                         destructiveButtonClicked: function(){
-                            qmService.notifications.skipAllForVariable(trackingReminderNotification);
+                            qmService.notifications.skipAll(n);
                             return true;
                         }
                     });
@@ -2107,35 +2101,21 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                         qmLog.info("NOT going to reconfigurePushNotifications because we have deviceTokenOnServer || deviceTokenToSync")
                     }
                 },
-                skipAllForVariable: function(trackingReminderNotification, successHandler, errorHandler, ev){
+                skipAll: function(n, successHandler, errorHandler, ev){
                     var title = "Skip all?";
-                    var textContent = "Do you want to dismiss all remaining past " + trackingReminderNotification.variableName + " reminder notifications?";
+                    var textContent = "Do you want to dismiss all remaining past " + n.variableName + " reminder notifications?";
                     function yesCallback(){
-                        var filtered = qm.notifications.deleteByVariableName(trackingReminderNotification.variableName);
-                        trackingReminderNotification.hide = true;
-                        qmLog.debug('Skipping all notifications for trackingReminder', null, trackingReminderNotification);
-                        qmService.showInfoToast("Skipping all " + trackingReminderNotification.variableName + " notifications...");
-                        var params = {trackingReminderId: trackingReminderNotification.trackingReminderId};
-                        if(successHandler){
-                            successHandler(filtered);
-                        }
-                        qm.notifications.skipAllTrackingReminderNotifications(params, function(response){
-                            //if(successHandler){successHandler(response);}
-                        }, function(error){
-                            if(errorHandler){
-                                errorHandler(error);
-                            }
-                            qmLog.error(error);
-                            qmService.showMaterialAlert('Failed to skip! ', 'Please let me know by pressing the help button.  Thanks!');
-                        });
+                        var filtered = qm.notifications.deleteByVariableName(n.variableName);
+                        n.hide = true;
+                        qmLog.debug('Skipping all notifications for trackingReminder', null, n);
+                        qmService.showInfoToast("Skipping all " + n.variableName + " notifications...");
+                        var params = {trackingReminderId: n.trackingReminderId};
+                        if(successHandler){successHandler(filtered);}
+                        qm.notifications.skipAll(params);
                     }
-                    function noCallback(){
-                    }
+                    function noCallback(){}
                     qmService.showMaterialConfirmationDialog(title, textContent, yesCallback, noCallback, ev);
                     return true;
-                },
-                skipAll: function(trackingReminderNotification, successHandler, errorHandler, ev){
-                    return qmService.notifications.skipAllForVariable(trackingReminderNotification, successHandler, errorHandler, ev);
                 },
                 lastAction: "",
                 showUndoToast: function(callback){
@@ -2905,7 +2885,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                                 deferred.reject(error);
                             });
                         };
-                        qm.notifications.postNotifications(function(){
+                        qm.notifications.post(function(){
                             postTrackingRemindersToApiAndHandleResponse();
                         }, function(error){
                             postTrackingRemindersToApiAndHandleResponse();
@@ -5122,7 +5102,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         };
         qmService.refreshTrackingReminderNotifications = function(params){
             var deferred = $q.defer();
-            qm.notifications.postNotifications(function(){
+            qm.notifications.post(function(){
                 var currentDateTimeInUtcStringPlus5Min = qmService.getCurrentDateTimeInUtcStringPlusMin(5);
                 if(!params){params = {};}
                 params.reminderTime = '(lt)' + currentDateTimeInUtcStringPlus5Min;
@@ -7776,7 +7756,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         function checkHoursSinceLastPushNotificationReceived(){
             //if(!$rootScope.platform.isMobile){return;}  // We get pushes from web now, too
             if(!qm.push.getLastPushTimeStampInSeconds()){
-                qmLog.errorOrDebugIfTesting("Push never received!");
+                qmLog.warn("Push never received!");
                 qmService.configurePushNotifications();
             }
             if(qm.push.getMinutesSinceLastPush() > qm.notifications.getMostFrequentReminderIntervalInMinutes()){
@@ -8045,7 +8025,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     window.snoozeAction = function(data){
                         var body = {trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId};
                         qmLog.pushDebug('snoozeAction', ' push data: ', {pushData: data, notificationsPostBody: body});
-                        qm.notifications.snoozeNotification(body);
+                        qm.notifications.snooze(body);
                         finishPush(data);
                     };
                     window.trackLastValueAction = function(data){
