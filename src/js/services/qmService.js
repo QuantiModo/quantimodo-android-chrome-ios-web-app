@@ -191,7 +191,10 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                         if(!u){
                             return false;
                         }
-                        if(!u.stripeActive && u.id !== 230){
+                        if(u.id === 230){
+                            return true;
+                        } // Show ads for mike so he sees any issues
+                        if(u.stripeActive){
                             return false;
                         } // Show ads for mike so he sees any issues
                         if(!qm.platform.isWeb()){
@@ -2142,21 +2145,11 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                         throw "No undo action provided to showUndoToast to refresh view!";
                     }
                     qmService.showToastWithButton(qm.notifications.lastAction, 'UNDO', function(){
-                        qm.notifications.undo();
+                        qm.notifications.removeNotificationFromSyncQueueAndUnhide();
                         if(callback){
                             callback();
                         }
                     });
-                },
-                handleNotificationAction: function(trackingReminderNotification, undoCallback){
-                    qmLog.info("Clicked " + qm.notifications.lastAction + " for " + trackingReminderNotification.variableName);
-                    trackingReminderNotification.hide = true;
-                    qm.notifications.numberOfPendingNotifications--;
-                    qmService.notifications.showUndoToast(undoCallback);
-                    if(!trackingReminderNotification.trackingReminderNotificationId){
-                        trackingReminderNotification.trackingReminderNotificationId = trackingReminderNotification.id;
-                    }
-                    return trackingReminderNotification;
                 },
                 skip: function(trackingReminderNotification){
                     qmService.notification.skip(trackingReminderNotification);
@@ -2928,7 +2921,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                                 qmService.notifications.getDrawOverAppsPopupPermissionIfNecessary();
                                 qmService.scheduleSingleMostFrequentLocalNotification(reminders);
                             }
-                            reminders = validateReminderArray(reminders);
+                            reminders = qm.reminderHelper.validateReminderArray(reminders);
                             deferred.resolve(reminders);
                             qmService.trackingReminders.syncPromise = null;
                         }, function(error){
@@ -2940,7 +2933,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     qmService.trackingReminders.syncPromise = deferred.promise;
                     $timeout(function(){
                         qmService.trackingReminders.syncPromise = null;
-                    }, 30000);
+                    }, 20000);
                     return deferred.promise;
                 }
             }
@@ -3878,6 +3871,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 errorHandler);
         };
         qmService.goToState = function(to, params, options){
+            if(params && params.variableObject && !params.variableName){params.variableName = params.variableObject.name;}
             //qmLog.info('Called goToState: ' + to, null, qmLog.getStackTrace());
             qmLog.info('Going to state ' + to);
             if(to !== "false"){
@@ -4251,18 +4245,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             });
             return deferred.promise;
         };
-        qmService.filterByStringProperty = function(arrayToFilter, propertyName, allowedValue){
-            if(!allowedValue || allowedValue.toLowerCase() === "anything"){
-                return arrayToFilter;
-            }
-            var filteredArray = [];
-            for(var i = 0; i < arrayToFilter.length; i++){
-                if(arrayToFilter[i][propertyName].toLowerCase() === allowedValue.toLowerCase()){
-                    filteredArray.push(arrayToFilter[i]);
-                }
-            }
-            return filteredArray;
-        };
         qmService.storage.getFavorites = function(variableCategoryName){
             var deferred = $q.defer();
             qmService.getAllReminderTypes(variableCategoryName).then(function(allTrackingReminderTypes){
@@ -4281,25 +4263,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             }else{
                 return variableName;
             }
-        };
-        qmService.attachVariableCategoryIcons = function(dataArray){
-            if(!dataArray){
-                return;
-            }
-            var variableCategoryInfo;
-            for(var i = 0; i < dataArray.length; i++){
-                variableCategoryInfo = qmService.getVariableCategoryInfo(dataArray[i].variableCategoryName);
-                if(variableCategoryInfo.ionIcon){
-                    if(!dataArray[i].ionIcon){
-                        dataArray[i].ionIcon = variableCategoryInfo.ionIcon;
-                    }
-                }else{
-                    console.warn('Could not find icon for variableCategoryName ' + dataArray[i].variableCategoryName);
-                    return 'ion-speedometer';
-                }
-                dataArray[i] = qmService.addVariableCategoryImagePaths(dataArray[i])
-            }
-            return dataArray;
         };
         qmService.getVariableCategoryInfo = function(variableCategoryName){
             var selectedVariableCategoryObject = $rootScope.variableCategories.Anything;
@@ -5086,13 +5049,14 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 backgroundGeolocation.stop();
             }
         };
-        var putTrackingReminderNotificationsInLocalStorageAndUpdateInbox = function(trackingReminderNotifications){
-            qmService.storage.setItem('lastGotNotificationsAtMilliseconds', window.qm.timeHelper.getUnixTimestampInMilliseconds());
-            trackingReminderNotifications = qmService.attachVariableCategoryIcons(trackingReminderNotifications);
-            qm.storage.setTrackingReminderNotifications(trackingReminderNotifications);
+        var putTrackingReminderNotificationsInLocalStorageAndUpdateInbox = function(notifications){
+            qmService.storage.setItem(qm.items.lastGotNotificationsAtMilliseconds,
+                window.qm.timeHelper.getUnixTimestampInMilliseconds());
+            qm.api.addVariableCategoryAndUnit(notifications);
+            qm.storage.setTrackingReminderNotifications(notifications);
             qmService.notifications.broadcastGetTrackingReminderNotifications();
-            qm.notifications.numberOfPendingNotifications = trackingReminderNotifications.length;
-            return trackingReminderNotifications;
+            qm.notifications.numberOfPendingNotifications = notifications.length;
+            return notifications;
         };
         qmService.getSecondsSinceWeLastGotNotifications = function(){
             var lastGotNotificationsAtMilliseconds = qm.storage.getItem(qm.items.lastGotNotificationsAtMilliseconds);
@@ -5104,12 +5068,12 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         qmService.getTrackingRemindersDeferred = function(variableCategoryName){
             var deferred = $q.defer();
             qmService.storage.getTrackingReminders(variableCategoryName).then(function(reminders){
-                reminders = validateReminderArray(reminders);
+                reminders = qm.reminderHelper.validateReminderArray(reminders);
                 if(reminders && reminders.length){
                     deferred.resolve(reminders);
                 }else{
                     qmService.trackingReminders.syncTrackingReminders().then(function(reminders){
-                        reminders = validateReminderArray(reminders);
+                        reminders = qm.reminderHelper.validateReminderArray(reminders);
                         deferred.resolve(reminders);
                     });
                 }
@@ -5393,7 +5357,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             if(queue){
                 unfiltered = unfiltered.concat(queue);
             }
-            unfiltered = qmService.attachVariableCategoryIcons(unfiltered);
+            qm.api.addVariableCategoryAndUnit(unfiltered);
             if(unfiltered){
                 if(variableCategoryName && variableCategoryName !== 'Anything'){
                     for(var j = 0; j < unfiltered.length; j++){
@@ -5405,7 +5369,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     filtered = unfiltered;
                 }
                 filtered = qmService.addRatingTimesToDailyReminders(filtered); //We need to keep this in case we want offline reminders
-                filtered = validateReminderArray(filtered);
+                filtered = qm.reminderHelper.validateReminderArray(filtered);
                 deferred.resolve(filtered);
             }
             return deferred.promise;
@@ -7286,75 +7250,17 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             }
             return null;
         };
-        function processTrackingReminders(reminders, variableCategoryName){
-            reminders = validateReminderArray(reminders);
-            reminders = qmService.filterByStringProperty(reminders, 'variableCategoryName', variableCategoryName);
-            reminders = validateReminderArray(reminders);
-            //if(!trackingReminders || !trackingReminders.length){return {};}
-            for(var i = 0; i < reminders.length; i++){
-                reminders[i].total = null;
-                if(typeof reminders[i].defaultValue === "undefined"){
-                    reminders[i].defaultValue = null;
-                }
-            }
-            reminders = qmService.attachVariableCategoryIcons(reminders);
-            reminders = validateReminderArray(reminders);
-            return separateFavoritesAndArchived(reminders);
-        }
-        function validateReminderArray(reminders){
-            if(reminders && !Array.isArray(reminders) && reminders.data){reminders = reminders.data;}
-            if(!Array.isArray(reminders)){
-                console.error("Reminders should be array but is: ", reminders);
-                throw "Reminders should be array"
-            }
-            return reminders;
-        }
-        function separateFavoritesAndArchived(reminders){
-            reminders = validateReminderArray(reminders);
-            var separated = {allTrackingReminders: reminders};
-            qmLog.debug('separateFavoritesAndArchived: allTrackingReminders is: ', reminders);
-            try{
-                separated.favorites = reminders.filter(function(r){
-                    return r.reminderFrequency === 0;
-                });
-            }catch (error){
-                // TODO: Why is this necessary?
-                qmLog.error(error, "trying again after JSON.parse(JSON.stringify(trackingReminders)). Why is this necessary?", {trackingReminders: reminders});
-                reminders = JSON.parse(JSON.stringify(reminders));
-                separated.favorites = qm.reminderHelper.getFavorites(reminders);
-                //reminderTypesArray.favorites = [];
-            }
-            try{
-                separated.trackingReminders = qm.reminderHelper.getActive(reminders);
-            }catch (error){
-                qmLog.error(error, {trackingReminders: reminders});
-            }
-            try{
-                separated.archivedTrackingReminders = qm.reminderHelper.getArchived(reminders);
-            }catch (error){
-                qmLog.error(error, {trackingReminders: reminders});
-            }
-            return separated;
-        }
         qmService.getAllReminderTypes = function(variableCategoryName, type){
             var deferred = $q.defer();
             qmService.getTrackingRemindersDeferred(variableCategoryName).then(function(reminders){
-                reminders = validateReminderArray(reminders);
-                var count = 0;
-                if(reminders && reminders.length){
-                    count = reminders.length;
-                }
-                qmLog.info('Got ' + count + ' unprocessed ' + variableCategoryName + ' category trackingReminders', null);
-                var separated = processTrackingReminders(reminders, variableCategoryName);
+                reminders = qm.reminderHelper.validateReminderArray(reminders);
+                qmLog.info('Got ' + reminders.length + ' unprocessed ' + variableCategoryName + ' category trackingReminders');
+                var separated = qm.reminderHelper.filterByCategoryAndSeparateFavoritesAndArchived(reminders, variableCategoryName);
                 if(type){
-                    count = 0;
-                    if(separated[type] && separated[type].length){
-                        count = separated[type].length;
-                    }
-                    qmLog.info('Got ' + count + ' ' + variableCategoryName + ' category ' + type + 's', null);
+                    qmLog.info('Got ' + separated[type].length + ' ' + variableCategoryName + ' category ' + type + 's');
                     deferred.resolve(separated[type]);
                 }else{
-                    qmLog.info('Returning reminderTypesArray from getTrackingRemindersDeferred', null);
+                    qmLog.info('Returning reminderTypesArray from getTrackingRemindersDeferred');
                     deferred.resolve(separated);
                 }
             });
@@ -7365,18 +7271,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             variableObject.variableId = trackingReminder.variableId;
             variableObject.name = trackingReminder.variableName;
             return variableObject;
-        };
-        qmService.addVariableCategoryImagePaths = function(object){
-            if(object.variableCategoryName){
-                var pathPrefix = 'img/variable_categories/' + object.variableCategoryName.toLowerCase().replace(' ', '-');
-                if(!object.pngPath){
-                    object.pngPath = pathPrefix + '.png';
-                }
-                if(!object.svgPath){
-                    object.svgPath = pathPrefix + '.svg';
-                }
-            }
-            return object;
         };
         qmService.showMaterialAlert = function(title, textContent, ev){
             if(qm.speech.getSpeechEnabled()){
