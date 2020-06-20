@@ -3700,6 +3700,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 qmSdkApiResponseHandler(error, notifications, response, successHandler, errorHandler, {}, functionName);
             }
             params = qm.api.addGlobalParams(params);
+            params.limit = qm.notifications.limit;
             apiInstance.getTrackingReminderNotifications(params, callback);
             //qmService.get('api/v3/trackingReminderNotifications', ['variableCategoryName', 'reminderTime', 'sort', 'reminderFrequency'], params, successHandler, errorHandler);
         };
@@ -4255,10 +4256,19 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             });
             return deferred.promise;
         };
-        qmService.storage.getFavorites = function(variableCategoryName){
+        qmService.storage.getFavorites = function(categoryName){
             var deferred = $q.defer();
-            qmService.getAllReminderTypes(variableCategoryName).then(function(allTrackingReminderTypes){
-                deferred.resolve(allTrackingReminderTypes.favorites);
+            qmService.getAllReminderTypes(categoryName).then(function(allTypes){
+                deferred.resolve(allTypes.favorites);
+            }, function(error){
+                deferred.reject(error);
+            });
+            return deferred.promise;
+        };
+        qmService.storage.getReminders = function(categoryName){
+            var deferred = $q.defer();
+            qmService.getAllReminderTypes(categoryName).then(function(allTypes){
+                deferred.resolve(allTypes.trackingReminders);
             }, function(error){
                 deferred.reject(error);
             });
@@ -5117,7 +5127,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 if(!params){params = {};}
                 params.reminderTime = '(lt)' + currentDateTimeInUtcStringPlus5Min;
                 params.sort = '-reminderTime';
-                params.limit = 100; // Limit to notifications in the scope instead of here to improve inbox performance
+                params.limit = qm.notifications.limit; // Limit to notifications in the scope instead of here to improve inbox performance
                 qmService.getTrackingReminderNotificationsFromApi(params, function(notifications){
                     notifications = putTrackingReminderNotificationsInLocalStorageAndUpdateInbox(notifications);
                     if(notifications.length && $rootScope.platform.isMobile && getDeviceTokenToSync()){

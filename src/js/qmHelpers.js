@@ -5185,6 +5185,7 @@ var qm = {
         }
     },
     notifications: {
+        limit: 50, // Need a large number or we have to press refresh
         actions: {
             trackYesAction: function(data){
                 var body = {trackingReminderNotificationId: data.trackingReminderNotificationId, modifiedValue: 1};
@@ -5701,15 +5702,14 @@ var qm = {
             }, errorHandler);
         },
         syncNotifications: function(){
-            qm.qmLog.info("Notifications sync countdown completed.  Syncing now... ");
-            qm.storage.removeItem(qm.items.trackingReminderNotificationSyncScheduled);
+
             // Post notification queue in 5 minutes if it's still there
             qm.notifications.postNotifications();
         },
-        scheduleNotificationSync: function(delayInMilliseconds){
+        scheduleNotificationPost: function(delayInMilliseconds){
             var queue = qm.storage.getItem(qm.items.notificationsSyncQueue);
-            if(queue && queue.length > 5){
-                qm.notifications.syncNotifications();
+            if(queue && queue.length > 10){
+                qm.notifications.postNotifications();
                 return;
             }
             if(!delayInMilliseconds){
@@ -5724,7 +5724,8 @@ var qm = {
                     qm.qmLog.info("Scheduling notifications sync for " + delayInMilliseconds / 1000 + " seconds from now..");
                 }
                 setTimeout(function(){
-                    qm.notifications.syncNotifications();
+                    qm.qmLog.info("Notifications sync countdown completed.  Syncing now... ");
+                    qm.notifications.postNotifications();
                 }, delayInMilliseconds);
             }else{
                 if(!qm.platform.isMobile()){ // Better performance
@@ -5738,12 +5739,12 @@ var qm = {
             if(!n.action){n.action = 'track';}
             qm.qmLog.debug('trackTrackingReminderNotificationDeferred: Going to track ', n);
             qm.notifications.addToSyncQueue(n);
-            qm.notifications.scheduleNotificationSync();
+            qm.notifications.scheduleNotificationPost();
         },
         snoozeNotification: function(n){
             n.action = 'snooze';
             qm.notifications.addToSyncQueue(n);
-            qm.notifications.scheduleNotificationSync();
+            qm.notifications.scheduleNotificationPost();
         },
         skipAllTrackingReminderNotifications: function(params, successHandler, errorHandler){
             if(!params){
@@ -5752,16 +5753,17 @@ var qm = {
             qm.api.postToQuantiModo(params, 'v3/trackingReminderNotifications/skip/all', successHandler, errorHandler);
         },
         postNotifications: function(successHandler, errorHandler){
-            qm.qmLog.debug("Called postTrackingReminderNotificationsDeferred...");
+            qm.qmLog.debug("Called postNotifications...");
             var notifications = qm.storage.getItem(qm.items.notificationsSyncQueue);
             qm.storage.removeItem(qm.items.notificationsSyncQueue);
+            qm.storage.removeItem(qm.items.trackingReminderNotificationSyncScheduled);
             if(!notifications || !notifications.length){
                 if(successHandler){successHandler();}
                 return;
             }
             if(!(notifications instanceof Array)){notifications = [notifications];}
             if(!notifications[0]){
-                qm.qmLog.error("trackingReminderNotificationsArray[0] is " + notifications[0], {notifications: notifications});
+                qm.qmLog.error("notifications[0] is " + notifications[0], {notifications: notifications});
             }
             notifications[0] = qm.timeHelper.addTimeZoneOffsetProperty(notifications[0]);
             qm.api.postToQuantiModo(notifications, 'v3/trackingReminderNotifications',
@@ -5782,7 +5784,7 @@ var qm = {
         skip: function(trackingReminderNotification){
             trackingReminderNotification.action = 'skip';
             qm.notifications.addToSyncQueue(trackingReminderNotification);
-            qm.notifications.scheduleNotificationSync();
+            qm.notifications.scheduleNotificationPost();
         },
         trackingReminderNotificationCommands: {
             "I don't know": function(){
