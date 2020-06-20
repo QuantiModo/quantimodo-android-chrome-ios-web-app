@@ -1838,7 +1838,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     }
                 },
                 hideNavigationMenu: function(){
-                    qmLog.info("Hiding navigation menu");
+                    qmLog.debug("Hiding navigation menu");
                     qmService.rootScope.setProperty('hideNavigationMenu', true);
                 },
                 showNavigationMenu: function(){
@@ -1847,11 +1847,11 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 }
             },
             notifications: {
-                trackAll: function(trackingReminderNotification, modifiedReminderValue, ev){
-                    qm.notifications.deleteByVariableName(trackingReminderNotification.variableName);
-                    if(modifiedReminderValue !== null){trackingReminderNotification.modifiedValue = modifiedReminderValue;}
-                    qm.notifications.trackNotification(trackingReminderNotification, true);
-                    //qmService.logEventToGA(qm.analytics.eventCategories.inbox, "trackAll");
+                trackAll: function(n, value){
+                    qm.notifications.deleteByVariableName(n.variableName);
+                    if(value !== null){n.modifiedValue = value;}
+                    n.action = 'trackAll';
+                    qm.notifications.trackNotification(n);
                 },
                 showActionSheetForNotification: function(trackingReminderNotification){
                     var trackingReminder = trackingReminderNotification;
@@ -1930,7 +1930,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 },
                 editReminderSettingsByNotification: function(trackingReminderNotification){
                     trackingReminderNotification.hide = true;
-                    qm.notifications.numberOfPendingNotifications--;
                     var trackingReminder = trackingReminderNotification;
                     trackingReminder.id = trackingReminderNotification.trackingReminderId;
                     qmService.goToState('app.reminderAdd', {
@@ -4207,7 +4206,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 qmService.deferredRequests.user = null;
                 deferred.resolve(user);
             }, function(error){
-                qmLog.error(error);
+                qmLog.info(error);
                 deferred.reject(error);
                 qmService.deferredRequests.user = null;
                 return deferred.promise;
@@ -5066,7 +5065,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             qm.api.addVariableCategoryAndUnit(notifications);
             qm.storage.setTrackingReminderNotifications(notifications);
             qmService.notifications.broadcastGetTrackingReminderNotifications();
-            qm.notifications.numberOfPendingNotifications = notifications.length;
             return notifications;
         };
         qmService.getSecondsSinceWeLastGotNotifications = function(){
@@ -5294,8 +5292,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             qmService.reminders.broadcastGetTrackingReminders();
         };
         qmService.storage.deleteTrackingReminderNotification = function(body){
-            qm.notifications.numberOfPendingNotifications -= qm.notifications.numberOfPendingNotifications;
-            window.qm.storage.deleteTrackingReminderNotification(body);
+            qm.storage.deleteTrackingReminderNotification(body);
         };
         qmService.groupTrackingReminderNotificationsByDateRange = function(trackingReminderNotifications){
             if(!qm.arrayHelper.variableIsArray(trackingReminderNotifications)){
@@ -7827,7 +7824,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         };
         qmService.configurePushNotifications = function(){
             if(!qm.getUser()){ // Otherwise we try to do it immediately and always get 401 and make duplicate appSettings requests
-                qmLog.info("Not configuring push notifications because we don't have a user yet");
+                qmLog.debug("Not configuring push notifications because we don't have a user yet");
                 return;
             }
             if(!qm.platform.isMobile()){
