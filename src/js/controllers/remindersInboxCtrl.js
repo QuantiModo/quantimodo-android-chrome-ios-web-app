@@ -61,19 +61,7 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
             $scope.stateParams = $stateParams;
             qmService.actionSheet.setDefaultActionSheet(function(){
                     $scope.refreshTrackingReminderNotifications();
-                },
-                getVariableCategoryName(), 'Clear All Notifications',
-                function(){
-                    qmService.showInfoToast('Skipping all reminder notifications...');
-                    qm.notifications.skipAllTrackingReminderNotifications({}, function(){
-                        $scope.refreshTrackingReminderNotifications();
-                    }, function(error){
-                        qmLog.error(error);
-                        qmService.showMaterialAlert('Failed to skip! ', 'Please let me know by pressing the help button.  Thanks!');
-                    });
-                    return true;
-                }
-            );
+                }, getVariableCategoryName());
             qmService.splash.hideSplashScreen();
         });
         $scope.$on('$ionicView.afterEnter', function(){
@@ -177,7 +165,7 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
             var lastAction = 'Recorded ' + n.modifiedValue + ' ' + n.unitAbbreviatedName;
             qm.notifications.lastAction = qm.stringHelper.formatValueUnitDisplayText(lastAction) + ' for '+n.variableName;
             notificationAction(n, function (params) {
-                qm.notifications.trackNotification(params);
+                qm.notifications.track(params);
             });
             refreshIfRunningOutOfNotifications();
         };
@@ -250,7 +238,7 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
         }
         function getFallbackInboxContentIfNecessary(){
             var num = getNumberOfDisplayedNotifications();
-            if(num < 3){
+            if(!num && !$scope.state.loading){
                 var cat = getVariableCategoryName();
                 if(cat){refreshNotificationsForCategory(cat);}
                 getFavorites();
@@ -300,17 +288,24 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
                 }
             }, 5000)
             closeWindowIfNecessary();
+            if(!getNumberOfDisplayedNotifications()){
+                getTrackingReminderNotifications();
+            }
             return n;
         };
-        $scope.track = function(n, value, $event){
-            if(isGhostClick($event)){return false;}
+        $scope.track = function(n, value, $ev, trackAll){ // Keep trackAll param because it's used in templates/items/notification-item.html
+            if(isGhostClick($ev)){return false;}
+            if(trackAll){
+                return $scope.trackAll(n, value, $ev);
+            }
+            n.action = 'track';
             n.modifiedValue = value;
             var valueUnit = qm.stringHelper.formatValueUnitDisplayText(n.modifiedValue + ' ' + n.unitAbbreviatedName);
             var variableName = n.variableName;
             qm.notifications.lastAction = 'Recorded ' + valueUnit + ' for '+ variableName;
             notificationAction(n, function (params) {
                 if(value !== null){params.modifiedValue = value;}
-                qm.notifications.trackNotification(params);
+                qm.notifications.track(params);
             });
             refreshIfRunningOutOfNotifications();
             if($scope.state.showTrackAllButtons){
@@ -320,17 +315,32 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
                 })
             }
         };
-        $scope.trackAll = function(n, value, ev){
+        $scope.trackAll = function(n, value, $ev){
+            if(isGhostClick($ev)){return false;}
+            n.action = 'trackAll';
             n.modifiedValue = value;
             var valueUnit = qm.stringHelper.formatValueUnitDisplayText(n.modifiedValue + ' ' + n.unitAbbreviatedName);
             qm.notifications.lastAction = 'Recorded ' + valueUnit + ' for all '+n.variableName;
+            hideByVariableId(n.variableId);
             notificationAction(n, function (params) {
-                qmService.notifications.trackAll(params, value, ev);
-                hideByVariableId(n.variableId);
+                qm.notifications.trackAll(params, value, $ev);
             }, function () {
                 unhideByVariableId(n.variableId);
             });
         }
+        $scope.skipAll = function(n, $ev){
+            if(isGhostClick($ev)){return false;}
+            n.action = 'skipAll';
+            qm.notifications.lastAction = 'Skipped all remaining '+n.variableName+" notifications";
+            qm.ui.preventDragAfterAlert($ev);
+            hideByVariableId(n.variableId);
+            notificationAction(n, function (params) {
+                qm.notifications.skipAll(params);
+            }, function () {
+                unhideByVariableId(n.variableId);
+            });
+            return true;
+        };
         $scope.trackAllWithConfirmation = function(n, value, ev){
             qm.ui.preventDragAfterAlert(ev);
             var valueUnit = qm.stringHelper.formatValueUnitDisplayText(value + " " + n.unitAbbreviatedName);
@@ -346,6 +356,7 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
         };
         $scope.skip = function(n, $event){
             if(isGhostClick($event)){return;}
+            n.action = 'skip';
             qm.notifications.lastAction = 'Skipped '+n.variableName;
             notificationAction(n, function (params) {
                 qm.notifications.skip(params);
@@ -355,9 +366,10 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
         };
         $scope.snooze = function(n, $event){
             if(isGhostClick($event)){return;}
+            n.action = 'snooze';
             qm.notifications.lastAction = 'Snoozed '+n.variableName;
             notificationAction(n, function (params) {
-                qm.notifications.snoozeNotification(params);
+                qm.notifications.snooze(params);
             });
             qmService.logEventToGA(qm.analytics.eventCategories.inbox, "snooze");
             refreshIfRunningOutOfNotifications();
@@ -479,13 +491,11 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
             showLoader();
             qmService.refreshTrackingReminderNotifications(params).then(function(){
                 getTrackingReminderNotifications();
-                if(!qm.notifications.getNumberInGlobalsOrLocalStorage(getVariableCategoryName())){
+                if(!getNumberOfDisplayedNotifications()){
                     getFallbackInboxContentIfNecessary();
                 }
             }, function(error){
-                if(!qm.notifications.getNumberInGlobalsOrLocalStorage(getVariableCategoryName())){
-                    getFallbackInboxContentIfNecessary();
-                }
+                getFallbackInboxContentIfNecessary();
                 qmLog.info('$scope.refreshTrackingReminderNotifications: ', error);
                 hideInboxLoader();
             });
@@ -523,15 +533,6 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
                 fromUrl: window.location.href,
                 fromState: $state.current.name
             });
-        };
-        $scope.skipAllForVariable = function(n, ev){
-            qm.ui.preventDragAfterAlert(ev);
-            qmService.notifications.skipAllForVariable(n, function(trackingReminderNotifications){
-                getFilteredTrackingReminderNotificationsFromLocalStorage();
-            }, function(error){
-                hideInboxLoader();
-            });
-            return true;
         };
         // Triggered on a button click, or some other target
         $scope.showActionSheetForNotification = function(n, $event, dividerIndex, notificationIndex){
@@ -591,14 +592,14 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
                         return true; // Hide sheet
                     }
                     if(button.text.indexOf("Skip All") !== -1){
-                        $scope.skipAllForVariable(n);
+                        $scope.skipAll(n);
                         return true; // Hide sheet
                     }
                     qmLog.error("How should I handle this button?", {button: button});
                     return true; // Hide sheet
                 },
                 destructiveButtonClicked: function(){
-                    $scope.skipAllForVariable(n);
+                    $scope.skipAll(n);
                     return true;
                 }
             });

@@ -14,7 +14,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
             });
             $scope.$on('$ionicView.afterEnter', function(e){
                 qmLog.debug($scope.controller_name + ".afterEnter so posting queued notifications if any");
-                qm.notifications.postNotifications();
+                qm.notifications.post();
                 qmService.refreshUserUsingAccessTokenInUrlIfNecessary();
                 $rootScope.setMicAndSpeechEnabled(qm.mic.getMicEnabled());
                 qm.chatButton.setZohoChatButtonZIndex();
@@ -287,8 +287,9 @@ angular.module('starter')// Parent Controller - This controller runs before ever
                     qmService.actionSheets.actionSheetButtons.variableSettings
                 ];
                 /** @namespace qm.getAppSettings().favoritesController */
-                if(qm.getAppSettings().favoritesController && qm.getAppSettings().favoritesController.actionMenuButtons){
-                    actionMenuButtons = qm.getAppSettings().favoritesController.actionMenuButtons;
+                var appSettings = qm.getAppSettings();
+                if(appSettings.favoritesController && appSettings.favoritesController.actionMenuButtons){
+                    actionMenuButtons = appSettings.favoritesController.actionMenuButtons;
                 }
                 if(bloodPressure){
                     actionMenuButtons = [];
