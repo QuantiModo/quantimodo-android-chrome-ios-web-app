@@ -143,8 +143,8 @@ var qm = {
     api: {
         requestLog: [],
         registerHelpers: function(){
-            qm.Quantimodo.TrackingReminderNotification.prototype.track = function(trackAll, successHandler, errorHandler){
-                qm.notifications.trackNotification(this, trackAll, successHandler, errorHandler);
+            qm.Quantimodo.TrackingReminderNotification.prototype.track = function(trackAll){
+                qm.notifications.trackNotification(this, trackAll);
             };
             qm.Quantimodo.TrackingReminderNotification.prototype.getCirclePage = function(){
                 return {
@@ -290,7 +290,7 @@ var qm = {
             }
             if(response.status === 401){
                 if(!options || !options.doNotSendToLogin){
-                    qm.qmLog.info("Not authenticated!");
+                    qm.qmLog.authDebug("Not authenticated!");
                 }
                 qm.auth.handle401Response(response, options)
             }else{
@@ -1711,7 +1711,7 @@ var qm = {
                     return accessToken;
                 }
             }
-            qm.qmLog.info("No access token or user!");
+            qm.qmLog.debug("No access token or user!");
             return null;
         },
         saveAccessTokenResponse: function(accessResponse){
@@ -1778,7 +1778,7 @@ var qm = {
             return accessTokenFromUrl;
         },
         deleteAllAccessTokens: function(reason){
-            qm.qmLog.info("deleteAllAccessTokens because: " + reason);
+            qm.qmLog.authDebug("deleteAllAccessTokens because: " + reason);
             qm.storage.removeItem('accessToken');
             var u = qm.userHelper.getUserFromLocalStorage();
             if(u){u.accessToken = null;}
@@ -1930,7 +1930,7 @@ var qm = {
                 return false;
             }
             if(afterLoginGoToStateOrUrl.indexOf('login') !== -1){
-                qm.qmLog.info('setAfterLoginGoToState: Why are we sending to login from login state?');
+                qm.qmLog.debug('setAfterLoginGoToState: Why are we sending to login from login state?');
                 return false;
             }
             return true;
@@ -1960,7 +1960,7 @@ var qm = {
         },
         setAfterLoginGoToUrlAndSendToLogin: function(reason){
             if(qm.urlHelper.indexOfCurrentUrl('login') !== -1){
-                qm.qmLog.info('qm.auth.setAfterLoginGoToUrlAndSendToLogin: Why are we sending to login from login state?');
+                qm.qmLog.authDebug('qm.auth.setAfterLoginGoToUrlAndSendToLogin: Why are we sending to login from login state?');
                 return;
             }
             qm.auth.setAfterLoginGoToUrl();
@@ -5428,10 +5428,13 @@ var qm = {
             qm.qmLog.info("Last notifications refresh " + qm.timeHelper.getTimeSinceString(qm.notifications.getLastNotificationsRefreshTime()));
             return qm.timeHelper.getUnixTimestampInSeconds() - qm.notifications.getLastNotificationsRefreshTime();
         },
-        addToSyncQueue: function(trackingReminderNotification){
-            qm.notifications.deleteById(trackingReminderNotification.id);
-            qm.userVariables.updateLatestMeasurementTime(trackingReminderNotification.variableName, trackingReminderNotification.modifiedValue);
-            return qm.storage.addToOrReplaceByIdAndMoveToFront(qm.items.notificationsSyncQueue, trackingReminderNotification);
+        addToSyncQueue: function(n){
+            if(n.action === 'trackAll'){
+                qm.storage.deleteByProperty(qm.items.trackingReminderNotifications, "variableId", n.variableId)
+            }
+            qm.notifications.deleteById(n.id);
+            qm.userVariables.updateLatestMeasurementTime(n.variableName, n.modifiedValue);
+            return qm.storage.addToOrReplaceByIdAndMoveToFront(qm.items.notificationsSyncQueue, n);
         },
         refreshIfEmpty: function(successHandler, errorHandler){
             if(!qm.notifications.getNumberInGlobalsOrLocalStorage()){
@@ -5697,9 +5700,20 @@ var qm = {
                 }
             }, errorHandler);
         },
+        syncNotifications: function(){
+            qm.qmLog.info("Notifications sync countdown completed.  Syncing now... ");
+            qm.storage.removeItem(qm.items.trackingReminderNotificationSyncScheduled);
+            // Post notification queue in 5 minutes if it's still there
+            qm.notifications.postNotifications();
+        },
         scheduleNotificationSync: function(delayInMilliseconds){
+            var queue = qm.storage.getItem(qm.items.notificationsSyncQueue);
+            if(queue && queue.length > 5){
+                qm.notifications.syncNotifications();
+                return;
+            }
             if(!delayInMilliseconds){
-                delayInMilliseconds = 3 * 60 * 1000;
+                delayInMilliseconds = 3 * 60 * 1000; // 3 minutes
                 //delayBeforePostingNotificationsInMilliseconds = 15 * 1000;
             }
             var scheduledAtMillis = qm.storage.getItem(qm.items.trackingReminderNotificationSyncScheduled);
@@ -5710,45 +5724,25 @@ var qm = {
                     qm.qmLog.info("Scheduling notifications sync for " + delayInMilliseconds / 1000 + " seconds from now..");
                 }
                 setTimeout(function(){
-                    qm.qmLog.info("Notifications sync countdown completed.  Syncing now... ");
-                    qm.storage.removeItem(qm.items.trackingReminderNotificationSyncScheduled);
-                    // Post notification queue in 5 minutes if it's still there
-                    qm.notifications.postNotifications();
+                    qm.notifications.syncNotifications();
                 }, delayInMilliseconds);
             }else{
                 if(!qm.platform.isMobile()){ // Better performance
-                    qm.qmLog.info("Not scheduling sync because one is already scheduled " + qm.timeHelper.getTimeSinceString(scheduledAtMillis));
+                    qm.qmLog.info("Not scheduling sync because one is already scheduled " +
+                        qm.timeHelper.getTimeSinceString(scheduledAtMillis));
                 }
             }
         },
-        trackNotification: function(trackingReminderNotification, trackAll){
-            qm.qmLog.debug('trackTrackingReminderNotificationDeferred: Going to track ', trackingReminderNotification);
-            if(!trackingReminderNotification.variableName && trackingReminderNotification.trackingReminderNotificationId){
-                var notificationFromLocalStorage = qm.storage.getElementOfLocalStorageItemById(qm.items.trackingReminderNotifications,
-                    trackingReminderNotification.trackingReminderNotificationId);
-                if(notificationFromLocalStorage){
-                    if(typeof trackingReminderNotification.modifiedValue !== "undefined" && trackingReminderNotification.modifiedValue !== null){
-                        notificationFromLocalStorage.modifiedValue = trackingReminderNotification.modifiedValue;
-                    }
-                    trackingReminderNotification = notificationFromLocalStorage;
-                }
-            }
-            qm.notifications.numberOfPendingNotifications -= qm.notifications.numberOfPendingNotifications;
-            trackingReminderNotification.action = 'track';
-            if(trackAll){
-                trackingReminderNotification.action = 'trackAll';
-            }
-            qm.notifications.addToSyncQueue(trackingReminderNotification);
-            if(trackAll){
-                qm.notifications.scheduleNotificationSync(1);
-            }else{
-                qm.notifications.scheduleNotificationSync();
-            }
+        trackNotification: function(n, trackAll){
+            if(trackAll){n.action = 'trackAll';}
+            if(!n.action){n.action = 'track';}
+            qm.qmLog.debug('trackTrackingReminderNotificationDeferred: Going to track ', n);
+            qm.notifications.addToSyncQueue(n);
+            qm.notifications.scheduleNotificationSync();
         },
-        snoozeNotification: function(trackingReminderNotification){
-            qm.notifications.numberOfPendingNotifications--;
-            trackingReminderNotification.action = 'snooze';
-            qm.notifications.addToSyncQueue(trackingReminderNotification);
+        snoozeNotification: function(n){
+            n.action = 'snooze';
+            qm.notifications.addToSyncQueue(n);
             qm.notifications.scheduleNotificationSync();
         },
         skipAllTrackingReminderNotifications: function(params, successHandler, errorHandler){
@@ -5758,43 +5752,34 @@ var qm = {
             qm.api.postToQuantiModo(params, 'v3/trackingReminderNotifications/skip/all', successHandler, errorHandler);
         },
         postNotifications: function(successHandler, errorHandler){
-            qm.qmLog.info("Called postTrackingReminderNotificationsDeferred...");
-            var trackingReminderNotificationsArray = qm.storage.getItem(qm.items.notificationsSyncQueue);
+            qm.qmLog.debug("Called postTrackingReminderNotificationsDeferred...");
+            var notifications = qm.storage.getItem(qm.items.notificationsSyncQueue);
             qm.storage.removeItem(qm.items.notificationsSyncQueue);
-            if(!trackingReminderNotificationsArray || !trackingReminderNotificationsArray.length){
-                if(successHandler){
-                    successHandler();
-                }
+            if(!notifications || !notifications.length){
+                if(successHandler){successHandler();}
                 return;
             }
-            if(!(trackingReminderNotificationsArray instanceof Array)){
-                trackingReminderNotificationsArray = [trackingReminderNotificationsArray];
+            if(!(notifications instanceof Array)){notifications = [notifications];}
+            if(!notifications[0]){
+                qm.qmLog.error("trackingReminderNotificationsArray[0] is " + notifications[0], {notifications: notifications});
             }
-            if(!trackingReminderNotificationsArray[0]){
-                qm.qmLog.error("trackingReminderNotificationsArray[0] is " + trackingReminderNotificationsArray[0],
-                    {trackingReminderNotificationsArray: trackingReminderNotificationsArray});
-            }
-            trackingReminderNotificationsArray[0] = qm.timeHelper.addTimeZoneOffsetProperty(trackingReminderNotificationsArray[0]);
-            qm.api.postToQuantiModo(trackingReminderNotificationsArray, 'v3/trackingReminderNotifications',
+            notifications[0] = qm.timeHelper.addTimeZoneOffsetProperty(notifications[0]);
+            qm.api.postToQuantiModo(notifications, 'v3/trackingReminderNotifications',
                 function(response){
                     var measurements = response.measurements;
                     if(!measurements && response.data){measurements = response.data.measurements;}
                     if(measurements){qm.measurements.addMeasurementsToMemory(measurements);}
                     if(successHandler){successHandler(response);}
                 }, function(error){
-                qm.qmLog.info("Called postTrackingReminderNotificationsToApi...");
-                var newNotificationsSyncQueue = qm.storage.getItem(qm.items.notificationsSyncQueue);
-                if(newNotificationsSyncQueue){
-                    trackingReminderNotificationsArray = trackingReminderNotificationsArray.concat(newNotificationsSyncQueue);
-                }
-                qm.storage.setItem(qm.items.notificationsSyncQueue, trackingReminderNotificationsArray);
-                if(errorHandler){
-                    errorHandler();
-                }
-            });
+                    qm.qmLog.error(error)
+                    qm.qmLog.info("Called postTrackingReminderNotificationsToApi...");
+                    var newNotificationsSyncQueue = qm.storage.getItem(qm.items.notificationsSyncQueue);
+                    if(newNotificationsSyncQueue){notifications = notifications.concat(newNotificationsSyncQueue);}
+                    qm.storage.setItem(qm.items.notificationsSyncQueue, notifications);
+                    if(errorHandler){errorHandler(error);}
+                });
         },
         skip: function(trackingReminderNotification){
-            qm.notifications.numberOfPendingNotifications -= qm.notifications.numberOfPendingNotifications;
             trackingReminderNotification.action = 'skip';
             qm.notifications.addToSyncQueue(trackingReminderNotification);
             qm.notifications.scheduleNotificationSync();
@@ -6750,7 +6735,7 @@ var qm = {
                 }
                 return qm.speech.speechAvailable = qm.speech.speechEnabled = false;
             }
-            qm.qmLog.info("speechSynthesis is available");
+            qm.qmLog.debug("speechSynthesis is available");
             var isWebBrowser = qm.platform.isWeb();
             var isChromeBrowser = qm.platform.browser.isChromeBrowser();
             if(isWebBrowser && !isChromeBrowser){
@@ -8535,6 +8520,7 @@ var qm = {
                 return obj;
             }
             var a = new Date();
+            obj.timeZone = moment.tz.guess();
             obj.timeZoneOffset = a.getTimezoneOffset();
             return obj;
         }
@@ -9252,7 +9238,7 @@ var qm = {
             });
         },
         getUserFromApi: function(successHandler, errorHandler, params){
-            qm.qmLog.info("Getting user from API...");
+            qm.qmLog.authDebug("Getting user from API...");
             function userSuccessHandler(userFromApi){
                 if(userFromApi && typeof userFromApi.displayName !== "undefined"){
                     qm.qmLog.info("Got user from API...");
