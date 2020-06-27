@@ -1,6 +1,6 @@
 angular.module('starter').controller('StudiesCtrl', ["$scope", "$ionicLoading", "$state", "$stateParams", "qmService",
-    "qmLogService", "$rootScope", "$ionicActionSheet", "$mdDialog", "$timeout",
-    function($scope, $ionicLoading, $state, $stateParams, qmService, qmLogService, $rootScope, $ionicActionSheet, $mdDialog, $timeout){
+    "qmLogService", "$rootScope", "$ionicActionSheet", "$mdDialog",
+    function($scope, $ionicLoading, $state, $stateParams, qmService, qmLogService, $rootScope, $ionicActionSheet, $mdDialog){
         $scope.controller_name = "StudiesCtrl";
         $scope.state = {
             variableName: null,
@@ -187,14 +187,22 @@ angular.module('starter').controller('StudiesCtrl', ["$scope", "$ionicLoading", 
         }
         function getEffectVariableName(){
             if(qm.studyHelper.getEffectVariableName($stateParams, $scope, $rootScope)){
-                return qm.studyHelper.getEffectVariableName($stateParams, $scope, $rootScope);
+                var name = qm.studyHelper.getEffectVariableName($stateParams, $scope, $rootScope);
+                if(name && name.indexOf(':') === 0){
+                    qmService.goToState(qm.staticData.stateNames.predictorSearch);
+                }
+                return name;
             }
             if($stateParams.fallBackToPrimaryOutcome && !getCauseVariableName()){
                 return qm.getPrimaryOutcomeVariable().name;
             }
         }
         function getCauseVariableName(){
-            return qm.studyHelper.getCauseVariableName($stateParams, $scope, $rootScope);
+            var name = qm.studyHelper.getCauseVariableName($stateParams, $scope, $rootScope);
+            if(name && name.indexOf(':') === 0){
+                qmService.goToState(qm.staticData.stateNames.outcomeSearch);
+            }
+            return name;
         }
         $rootScope.toggleFilterBar = function(){
             $scope.showSearchFilterBox = !$scope.showSearchFilterBox;
