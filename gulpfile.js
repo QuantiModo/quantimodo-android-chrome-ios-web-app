@@ -1179,10 +1179,10 @@ function outputApiErrorResponse(err, options) {
         qmLog.error("Request options: ", options);
         return;
     }
+    qmLog.error(options.uri + " error response", err.response.body);
     if(err.response.statusCode === 401){
         throw "Credentials invalid.  Please correct them in " + paths.src.devCredentials + " and try again.";
     }
-    qmLog.error(options.uri + " error response", err.response.body);
 }
 function getFileNameFromUrl(url) {
     return url.split('/').pop();
