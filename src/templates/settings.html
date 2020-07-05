@@ -148,7 +148,9 @@
             </ion-toggle>
         </div>
         <div id="time-zone" class="list card">
-            <a class="item"><i class="icon ion-clock"></i>&nbsp; Your Time Zone: &nbsp;UTC {{timeZone}}</a>
+            <a  class="item">
+                <i class="icon ion-clock"></i>&nbsp; Your Time Zone: <select class="js-Selector"></select>
+            </a>
         </div>
         <div id="user-description" class="list card" ng-show="user">
             <a ng-click="state.showBioModalPromptPopup($event)" class="item ">

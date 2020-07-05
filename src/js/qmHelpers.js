@@ -153,7 +153,8 @@ var qm = {
                 if(typeof moment.tz === "undefined"){
                     qmLog.error("moment.tz is not defined!");
                 } else {
-                    headers['X-Timezone'] = moment.tz.guess();
+                    var tz = moment.tz;
+                    headers['X-Timezone'] = tz.guess();
                 }
             }
             var token = qm.auth.getAccessToken();
@@ -9244,7 +9245,8 @@ var qm = {
                     }
                 }
             }
-            if(typeof qm.Quantimodo === "undefined"){  // Can't use QM SDK in service worker because it uses XHR instead of fetch
+            var alwaysUseXhr = true; // Sdk doesn't return timezone
+            if(alwaysUseXhr || typeof qm.Quantimodo === "undefined"){  // Can't use QM SDK in service worker because it uses XHR instead of fetch
                 qm.userHelper.getUserViaXhrOrFetch(userSuccessHandler, errorHandler, params);
             }else{   // Can't use QM SDK in service worker because it uses XHR instead of fetch
                 qm.userHelper.getUserViaSdk(userSuccessHandler, errorHandler, params);

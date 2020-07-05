@@ -30,9 +30,6 @@ angular.module('starter').controller('SettingsCtrl', ["$state", "$scope", "$ioni
             if (document.title !== $scope.state.title) {document.title = $scope.state.title;}
             qmLogService.debug('beforeEnter state ' + $state.current.name, null);
             $scope.debugMode = qmLog.getDebugMode();
-            if($rootScope.user){
-                $scope.timeZone = $rootScope.user.timeZoneOffset / 60 * -1;
-            }
             $scope.drawOverAppsPopupEnabled = qmService.notifications.drawOverAppsPopupEnabled();
             $scope.backgroundLocationTracking = !!(qm.storage.getItem('bgGPS'));
             qmService.navBar.showNavigationMenuIfHideUrlParamNotSet();
@@ -57,6 +54,7 @@ angular.module('starter').controller('SettingsCtrl', ["$state", "$scope", "$ioni
             }
         });
         $scope.$on('$ionicView.afterEnter', function(e){
+            setUserTimezoneInSelector();
             qmService.hideLoader();
         });
         $scope.completelyResetAppStateAndSendToLogin = function(reason){
@@ -429,4 +427,49 @@ angular.module('starter').controller('SettingsCtrl', ["$state", "$scope", "$ioni
                 qmService.showInfoToast("Canceled");
             });
         };
+        $scope.state.timezoneChange = function(ev) {
+            qmService.showInfoToast("Timezone set to updated!");
+            qmService.updateUserSettingsDeferred({timezone: result})
+        };
+
+        function initializeTimezoneOptions() {
+            var selectorOptions = moment.tz.names()
+                .reduce(function (memo, tz) {
+                    memo.push({
+                        name: tz,
+                        offset: moment.tz(tz).utcOffset()
+                    });
+                    return memo;
+                }, [])
+                .sort(function (a, b) {
+                    return a.offset - b.offset
+                })
+                .reduce(function (memo, tz) {
+                    const timezone = tz.offset ? moment.tz(tz.name).format('Z') : '';
+                    return memo.concat(`<option value="${tz.name}">(GMT${timezone}) ${tz.name}</option>`);
+                }, "");
+            document.querySelector(".js-Selector").innerHTML = selectorOptions;
+        }
+
+        initializeTimezoneOptions();
+
+        function setUserTimezoneInSelector() {
+            qm.userHelper.getUserFromLocalStorageOrApi(function (u) {
+                document.querySelector(".js-Selector").value = u.timezone;
+                document.querySelector(".js-Selector").addEventListener("change", function (e) {
+                    var val = e.target.value;
+                    if (val === "") {
+                        return;
+                    }
+                    var tz = moment.tz(val);
+                    var name = tz._z.name;
+                    if (u && u.timezone !== name) {
+                        qmService.showInfoToast("Timezone set to updated!");
+                        qmService.updateUserSettingsDeferred({timezone: name})
+                    }
+                });
+                const event = new Event("change");
+                document.querySelector(".js-Selector").dispatchEvent(event);
+            });
+        }
     }]);
