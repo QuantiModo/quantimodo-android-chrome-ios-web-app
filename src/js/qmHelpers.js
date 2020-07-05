@@ -9209,7 +9209,7 @@ var qm = {
             return true;
         },
         getUserViaXhrOrFetch: function(userSuccessHandler, errorHandler, params){
-            qm.api.getRequestUrl('api/v1/user', function(url){
+            qm.api.getRequestUrl('v1/user', function(url){
                 qm.api.getViaXhrOrFetch(url, function(user){
                     userSuccessHandler(user);
                 }, errorHandler)
