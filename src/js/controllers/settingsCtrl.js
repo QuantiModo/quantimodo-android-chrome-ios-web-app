@@ -446,7 +446,7 @@ angular.module('starter').controller('SettingsCtrl', ["$state", "$scope", "$ioni
                 })
                 .reduce(function (memo, tz) {
                     var timezone = tz.offset ? moment.tz(tz.name).format('Z') : '';
-                    return memo.concat(`<option value="${tz.name}">(GMT${timezone}) ${tz.name}</option>`);
+                    return memo.concat('<option value="'+tz.name+'">(GMT'+timezone+') '+tz.name+'</option>');
                 }, "");
             document.querySelector(".js-Selector").innerHTML = selectorOptions;
         }
