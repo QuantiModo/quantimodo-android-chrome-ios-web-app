@@ -10256,6 +10256,7 @@ var qm = {
             messaging.getToken()
                 .then(function(currentToken){
                     if(currentToken){
+                        qm.webNotifications.token = currentToken;
                         qm.qmLog.info("Firebase messaging token: " + currentToken);
                         var deviceTokenOnServer = qm.storage.getItem(qm.items.deviceTokenOnServer);
                         if(force || !deviceTokenOnServer || deviceTokenOnServer !== currentToken){
@@ -10270,14 +10271,16 @@ var qm = {
                     }
                 })
                 .catch(function(err){
-                    qm.qmLog.error('An error occurred while retrieving token. ', null, err);
+                    qm.qmLog.error('An error occurred while retrieving token because: '+err.message, null, err);
                     //showToken('Error retrieving Instance ID token. ', err);
                     //qm.webNotifications.postWebPushSubscriptionToServer(false);
                 });
         },
+        permissionGranted: null,
         subscribeUser: function(messaging, force){
             messaging.requestPermission()
                 .then(function(){
+                    qm.webNotifications.permissionGranted = true;
                     qm.qmLog.info('Notification permission granted.');
                     // Get Instance ID token. Initially this makes a network call, once retrieved
                     // subsequent calls to getToken will return from cache.
