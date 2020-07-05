@@ -303,12 +303,10 @@ var qm = {
                     qm.qmLog.debug('Version number not specified!', null, 'Version number not specified on qm.getAppSettings()');
                 }
             }
-            if(!params.accessToken && qm.auth.getAccessTokenFromUrlUserOrStorage()){
-                params.accessToken = qm.auth.getAccessTokenFromUrlUserOrStorage();
-            }
-            if(!params.clientId && qm.api.getClientId()){
-                params.clientId = qm.api.getClientId();
-            }
+            var t = qm.auth.getAccessTokenFromUrlUserOrStorage();
+            if(!params.accessToken && t){params.accessToken = t;}
+            var c = qm.api.getClientId();
+            if(!params.clientId && c){params.clientId = c;}
             params.platform = qm.platform.getCurrentPlatform();
             if(qm.devCredentials){
                 if(qm.devCredentials.username){
