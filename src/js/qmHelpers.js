@@ -153,7 +153,8 @@ var qm = {
                 if(typeof moment.tz === "undefined"){
                     qmLog.error("moment.tz is not defined!");
                 } else {
-                    headers['X-Timezone'] = moment.tz.guess();
+                    var tz = moment.tz;
+                    headers['X-Timezone'] = tz.guess();
                 }
             }
             var token = qm.auth.getAccessToken();
@@ -603,6 +604,10 @@ var qm = {
         },
         getViaFetch: function(url, successHandler, errorHandler){
             qm.qmLog.pushDebug("Making get request to " + url);
+            if(typeof fetch === "undefined") { // For testing in nodejs
+                var fetch = require("../../node_modules/node-fetch/lib/index.js");
+                global.Headers = fetch.Headers;
+            }
             fetch(url, {
                 method: 'get',
                 headers: new Headers(qm.api.getDefaultHeaders())
@@ -698,7 +703,7 @@ var qm = {
                         }
                     }
                     function getAppName(){
-                        if(qm.chrome.getChromeManifest()){
+                        if(qm.chrome && qm.chrome.getChromeManifest()){
                             return qm.chrome.getChromeManifest().name;
                         }
                         return qm.urlHelper.getParam('appName');
@@ -707,7 +712,7 @@ var qm = {
                         url = addQueryParameter(url, 'appName', getAppName());
                     }
                     function getAppVersion(){
-                        if(qm.chrome.getChromeManifest()){
+                        if(qm.chrome && qm.chrome.getChromeManifest()){
                             return qm.chrome.getChromeManifest().version;
                         }
                         var appSettings = qm.getAppSettings();
@@ -9204,7 +9209,7 @@ var qm = {
             return true;
         },
         getUserViaXhrOrFetch: function(userSuccessHandler, errorHandler, params){
-            qm.api.getRequestUrl('api/v1/user', function(url){
+            qm.api.getRequestUrl('v1/user', function(url){
                 qm.api.getViaXhrOrFetch(url, function(user){
                     userSuccessHandler(user);
                 }, errorHandler)
@@ -9240,7 +9245,8 @@ var qm = {
                     }
                 }
             }
-            if(typeof qm.Quantimodo === "undefined"){  // Can't use QM SDK in service worker because it uses XHR instead of fetch
+            var alwaysUseXhr = true; // Sdk doesn't return timezone
+            if(alwaysUseXhr || typeof qm.Quantimodo === "undefined"){  // Can't use QM SDK in service worker because it uses XHR instead of fetch
                 qm.userHelper.getUserViaXhrOrFetch(userSuccessHandler, errorHandler, params);
             }else{   // Can't use QM SDK in service worker because it uses XHR instead of fetch
                 qm.userHelper.getUserViaSdk(userSuccessHandler, errorHandler, params);
