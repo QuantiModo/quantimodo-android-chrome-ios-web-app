@@ -604,6 +604,10 @@ var qm = {
         },
         getViaFetch: function(url, successHandler, errorHandler){
             qm.qmLog.pushDebug("Making get request to " + url);
+            if(typeof fetch === "undefined") { // For testing in nodejs
+                var fetch = require("../../node_modules/node-fetch/lib/index.js");
+                global.Headers = fetch.Headers;
+            }
             fetch(url, {
                 method: 'get',
                 headers: new Headers(qm.api.getDefaultHeaders())
@@ -699,7 +703,7 @@ var qm = {
                         }
                     }
                     function getAppName(){
-                        if(qm.chrome.getChromeManifest()){
+                        if(qm.chrome && qm.chrome.getChromeManifest()){
                             return qm.chrome.getChromeManifest().name;
                         }
                         return qm.urlHelper.getParam('appName');
@@ -708,7 +712,7 @@ var qm = {
                         url = addQueryParameter(url, 'appName', getAppName());
                     }
                     function getAppVersion(){
-                        if(qm.chrome.getChromeManifest()){
+                        if(qm.chrome && qm.chrome.getChromeManifest()){
                             return qm.chrome.getChromeManifest().version;
                         }
                         var appSettings = qm.getAppSettings();
