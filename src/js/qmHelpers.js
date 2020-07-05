@@ -7700,9 +7700,7 @@ var qm = {
         },
         clearStorageExceptForUnitsAndCommonVariables: function(){
             qm.qmLog.info('Clearing local storage!');
-            var units = qm.staticData.units;
             qm.storage.clear();
-            qm.storage.setItem(qm.items.units, units);
             qm.localForage.clear();
         },
     },
