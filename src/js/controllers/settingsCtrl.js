@@ -445,7 +445,7 @@ angular.module('starter').controller('SettingsCtrl', ["$state", "$scope", "$ioni
                     return a.offset - b.offset
                 })
                 .reduce(function (memo, tz) {
-                    const timezone = tz.offset ? moment.tz(tz.name).format('Z') : '';
+                    var timezone = tz.offset ? moment.tz(tz.name).format('Z') : '';
                     return memo.concat(`<option value="${tz.name}">(GMT${timezone}) ${tz.name}</option>`);
                 }, "");
             document.querySelector(".js-Selector").innerHTML = selectorOptions;
@@ -468,7 +468,7 @@ angular.module('starter').controller('SettingsCtrl', ["$state", "$scope", "$ioni
                         qmService.updateUserSettingsDeferred({timezone: name})
                     }
                 });
-                const event = new Event("change");
+                var event = new Event("change");
                 document.querySelector(".js-Selector").dispatchEvent(event);
             });
         }
