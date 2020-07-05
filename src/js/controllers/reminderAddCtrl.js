@@ -42,9 +42,7 @@ angular.module('starter').controller('ReminderAddCtrl', ["$scope", "$state", "$s
             ]
         };
         var u = $rootScope.user;
-        if(u && (u.administrator || u.user.email.toLowerCase().indexOf('test') > -1)){
-            $scope.state.frequencies.push({id: 15, name: 'Minutely'});
-        }
+        if(qm.userHelper.isTestUserOrAdmin()){$scope.state.frequencies.push({id: 15, name: 'Minutely'});}
         if(!u){qmService.refreshUser();}
         $scope.$on('$ionicView.beforeEnter', function(){
             if (document.title !== $scope.state.title) {document.title = $scope.state.title;}
