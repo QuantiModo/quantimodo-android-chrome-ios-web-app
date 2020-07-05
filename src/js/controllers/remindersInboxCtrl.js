@@ -167,7 +167,6 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
             notificationAction(n, function (params) {
                 qm.notifications.track(params);
             });
-            refreshIfRunningOutOfNotifications();
         };
         function getFavorites(){
             var cat = getVariableCategoryName();
@@ -219,7 +218,7 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
                         hideNotification(n);
                     }
                 })
-            })
+            });
             return total;
         }
         function unhideByVariableId(variableId) {
@@ -291,6 +290,7 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
             if(!getNumberOfDisplayedNotifications()){
                 getTrackingReminderNotifications();
             }
+            refreshIfRunningOutOfNotifications();
             return n;
         };
         $scope.track = function(n, value, $ev, trackAll){ // Keep trackAll param because it's used in templates/items/notification-item.html
@@ -307,7 +307,6 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
                 if(value !== null){params.modifiedValue = value;}
                 qm.notifications.track(params);
             });
-            refreshIfRunningOutOfNotifications();
             if($scope.state.showTrackAllButtons){
                 qm.toast.showQuestionToast('Want to record ' + valueUnit + " for ALL remaining " + variableName + " notifications?",
                 'Recorded ' + valueUnit + " for ALL remaining " + variableName + " notifications!", function () {
@@ -362,7 +361,6 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
                 qm.notifications.skip(params);
                 qmService.logEventToGA(qm.analytics.eventCategories.inbox, "skip");
             });
-            refreshIfRunningOutOfNotifications();
         };
         $scope.snooze = function(n, $event){
             if(isGhostClick($event)){return;}
@@ -372,7 +370,6 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
                 qm.notifications.snooze(params);
             });
             qmService.logEventToGA(qm.analytics.eventCategories.inbox, "snooze");
-            refreshIfRunningOutOfNotifications();
         };
         function wordClicked(word){
             alert(word.text + " appears " + word.count + " times and the average " + qm.getPrimaryOutcomeVariable().name +
