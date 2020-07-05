@@ -9125,6 +9125,14 @@ var qm = {
                 successHandler(checkUserId(user));
             });
         },
+        isAdmin: function(){
+            var u = qm.getUser();
+            if(!u){return false;}
+            return u.administrator;
+        },
+        isTestUserOrAdmin: function(){
+            return qm.userHelper.isTestUser() || qm.userHelper.isAdmin();
+        },
         isTestUser: function(){
             var user = qm.globalHelper.getItem(qm.items.user); // Can't use qm.getUser() because of recursion
             if(!user){
