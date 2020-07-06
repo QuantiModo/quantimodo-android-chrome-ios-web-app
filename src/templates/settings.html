@@ -147,8 +147,18 @@
                 <div ng-if="!user.stripeActive"><i class="icon ion-cash"></i> &nbsp Free Mode &nbsp</div>
             </ion-toggle>
         </div>
-        <div id="time-zone" class="list card">
-            <a class="item"><i class="icon ion-clock"></i>&nbsp; Your Time Zone: &nbsp;UTC {{timeZone}}</a>
+        <div id="time-zone" class="card sign-in" ng-if="user">
+            <div class="item item-divider"><i class="icon ion-clock"></i>&nbsp; Your Time Zone &nbsp;</div>
+            <div class="item">
+                <md-input-container style="margin: 0 0;">
+                    <md-select ng-model="user.timezone" ng-change="state.updateTimezone()">
+                        <md-option><em>None</em></md-option>
+                        <md-option ng-repeat="timezone in state.timezones" ng-value="timezone">
+                            {{timezone}}
+                        </md-option>
+                    </md-select>
+                </md-input-container>
+            </div>
         </div>
         <div id="user-description" class="list card" ng-show="user">
             <a ng-click="state.showBioModalPromptPopup($event)" class="item ">
@@ -166,11 +176,13 @@
             <a class="item"> <i class="icon ion-ios-color-wand"></i> &nbsp; Downgrade to Lite </a>
         </div>
         <div id="image-credits" class="list card"
-             ng-click="openUrl('https://' + appSettings.clientId + '.quantimo.do/api/v2/image-credits')">
+             ng-click="openUrl('https://app.quantimo.do/api/v2/image-credits')">
             <a class="item"><i class="icon ion-ios-camera-outline"></i>&nbsp;Image Credits</a>
         </div>
         <div id="dialog-flow" class="list card">
-            <a href="https://assistant.google.com/services/invoke/uid/000000d5ea7143b3?intent=Record%20Measurement%20Intent">
+            <a class="item"
+               href="https://assistant.google.com/services/invoke/uid/000000d5ea7143b3?intent=Record%20Measurement%20Intent">
+                <i class="icon ion-ios-camera-outline"></i>
                 🅖 Ask Dr. Modo to Record a Measurement
             </a>
         </div>
