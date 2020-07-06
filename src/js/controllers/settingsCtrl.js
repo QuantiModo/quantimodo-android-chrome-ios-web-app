@@ -7,6 +7,7 @@ angular.module('starter').controller('SettingsCtrl', ["$state", "$scope", "$ioni
         $scope.controller_name = "SettingsCtrl";
         $scope.state = {
             title: "Settings",
+            timezones: moment.tz.names(),
             updatePrimaryOutcomeVariable: function(ev){
                 qm.help.getExplanation('primaryOutcomeVariable', null, function(explanation){
                     var dialogParameters = {
@@ -54,7 +55,6 @@ angular.module('starter').controller('SettingsCtrl', ["$state", "$scope", "$ioni
             }
         });
         $scope.$on('$ionicView.afterEnter', function(e){
-            setUserTimezoneInSelector();
             qmService.hideLoader();
         });
         $scope.completelyResetAppStateAndSendToLogin = function(reason){
@@ -427,49 +427,8 @@ angular.module('starter').controller('SettingsCtrl', ["$state", "$scope", "$ioni
                 qmService.showInfoToast("Canceled");
             });
         };
-        $scope.state.timezoneChange = function(ev) {
-            qmService.showInfoToast("Timezone set to updated!");
-            qmService.updateUserSettingsDeferred({timezone: result})
+        $scope.state.updateTimezone = function() {
+            qmService.showInfoToast("Timezone changed to "+$rootScope.user.timezone);
+            qmService.updateUserSettingsDeferred({timezone: $rootScope.user.timezone})
         };
-
-        function initializeTimezoneOptions() {
-            var selectorOptions = moment.tz.names()
-                .reduce(function (memo, tz) {
-                    memo.push({
-                        name: tz,
-                        offset: moment.tz(tz).utcOffset()
-                    });
-                    return memo;
-                }, [])
-                .sort(function (a, b) {
-                    return a.offset - b.offset
-                })
-                .reduce(function (memo, tz) {
-                    var timezone = tz.offset ? moment.tz(tz.name).format('Z') : '';
-                    return memo.concat('<option value="'+tz.name+'">(GMT'+timezone+') '+tz.name+'</option>');
-                }, "");
-            document.querySelector(".js-Selector").innerHTML = selectorOptions;
-        }
-
-        initializeTimezoneOptions();
-
-        function setUserTimezoneInSelector() {
-            qm.userHelper.getUserFromLocalStorageOrApi(function (u) {
-                document.querySelector(".js-Selector").value = u.timezone;
-                document.querySelector(".js-Selector").addEventListener("change", function (e) {
-                    var val = e.target.value;
-                    if (val === "") {
-                        return;
-                    }
-                    var tz = moment.tz(val);
-                    var name = tz._z.name;
-                    if (u && u.timezone !== name) {
-                        qmService.showInfoToast("Timezone set to updated!");
-                        qmService.updateUserSettingsDeferred({timezone: name})
-                    }
-                });
-                var event = new Event("change");
-                document.querySelector(".js-Selector").dispatchEvent(event);
-            });
-        }
     }]);
