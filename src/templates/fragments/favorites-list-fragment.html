@@ -3,7 +3,5 @@
      ng-if="state.favoritesArray.length && !favorite.hide"
      ng-repeat="trackingReminder in state.favoritesArray track by $index"
      on-hold="showFavoriteActionSheet(favorite, $index, null, state)">
-    <div class="item" style="padding-bottom:0px;">
-        <div ng-include="'templates/items/favorite-item.html'"></div>
-    </div>
+    <div ng-include="'templates/items/favorite-item.html'"></div>
 </div>

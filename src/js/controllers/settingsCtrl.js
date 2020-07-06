@@ -7,6 +7,7 @@ angular.module('starter').controller('SettingsCtrl', ["$state", "$scope", "$ioni
         $scope.controller_name = "SettingsCtrl";
         $scope.state = {
             title: "Settings",
+            timezones: moment.tz.names(),
             updatePrimaryOutcomeVariable: function(ev){
                 qm.help.getExplanation('primaryOutcomeVariable', null, function(explanation){
                     var dialogParameters = {
@@ -30,9 +31,6 @@ angular.module('starter').controller('SettingsCtrl', ["$state", "$scope", "$ioni
             if (document.title !== $scope.state.title) {document.title = $scope.state.title;}
             qmLogService.debug('beforeEnter state ' + $state.current.name, null);
             $scope.debugMode = qmLog.getDebugMode();
-            if($rootScope.user){
-                $scope.timeZone = $rootScope.user.timeZoneOffset / 60 * -1;
-            }
             $scope.drawOverAppsPopupEnabled = qmService.notifications.drawOverAppsPopupEnabled();
             $scope.backgroundLocationTracking = !!(qm.storage.getItem('bgGPS'));
             qmService.navBar.showNavigationMenuIfHideUrlParamNotSet();
@@ -428,5 +426,9 @@ angular.module('starter').controller('SettingsCtrl', ["$state", "$scope", "$ioni
             }, function() {
                 qmService.showInfoToast("Canceled");
             });
+        };
+        $scope.state.updateTimezone = function() {
+            qmService.showInfoToast("Timezone changed to "+$rootScope.user.timezone);
+            qmService.updateUserSettingsDeferred({timezone: $rootScope.user.timezone})
         };
     }]);
