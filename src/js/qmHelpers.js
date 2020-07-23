@@ -1975,6 +1975,10 @@ var qm = {
     },
     builder: {},
     chartHelper: {
+        configureHighchart: function(highchartConfig){
+            qm.chartHelper.setChartExportingOptionsOnce(highchartConfig);
+            qm.chartHelper.setTooltipFormatterFunction(highchartConfig);
+        },
         setChartExportingOptionsOnce: function(highchartConfig){
             if(!highchartConfig){
                 qm.qmLog.info("No highchartConfig provided to setChartExportingOptionsOnce");
@@ -1983,16 +1987,25 @@ var qm = {
             highchartConfig.exporting = {enabled: qm.platform.isWeb()};
             return highchartConfig;
         },
-        setChartExportOptionsForAllSubProperties: function(something){
+        configureHighchartSubProperties: function(something){
             var keys = Object.keys(something);
             for(var i = 0; i < keys.length; i++){
                 if(something[keys[i]] && typeof something[keys[i]] === 'object'){
                     if(something[keys[i]].highchartConfig){
-                        qm.chartHelper.setChartExportingOptionsOnce(something[keys[i]].highchartConfig)
+                        qm.chartHelper.configureHighchart(something[keys[i]].highchartConfig)
                     }else{
-                        qm.chartHelper.setChartExportOptionsForAllSubProperties(something[keys[i]])
+                        qm.chartHelper.configureHighchartSubProperties(something[keys[i]])
                     }
                 }
+            }
+        },
+        setTooltipFormatterFunction: function(highchartConfig) {
+            if (highchartConfig.tooltip &&
+                highchartConfig.tooltip.formatter &&
+                highchartConfig.tooltip.formatter._expression) {
+                var exp = highchartConfig.tooltip.formatter._expression;
+                var def = exp.substring(exp.indexOf("{") + 1, exp.lastIndexOf("}"));
+                highchartConfig.tooltip.formatter = new Function(def);
             }
         }
     },
@@ -8272,7 +8285,7 @@ var qm = {
                 qm.qmLog.error("No study provided to processAndSaveStudy.  We got: ", data, data);
                 return false;
             }
-            qm.chartHelper.setChartExportOptionsForAllSubProperties(study);
+            qm.chartHelper.configureHighchartSubProperties(study);
             if(study.text){  // Hack to make consistent with basic correlations to use same HTML template
                 study.statistics = qm.objectHelper.copyPropertiesFromOneObjectToAnother(study.text, study.statistics, false);
                 delete study.text;
