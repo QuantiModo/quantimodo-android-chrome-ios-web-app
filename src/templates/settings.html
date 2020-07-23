@@ -168,8 +168,8 @@
             </a>
         </div>
         <div id="delete-account" style="text-align: center;">
-            <md-button ng-if="user" ng-click="openDeleteUserAccountDialog($event)">Delete
-                Account
+            <md-button ng-if="user" ng-click="openDeleteUserAccountDialog($event)">
+                Delete Account
             </md-button>
         </div>
         <div id="downgrade-button" ng-if="user && user.stripeActive" class="list card" ng-click="downgrade()">
