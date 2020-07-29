@@ -8954,7 +8954,7 @@ var qm = {
             }
             if(!url){
                 qm.qmLog.errorAndExceptionTestingOrDevelopment("No url from event in getParameterFromEventUrl!  event is "+
-                    JSON.stringify(event), null, event)
+                    JSON.stringify(event), null, event);
                 return;
             }
             if(!qm.urlHelper.isQuantiMoDoDomain(url)){
@@ -8967,6 +8967,10 @@ var qm = {
             return value;
         },
         isQuantiMoDoDomain: function(urlToCheck){
+            if(typeof urlToCheck.indexOf !== "function"){
+                qmLog.errorAndExceptionTestingOrDevelopment("urlToCheck is a "+typeof urlToCheck, urlToCheck);
+                return null;
+            }
             var isHttps = urlToCheck.indexOf("https://") === 0;
             var matchesQuantiModo = qm.urlHelper.getRootDomain(urlToCheck) === 'quantimo.do';
             var result = isHttps && matchesQuantiModo;
