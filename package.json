@@ -85,7 +85,7 @@
     "gulp-zip": "5.0.2",
     "inquirer": "7.3.3",
     "ionic": "2.2.3",
-    "jshint": "2.11.0",
+    "jshint": "2.11.2",
     "lazypipe": "1.0.2",
     "morgan": "1.10.0",
     "ng-material-floating-button": "0.6.2",
