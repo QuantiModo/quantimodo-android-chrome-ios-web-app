@@ -564,7 +564,7 @@ var qm = {
             qm.api.getRequestUrl(path, function(url){
                 qm.qmLog.info("Making POST request to " + url);
                 if(typeof XMLHttpRequest !== "undefined"){
-                    qm.api.postViaXhr(body, url, successHandler);
+                    qm.api.postViaXhr(body, url, successHandler, errorHandler);
                 }else{
                     qm.api.postViaFetch(body, url, successHandler, errorHandler);  // Need fetch for service worker
                 }
@@ -637,7 +637,12 @@ var qm = {
                 if(xhr.readyState === XMLHttpRequest.DONE){
                     var fallback = null; // Just return null instead of 500 page HTML
                     var responseObject = qm.stringHelper.parseIfJsonString(xhr.responseText, fallback);
-                    successHandler(responseObject);
+                    if ( xhr.status === 200 ) {
+                        successHandler(responseObject);
+                    } else {
+                        qm.qmLog.error("qm.api.get error from " + url + " request: " + xhr.responseText, null, responseObject);
+                        if(errorHandler){errorHandler(responseObject);}
+                    }
                 }
             };
             xhr.send(null);
@@ -666,7 +671,7 @@ var qm = {
             }
             return xhr;
         },
-        postViaXhr: function(body, url, successHandler){
+        postViaXhr: function(body, url, successHandler, errorHandler){
             var xhr = new XMLHttpRequest();   // new HttpRequest instance
             xhr.open("POST", url);
             xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
@@ -675,8 +680,11 @@ var qm = {
                 if(xhr.readyState === XMLHttpRequest.DONE){
                     var fallback = xhr.responseText;
                     var responseObject = qm.stringHelper.parseIfJsonString(xhr.responseText, fallback);
-                    if(successHandler){
-                        successHandler(responseObject);
+                    if ( xhr.status === 201 ) {
+                        if(successHandler){successHandler(responseObject);}
+                    } else {
+                        qm.qmLog.error("qm.api.get error from " + url + " request: " + xhr.responseText, null, responseObject);
+                        if(errorHandler){errorHandler(responseObject);}
                     }
                 }
             };
@@ -8528,6 +8536,29 @@ var qm = {
             obj.timeZone = moment.tz.guess();
             obj.timeZoneOffset = a.getTimezoneOffset();
             return obj;
+        },
+        guessTimeZoneIfNecessary: function(cb){
+            var u = qm.getUser();
+            if(!u || u.timezone){
+                if(cb){cb();}
+                return;
+            }
+            var a = new Date();
+            var params = {};
+            params.timeZone = moment.tz.guess();
+            params.timeZoneOffset = a.getTimezoneOffset();
+            if(!params.timeZoneOffset){
+                qmLog.info("Not setting timeZone because offset is 0");
+                if(cb){cb();}
+                return;
+            }
+            qm.userHelper.updateUserSettings(params, function (user) {
+                qm.toast.infoLink("Your timezone has been set to "+params.timeZone+
+                    ". You can change it on the settings page.", "Settings", function(){
+                    window.location.href = qm.urlHelper.getSettingsUrl();
+                });
+                if(cb){cb();}
+            });
         }
     },
     toast: {
@@ -8584,7 +8615,32 @@ var qm = {
                     callback(result);
                 }
             })
-        }
+        },
+        infoLink: function(message, confirmButtonText, callback){
+            var Toast = Swal.mixin({
+                toast: true,
+                icon: "success",
+                position: 'top-end',
+                confirmButtonText: confirmButtonText,
+                //cancelButtonText: "No",
+                showConfirmButton: true,
+                showCloseButton: true,
+                timer: 15000,
+                timerProgressBar: true,
+                onOpen: function (toast) {
+                    toast.addEventListener('mouseenter', Swal.stopTimer)
+                    toast.addEventListener('mouseleave', Swal.resumeTimer)
+                }
+            });
+            Toast.fire({
+                icon: 'success',
+                title: message
+            }).then(function(result){
+                if (result.value) {
+                    callback(result);
+                }
+            })
+        },
     },
     trackingReminderNotifications: [],
     ui: {
@@ -9101,6 +9157,9 @@ var qm = {
             var referrerClientId = qm.getAppSettings().clientId;
             return "https://"+subDomain+".quantimo.do/#/app/history-all-category/Anything?accessToken=" + accessToken +
                 '&quantimodoClientId=' + referrerClientId;
+        },
+        getSettingsUrl: function () {
+            return qm.urlHelper.getIonicUrlForPath('settings');
         }
     },
     user: null,
@@ -9324,6 +9383,20 @@ var qm = {
                 }, errorHandler, params, 'getUsersFromApi');
             });
         },
+        updateUserSettings: function(params, successHandler, errorHandler){
+            qm.api.postToQuantiModo(params, 'v3/userSettings', function (response) {
+                var user = response.user || response.data || response;
+                if(!user.email){
+                    qmLog.errorAndExceptionTestingOrDevelopment("no user returned from userSettings.  Here's the response: ", response);
+                    if(errorHandler){
+                        errorHandler("no user returned from userSettings.")
+                    }
+                    return;
+                }
+                qm.userHelper.setUser(response.user);
+                if(successHandler){successHandler(response);}
+            }, errorHandler)
+        }
     },
     commonVariablesHelper: {
         getFromLocalStorage: function(params, successHandler){

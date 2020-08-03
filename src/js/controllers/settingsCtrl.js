@@ -51,7 +51,13 @@ angular.module('starter').controller('SettingsCtrl', ["$state", "$scope", "$ioni
             if(!$rootScope.user){
                 qmService.login.sendToLoginIfNecessaryAndComeBack("No $rootScope.user in " + $state.current.name);
             } else {
-                qmService.refreshUser();
+                qm.timeHelper.guessTimeZoneIfNecessary(function (u) {
+                    if(u){
+                        qmService.setUser(u)
+                    } else {
+                        qmService.refreshUser();
+                    }
+                })
             }
         });
         $scope.$on('$ionicView.afterEnter', function(e){
