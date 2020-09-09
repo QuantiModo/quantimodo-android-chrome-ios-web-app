@@ -45,7 +45,7 @@
                         {{unit.name}}
                     </md-option>
                 </md-select>
-                <select id="unitSelector" ng-model="state.variableObject.unit.abbreviatedName"
+                <select id="unitSelector" ng-model="state.variableObject.unitAbbreviatedName"
                         ng-show="platform.isMobile"
                         ng-options="unit.abbreviatedName as unit.name for unit in state.variableObject.availableUnits">
                 </select>
