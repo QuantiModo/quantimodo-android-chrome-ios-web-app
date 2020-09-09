@@ -99,7 +99,7 @@
     "request-promise": "4.2.6",
     "run-sequence": "2.2.1",
     "shelljs": "0.8.4",
-    "superagent": "3.8.3",
+    "superagent": "6.1.0",
     "sw-precache": "5.2.1",
     "taco-team-build": "0.2.5",
     "time-require": "0.1.2",
