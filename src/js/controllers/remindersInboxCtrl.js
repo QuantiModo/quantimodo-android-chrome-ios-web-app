@@ -272,10 +272,6 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
                 if(undoFunction){undoFunction();}
             });
             if(!n.trackingReminderNotificationId){n.trackingReminderNotificationId = n.id;}
-            if($state.current.name === "app.remindersInboxCompact"){
-                if(!getNumberOfDisplayedNotifications()){window.close();}
-                $scope.trackingReminderNotifications.shift();
-            }
             setTimeout(function () {
                 if(qmService.notifications.undo){
                     n.hide = false;
