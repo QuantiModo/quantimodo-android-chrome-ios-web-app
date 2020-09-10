@@ -3590,8 +3590,14 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             });
             return deferred.promise;
         };
-        qmService.deleteV1Measurements = function(measurements, successHandler, errorHandler){
-            qmService.post('api/v3/measurements/delete', ['variableId', 'variableName', 'startTimeEpoch', 'id'], measurements, successHandler, errorHandler);
+        qmService.deleteV1Measurements = function(measurement, successHandler, errorHandler){
+            var startAt = measurement.startAt || measurement.startTime || measurement.startTimeEpoch || null;
+            if(!startAt){
+                qm.qmLog.errorAndExceptionTestingOrDevelopment("No start time provided to delete measurement: ", measurement);
+            }
+            qmService.post('api/v3/measurements/delete',
+                ['variableId', 'variableName', 'startTimeEpoch', 'id'],
+                measurement, successHandler, errorHandler);
         };
         qmService.postMeasurementsExport = function(type, successHandler, errorHandler){
             qmService.post('api/v2/measurements/request_' + type, [], [], successHandler, errorHandler);
