@@ -735,6 +735,9 @@ var qm = {
                     if(qm.api.getClientId()){
                         url = addQueryParameter(url, 'clientId', qm.api.getClientId());
                     }
+                    if(qm.appMode.isDevelopment()){
+                        url = addQueryParameter(url, 'XDEBUG_SESSION_START', "PHPSTORM");
+                    }
                     url = addQueryParameter(url, 'platform', qm.platform.getCurrentPlatform());
                     return url;
                 }
