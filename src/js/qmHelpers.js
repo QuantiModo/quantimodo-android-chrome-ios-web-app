@@ -680,7 +680,7 @@ var qm = {
                 if(xhr.readyState === XMLHttpRequest.DONE){
                     var fallback = xhr.responseText;
                     var responseObject = qm.stringHelper.parseIfJsonString(xhr.responseText, fallback);
-                    if ( xhr.status === 201 ) {
+                    if ( xhr.status === 201 || responseObject.success === true) {
                         if(successHandler){successHandler(responseObject);}
                     } else {
                         qm.qmLog.error("qm.api.get error from " + url + " request: " + xhr.responseText, null, responseObject);
@@ -5789,13 +5789,17 @@ var qm = {
                     if(!measurements && response.data){measurements = response.data.measurements;}
                     if(measurements){qm.measurements.addMeasurementsToMemory(measurements);}
                     if(successHandler){successHandler(response);}
-                }, function(error){
-                    qm.qmLog.error(error)
-                    qm.qmLog.info("Called postTrackingReminderNotificationsToApi...");
-                    var newNotificationsSyncQueue = qm.storage.getItem(qm.items.notificationsSyncQueue);
-                    if(newNotificationsSyncQueue){notifications = notifications.concat(newNotificationsSyncQueue);}
-                    qm.storage.setItem(qm.items.notificationsSyncQueue, notifications);
-                    if(errorHandler){errorHandler(error);}
+                }, function(response){
+                    if(!response.success){
+                        qm.qmLog.error(response.message)
+                        var newNotificationsSyncQueue = qm.storage.getItem(qm.items.notificationsSyncQueue);
+                        if(newNotificationsSyncQueue){notifications = notifications.concat(newNotificationsSyncQueue);}
+                        qm.storage.setItem(qm.items.notificationsSyncQueue, notifications);
+                        if(errorHandler){errorHandler(error);}
+                    } else{ // This happens when the error is a message saying the notification was already deleted
+                        // so we don't want to put notifications back in queue
+                        qm.qmLog.warn(response.message)
+                    }
                 });
         },
         skip: function(trackingReminderNotification){
