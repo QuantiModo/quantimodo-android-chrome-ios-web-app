@@ -8789,6 +8789,15 @@ var qm = {
                 }
             }
             return arr;
+        },
+        find:function(v){
+            var nameOrId;
+            if(typeof v === "string" || data === parseInt(data, 10)){
+                nameOrId = v;
+            } else {
+                nameOrId = v.unitId || v.defaultUnitId || v.defaultUnitAbbreviatedName || v.unitAbbreviatedName || v.id;
+            }
+            return qm.unitHelper.getByNameAbbreviatedNameOrId(nameOrId);
         }
     },
     urlHelper: {

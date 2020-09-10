@@ -2200,7 +2200,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     delete trackingReminder.id;
                     trackingReminder.variableName = variableObject.name;
                     if(variableObject.unit){
-                        trackingReminder.unitAbbreviatedName = variableObject.unit.abbreviatedName;
+                        trackingReminder.unitAbbreviatedName = variableObject.unitAbbreviatedName;
                     }
                     trackingReminder.valence = variableObject.valence;
                     trackingReminder.variableCategoryName = variableObject.variableCategoryName;
@@ -2213,7 +2213,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                         qmService.goToState('app.reminderAdd', {variableObject: variableObject, doneState: doneState});
                         return;
                     }
-                    var unitAbbreviatedName = (variableObject.unit) ? variableObject.unit.abbreviatedName : variableObject.abbreviatedName;
+                    var unitAbbreviatedName = (variableObject.unit) ? variableObject.unitAbbreviatedName : variableObject.abbreviatedName;
                     if(unitAbbreviatedName === 'serving'){
                         trackingReminder.defaultValue = 1;
                     }
@@ -7150,7 +7150,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             var trackingReminder = {};
             trackingReminder.variableId = variableObject.variableId;
             trackingReminder.variableName = variableObject.name;
-            trackingReminder.unitAbbreviatedName = variableObject.unit.abbreviatedName;
+            trackingReminder.unitAbbreviatedName = variableObject.unitAbbreviatedName;
             trackingReminder.valence = variableObject.valence;
             trackingReminder.variableCategoryName = variableObject.variableCategoryName;
             trackingReminder.reminderFrequency = 0;
