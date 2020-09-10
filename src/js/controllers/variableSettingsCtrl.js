@@ -118,7 +118,7 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
             minLength: 2
         };
         function getConversionFactor(conversionFactor){
-            if($scope.state.variableObject.unit.abbreviatedName === "/5"){
+            if($scope.state.variableObject.unitAbbreviatedName === "/5"){
                 return 1;
             }
             return conversionFactor;
@@ -249,7 +249,7 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
                 helpText: "Search for a duplicated or synonymous variable that you'd like to join to " +
                     $scope.state.variableObject.name + ". Once joined, its measurements will be included in the analysis of " +
                     $scope.state.variableObject.name + ".  You can only join variables that have the same unit " +
-                    $scope.state.variableObject.unit.abbreviatedName + ".",
+                    $scope.state.variableObject.unitAbbreviatedName + ".",
                 placeholder: "What variable would you like to join?",
                 buttonText: "Select Variable",
                 requestParams: requestParams,

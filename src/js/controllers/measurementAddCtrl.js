@@ -241,8 +241,6 @@ angular.module('starter').controller('MeasurementAddCtrl', ["$scope", "$q", "$ti
             if(userVariables && userVariables.length){v = userVariables[0];}
             $scope.state.variableObject = v;
             $scope.state.title = "Record Measurement";
-            if(v.unit && v.unit.abbreviatedName){v.unitAbbreviatedName = v.unit.abbreviatedName;}
-            if(v.defaultUnitAbbreviatedName){v.unitAbbreviatedName = v.defaultUnitAbbreviatedName;}
             if(v.unitAbbreviatedName){
                 setupUnit(v.unitAbbreviatedName, v.valence);
             }else if(v.variableCategoryName){
