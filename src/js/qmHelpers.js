@@ -4378,7 +4378,11 @@ var qm = {
                 m.startTime = m.startTime || m.startTimeEpoch;
                 m.startAt = m.startAt || m.startTimeString;
                 var unit = qm.unitHelper.getByNameAbbreviatedNameOrId(m.unitId || m.unitAbbreviatedName);
-                if(!m.unitAbbreviatedName){m.unitAbbreviatedName = unit.abbreviatedName;}
+                if(!unit){
+                    qm.qmLog.errorAndExceptionTestingOrDevelopment("Could not get unit for this measurement: ", m)
+                } else {
+                    if(!m.unitAbbreviatedName){m.unitAbbreviatedName = unit.abbreviatedName;}
+                }
                 if(!m.variableName){m.variableName = m.variable;}
                 if(m.variableName === qm.getPrimaryOutcomeVariable().name){m.valence = qm.getPrimaryOutcomeVariable().valence;}
                 if(unit.abbreviatedName === '/5'){m.roundedValue = Math.round(m.value);}
