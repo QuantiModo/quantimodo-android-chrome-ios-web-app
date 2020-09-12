@@ -9843,6 +9843,12 @@ var qm = {
             if(name){name = qm.variableCategoryHelper.replaceCategoryAliasWithActualNameIfNecessary(name);}
             return name;
         },
+        getVariableCategoryFromStateParamsOrUrl: function(obj1, obj2, obj3){
+            var name = qm.variableCategoryHelper.getVariableCategoryNameFromStateParamsOrUrl(
+                $scope.state.trackingReminder, $stateParams, $stateParams.variableObject);
+            if(!$name){return null;}
+            return qm.variableCategoryHelper.getVariableCategory(name);
+        },
         getByNameOrId: function(nameOrId){
             var cats = qm.variableCategoryHelper.getVariableCategoriesFromGlobals();
             if(isNaN(nameOrId)){
