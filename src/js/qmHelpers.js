@@ -5799,7 +5799,7 @@ var qm = {
                         var newNotificationsSyncQueue = qm.storage.getItem(qm.items.notificationsSyncQueue);
                         if(newNotificationsSyncQueue){notifications = notifications.concat(newNotificationsSyncQueue);}
                         qm.storage.setItem(qm.items.notificationsSyncQueue, notifications);
-                        if(errorHandler){errorHandler(error);}
+                        if(errorHandler){errorHandler(response.message || response.error);}
                     } else{ // This happens when the error is a message saying the notification was already deleted
                         // so we don't want to put notifications back in queue
                         qm.qmLog.warn(response.message)
