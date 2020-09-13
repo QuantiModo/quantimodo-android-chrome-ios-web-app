@@ -4382,10 +4382,10 @@ var qm = {
                     qm.qmLog.errorAndExceptionTestingOrDevelopment("Could not get unit for this measurement: ", m)
                 } else {
                     if(!m.unitAbbreviatedName){m.unitAbbreviatedName = unit.abbreviatedName;}
+                    if(unit.abbreviatedName === '/5'){m.roundedValue = Math.round(m.value);}
                 }
                 if(!m.variableName){m.variableName = m.variable;}
                 if(m.variableName === qm.getPrimaryOutcomeVariable().name){m.valence = qm.getPrimaryOutcomeVariable().valence;}
-                if(unit.abbreviatedName === '/5'){m.roundedValue = Math.round(m.value);}
                 m.displayValueAndUnitString = m.displayValueAndUnitString || m.value + " " + unit.abbreviatedName;
                 m.displayValueAndUnitString = qm.stringHelper.formatValueUnitDisplayText(m.displayValueAndUnitString)
                 m.valueUnitVariableName = m.displayValueAndUnitString + " " + m.variableName;
