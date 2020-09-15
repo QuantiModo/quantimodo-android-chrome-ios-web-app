@@ -4354,6 +4354,7 @@ var qm = {
             return measurements;
         },
         addInfoAndImagesToMeasurements: function(measurements){
+            if(!Array.isArray(measurements)){measurements = Object.values(measurements);}
             function parseJsonIfPossible(str){
                 var object = false;
                 try{
@@ -4379,6 +4380,7 @@ var qm = {
                 m.startAt = m.startAt || m.startTimeString;
                 var unit = qm.unitHelper.getByNameAbbreviatedNameOrId(m.unitId || m.unitAbbreviatedName);
                 if(!unit){
+                    unit = qm.unitHelper.getByNameAbbreviatedNameOrId(m.unitId || m.unitAbbreviatedName);
                     qm.qmLog.errorAndExceptionTestingOrDevelopment("Could not get unit for this measurement: ", m)
                 } else {
                     if(!m.unitAbbreviatedName){m.unitAbbreviatedName = unit.abbreviatedName;}
