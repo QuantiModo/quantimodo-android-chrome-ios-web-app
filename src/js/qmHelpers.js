@@ -8760,7 +8760,10 @@ var qm = {
                     if(objectProperty.toLowerCase().indexOf('unit') === -1){
                         continue;
                     }
-                    var lowerCaseObjectProperty = objectProperty.toLowerCase().replace('defaultUnit', '').replace('userUnit', '').replace('unit', '');
+                    var lowerCaseObjectProperty = objectProperty.toLowerCase()
+                        .replace('defaultUnit', '')
+                        .replace('userUnit', '')
+                        .replace('unit', '');
                     for(var unitProperty in unit){
                         if(unit.hasOwnProperty(unitProperty)){
                             var lowerCaseUnitProperty = unitProperty.toLowerCase();
@@ -8772,6 +8775,10 @@ var qm = {
                     }
                 }
             }
+            if(object.unitId){object.unitId = unit.id;}
+            if(object.unitName){object.unitName = unit.name;}
+            if(object.unitAbbreviatedName){object.unitAbbreviatedName = unit.abbreviatedName;}
+            if(object.unit){object.unit = unit;}
             return object;
         },
         getYesNo: function() {
