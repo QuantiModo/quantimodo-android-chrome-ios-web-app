@@ -2959,6 +2959,12 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     text: 'Add Reminder',
                     stateParams: {skipReminderSettingsIfPossible: true}
                 },
+                reminderEdit: {
+                    state: qm.stateNames.reminderAdd,
+                    icon: ionIcons.reminder,
+                    text: 'Reminder Settings',
+                    stateParams: {}
+                },
                 reminderSearch: {
                     state: qm.stateNames.reminderSearch,
                     icon: ionIcons.reminder,
@@ -3067,7 +3073,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 }
                 b.state = b.state || b.stateName;
                 if(b.state){
-                    if(b.state === qm.stateNames.reminderAdd && v){
+                    if(b.state === qm.stateNames.reminderAdd && v && !v.trackingReminderId){
                         qmService.reminders.addToRemindersUsingVariableObject(v, {
                             doneState: qm.stateNames.remindersList,
                             skipReminderSettingsIfPossible: true
@@ -3114,7 +3120,11 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     }
                     var allButtons = qmService.actionSheets.actionSheetButtons;
                     buttons.push(allButtons.measurementAddVariable);
-                    buttons.push(allButtons.reminderAdd);
+                    if(v.trackingReminderId){
+                        buttons.push(allButtons.reminderEdit);
+                    } else {
+                        buttons.push(allButtons.reminderAdd);
+                    }
                     var hasMeasurements = v.userId && v.numberOfRawMeasurements;
                     if(hasMeasurements){
                         buttons.push(allButtons.charts);
