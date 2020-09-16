@@ -10414,7 +10414,7 @@ var qm = {
                     qm.webNotifications.getAndPostDeviceToken(messaging, force);
                 })
                 .catch(function(err){
-                    qm.qmLog.error('Unable to get permission to notify.', err);
+                    qm.qmLog.info('Unable to get permission to notify.', err);
                 });
         },
         postWebPushSubscriptionToServer: function(deviceTokenString){
