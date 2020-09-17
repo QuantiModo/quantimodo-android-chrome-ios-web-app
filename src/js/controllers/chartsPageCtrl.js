@@ -67,6 +67,7 @@ angular.module('starter').controller('ChartsPageCtrl', ["$scope", "$q", "$state"
         function removeHiddenCharts(variableObject){
             var clonedVariable = JSON.parse(JSON.stringify(variableObject));
             var charts = clonedVariable.charts;
+            qm.chartHelper.configureHighchartSubProperties(charts);
             for(var property in charts){
                 if(charts.hasOwnProperty(property)){
                     var hideParamName = 'hide' + qm.stringHelper.capitalizeFirstLetter(property);

@@ -7,6 +7,7 @@ angular.module('starter').controller('SettingsCtrl', ["$state", "$scope", "$ioni
         $scope.controller_name = "SettingsCtrl";
         $scope.state = {
             title: "Settings",
+            timezones: moment.tz.names(),
             updatePrimaryOutcomeVariable: function(ev){
                 qm.help.getExplanation('primaryOutcomeVariable', null, function(explanation){
                     var dialogParameters = {
@@ -30,9 +31,6 @@ angular.module('starter').controller('SettingsCtrl', ["$state", "$scope", "$ioni
             if (document.title !== $scope.state.title) {document.title = $scope.state.title;}
             qmLogService.debug('beforeEnter state ' + $state.current.name, null);
             $scope.debugMode = qmLog.getDebugMode();
-            if($rootScope.user){
-                $scope.timeZone = $rootScope.user.timeZoneOffset / 60 * -1;
-            }
             $scope.drawOverAppsPopupEnabled = qmService.notifications.drawOverAppsPopupEnabled();
             $scope.backgroundLocationTracking = !!(qm.storage.getItem('bgGPS'));
             qmService.navBar.showNavigationMenuIfHideUrlParamNotSet();
@@ -53,7 +51,13 @@ angular.module('starter').controller('SettingsCtrl', ["$state", "$scope", "$ioni
             if(!$rootScope.user){
                 qmService.login.sendToLoginIfNecessaryAndComeBack("No $rootScope.user in " + $state.current.name);
             } else {
-                qmService.refreshUser();
+                qm.timeHelper.guessTimeZoneIfNecessary(function (u) {
+                    if(u){
+                        qmService.setUser(u)
+                    } else {
+                        qmService.refreshUser();
+                    }
+                })
             }
         });
         $scope.$on('$ionicView.afterEnter', function(e){
@@ -386,29 +390,30 @@ angular.module('starter').controller('SettingsCtrl', ["$state", "$scope", "$ioni
         $scope.openDeleteUserAccountDialog = function(ev){
             qmLog.error("User clicked DELETE ACCOUNT!");
             // sendBugReport instead of dialog so we can get their actual email (in case they're logged in as the wrong user) and extra diagnostic info
-            qmService.sendBugReport();
-            return;
-            // Appending dialog to document.body to cover sidenav in docs app
-            // var confirm = $mdDialog.prompt()
-            //     .title('Are you sure you want to delete your data?')
-            //     .textContent('I really want to help people. So, if you do decide to delete your account, I would be eternally grateful to know how I could do better in the future?')
-            //     .placeholder('What should I do better?')
-            //     .ariaLabel('Deletion reason')
-            //     //.initialValue('Buddy')
-            //     .targetEvent(ev)
-            //     .required(true)
-            //     .ok('DELETE ACCOUNT')
-            //     .cancel('Give me another chance?');
-            //
-            // $mdDialog.show(confirm).then(function(reason) {
-            //     qmLog.error("User DELETED ACCOUNT!  Reason for deletion: " + reason);
-            //     qm.userHelper.deleteUserAccount(reason, function () {
-            //         qmService.completelyResetAppStateAndLogout();
-            //     });
-            // }, function(reason) {
-            //     qmLog.error("User canceled DELETE ACCOUNT!  Reason for deletion: " + reason);
-            // });
-        }
+            //qmService.sendBugReport();
+            //return;
+            //Appending dialog to document.body to cover sidenav in docs app
+            var message = 'I really want to reduce suffering in the universe. So I would be eternally grateful to know how I could do better in the future?';
+            var confirm = $mdDialog.prompt()
+                .title('Are you sure you want to delete your data forever?')
+                .textContent(message)
+                .placeholder('What did you hate the most about me?')
+                .ariaLabel('Deletion reason')
+                //.initialValue('Buddy')
+                .targetEvent(ev)
+                .required(true)
+                .ok('DELETE ALL MY DATA')
+                .cancel('Give me another chance?');
+
+            $mdDialog.show(confirm).then(function(reason) {
+                qmLog.error("User DELETED ACCOUNT!  Reason for deletion: " + reason);
+                qm.userHelper.deleteUserAccount(reason, function () {
+                    qmService.completelyResetAppStateAndLogout();
+                });
+            }, function(reason) {
+                qmLog.error("User canceled DELETE ACCOUNT!  Reason for deletion: " + reason);
+            });
+        };
         $scope.state.showBioModalPromptPopup = function(ev) {
             // Appending dialog to document.body to cover sidenav in docs app
             var confirm = $mdDialog.prompt()
@@ -428,5 +433,9 @@ angular.module('starter').controller('SettingsCtrl', ["$state", "$scope", "$ioni
             }, function() {
                 qmService.showInfoToast("Canceled");
             });
+        };
+        $scope.state.updateTimezone = function() {
+            qmService.showInfoToast("Timezone changed to "+$rootScope.user.timezone);
+            qmService.updateUserSettingsDeferred({timezone: $rootScope.user.timezone})
         };
     }]);
