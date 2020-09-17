@@ -194,14 +194,18 @@ var qm = {
             }
             return qmApiClient;
         },
+        justUseBuiltInHttpCache: true, // Redundant and produces unexpected results
         cacheSet: function(params, data, functionName){
-            if(!qm.api.cache[functionName]){
-                qm.api.cache[functionName] = {};
-            }
+            if(!qm.api.cache[functionName]){qm.api.cache[functionName] = {};}
             var key = qm.api.getCacheName(params);
-            qm.api.cache[functionName][key] = data;
+            if(!qm.api.justUseBuiltInHttpCache){  // Redundant and produces unexpected results
+                qm.api.cache[functionName][key] = data;
+            }
         },
         cacheGet: function(params, functionName){
+            if(qm.api.justUseBuiltInHttpCache){  // Redundant and produces unexpected results
+                return null;
+            }
             if(params && params.refresh){
                 return null;
             }
@@ -4384,10 +4388,10 @@ var qm = {
                     qm.qmLog.errorAndExceptionTestingOrDevelopment("Could not get unit for this measurement: ", m)
                 } else {
                     if(!m.unitAbbreviatedName){m.unitAbbreviatedName = unit.abbreviatedName;}
+                    if(unit.abbreviatedName === '/5'){m.roundedValue = Math.round(m.value);}
                 }
                 if(!m.variableName){m.variableName = m.variable;}
                 if(m.variableName === qm.getPrimaryOutcomeVariable().name){m.valence = qm.getPrimaryOutcomeVariable().valence;}
-                if(unit.abbreviatedName === '/5'){m.roundedValue = Math.round(m.value);}
                 m.displayValueAndUnitString = m.displayValueAndUnitString || m.value + " " + unit.abbreviatedName;
                 m.displayValueAndUnitString = qm.stringHelper.formatValueUnitDisplayText(m.displayValueAndUnitString)
                 m.valueUnitVariableName = m.displayValueAndUnitString + " " + m.variableName;
