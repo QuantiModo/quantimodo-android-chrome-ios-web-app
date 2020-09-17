@@ -445,11 +445,11 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
         };
         $rootScope.$on('broadcastGetTrackingReminderNotifications', function(){
             qmLog.info('getTrackingReminderNotifications broadcast received..');
-            getNotifications();
+            getFilteredTrackingReminderNotificationsFromLocalStorage();
         });
         var getTrackingReminderNotifications = function(){
             qmLog.info('RemindersInboxCtrl called getTrackingReminderNotifications: ' + window.location.href);
-            getNotifications();
+            getFilteredTrackingReminderNotificationsFromLocalStorage();
         };
         function shouldWeShowZeroButton(trackingReminderNotification){
             return trackingReminderNotification.inputType === 'defaultValue' ||
