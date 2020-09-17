@@ -4354,6 +4354,7 @@ var qm = {
             return measurements;
         },
         addInfoAndImagesToMeasurements: function(measurements){
+            if(!Array.isArray(measurements)){measurements = Object.values(measurements);}
             function parseJsonIfPossible(str){
                 var object = false;
                 try{
@@ -4379,6 +4380,7 @@ var qm = {
                 m.startAt = m.startAt || m.startTimeString;
                 var unit = qm.unitHelper.getByNameAbbreviatedNameOrId(m.unitId || m.unitAbbreviatedName);
                 if(!unit){
+                    unit = qm.unitHelper.getByNameAbbreviatedNameOrId(m.unitId || m.unitAbbreviatedName);
                     qm.qmLog.errorAndExceptionTestingOrDevelopment("Could not get unit for this measurement: ", m)
                 } else {
                     if(!m.unitAbbreviatedName){m.unitAbbreviatedName = unit.abbreviatedName;}
@@ -5786,8 +5788,17 @@ var qm = {
             if(!notifications[0]){
                 qm.qmLog.error("notifications[0] is " + notifications[0], {notifications: notifications});
             }
-            notifications[0] = qm.timeHelper.addTimeZoneOffsetProperty(notifications[0]);
-            qm.api.postToQuantiModo(notifications, 'v3/trackingReminderNotifications',
+            var body = notifications.map(function (n){
+                return {
+                    'value': n.modifiedValue || n.value,
+                    'trackingReminderNotificationId': n.trackingReminderNotificationId,
+                    'variableId': n.variableId,
+                    'trackingReminderId': n.trackingReminderId,
+                    'action': n.action,
+                    'timeZone': moment.tz.guess(),
+                }
+            })
+            qm.api.postToQuantiModo(body, 'v3/trackingReminderNotifications',
                 function(response){
                     var measurements = response.measurements;
                     if(!measurements && response.data){measurements = response.data.measurements;}
@@ -8758,7 +8769,10 @@ var qm = {
                     if(objectProperty.toLowerCase().indexOf('unit') === -1){
                         continue;
                     }
-                    var lowerCaseObjectProperty = objectProperty.toLowerCase().replace('defaultUnit', '').replace('userUnit', '').replace('unit', '');
+                    var lowerCaseObjectProperty = objectProperty.toLowerCase()
+                        .replace('defaultUnit', '')
+                        .replace('userUnit', '')
+                        .replace('unit', '');
                     for(var unitProperty in unit){
                         if(unit.hasOwnProperty(unitProperty)){
                             var lowerCaseUnitProperty = unitProperty.toLowerCase();
@@ -8770,6 +8784,10 @@ var qm = {
                     }
                 }
             }
+            if(object.unitId){object.unitId = unit.id;}
+            if(object.unitName){object.unitName = unit.name;}
+            if(object.unitAbbreviatedName){object.unitAbbreviatedName = unit.abbreviatedName;}
+            if(object.unit){object.unit = unit;}
             return object;
         },
         getYesNo: function() {
@@ -10411,7 +10429,7 @@ var qm = {
                     qm.webNotifications.getAndPostDeviceToken(messaging, force);
                 })
                 .catch(function(err){
-                    qm.qmLog.error('Unable to get permission to notify.', err);
+                    qm.qmLog.info('Unable to get permission to notify.', err);
                 });
         },
         postWebPushSubscriptionToServer: function(deviceTokenString){
