@@ -107,24 +107,13 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
             $rootScope.hideBackButton = false;
         });
         var setPageTitle = function(){
-            if($stateParams.today){
-                if(getVariableCategoryName() === 'Treatments'){
-                    $scope.state.title = "Today's Scheduled Meds";
-                    $scope.state.favoritesTitle = "As-Needed Meds";
-                }else if(getVariableCategoryName()){
-                    $scope.state.title = "Today's Scheduled " + getVariableCategoryName();
-                }else{
-                    $scope.state.title = "Today's Reminder Notifications";
-                }
+            if(getVariableCategoryName() === 'Treatments'){
+                $scope.state.title = 'Overdue Meds';
+                $scope.state.favoritesTitle = "As-Needed Meds";
+            }else if(getVariableCategoryName()){
+                $scope.state.title = $filter('wordAliases')(getVariableCategoryName()) + " " + $filter('wordAliases')("Reminder Inbox");
             }else{
-                if(getVariableCategoryName() === 'Treatments'){
-                    $scope.state.title = 'Overdue Meds';
-                    $scope.state.favoritesTitle = "As-Needed Meds";
-                }else if(getVariableCategoryName()){
-                    $scope.state.title = $filter('wordAliases')(getVariableCategoryName()) + " " + $filter('wordAliases')("Reminder Inbox");
-                }else{
-                    $scope.state.title = 'Inbox';
-                }
+                $scope.state.title = 'Inbox';
             }
         };
         var lastButtonPressTimeStamp, lastClientY, lastClientX;
@@ -459,17 +448,11 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
         };
         $rootScope.$on('broadcastGetTrackingReminderNotifications', function(){
             qmLog.info('getTrackingReminderNotifications broadcast received..');
-            if(!$stateParams.today){
-                getFilteredTrackingReminderNotificationsFromLocalStorage();
-            }
+            getFilteredTrackingReminderNotificationsFromLocalStorage();
         });
         var getTrackingReminderNotifications = function(){
             qmLog.info('RemindersInboxCtrl called getTrackingReminderNotifications: ' + window.location.href);
-            if($stateParams.today){
-                getFilteredTodayTrackingReminderNotifications();
-            }else{
-                getFilteredTrackingReminderNotificationsFromLocalStorage();
-            }
+            getFilteredTrackingReminderNotificationsFromLocalStorage();
         };
         function shouldWeShowZeroButton(trackingReminderNotification){
             return trackingReminderNotification.inputType === 'defaultValue' ||
