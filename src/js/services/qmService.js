@@ -3186,8 +3186,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             },
             addActionArrayButtonsToActionSheet: function(actionArray, buttons){
                 if(!actionArray){
-                    qmLog.error("No action array provided to addActionArrayButtonsToActionSheet!");
-                    return;
+                    qmLog.info("No action array provided to addActionArrayButtonsToActionSheet! Maybe it's a new reminders?");
+                    return buttons;
                 }
                 for(var i = 0; i < actionArray.length; i++){
                     if(actionArray[i].action !== "snooze"){
