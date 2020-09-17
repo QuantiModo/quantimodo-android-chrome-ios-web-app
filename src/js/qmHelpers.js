@@ -5500,7 +5500,7 @@ var qm = {
         getAllUniqueNotifications: function(){
             qm.qmLog.info("Called getAllUniqueRatingNotifications");
             var notifications = qm.storage.getItem(qm.items.trackingReminderNotifications);
-            if(!notifications){
+            if(!notifications || !notifications.length){
                 qm.qmLog.info("No notifications in storage!");
                 return null;
             }
@@ -5545,7 +5545,7 @@ var qm = {
         removeNotificationFromSyncQueueAndUnhide: function(){
             qm.qmLog.info("Called undo notification tracking...");
             var notificationsSyncQueue = qm.storage.getItem(qm.items.notificationsSyncQueue);
-            if(!notificationsSyncQueue){
+            if(!notificationsSyncQueue || !notificationsSyncQueue.length){
                 return false;
             }
             notificationsSyncQueue[0].hide = false;
@@ -7439,7 +7439,7 @@ var qm = {
             return userVariable;
         },
         setTrackingReminderNotifications: function(notifications){
-            if(!notifications){
+            if(!notifications || !notifications.length){
                 qm.qmLog.error("No notifications provided to qm.storage.setTrackingReminderNotifications");
                 return;
             }
@@ -7712,7 +7712,8 @@ var qm = {
             if(isNaN(trackingReminderNotificationId) && body.trackingReminderNotificationId){
                 trackingReminderNotificationId = body.trackingReminderNotificationId;
             }
-            if(qm.storage.getTrackingReminderNotifications() && qm.storage.getTrackingReminderNotifications().length){
+            var notifications = qm.storage.getTrackingReminderNotifications();
+            if(notifications && notifications.length){
                 qm.qmLog.info(null, 'Deleting notification with id ' + trackingReminderNotificationId, null);
                 qm.storage.deleteById(qm.items.trackingReminderNotifications, trackingReminderNotificationId);
             }else{
