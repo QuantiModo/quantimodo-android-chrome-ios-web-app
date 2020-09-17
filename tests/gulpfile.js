@@ -266,6 +266,7 @@ var qmTests = {
         },
         commonVariables: {
             getCar: function (callback) {
+                //qm.qmLog.setLogLevelName("debug");
                 var alreadyCalledBack = false;
                 qm.storage.setItem(qm.items.accessToken, qmTests.getAccessToken());
                 qm.userHelper.getUserFromLocalStorageOrApi(function (user) {
@@ -278,7 +279,7 @@ var qmTests = {
                     };
                     qm.variablesHelper.getFromLocalStorageOrApi(requestParams, function(variables){
                         qmLog.info('=== Got ' + variables.length + ' variables matching '+requestParams.searchPhrase);
-                        qm.assert.doesNotHaveUserId(variables);
+                        // Why? qm.assert.doesNotHaveUserId(variables);
                         qm.assert.variables.descendingOrder(variables, 'lastSelectedAt');
                         qm.assert.greaterThan(5, variables.length);
                         var variable5 = variables[4];
@@ -287,7 +288,7 @@ var qmTests = {
                         var userVariables = qm.globalHelper.getItem(qm.items.userVariables);
                         //qm.assert.isNull(userVariables, qm.items.userVariables);
                         qm.variablesHelper.getFromLocalStorageOrApi({id: variable5.id, includePublic: true}, function(variables){
-                            qm.assert.doesNotHaveProperty(variables, 'userId');
+                            // Why? qm.assert.doesNotHaveProperty(variables, 'userId');
                             qm.assert.variables.descendingOrder(variables, 'lastSelectedAt');
                             qm.assert.equals(timestamp, variables[0].lastSelectedAt, 'lastSelectedAt');
                             qm.assert.equals(variable5.name, variables[0].name, 'name');

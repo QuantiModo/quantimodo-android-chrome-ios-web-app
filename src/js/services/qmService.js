@@ -127,15 +127,16 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             actionSheet: {
                 setDefaultActionSheet: function(refreshFunction, variableCategoryName, destructiveText, destructiveFunction){
                     qmService.rootScope.setShowActionSheetMenu(function(){
+                        var allButtons = qmService.actionSheets.actionSheetButtons;
                         var params = {
                             buttons: [
-                                qmService.actionSheets.actionSheetButtons.historyAll,
-                                qmService.actionSheets.actionSheetButtons.reminderAdd,
-                                qmService.actionSheets.actionSheetButtons.measurementAddSearch,
-                                qmService.actionSheets.actionSheetButtons.charts,
-                                qmService.actionSheets.actionSheetButtons.settings,
-                                qmService.actionSheets.actionSheetButtons.help,
-                                qmService.actionSheets.actionSheetButtons.refresh
+                                allButtons.historyAll,
+                                allButtons.reminderAdd,
+                                allButtons.measurementAddSearch,
+                                allButtons.charts,
+                                allButtons.settings,
+                                allButtons.help,
+                                allButtons.refresh
                             ],
                             cancelText: '<i class="icon ion-ios-close"></i>Cancel',
                             cancel: function(){
@@ -1839,7 +1840,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     }
                 },
                 hideNavigationMenu: function(){
-                    qmLog.info("Hiding navigation menu");
+                    qmLog.debug("Hiding navigation menu");
                     qmService.rootScope.setProperty('hideNavigationMenu', true);
                 },
                 showNavigationMenu: function(){
@@ -1848,34 +1849,29 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 }
             },
             notifications: {
-                trackAll: function(trackingReminderNotification, modifiedReminderValue, ev){
-                    qm.notifications.deleteByVariableName(trackingReminderNotification.variableName);
-                    if(modifiedReminderValue !== null){trackingReminderNotification.modifiedValue = modifiedReminderValue;}
-                    qm.notifications.trackNotification(trackingReminderNotification, true);
-                    //qmService.logEventToGA(qm.analytics.eventCategories.inbox, "trackAll");
-                },
-                showActionSheetForNotification: function(trackingReminderNotification){
-                    var trackingReminder = trackingReminderNotification;
-                    trackingReminder.id = trackingReminderNotification.trackingReminderId;
-                    var variableObject = trackingReminderNotification;
-                    variableObject.variableId = trackingReminderNotification.variableId;
-                    variableObject.name = trackingReminderNotification.variableName;
+                showActionSheetForNotification: function(n){
+                    var trackingReminder = n;
+                    trackingReminder.id = n.trackingReminderId;
+                    var variableObject = n;
+                    variableObject.variableId = n.variableId;
+                    variableObject.name = n.variableName;
+                    var allButtons = qmService.actionSheets.actionSheetButtons;
                     var buttons = [
-                        {text: 'Actions for ' + trackingReminderNotification.variableName},
+                        {text: 'Actions for ' + n.variableName},
                         {text: '<i class="icon ion-android-notifications-none"></i>Edit Reminder'},
-                        qmService.actionSheets.actionSheetButtons.charts,
-                        qmService.actionSheets.actionSheetButtons.historyAllVariable,
-                        //qmService.actionSheets.actionSheetButtons.variableSettings
+                        allButtons.charts,
+                        allButtons.historyAllVariable,
+                        //allButtons.variableSettings
                     ];
-                    if(trackingReminderNotification.outcome === true){
-                        buttons.push(qmService.actionSheets.actionSheetButtons.predictors);
-                    }else if(trackingReminderNotification.outcome === false){
-                        buttons.push(qmService.actionSheets.actionSheetButtons.outcomes);
+                    if(n.outcome === true){
+                        buttons.push(allButtons.predictors);
+                    }else if(n.outcome === false){
+                        buttons.push(allButtons.outcomes);
                     }else{
-                        qmLog.error("Why is outcome not boolean in this notification!?!?!", null, trackingReminderNotification)
+                        qmLog.error("Why is outcome not boolean in this notification!?!?!", null, n)
                     }
-                    for(var i = 0; i < trackingReminderNotification.trackAllActions.length; i++){
-                        buttons.push({text: '<i class="icon ion-android-done-all"></i>' + trackingReminderNotification.trackAllActions[i].title})
+                    for(var i = 0; i < n.trackAllActions.length; i++){
+                        buttons.push({text: '<i class="icon ion-android-done-all"></i>' + n.trackAllActions[i].title})
                     }
                     buttons.push({text: '<i class="icon ion-trash-a"></i>Skip All '});
                     // Show the action sheet
@@ -1892,7 +1888,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                                 qmLog.debug('clicked variable name', null);
                             }
                             if(index === 1){
-                                qmService.notifications.editReminderSettingsByNotification(trackingReminderNotification);
+                                qmService.notifications.editReminderSettingsByNotification(n);
                             }
                             if(index === 2){
                                 qmService.goToState('app.charts', {
@@ -1907,23 +1903,23 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                                 });
                             }
                             var buttonIndex = 4;
-                            for(var i = 0; i < trackingReminderNotification.trackAllActions.length; i++){
+                            for(var i = 0; i < n.trackAllActions.length; i++){
                                 if(index === buttonIndex){
-                                    qmService.notifications.trackAll(trackingReminderNotification, trackingReminderNotification.trackAllActions[i].modifiedValue);
+                                    qm.notifications.trackAll(n, n.trackAllActions[i].modifiedValue);
                                 }
                                 buttonIndex++;
                             }
                             if(index === buttonIndex){
-                                qmService.notifications.skipAllForVariable(trackingReminderNotification);
+                                qmService.notifications.skipAll(n);
                             }
                             buttonIndex++;
                             if(index === buttonIndex){
-                                qmService.goToVariableSettingsByName(trackingReminderNotification.variableName);
+                                qmService.goToVariableSettingsByName(n.variableName);
                             }
                             return true;
                         },
                         destructiveButtonClicked: function(){
-                            qmService.notifications.skipAllForVariable(trackingReminderNotification);
+                            qmService.notifications.skipAll(n);
                             return true;
                         }
                     });
@@ -1931,7 +1927,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 },
                 editReminderSettingsByNotification: function(trackingReminderNotification){
                     trackingReminderNotification.hide = true;
-                    qm.notifications.numberOfPendingNotifications--;
                     var trackingReminder = trackingReminderNotification;
                     trackingReminder.id = trackingReminderNotification.trackingReminderId;
                     qmService.goToState('app.reminderAdd', {
@@ -2109,35 +2104,21 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                         qmLog.info("NOT going to reconfigurePushNotifications because we have deviceTokenOnServer || deviceTokenToSync")
                     }
                 },
-                skipAllForVariable: function(trackingReminderNotification, successHandler, errorHandler, ev){
+                skipAll: function(n, successHandler, errorHandler, ev){
                     var title = "Skip all?";
-                    var textContent = "Do you want to dismiss all remaining past " + trackingReminderNotification.variableName + " reminder notifications?";
+                    var textContent = "Do you want to dismiss all remaining past " + n.variableName + " reminder notifications?";
                     function yesCallback(){
-                        var filtered = qm.notifications.deleteByVariableName(trackingReminderNotification.variableName);
-                        trackingReminderNotification.hide = true;
-                        qmLog.debug('Skipping all notifications for trackingReminder', null, trackingReminderNotification);
-                        qmService.showInfoToast("Skipping all " + trackingReminderNotification.variableName + " notifications...");
-                        var params = {trackingReminderId: trackingReminderNotification.trackingReminderId};
-                        if(successHandler){
-                            successHandler(filtered);
-                        }
-                        qm.notifications.skipAllTrackingReminderNotifications(params, function(response){
-                            //if(successHandler){successHandler(response);}
-                        }, function(error){
-                            if(errorHandler){
-                                errorHandler(error);
-                            }
-                            qmLog.error(error);
-                            qmService.showMaterialAlert('Failed to skip! ', 'Please let me know by pressing the help button.  Thanks!');
-                        });
+                        var filtered = qm.notifications.deleteByVariableName(n.variableName);
+                        n.hide = true;
+                        qmLog.debug('Skipping all notifications for trackingReminder', null, n);
+                        qmService.showInfoToast("Skipping all " + n.variableName + " notifications...");
+                        var params = {trackingReminderId: n.trackingReminderId};
+                        if(successHandler){successHandler(filtered);}
+                        qm.notifications.skipAll(params);
                     }
-                    function noCallback(){
-                    }
+                    function noCallback(){}
                     qmService.showMaterialConfirmationDialog(title, textContent, yesCallback, noCallback, ev);
                     return true;
-                },
-                skipAll: function(trackingReminderNotification, successHandler, errorHandler, ev){
-                    return qmService.notifications.skipAllForVariable(trackingReminderNotification, successHandler, errorHandler, ev);
                 },
                 lastAction: "",
                 showUndoToast: function(callback){
@@ -2220,7 +2201,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     delete trackingReminder.id;
                     trackingReminder.variableName = variableObject.name;
                     if(variableObject.unit){
-                        trackingReminder.unitAbbreviatedName = variableObject.unit.abbreviatedName;
+                        trackingReminder.unitAbbreviatedName = variableObject.unitAbbreviatedName;
                     }
                     trackingReminder.valence = variableObject.valence;
                     trackingReminder.variableCategoryName = variableObject.variableCategoryName;
@@ -2233,7 +2214,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                         qmService.goToState('app.reminderAdd', {variableObject: variableObject, doneState: doneState});
                         return;
                     }
-                    var unitAbbreviatedName = (variableObject.unit) ? variableObject.unit.abbreviatedName : variableObject.abbreviatedName;
+                    var unitAbbreviatedName = (variableObject.unit) ? variableObject.unitAbbreviatedName : variableObject.abbreviatedName;
                     if(unitAbbreviatedName === 'serving'){
                         trackingReminder.defaultValue = 1;
                     }
@@ -2907,7 +2888,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                                 deferred.reject(error);
                             });
                         };
-                        qm.notifications.postNotifications(function(){
+                        qm.notifications.post(function(){
                             postTrackingRemindersToApiAndHandleResponse();
                         }, function(error){
                             postTrackingRemindersToApiAndHandleResponse();
@@ -3022,10 +3003,11 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 return buttons;
             },
             addHtmlToAllActionSheetButtons: function(){
-                for(var propertyName in qmService.actionSheets.actionSheetButtons){
-                    if(qmService.actionSheets.actionSheetButtons.hasOwnProperty(propertyName)){
-                        qmService.actionSheets.actionSheetButtons[propertyName] =
-                            qmService.actionSheets.addHtmlToActionSheetButton(qmService.actionSheets.actionSheetButtons[propertyName], propertyName);
+                var allButtons = qmService.actionSheets.actionSheetButtons;
+                for(var propertyName in allButtons){
+                    if(allButtons.hasOwnProperty(propertyName)){
+                        allButtons[propertyName] =
+                            qmService.actionSheets.addHtmlToActionSheetButton(allButtons[propertyName], propertyName);
                     }
                 }
             },
@@ -3077,80 +3059,78 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 qm.feed.addToFeedQueueAndRemoveFromFeed(card);
                 return false; // Don't close if clicking top variable name
             },
-            handleVariableActionSheetClick: function(button, variableObject){
-                var stateParams = {};
-                if(button.stateParams){
-                    stateParams = button.stateParams;
+            handleVariableActionSheetClick: function(b, v){
+                var params = {};
+                if(b.stateParams){params = b.stateParams;}
+                if(v){
+                    params.variableObject = v;
+                    params.variableName = v.name || v.variableName;
                 }
-                if(variableObject){
-                    stateParams.variableObject = variableObject;
-                    stateParams.variableName = variableObject.name || variableObject.variableName;
-                }
-                button.state = button.state || button.stateName;
-                if(button.state){
-                    if(button.state === qm.stateNames.reminderAdd && variableObject){
-                        qmService.reminders.addToRemindersUsingVariableObject(variableObject, {
+                b.state = b.state || b.stateName;
+                if(b.state){
+                    if(b.state === qm.stateNames.reminderAdd && v){
+                        qmService.reminders.addToRemindersUsingVariableObject(v, {
                             doneState: qm.stateNames.remindersList,
                             skipReminderSettingsIfPossible: true
                         });
                     }else{
-                        qmService.goToState(button.state, stateParams);
+                        qmService.goToState(b.state, params);
                     }
                     return true;
                 }
-                if(button.action && button.action.modifiedValue){
-                    qmService.trackByFavorite(stateParams.variableObject, button.action.modifiedValue);
+                if(b.action && b.action.modifiedValue){
+                    qmService.trackByFavorite(params.variableObject, b.action.modifiedValue);
                 }
-                if(button.id === qmService.actionSheets.actionSheetButtons.compare.id){
-                    qmService.goToStudyCreationForVariable(variableObject);
+                var allButtons = qmService.actionSheets.actionSheetButtons;
+                if(b.id === allButtons.compare.id){
+                    qmService.goToStudyCreationForVariable(v);
                 }
-                if(button.id === qmService.actionSheets.actionSheetButtons.predictors.id){
-                    qmService.goToCorrelationsListForVariable(variableObject);
+                if(b.id === allButtons.predictors.id){
+                    qmService.goToCorrelationsListForVariable(v);
                 }
-                if(button.id === qmService.actionSheets.actionSheetButtons.outcomes.id){
-                    qmService.goToCorrelationsListForVariable(variableObject);
+                if(b.id === allButtons.outcomes.id){
+                    qmService.goToCorrelationsListForVariable(v);
                 }
                 return false; // Don't close if clicking top variable name
             },
-            getVariableObjectActionSheet: function(variableName, variableObject, extraButtons){
-                if(!variableName || typeof variableName !== "string"){
-                    if(!variableObject){variableObject = variableName;}
-                    variableName = variableObject.variableName || variableObject.name;
+            getVariableObjectActionSheet: function(name, v, extraButtons, state){
+                if(!name || typeof name !== "string"){
+                    if(!v){v = name;}
+                    name = v.variableName || v.name;
                 }
-                if(!variableObject){variableObject = qm.storage.getUserVariableByName(variableName);}
-                if(!variableName){variableName = variableObject.variableName || variableObject.name;}
-                qmLog.info("Getting action sheet for variable " + variableName);
+                if(!v){v = qm.storage.getUserVariableByName(name);}
+                if(!name){name = v.variableName || v.name;}
+                qmLog.info("Getting action sheet for variable " + name);
                 return function(){
-                    qmLog.debug('variablePageCtrl.showActionSheetMenu:  variable: ' + variableName);
-                    variableName = variableObject.displayName || variableObject.variableName || variableObject.name;
+                    qmLog.debug('variablePageCtrl.showActionSheetMenu:  variable: ' + name);
+                    name = v.displayName || v.variableName || v.name;
                     var titleButton = qmService.actionSheets.addHtmlToActionSheetButton({
-                        icon: variableObject.ionIcon,
-                        text: qmService.getTruncatedVariableName(variableName)
+                        icon: v.ionIcon,
+                        text: qmService.getTruncatedVariableName(name)
                     }, 'variableName');
                     var buttons = [titleButton];
                     if(extraButtons){
                         if(!Array.isArray(extraButtons)){extraButtons = [extraButtons];}
                         buttons = buttons.concat(extraButtons);
                     }
-                    buttons = buttons.concat([
-                        qmService.actionSheets.actionSheetButtons.measurementAddVariable,
-                        qmService.actionSheets.actionSheetButtons.reminderAdd
-                    ]);
-                    var hasMeasurements = variableObject.userId && variableObject.numberOfRawMeasurements;
+                    var allButtons = qmService.actionSheets.actionSheetButtons;
+                    buttons.push(allButtons.measurementAddVariable);
+                    buttons.push(allButtons.reminderAdd);
+                    var hasMeasurements = v.userId && v.numberOfRawMeasurements;
                     if(hasMeasurements){
-                        buttons.push(qmService.actionSheets.actionSheetButtons.charts);
-                        buttons.push(qmService.actionSheets.actionSheetButtons.historyAllVariable);
+                        buttons.push(allButtons.charts);
+                        buttons.push(allButtons.historyAllVariable);
                     }
                     var u = qm.getUser();
                     var hasMeasurementsOrIsAdmin = hasMeasurements || (u && u.administrator);
-                    if(hasMeasurementsOrIsAdmin){buttons.push(qmService.actionSheets.actionSheetButtons.variableSettings);}
-                    if(variableObject){buttons.push(qmService.actionSheets.actionSheetButtons.compare);}
-                    if(variableObject && variableObject.outcome){
-                        buttons.push(qmService.actionSheets.actionSheetButtons.predictors);
+                    if(hasMeasurementsOrIsAdmin){buttons.push(allButtons.variableSettings);}
+                    if(v){buttons.push(allButtons.compare);}
+                    if(v && v.outcome){
+                        buttons.push(allButtons.predictors);
                     }else{
-                        buttons.push(qmService.actionSheets.actionSheetButtons.outcomes);
+                        buttons.push(allButtons.outcomes);
                     }
-                    var actions = variableObject.actionArray;
+                    var actions = v.actionArray;
                     if(actions){
                         for(var i = 0; i < actions.length; i++){
                             var item = actions[i];
@@ -3176,27 +3156,37 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                             return true;
                         },
                         buttonClicked: function(index, button){
-                            return qmService.actionSheets.handleVariableActionSheetClick(button, variableObject);
+                            return qmService.actionSheets.handleVariableActionSheetClick(button, v);
                         }
                     };
-                    if(variableObject.userId){
+                    if(v.trackingReminderId){
+                        actionSheetParams.destructiveText = '<i class="icon ion-trash-a"></i>Delete';
+                        actionSheetParams.destructiveButtonClicked = function(){
+                            if(state && state.favoritesArray){
+                                state.favoritesArray = state.favoritesArray.filter(function(one){return one.id !== one.id;});
+                            }
+                            v.hide = true
+                            qmService.deleteTrackingReminderDeferred(v);
+                            return true;
+                        };
+                    } else if(v.userId){
                         actionSheetParams.destructiveText = '<i class="icon ion-trash-a"></i>Delete All';
                         actionSheetParams.destructiveButtonClicked = function(){
-                            qmService.showDeleteAllMeasurementsForVariablePopup(variableName);
+                            qmService.showDeleteAllMeasurementsForVariablePopup(name);
                             return true;
                         };
                     }
                     var hideSheet = $ionicActionSheet.show(actionSheetParams);
                 };
             },
-            showVariableObjectActionSheet: function(variableName, variableObject, extraButtons){
-                var showActionSheet = qmService.actionSheets.getVariableObjectActionSheet(variableName, variableObject, extraButtons);
+            showVariableObjectActionSheet: function(name, variable, extraButtons, state){
+                var showActionSheet = qmService.actionSheets.getVariableObjectActionSheet(name, variable, extraButtons, state);
                 return showActionSheet();
             },
             addActionArrayButtonsToActionSheet: function(actionArray, buttons){
                 if(!actionArray){
-                    qmLog.error("No action array provided to addActionArrayButtonsToActionSheet!");
-                    return;
+                    qmLog.info("No action array provided to addActionArrayButtonsToActionSheet! Maybe it's a new reminders?");
+                    return buttons;
                 }
                 for(var i = 0; i < actionArray.length; i++){
                     if(actionArray[i].action !== "snooze"){
@@ -3601,8 +3591,14 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             });
             return deferred.promise;
         };
-        qmService.deleteV1Measurements = function(measurements, successHandler, errorHandler){
-            qmService.post('api/v3/measurements/delete', ['variableId', 'variableName', 'startTimeEpoch', 'id'], measurements, successHandler, errorHandler);
+        qmService.deleteV1Measurements = function(measurement, successHandler, errorHandler){
+            var startAt = measurement.startAt || measurement.startTime || measurement.startTimeEpoch || null;
+            if(!startAt){
+                qm.qmLog.errorAndExceptionTestingOrDevelopment("No start time provided to delete measurement: ", measurement);
+            }
+            qmService.post('api/v3/measurements/delete',
+                ['variableId', 'variableName', 'startTimeEpoch', 'id'],
+                measurement, successHandler, errorHandler);
         };
         qmService.postMeasurementsExport = function(type, successHandler, errorHandler){
             qmService.post('api/v2/measurements/request_' + type, [], [], successHandler, errorHandler);
@@ -3702,6 +3698,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 qmSdkApiResponseHandler(error, notifications, response, successHandler, errorHandler, {}, functionName);
             }
             params = qm.api.addGlobalParams(params);
+            params.limit = qm.notifications.limit;
             apiInstance.getTrackingReminderNotifications(params, callback);
             //qmService.get('api/v3/trackingReminderNotifications', ['variableCategoryName', 'reminderTime', 'sort', 'reminderFrequency'], params, successHandler, errorHandler);
         };
@@ -4196,7 +4193,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 qmService.deferredRequests.user = null;
                 deferred.resolve(user);
             }, function(error){
-                qmLog.error(error);
+                qmLog.info(error);
                 deferred.reject(error);
                 qmService.deferredRequests.user = null;
                 return deferred.promise;
@@ -4245,10 +4242,19 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             });
             return deferred.promise;
         };
-        qmService.storage.getFavorites = function(variableCategoryName){
+        qmService.storage.getFavorites = function(categoryName){
             var deferred = $q.defer();
-            qmService.getAllReminderTypes(variableCategoryName).then(function(allTrackingReminderTypes){
-                deferred.resolve(allTrackingReminderTypes.favorites);
+            qmService.getAllReminderTypes(categoryName).then(function(allTypes){
+                deferred.resolve(allTypes.favorites);
+            }, function(error){
+                deferred.reject(error);
+            });
+            return deferred.promise;
+        };
+        qmService.storage.getReminders = function(categoryName){
+            var deferred = $q.defer();
+            qmService.getAllReminderTypes(categoryName).then(function(allTypes){
+                deferred.resolve(allTypes.trackingReminders);
             }, function(error){
                 deferred.reject(error);
             });
@@ -5055,7 +5061,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             qm.api.addVariableCategoryAndUnit(notifications);
             qm.storage.setTrackingReminderNotifications(notifications);
             qmService.notifications.broadcastGetTrackingReminderNotifications();
-            qm.notifications.numberOfPendingNotifications = notifications.length;
             return notifications;
         };
         qmService.getSecondsSinceWeLastGotNotifications = function(){
@@ -5103,12 +5108,12 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         };
         qmService.refreshTrackingReminderNotifications = function(params){
             var deferred = $q.defer();
-            qm.notifications.postNotifications(function(){
+            qm.notifications.post(function(){
                 var currentDateTimeInUtcStringPlus5Min = qmService.getCurrentDateTimeInUtcStringPlusMin(5);
                 if(!params){params = {};}
                 params.reminderTime = '(lt)' + currentDateTimeInUtcStringPlus5Min;
                 params.sort = '-reminderTime';
-                params.limit = 100; // Limit to notifications in the scope instead of here to improve inbox performance
+                params.limit = qm.notifications.limit; // Limit to notifications in the scope instead of here to improve inbox performance
                 qmService.getTrackingReminderNotificationsFromApi(params, function(notifications){
                     notifications = putTrackingReminderNotificationsInLocalStorageAndUpdateInbox(notifications);
                     if(notifications.length && $rootScope.platform.isMobile && getDeviceTokenToSync()){
@@ -5283,8 +5288,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             qmService.reminders.broadcastGetTrackingReminders();
         };
         qmService.storage.deleteTrackingReminderNotification = function(body){
-            qm.notifications.numberOfPendingNotifications -= qm.notifications.numberOfPendingNotifications;
-            window.qm.storage.deleteTrackingReminderNotification(body);
+            qm.storage.deleteTrackingReminderNotification(body);
         };
         qmService.groupTrackingReminderNotificationsByDateRange = function(trackingReminderNotifications){
             if(!qm.arrayHelper.variableIsArray(trackingReminderNotifications)){
@@ -6190,10 +6194,11 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         };
         qmService.goToCorrelationsListForVariable = function(variable){
             function goToCorrelationsList(variable){
+                var name = variable.name || variable.variableName;
                 if(variable.outcome){
-                    qmService.goToPredictorsList(variable.name);
+                    qmService.goToPredictorsList(name);
                 }else{
-                    qmService.goToOutcomesList(variable.name);
+                    qmService.goToOutcomesList(name);
                 }
             }
             if(typeof variable === "string"){
@@ -7140,7 +7145,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             var trackingReminder = {};
             trackingReminder.variableId = variableObject.variableId;
             trackingReminder.variableName = variableObject.name;
-            trackingReminder.unitAbbreviatedName = variableObject.unit.abbreviatedName;
+            trackingReminder.unitAbbreviatedName = variableObject.unitAbbreviatedName;
             trackingReminder.valence = variableObject.valence;
             trackingReminder.variableCategoryName = variableObject.variableCategoryName;
             trackingReminder.reminderFrequency = 0;
@@ -7758,7 +7763,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         function checkHoursSinceLastPushNotificationReceived(){
             //if(!$rootScope.platform.isMobile){return;}  // We get pushes from web now, too
             if(!qm.push.getLastPushTimeStampInSeconds()){
-                qmLog.errorOrDebugIfTesting("Push never received!");
+                qmLog.warn("Push never received!");
                 qmService.configurePushNotifications();
             }
             if(qm.push.getMinutesSinceLastPush() > qm.notifications.getMostFrequentReminderIntervalInMinutes()){
@@ -7816,7 +7821,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         };
         qmService.configurePushNotifications = function(){
             if(!qm.getUser()){ // Otherwise we try to do it immediately and always get 401 and make duplicate appSettings requests
-                qmLog.info("Not configuring push notifications because we don't have a user yet");
+                qmLog.debug("Not configuring push notifications because we don't have a user yet");
                 return;
             }
             if(!qm.platform.isMobile()){
@@ -8027,7 +8032,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     window.snoozeAction = function(data){
                         var body = {trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId};
                         qmLog.pushDebug('snoozeAction', ' push data: ', {pushData: data, notificationsPostBody: body});
-                        qm.notifications.snoozeNotification(body);
+                        qm.notifications.snooze(body);
                         finishPush(data);
                     };
                     window.trackLastValueAction = function(data){

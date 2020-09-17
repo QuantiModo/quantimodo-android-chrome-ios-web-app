@@ -10,9 +10,9 @@ angular.module('starter').controller('LoginCtrl', ["$scope", "$state", "$rootSco
             loginForm: false,
             tryToGetUser: function(force){
                 qmService.showBasicLoader(); // Chrome needs to do this because we can't redirect with access token
-                console.info("Trying to get user");
+                qmLog.authDebug("Trying to get user");
                 qmService.refreshUser(force, {}).then(function(){
-                    console.info("Got user");
+                    qmLog.authDebug("Got user");
                     qmService.hideLoader();
                     leaveIfLoggedIn();
                 }, function(error){
