@@ -398,14 +398,17 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
                 })
             })
         }
-        var getFilteredTrackingReminderNotificationsFromLocalStorage = function(){
+        var getNotifications = function(){
             var notifications = qm.storage.getTrackingReminderNotifications(getVariableCategoryName(),
                 $scope.state.maximumNotificationsToDisplay);
+            var untracked = notifications.filter(function (n){
+                return n.action;
+            });
             qmLog.debug('Just got ' + notifications.length + ' trackingReminderNotifications from local storage');
             if($state.current.name === "app.remindersInboxCompact"){
-                $scope.trackingReminderNotifications = notifications;
+                $scope.trackingReminderNotifications = untracked;
             }else{
-                addNotificationsToScope(notifications)
+                addNotificationsToScope(untracked)
             }
             hideInboxLoader();
             getFallbackInboxContentIfNecessary();
