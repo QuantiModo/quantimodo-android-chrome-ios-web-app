@@ -2877,8 +2877,10 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                                         if(!notificationExists && queue[0].reminderFrequency && !queue[0].stopTrackingDate){
                                             qmLog.error("Notification not found for reminder we just created!", null, {'reminder': queue[0]});
                                         }
-                                        qmLog.info("Got " + notifications.length + " notifications to from postTrackingRemindersDeferred response", null, {notifications: notifications});
-                                        qm.storage.setTrackingReminderNotifications(notifications);
+                                        qmLog.info("Got " + notifications.length +
+                                            " notifications to from postTrackingRemindersDeferred response",
+                                            null, {notifications: notifications});
+                                        putTrackingReminderNotificationsInLocalStorageAndUpdateInbox(notifications);
                                     }
                                 }else{
                                     qmLog.error("No postTrackingRemindersToApi response.data!");
