@@ -5788,8 +5788,17 @@ var qm = {
             if(!notifications[0]){
                 qm.qmLog.error("notifications[0] is " + notifications[0], {notifications: notifications});
             }
-            notifications[0] = qm.timeHelper.addTimeZoneOffsetProperty(notifications[0]);
-            qm.api.postToQuantiModo(notifications, 'v3/trackingReminderNotifications',
+            var body = notifications.map(function (n){
+                return {
+                    'value': n.modifiedValue || n.value,
+                    'trackingReminderNotificationId': n.trackingReminderNotificationId,
+                    'variableId': n.variableId,
+                    'trackingReminderId': n.trackingReminderId,
+                    'action': n.action,
+                    'timeZone': moment.tz.guess(),
+                }
+            })
+            qm.api.postToQuantiModo(body, 'v3/trackingReminderNotifications',
                 function(response){
                     var measurements = response.measurements;
                     if(!measurements && response.data){measurements = response.data.measurements;}
