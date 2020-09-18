@@ -33,34 +33,33 @@ angular.module('starter').controller('MeasurementAddCtrl', ["$scope", "$q", "$ti
             $scope.state.selectedDate = moment();
             $scope.state.units = qm.unitHelper.getNonAdvancedUnits();
             var reminderFromUrl = qm.urlHelper.getParam('trackingReminderObject', window.location.href, true);
-            if($stateParams.trackingReminder){
-                setupTrackingByReminderNotification($stateParams.trackingReminder);
-            }else if($stateParams.measurement){
-                setupTrackingByMeasurement($stateParams.measurement);
-            }else if(qm.urlHelper.getParam('measurementObject', window.location.href, true)){
-                setupTrackingByMeasurement(JSON.parse(qm.urlHelper.getParam('measurementObject', window.location.href, true)));
-            }else if($stateParams.variableObject){
-                setupFromVariable($stateParams.variableObject);
+            var measurementFromUrl = qm.urlHelper.getParam('measurementObject', window.location.href, true);
+            var tr = $stateParams.trackingReminder;
+            var m = $stateParams.measurement;
+            var v = $stateParams.variableObject;
+            var n = $stateParams.reminderNotification;
+            var id = qm.urlHelper.getParam('measurementId', location.href, true);
+            if(tr){
+                setupTrackingByReminder(tr);
+            }else if(m){
+                setupTrackingByMeasurement(m);
+            }else if(measurementFromUrl){
+                setupTrackingByMeasurement(JSON.parse(measurementFromUrl));
+            }else if(v){
+                setupFromVariable(v);
             }else if(reminderFromUrl){
-                var tr = JSON.parse(reminderFromUrl);
-                setupTrackingByReminderNotification(tr);
-            }else if($stateParams.reminderNotification){
-                setupTrackingByReminderNotification($stateParams.reminderNotification);
-            }else if(qm.urlHelper.getParam('measurementId', location.href, true)){
-                setMeasurementVariablesByMeasurementId().then(function(){
-                    if(!$scope.state.measurementIsSetup){
-                        $scope.goBack();
-                    }
+                setupTrackingByReminder(JSON.parse(reminderFromUrl));
+            }else if(n){
+                setupTrackingByReminder(n);
+            }else if(id){
+                setMeasurementVariablesByMeasurementId(id).then(function(){
+                    if(!$scope.state.measurementIsSetup){$scope.goBack();}
                 });
             }else if($stateParams.variableName){
                 setupFromVariableName($stateParams.variableName);
             }
-            if(!$scope.state.measurementIsSetup){
-                setupFromUrlParameters();
-            }
-            if(!$scope.state.measurementIsSetup){
-                setupFromVariable(qm.getPrimaryOutcomeVariable());
-            }
+            if(!$scope.state.measurementIsSetup){setupFromUrlParameters();}
+            if(!$scope.state.measurementIsSetup){setupFromVariable(qm.getPrimaryOutcomeVariable());}
         });
         $scope.$on('$ionicView.enter', function(e){
             qmLogService.debug('$ionicView.enter ' + $state.current.name);
@@ -274,10 +273,10 @@ angular.module('starter').controller('MeasurementAddCtrl', ["$scope", "$q", "$ti
                 qmLogService.error(error);
             });
         };
-        var setMeasurementVariablesByMeasurementId = function(){
+        var setMeasurementVariablesByMeasurementId = function(id){
             var deferred = $q.defer();
             qmService.showBlackRingLoader();
-            qmService.getMeasurementById(qm.urlHelper.getParam('measurementId', location.href, true))
+            qmService.getMeasurementById(id)
                 .then(function(m){
                         qmService.hideLoader();
                         $scope.state.measurementIsSetup = true;
@@ -336,7 +335,7 @@ angular.module('starter').controller('MeasurementAddCtrl', ["$scope", "$q", "$ti
             setupUnit(m.unitAbbreviatedName, m.valence);
             setStateVariable();
         };
-        var setupTrackingByReminderNotification = function(n){
+        var setupTrackingByReminder = function(n){
             $scope.state.title = "Record Measurement";
             if(!$scope.state.measurement.unitAbbreviatedName){
                 setupUnit(n.unitAbbreviatedName);
