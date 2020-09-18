@@ -4219,6 +4219,48 @@ var qm = {
         }
     },
     measurements: {
+        newMeasurement: function(src){
+            var value;
+            if(typeof src.modifiedValue !== "undefined" && src.modifiedValue !== null){
+                value = src.modifiedValue;
+            } else if (typeof src.value !== "undefined" && src.value !== null){
+                value = src.value;
+            } else if (typeof src.defaultValue !== "undefined" && src.defaultValue !== null){
+                value = src.defaultValue;
+            } else {
+                throw "no value provided"
+            }
+            var timeAt = src.trackingReminderNotificationTimeEpoch ||
+                src.startAt ||
+                src.startTime ||
+                src.notifyAt ||
+                src.startTimeString ||
+                src.startTimeEpoch;
+            var unit = qm.unitHelper.find(src);
+            var m = {
+                combinationOperation: src.combinationOperation || 'MEAN',
+                icon: src.icon,
+                inputType: src.inputType || unit.inputType,
+                maximumAllowedValue: src.maximumAllowedValue || unit.maximum,
+                minimumAllowedValue: src.minimumAllowedValue || unit.minimum,
+                pngPath: src.pngPath || src.image,
+                startAt: qm.timeHelper.toDate(timeAt),
+                startTime: qm.timeHelper.toUnixTime(timeAt),
+                unitAbbreviatedName: unit.abbreviatedName,
+                unitId: unit.id,
+                unitName: unit.name,
+                upc: src.upc,
+                valence: src.valence,
+                value: value,
+                variableCategoryId: src.variableCategoryName,
+                variableCategoryName: src.variableCategoryName,
+                variableName: src.variableName || src.name,
+            }
+            return m;
+        },
+        fromNotification: function (n){
+            return qm.measurements.newMeasurement(n);
+        },
         getUniqueKey: function(m){
             if(m.id){return m.id.toString();}
             var startTime = m.startTime || m.startTimeEpoch;
@@ -8486,6 +8528,13 @@ var qm = {
         }
     },
     timeHelper: {
+        toDate: function(timeAt){
+            var unixTime = qm.timeHelper.universalConversionToUnixTimeSeconds(timeAt);
+            return qm.timeHelper.convertUnixTimeStampToISOString(unixTime);
+        },
+        toUnixTime: function(timeAt){
+            return qm.timeHelper.universalConversionToUnixTimeSeconds(timeAt);
+        },
         getUnixTimestampInMilliseconds: function(dateTimeString){
             if(!dateTimeString){
                 return new Date().getTime();
@@ -8684,6 +8733,26 @@ var qm = {
         }
     },
     unitHelper: {
+        getInputType: function(unitAbbreviatedName, valence, variableName) {
+            return qm.unitHelper.getInputType(unitAbbreviatedName, valence, variableName);
+            var inputType = 'value';
+            if (variableName === 'Blood Pressure') {
+                inputType = 'bloodPressure';
+            }
+            if (unitAbbreviatedName === '/5') {
+                inputType = 'oneToFiveNumbers';
+                if (valence === 'positive') {
+                    inputType = 'happiestFaceIsFive';
+                }
+                if (valence === 'negative') {
+                    inputType = 'saddestFaceIsFive';
+                }
+            }
+            if (unitAbbreviatedName === 'yes/no') {
+                inputType = 'yesOrNo';
+            }
+            return inputType;
+        },
         getNonAdvancedUnits: function(){
             var nonAdvancedUnitObjects = [];
             var allUnits = qm.staticData.units;
