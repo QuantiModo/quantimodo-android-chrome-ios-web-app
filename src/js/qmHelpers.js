@@ -8734,23 +8734,14 @@ var qm = {
     },
     unitHelper: {
         getInputType: function(unitAbbreviatedName, valence, variableName) {
-            return qm.unitHelper.getInputType(unitAbbreviatedName, valence, variableName);
             var inputType = 'value';
-            if (variableName === 'Blood Pressure') {
-                inputType = 'bloodPressure';
-            }
+            if (variableName === 'Blood Pressure') {inputType = 'bloodPressure';}
             if (unitAbbreviatedName === '/5') {
                 inputType = 'oneToFiveNumbers';
-                if (valence === 'positive') {
-                    inputType = 'happiestFaceIsFive';
-                }
-                if (valence === 'negative') {
-                    inputType = 'saddestFaceIsFive';
-                }
+                if (valence === 'positive') {inputType = 'happiestFaceIsFive';}
+                if (valence === 'negative') {inputType = 'saddestFaceIsFive';}
             }
-            if (unitAbbreviatedName === 'yes/no') {
-                inputType = 'yesOrNo';
-            }
+            if (unitAbbreviatedName === 'yes/no') {inputType = 'yesOrNo';}
             return inputType;
         },
         getNonAdvancedUnits: function(){
