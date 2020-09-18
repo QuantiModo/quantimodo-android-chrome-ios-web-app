@@ -7439,25 +7439,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             }
             return true;
         };
-        qmService.getInputType = function(unitAbbreviatedName, valence, variableName){
-            var inputType = 'value';
-            if(variableName === 'Blood Pressure'){
-                inputType = 'bloodPressure';
-            }
-            if(unitAbbreviatedName === '/5'){
-                inputType = 'oneToFiveNumbers';
-                if(valence === 'positive'){
-                    inputType = 'happiestFaceIsFive';
-                }
-                if(valence === 'negative'){
-                    inputType = 'saddestFaceIsFive';
-                }
-            }
-            if(unitAbbreviatedName === 'yes/no'){
-                inputType = 'yesOrNo';
-            }
-            return inputType;
-        };
         var deleteAllMeasurementsForVariable = function(variableName){
             qmService.showBlackRingLoader();
             // Delete all measurements for a variable
