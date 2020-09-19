@@ -11,7 +11,7 @@
         <img id="{{'numericRatingOptions' + option.numericValue}}"
              ng-repeat="option in numericRatingOptions"
              on-hold="trackAllWithConfirmation(trackingReminderNotification, option.numericValue, $event)"
-             ng-click="track(trackingReminderNotification, option.numericValue, $event, trackAll)"
+             ng-click="track(trackingReminderNotification, option.numericValue, $event)"
              title="{{option.numericValue}}/5"
              ng-src="{{option.img}}">
     </div>
@@ -23,7 +23,7 @@
         <img id="{{'positiveRatingOptions' + option.numericValue}}"
              ng-repeat="option in positiveRatingOptions"
              on-hold="trackAllWithConfirmation(trackingReminderNotification, option.numericValue, $event)"
-             ng-click="track(trackingReminderNotification, option.numericValue, $event, trackAll)"
+             ng-click="track(trackingReminderNotification, option.numericValue, $event)"
              title="{{option.numericValue}}/5"
              ng-src="{{option.img}}">
     </div>
@@ -35,7 +35,7 @@
         <img id="{{'negativeRatingOptions' + option.numericValue}}"
              ng-repeat="option in negativeRatingOptions"
              on-hold="trackAllWithConfirmation(trackingReminderNotification, option.numericValue, $event)"
-             ng-click="track(trackingReminderNotification, option.numericValue, $event, trackAll)"
+             ng-click="track(trackingReminderNotification, option.numericValue, $event)"
              title="{{option.numericValue}}/5"
              ng-src="{{option.img}}">
     </div>
@@ -48,13 +48,13 @@
         <button class="button button-assertive"
                 style="text-overflow: clip; font-size: 14px;"
                 on-hold="trackAllWithConfirmation(trackingReminderNotification, 0, $event)"
-                ng-click="track(trackingReminderNotification, 0, $event, trackAll)">
+                ng-click="track(trackingReminderNotification, 0, $event)">
             <i class="ion-android-done"> &nbsp; NO &nbsp</i>
         </button>
         <button class="button button-balanced"
                 style="text-overflow: clip; font-size: 14px;"
                 on-hold="trackAllWithConfirmation(trackingReminderNotification, 1, $event)"
-                ng-click="track(trackingReminderNotification, 1, $event, trackAll)">
+                ng-click="track(trackingReminderNotification, 1, $event)">
             <i class="ion-android-done"> &nbsp; YES &nbsp</i>
         </button>
     </div>
