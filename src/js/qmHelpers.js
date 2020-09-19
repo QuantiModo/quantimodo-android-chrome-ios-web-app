@@ -194,16 +194,16 @@ var qm = {
             }
             return qmApiClient;
         },
-        justUseBuiltInHttpCache: true, // Redundant and produces unexpected results
+        useMemoryCache: true, // Redundant and produces unexpected results. However, have to keep using for now to prevent infinite loops.
         cacheSet: function(params, data, functionName){
             if(!qm.api.cache[functionName]){qm.api.cache[functionName] = {};}
             var key = qm.api.getCacheName(params);
-            if(!qm.api.justUseBuiltInHttpCache){  // Redundant and produces unexpected results
+            if(qm.api.useMemoryCache){  // Redundant and produces unexpected results. However, have to keep using for now to prevent infinite loops.
                 qm.api.cache[functionName][key] = data;
             }
         },
         cacheGet: function(params, functionName){
-            if(qm.api.justUseBuiltInHttpCache){  // Redundant and produces unexpected results
+            if(!qm.api.useMemoryCache){  // Redundant and produces unexpected results. However, have to keep using for now to prevent infinite loops.
                 return null;
             }
             if(params && params.refresh){
@@ -7709,17 +7709,13 @@ var qm = {
             qm.storage.setItem(localStorageItemName, array);
         },
         deleteTrackingReminderNotification: function(body){
-            var trackingReminderNotificationId = body;
-            if(isNaN(trackingReminderNotificationId) && body.trackingReminderNotification){
-                trackingReminderNotificationId = body.trackingReminderNotification.id;
-            }
-            if(isNaN(trackingReminderNotificationId) && body.trackingReminderNotificationId){
-                trackingReminderNotificationId = body.trackingReminderNotificationId;
-            }
+            var id = body;
+            if(isNaN(id) && body.trackingReminderNotification){id = body.trackingReminderNotification.id;}
+            if(isNaN(id) && body.trackingReminderNotificationId){id = body.trackingReminderNotificationId;}
             var notifications = qm.storage.getTrackingReminderNotifications();
             if(notifications && notifications.length){
-                qm.qmLog.info(null, 'Deleting notification with id ' + trackingReminderNotificationId, null);
-                qm.storage.deleteById(qm.items.trackingReminderNotifications, trackingReminderNotificationId);
+                qm.qmLog.info('Deleting notification with id ' + id);
+                qm.storage.deleteById(qm.items.trackingReminderNotifications, id);
             }else{
                 qm.notifications.refreshIfEmpty();
             }
