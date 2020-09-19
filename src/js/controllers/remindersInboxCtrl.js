@@ -75,6 +75,15 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
             }
             autoRefresh();
         });
+        $scope.$on('$ionicView.beforeLeave', function(){
+            qmLog.debug('RemindersInboxCtrl beforeLeave');
+            qm.notifications.post();
+        });
+        $scope.$on('$ionicView.afterLeave', function(){
+            qmLog.debug('RemindersInboxCtrl afterLeave');
+            $rootScope.hideHomeButton = false;
+            $rootScope.hideBackButton = false;
+        });
         function readHelpCards(helpCard){
             if(!qm.speech.getSpeechEnabled()){
                 return;
@@ -101,11 +110,7 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
                 }
             }, 30 * 60 * 1000);
         }
-        $scope.$on('$ionicView.afterLeave', function(){
-            qmLog.debug('RemindersInboxCtrl afterLeave', null);
-            $rootScope.hideHomeButton = false;
-            $rootScope.hideBackButton = false;
-        });
+
         var setPageTitle = function(){
             if(getVariableCategoryName() === 'Treatments'){
                 $scope.state.title = 'Overdue Meds';
@@ -278,11 +283,8 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
             refreshIfRunningOutOfNotifications();
             return n;
         };
-        $scope.track = function(n, value, $ev, trackAll){ // Keep trackAll param because it's used in templates/items/notification-item.html
+        $scope.track = function(n, value, $ev){ // Keep trackAll param because it's used in templates/items/notification-item.html
             if(isGhostClick($ev)){return false;}
-            if(trackAll){
-                return $scope.trackAll(n, value, $ev);
-            }
             n.action = 'track';
             n.modifiedValue = value;
             var valueUnit = qm.stringHelper.formatValueUnitDisplayText(n.modifiedValue + ' ' + n.unitAbbreviatedName);
