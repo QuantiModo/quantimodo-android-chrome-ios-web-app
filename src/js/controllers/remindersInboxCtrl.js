@@ -283,11 +283,8 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
             refreshIfRunningOutOfNotifications();
             return n;
         };
-        $scope.track = function(n, value, $ev, trackAll){ // Keep trackAll param because it's used in templates/items/notification-item.html
+        $scope.track = function(n, value, $ev){ // Keep trackAll param because it's used in templates/items/notification-item.html
             if(isGhostClick($ev)){return false;}
-            if(trackAll){
-                return $scope.trackAll(n, value, $ev);
-            }
             n.action = 'track';
             n.modifiedValue = value;
             var valueUnit = qm.stringHelper.formatValueUnitDisplayText(n.modifiedValue + ' ' + n.unitAbbreviatedName);
