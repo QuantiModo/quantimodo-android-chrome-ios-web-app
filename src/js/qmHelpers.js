@@ -4247,7 +4247,7 @@ var qm = {
                 inputType: src.inputType || (unit) ? unit.inputType : null,
                 maximumAllowedValue: src.maximumAllowedValue || (unit) ? unit.maximum : null,
                 minimumAllowedValue: src.minimumAllowedValue || (unit) ? unit.minimum : null,
-                pngPath: src.pngPath || src.image,
+                pngPath: src.pngPath || src.image || (cat) ? cat.pngUrl : null,
                 startAt: qm.timeHelper.toDate(timeAt),
                 startTime: qm.timeHelper.toUnixTime(timeAt),
                 unitAbbreviatedName: (unit) ? unit.abbreviatedName : null,
@@ -9979,6 +9979,7 @@ var qm = {
             } else {
                 nameOrId = v.variableCategoryId || v.variableCategoryName;
             }
+            if(!nameOrId){return null;}
             return qm.variableCategoryHelper.getByNameOrId(nameOrId);
         }
     },
