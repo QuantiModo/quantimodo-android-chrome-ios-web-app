@@ -4228,7 +4228,7 @@ var qm = {
             } else if (typeof src.defaultValue !== "undefined" && src.defaultValue !== null){
                 value = src.defaultValue;
             } else {
-                throw "no value provided"
+                value = null;
             }
             var timeAt = src.trackingReminderNotificationTimeEpoch ||
                 src.startAt ||
@@ -4240,15 +4240,15 @@ var qm = {
             var m = {
                 combinationOperation: src.combinationOperation || 'MEAN',
                 icon: src.icon,
-                inputType: src.inputType || unit.inputType,
-                maximumAllowedValue: src.maximumAllowedValue || unit.maximum,
-                minimumAllowedValue: src.minimumAllowedValue || unit.minimum,
+                inputType: src.inputType || (unit) ? unit.inputType : null,
+                maximumAllowedValue: src.maximumAllowedValue || (unit) ? unit.maximum : null,
+                minimumAllowedValue: src.minimumAllowedValue || (unit) ? unit.minimum : null,
                 pngPath: src.pngPath || src.image,
                 startAt: qm.timeHelper.toDate(timeAt),
                 startTime: qm.timeHelper.toUnixTime(timeAt),
-                unitAbbreviatedName: unit.abbreviatedName,
-                unitId: unit.id,
-                unitName: unit.name,
+                unitAbbreviatedName: (unit) ? unit.abbreviatedName : null,
+                unitId: (unit) ? unit.id : null,
+                unitName: (unit) ? unit.name : null,
                 upc: src.upc,
                 valence: src.valence,
                 value: value,
@@ -8880,9 +8880,9 @@ var qm = {
             }
             return arr;
         },
-        find:function(v){
+        find: function(v) {
             var nameOrId;
-            if(typeof v === "string" || data === parseInt(data, 10)){
+            if(typeof v === "string" || v === parseInt(v, 10)){
                 nameOrId = v;
             } else {
                 nameOrId = v.unitId || v.defaultUnitId || v.defaultUnitAbbreviatedName || v.unitAbbreviatedName || v.id;
