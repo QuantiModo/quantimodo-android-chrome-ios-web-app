@@ -4237,6 +4237,10 @@ var qm = {
                 src.startTimeString ||
                 src.startTimeEpoch;
             var unit = qm.unitHelper.find(src);
+            var cat = qm.variableCategoryHelper.find(src);
+            if(!unit && cat){
+                unit = qm.unitHelper.find(cat);
+            }
             var m = {
                 combinationOperation: src.combinationOperation || 'MEAN',
                 icon: src.icon,
@@ -4256,6 +4260,7 @@ var qm = {
                 variableCategoryName: src.variableCategoryName,
                 variableName: src.variableName || src.name,
             }
+            if(!m.inputType){m.inputType = qm.unitHelper.getInputType(unit.abbreviatedName, m.valence, m.variableName);}
             return m;
         },
         fromNotification: function (n){
@@ -9967,6 +9972,15 @@ var qm = {
             }
             return arr;
         },
+        find: function(v) {
+            var nameOrId;
+            if(typeof v === "string" || v === parseInt(v, 10)){
+                nameOrId = v;
+            } else {
+                nameOrId = v.variableCategoryId || v.variableCategoryName;
+            }
+            return qm.variableCategoryHelper.getByNameOrId(nameOrId);
+        }
     },
     visualizer: {
         visualizerEnabled: true,
