@@ -99,6 +99,7 @@ angular.module('starter').controller('ReminderAddCtrl', ["$scope", "$state", "$s
                 setupEditReminder($scope.state.trackingReminder);
             }  // Needed to set dates
             qmLog.info("tracking reminder after setup: ", $scope.state.trackingReminder);
+            setTitle();
         });
         $scope.showMoreOptions = function(){
             $scope.state.showMoreOptions = true;
@@ -140,17 +141,22 @@ angular.module('starter').controller('ReminderAddCtrl', ["$scope", "$state", "$s
             }
         }
         $scope.oldOpenReminderStartTimePicker = function(order){
-            var defaultStartTimeInSecondsSinceMidnightLocal = qmService.getSecondsSinceMidnightLocalFromLocalString($rootScope.user.earliestReminderTime);
+            var defaultStartTimeInSecondsSinceMidnightLocal =
+                qmService.getSecondsSinceMidnightLocalFromLocalString($rootScope.user.earliestReminderTime);
             if(order === 'first' && $scope.state.firstReminderStartTimeLocal){
-                defaultStartTimeInSecondsSinceMidnightLocal = qmService.getSecondsSinceMidnightLocalFromLocalString($scope.state.firstReminderStartTimeLocal);
+                defaultStartTimeInSecondsSinceMidnightLocal =
+                    qmService.getSecondsSinceMidnightLocalFromLocalString($scope.state.firstReminderStartTimeLocal);
             }
             if(order === 'second' && $scope.state.secondReminderStartTimeLocal){
-                defaultStartTimeInSecondsSinceMidnightLocal = qmService.getSecondsSinceMidnightLocalFromLocalString($scope.state.secondReminderStartTimeLocal);
+                defaultStartTimeInSecondsSinceMidnightLocal =
+                    qmService.getSecondsSinceMidnightLocalFromLocalString($scope.state.secondReminderStartTimeLocal);
             }
             if(order === 'third' && $scope.state.thirdReminderStartTimeLocal){
-                defaultStartTimeInSecondsSinceMidnightLocal = qmService.getSecondsSinceMidnightLocalFromLocalString($scope.state.thirdReminderStartTimeLocal);
+                defaultStartTimeInSecondsSinceMidnightLocal =
+                    qmService.getSecondsSinceMidnightLocalFromLocalString($scope.state.thirdReminderStartTimeLocal);
             }
-            defaultStartTimeInSecondsSinceMidnightLocal = qmService.getSecondsSinceMidnightLocalRoundedToNearestFifteen(defaultStartTimeInSecondsSinceMidnightLocal);
+            defaultStartTimeInSecondsSinceMidnightLocal =
+                qmService.getSecondsSinceMidnightLocalRoundedToNearestFifteen(defaultStartTimeInSecondsSinceMidnightLocal);
             $scope.state.timePickerConfiguration = {
                 callback: function(val){
                     if(typeof (val) === 'undefined'){
@@ -360,7 +366,11 @@ angular.module('starter').controller('ReminderAddCtrl', ["$scope", "$state", "$s
             var toastMessage = getVariableName($scope) + ' saved';
             qmService.showInfoToast(toastMessage);
             qmService.hideLoader();
-            $scope.goBack(); // We can't go back until we get new notifications
+            if($stateParams.doneState){
+                qmService.goToState($stateParams.doneState, $stateParams);
+            } else {
+                $scope.goBack(); // We can't go back until we get new notifications
+            }
         };
         function getFrequencyNameFromFrequencySeconds(frequencyName){
             var reverseFrequencyChart = {
@@ -480,7 +490,7 @@ angular.module('starter').controller('ReminderAddCtrl', ["$scope", "$state", "$s
                 });
         }
         var setTitle = function(){
-            if($stateParams.favorite){
+            if($stateParams.favorite || $state.current.name === qm.stateNames.favoriteAdd){
                 $scope.state.selectedFrequencyName = 'As-Needed';
                 if($stateParams.reminder){
                     if(getVariableCategoryName() === 'Treatments'){
