@@ -527,9 +527,7 @@ angular.module('starter').controller('ReminderAddCtrl', ["$scope", "$state", "$s
                 var number = getNumberOfUniqueValues($scope);
                 if(number && number > 30){hide = true;}
                 var cat = getVariableCategory();
-                if(cat && number = null && cat.name === "Sleep"){
-                    hide = true;
-                }
+                if(cat && number === null && cat.name === "Sleep"){hide = true;}
             }
             $scope.state.hideDefaultValueField = hide;
         }

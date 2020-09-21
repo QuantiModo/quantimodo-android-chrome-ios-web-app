@@ -4355,6 +4355,7 @@ var qm = {
         },
         addInfoAndImagesToMeasurements: function(measurements){
             function parseJsonIfPossible(str){
+                if(str === "{}"){return false;}
                 var object = false;
                 try{
                     object = JSON.parse(str);
