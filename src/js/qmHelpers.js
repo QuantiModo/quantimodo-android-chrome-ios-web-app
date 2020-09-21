@@ -4219,6 +4219,53 @@ var qm = {
         }
     },
     measurements: {
+        newMeasurement: function(src){
+            var value;
+            if(typeof src.modifiedValue !== "undefined" && src.modifiedValue !== null){
+                value = src.modifiedValue;
+            } else if (typeof src.value !== "undefined" && src.value !== null){
+                value = src.value;
+            } else if (typeof src.defaultValue !== "undefined" && src.defaultValue !== null){
+                value = src.defaultValue;
+            } else {
+                value = null;
+            }
+            var timeAt = src.trackingReminderNotificationTimeEpoch ||
+                src.startAt ||
+                src.startTime ||
+                src.notifyAt ||
+                src.startTimeString ||
+                src.startTimeEpoch;
+            var unit = qm.unitHelper.find(src);
+            var cat = qm.variableCategoryHelper.find(src);
+            if(!unit && cat){
+                unit = qm.unitHelper.find(cat);
+            }
+            var m = {
+                combinationOperation: src.combinationOperation || 'MEAN',
+                icon: src.icon,
+                inputType: src.inputType || (unit) ? unit.inputType : null,
+                maximumAllowedValue: src.maximumAllowedValue || (unit) ? unit.maximum : null,
+                minimumAllowedValue: src.minimumAllowedValue || (unit) ? unit.minimum : null,
+                pngPath: src.pngPath || src.image || (cat) ? cat.pngUrl : null,
+                startAt: qm.timeHelper.toDate(timeAt),
+                startTime: qm.timeHelper.toUnixTime(timeAt),
+                unitAbbreviatedName: (unit) ? unit.abbreviatedName : null,
+                unitId: (unit) ? unit.id : null,
+                unitName: (unit) ? unit.name : null,
+                upc: src.upc,
+                valence: src.valence,
+                value: value,
+                variableCategoryId: src.variableCategoryName,
+                variableCategoryName: src.variableCategoryName,
+                variableName: src.variableName || src.name,
+            }
+            if(!m.inputType && unit){m.inputType = qm.unitHelper.getInputType(unit.abbreviatedName, m.valence, m.variableName);}
+            return m;
+        },
+        fromNotification: function (n){
+            return qm.measurements.newMeasurement(n);
+        },
         getUniqueKey: function(m){
             if(m.id){return m.id.toString();}
             var startTime = m.startTime || m.startTimeEpoch;
@@ -8482,6 +8529,13 @@ var qm = {
         }
     },
     timeHelper: {
+        toDate: function(timeAt){
+            var unixTime = qm.timeHelper.universalConversionToUnixTimeSeconds(timeAt);
+            return qm.timeHelper.convertUnixTimeStampToISOString(unixTime);
+        },
+        toUnixTime: function(timeAt){
+            return qm.timeHelper.universalConversionToUnixTimeSeconds(timeAt);
+        },
         getUnixTimestampInMilliseconds: function(dateTimeString){
             if(!dateTimeString){
                 return new Date().getTime();
@@ -8680,6 +8734,17 @@ var qm = {
         }
     },
     unitHelper: {
+        getInputType: function(unitAbbreviatedName, valence, variableName) {
+            var inputType = 'value';
+            if (variableName === 'Blood Pressure') {inputType = 'bloodPressure';}
+            if (unitAbbreviatedName === '/5') {
+                inputType = 'oneToFiveNumbers';
+                if (valence === 'positive') {inputType = 'happiestFaceIsFive';}
+                if (valence === 'negative') {inputType = 'saddestFaceIsFive';}
+            }
+            if (unitAbbreviatedName === 'yes/no') {inputType = 'yesOrNo';}
+            return inputType;
+        },
         getNonAdvancedUnits: function(){
             var nonAdvancedUnitObjects = [];
             var allUnits = qm.staticData.units;
@@ -8820,9 +8885,9 @@ var qm = {
             }
             return arr;
         },
-        find:function(v){
+        find: function(v) {
             var nameOrId;
-            if(typeof v === "string" || data === parseInt(data, 10)){
+            if(typeof v === "string" || v === parseInt(v, 10)){
                 nameOrId = v;
             } else {
                 nameOrId = v.unitId || v.defaultUnitId || v.defaultUnitAbbreviatedName || v.unitAbbreviatedName || v.id;
@@ -9907,6 +9972,16 @@ var qm = {
             }
             return arr;
         },
+        find: function(v) {
+            var nameOrId;
+            if(typeof v === "string" || v === parseInt(v, 10)){
+                nameOrId = v;
+            } else {
+                nameOrId = v.variableCategoryId || v.variableCategoryName;
+            }
+            if(!nameOrId){return null;}
+            return qm.variableCategoryHelper.getByNameOrId(nameOrId);
+        }
     },
     visualizer: {
         visualizerEnabled: true,
