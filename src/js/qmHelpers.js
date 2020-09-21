@@ -4260,7 +4260,7 @@ var qm = {
                 variableCategoryName: src.variableCategoryName,
                 variableName: src.variableName || src.name,
             }
-            if(!m.inputType){m.inputType = qm.unitHelper.getInputType(unit.abbreviatedName, m.valence, m.variableName);}
+            if(!m.inputType && unit){m.inputType = qm.unitHelper.getInputType(unit.abbreviatedName, m.valence, m.variableName);}
             return m;
         },
         fromNotification: function (n){
