@@ -5856,16 +5856,14 @@ var qm = {
                     if(measurements){qm.measurements.addMeasurementsToMemory(measurements);}
                     if(successHandler){successHandler(response);}
                 }, function(response){
-                    if(!response.success){
-                        qm.qmLog.error(response.message)
-                        var newNotificationsSyncQueue = qm.storage.getItem(qm.items.notificationsSyncQueue);
-                        if(newNotificationsSyncQueue){notifications = notifications.concat(newNotificationsSyncQueue);}
-                        qm.storage.setItem(qm.items.notificationsSyncQueue, notifications);
-                        if(errorHandler){errorHandler(response.message || response.error);}
-                    } else{ // This happens when the error is a message saying the notification was already deleted
-                        // so we don't want to put notifications back in queue
-                        qm.qmLog.warn(response.message)
-                    }
+                    qm.qmLog.error(response.message)
+                    // This happens when the error is a message saying the notification was already deleted
+                    // so we don't want to put notifications back in queue
+                    // Don't return to queue or we cause an infinite loop if we get a no changes error
+                    // var newNotificationsSyncQueue = qm.storage.getItem(qm.items.notificationsSyncQueue);
+                    // if(newNotificationsSyncQueue){notifications = notifications.concat(newNotificationsSyncQueue);}
+                    // qm.storage.setItem(qm.items.notificationsSyncQueue, notifications);
+                    if(errorHandler){errorHandler(response.message || response.error);}
                 });
         },
         skip: function(trackingReminderNotification){
