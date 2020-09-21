@@ -75,6 +75,15 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
             }
             autoRefresh();
         });
+        $scope.$on('$ionicView.beforeLeave', function(){
+            qmLog.debug('RemindersInboxCtrl beforeLeave');
+            qm.notifications.post();
+        });
+        $scope.$on('$ionicView.afterLeave', function(){
+            qmLog.debug('RemindersInboxCtrl afterLeave');
+            $rootScope.hideHomeButton = false;
+            $rootScope.hideBackButton = false;
+        });
         function readHelpCards(helpCard){
             if(!qm.speech.getSpeechEnabled()){
                 return;
@@ -101,30 +110,15 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
                 }
             }, 30 * 60 * 1000);
         }
-        $scope.$on('$ionicView.afterLeave', function(){
-            qmLog.debug('RemindersInboxCtrl afterLeave', null);
-            $rootScope.hideHomeButton = false;
-            $rootScope.hideBackButton = false;
-        });
+
         var setPageTitle = function(){
-            if($stateParams.today){
-                if(getVariableCategoryName() === 'Treatments'){
-                    $scope.state.title = "Today's Scheduled Meds";
-                    $scope.state.favoritesTitle = "As-Needed Meds";
-                }else if(getVariableCategoryName()){
-                    $scope.state.title = "Today's Scheduled " + getVariableCategoryName();
-                }else{
-                    $scope.state.title = "Today's Reminder Notifications";
-                }
+            if(getVariableCategoryName() === 'Treatments'){
+                $scope.state.title = 'Overdue Meds';
+                $scope.state.favoritesTitle = "As-Needed Meds";
+            }else if(getVariableCategoryName()){
+                $scope.state.title = $filter('wordAliases')(getVariableCategoryName()) + " " + $filter('wordAliases')("Reminder Inbox");
             }else{
-                if(getVariableCategoryName() === 'Treatments'){
-                    $scope.state.title = 'Overdue Meds';
-                    $scope.state.favoritesTitle = "As-Needed Meds";
-                }else if(getVariableCategoryName()){
-                    $scope.state.title = $filter('wordAliases')(getVariableCategoryName()) + " " + $filter('wordAliases')("Reminder Inbox");
-                }else{
-                    $scope.state.title = 'Inbox';
-                }
+                $scope.state.title = 'Inbox';
             }
         };
         var lastButtonPressTimeStamp, lastClientY, lastClientX;
@@ -289,11 +283,8 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
             refreshIfRunningOutOfNotifications();
             return n;
         };
-        $scope.track = function(n, value, $ev, trackAll){ // Keep trackAll param because it's used in templates/items/notification-item.html
+        $scope.track = function(n, value, $ev){ // Keep trackAll param because it's used in templates/items/notification-item.html
             if(isGhostClick($ev)){return false;}
-            if(trackAll){
-                return $scope.trackAll(n, value, $ev);
-            }
             n.action = 'track';
             n.modifiedValue = value;
             var valueUnit = qm.stringHelper.formatValueUnitDisplayText(n.modifiedValue + ' ' + n.unitAbbreviatedName);
@@ -456,17 +447,11 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
         };
         $rootScope.$on('broadcastGetTrackingReminderNotifications', function(){
             qmLog.info('getTrackingReminderNotifications broadcast received..');
-            if(!$stateParams.today){
-                getFilteredTrackingReminderNotificationsFromLocalStorage();
-            }
+            getFilteredTrackingReminderNotificationsFromLocalStorage();
         });
         var getTrackingReminderNotifications = function(){
             qmLog.info('RemindersInboxCtrl called getTrackingReminderNotifications: ' + window.location.href);
-            if($stateParams.today){
-                getFilteredTodayTrackingReminderNotifications();
-            }else{
-                getFilteredTrackingReminderNotificationsFromLocalStorage();
-            }
+            getFilteredTrackingReminderNotificationsFromLocalStorage();
         };
         function shouldWeShowZeroButton(trackingReminderNotification){
             return trackingReminderNotification.inputType === 'defaultValue' ||

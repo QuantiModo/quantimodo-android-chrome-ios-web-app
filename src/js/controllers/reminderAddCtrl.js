@@ -564,6 +564,7 @@ angular.module('starter').controller('ReminderAddCtrl', ["$scope", "$state", "$s
             if(r && r.numberOfUniqueValues){return r.numberOfUniqueValues;}
             var v = scope.state.variableObject;
             if(v && v.numberOfUniqueValues){return v.numberOfUniqueValues;}
+            if(v && v.commonNumberOfUniqueValues){return v.commonNumberOfUniqueValues;}
             return null;
         }
         $scope.unitSelected = function(){

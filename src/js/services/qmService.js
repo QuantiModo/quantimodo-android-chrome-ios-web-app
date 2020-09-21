@@ -2876,8 +2876,10 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                                         if(!notificationExists && queue[0].reminderFrequency && !queue[0].stopTrackingDate){
                                             qmLog.error("Notification not found for reminder we just created!", null, {'reminder': queue[0]});
                                         }
-                                        qmLog.info("Got " + notifications.length + " notifications to from postTrackingRemindersDeferred response", null, {notifications: notifications});
-                                        qm.storage.setTrackingReminderNotifications(notifications);
+                                        qmLog.info("Got " + notifications.length +
+                                            " notifications to from postTrackingRemindersDeferred response",
+                                            null, {notifications: notifications});
+                                        putTrackingReminderNotificationsInLocalStorageAndUpdateInbox(notifications);
                                     }
                                 }else{
                                     qmLog.error("No postTrackingRemindersToApi response.data!");
@@ -2958,6 +2960,12 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     icon: ionIcons.reminder,
                     text: 'Add Reminder',
                     stateParams: {skipReminderSettingsIfPossible: true}
+                },
+                reminderEdit: {
+                    state: qm.stateNames.reminderAdd,
+                    icon: ionIcons.reminder,
+                    text: 'Reminder Settings',
+                    stateParams: {}
                 },
                 reminderSearch: {
                     state: qm.stateNames.reminderSearch,
@@ -3067,7 +3075,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 }
                 b.state = b.state || b.stateName;
                 if(b.state){
-                    if(b.state === qm.stateNames.reminderAdd && v){
+                    if(b.state === qm.stateNames.reminderAdd && v && !v.trackingReminderId){
                         qmService.reminders.addToRemindersUsingVariableObject(v, {
                             doneState: qm.stateNames.remindersList,
                             skipReminderSettingsIfPossible: true
@@ -3114,7 +3122,11 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     }
                     var allButtons = qmService.actionSheets.actionSheetButtons;
                     buttons.push(allButtons.measurementAddVariable);
-                    buttons.push(allButtons.reminderAdd);
+                    if(v.trackingReminderId){
+                        buttons.push(allButtons.reminderEdit);
+                    } else {
+                        buttons.push(allButtons.reminderAdd);
+                    }
                     var hasMeasurements = v.userId && v.numberOfRawMeasurements;
                     if(hasMeasurements){
                         buttons.push(allButtons.charts);
@@ -3184,8 +3196,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             },
             addActionArrayButtonsToActionSheet: function(actionArray, buttons){
                 if(!actionArray){
-                    qmLog.error("No action array provided to addActionArrayButtonsToActionSheet!");
-                    return;
+                    qmLog.info("No action array provided to addActionArrayButtonsToActionSheet! Maybe it's a new reminders?");
+                    return buttons;
                 }
                 for(var i = 0; i < actionArray.length; i++){
                     if(actionArray[i].action !== "snooze"){
@@ -7426,25 +7438,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 }
             }
             return true;
-        };
-        qmService.getInputType = function(unitAbbreviatedName, valence, variableName){
-            var inputType = 'value';
-            if(variableName === 'Blood Pressure'){
-                inputType = 'bloodPressure';
-            }
-            if(unitAbbreviatedName === '/5'){
-                inputType = 'oneToFiveNumbers';
-                if(valence === 'positive'){
-                    inputType = 'happiestFaceIsFive';
-                }
-                if(valence === 'negative'){
-                    inputType = 'saddestFaceIsFive';
-                }
-            }
-            if(unitAbbreviatedName === 'yes/no'){
-                inputType = 'yesOrNo';
-            }
-            return inputType;
         };
         var deleteAllMeasurementsForVariable = function(variableName){
             qmService.showBlackRingLoader();

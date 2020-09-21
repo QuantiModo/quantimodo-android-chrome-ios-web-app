@@ -194,14 +194,18 @@ var qm = {
             }
             return qmApiClient;
         },
+        useMemoryCache: true, // Redundant and produces unexpected results. However, have to keep using for now to prevent infinite loops.
         cacheSet: function(params, data, functionName){
-            if(!qm.api.cache[functionName]){
-                qm.api.cache[functionName] = {};
-            }
+            if(!qm.api.cache[functionName]){qm.api.cache[functionName] = {};}
             var key = qm.api.getCacheName(params);
-            qm.api.cache[functionName][key] = data;
+            if(qm.api.useMemoryCache){  // Redundant and produces unexpected results. However, have to keep using for now to prevent infinite loops.
+                qm.api.cache[functionName][key] = data;
+            }
         },
         cacheGet: function(params, functionName){
+            if(!qm.api.useMemoryCache){  // Redundant and produces unexpected results. However, have to keep using for now to prevent infinite loops.
+                return null;
+            }
             if(params && params.refresh){
                 return null;
             }
@@ -4215,6 +4219,53 @@ var qm = {
         }
     },
     measurements: {
+        newMeasurement: function(src){
+            var value;
+            if(typeof src.modifiedValue !== "undefined" && src.modifiedValue !== null){
+                value = src.modifiedValue;
+            } else if (typeof src.value !== "undefined" && src.value !== null){
+                value = src.value;
+            } else if (typeof src.defaultValue !== "undefined" && src.defaultValue !== null){
+                value = src.defaultValue;
+            } else {
+                value = null;
+            }
+            var timeAt = src.trackingReminderNotificationTimeEpoch ||
+                src.startAt ||
+                src.startTime ||
+                src.notifyAt ||
+                src.startTimeString ||
+                src.startTimeEpoch;
+            var unit = qm.unitHelper.find(src);
+            var cat = qm.variableCategoryHelper.find(src);
+            if(!unit && cat){
+                unit = qm.unitHelper.find(cat);
+            }
+            var m = {
+                combinationOperation: src.combinationOperation || 'MEAN',
+                icon: src.icon,
+                inputType: src.inputType || (unit) ? unit.inputType : null,
+                maximumAllowedValue: src.maximumAllowedValue || (unit) ? unit.maximum : null,
+                minimumAllowedValue: src.minimumAllowedValue || (unit) ? unit.minimum : null,
+                pngPath: src.pngPath || src.image || (cat) ? cat.pngUrl : null,
+                startAt: qm.timeHelper.toDate(timeAt),
+                startTime: qm.timeHelper.toUnixTime(timeAt),
+                unitAbbreviatedName: (unit) ? unit.abbreviatedName : null,
+                unitId: (unit) ? unit.id : null,
+                unitName: (unit) ? unit.name : null,
+                upc: src.upc,
+                valence: src.valence,
+                value: value,
+                variableCategoryId: src.variableCategoryName,
+                variableCategoryName: src.variableCategoryName,
+                variableName: src.variableName || src.name,
+            }
+            if(!m.inputType && unit){m.inputType = qm.unitHelper.getInputType(unit.abbreviatedName, m.valence, m.variableName);}
+            return m;
+        },
+        fromNotification: function (n){
+            return qm.measurements.newMeasurement(n);
+        },
         getUniqueKey: function(m){
             if(m.id){return m.id.toString();}
             var startTime = m.startTime || m.startTimeEpoch;
@@ -4354,6 +4405,7 @@ var qm = {
             return measurements;
         },
         addInfoAndImagesToMeasurements: function(measurements){
+            if(!Array.isArray(measurements)){measurements = Object.values(measurements);}
             function parseJsonIfPossible(str){
                 if(str === "{}"){return false;}
                 var object = false;
@@ -4380,13 +4432,14 @@ var qm = {
                 m.startAt = m.startAt || m.startTimeString;
                 var unit = qm.unitHelper.getByNameAbbreviatedNameOrId(m.unitId || m.unitAbbreviatedName);
                 if(!unit){
+                    unit = qm.unitHelper.getByNameAbbreviatedNameOrId(m.unitId || m.unitAbbreviatedName);
                     qm.qmLog.errorAndExceptionTestingOrDevelopment("Could not get unit for this measurement: ", m)
                 } else {
                     if(!m.unitAbbreviatedName){m.unitAbbreviatedName = unit.abbreviatedName;}
+                    if(unit.abbreviatedName === '/5'){m.roundedValue = Math.round(m.value);}
                 }
                 if(!m.variableName){m.variableName = m.variable;}
                 if(m.variableName === qm.getPrimaryOutcomeVariable().name){m.valence = qm.getPrimaryOutcomeVariable().valence;}
-                if(unit.abbreviatedName === '/5'){m.roundedValue = Math.round(m.value);}
                 m.displayValueAndUnitString = m.displayValueAndUnitString || m.value + " " + unit.abbreviatedName;
                 m.displayValueAndUnitString = qm.stringHelper.formatValueUnitDisplayText(m.displayValueAndUnitString)
                 m.valueUnitVariableName = m.displayValueAndUnitString + " " + m.variableName;
@@ -5499,7 +5552,7 @@ var qm = {
         getAllUniqueNotifications: function(){
             qm.qmLog.info("Called getAllUniqueRatingNotifications");
             var notifications = qm.storage.getItem(qm.items.trackingReminderNotifications);
-            if(!notifications){
+            if(!notifications || !notifications.length){
                 qm.qmLog.info("No notifications in storage!");
                 return null;
             }
@@ -5544,7 +5597,7 @@ var qm = {
         removeNotificationFromSyncQueueAndUnhide: function(){
             qm.qmLog.info("Called undo notification tracking...");
             var notificationsSyncQueue = qm.storage.getItem(qm.items.notificationsSyncQueue);
-            if(!notificationsSyncQueue){
+            if(!notificationsSyncQueue || !notificationsSyncQueue.length){
                 return false;
             }
             notificationsSyncQueue[0].hide = false;
@@ -5787,8 +5840,17 @@ var qm = {
             if(!notifications[0]){
                 qm.qmLog.error("notifications[0] is " + notifications[0], {notifications: notifications});
             }
-            notifications[0] = qm.timeHelper.addTimeZoneOffsetProperty(notifications[0]);
-            qm.api.postToQuantiModo(notifications, 'v3/trackingReminderNotifications',
+            var body = notifications.map(function (n){
+                return {
+                    'value': n.modifiedValue || n.value,
+                    'trackingReminderNotificationId': n.trackingReminderNotificationId,
+                    'variableId': n.variableId,
+                    'trackingReminderId': n.trackingReminderId,
+                    'action': n.action,
+                    'timeZone': moment.tz.guess(),
+                }
+            })
+            qm.api.postToQuantiModo(body, 'v3/trackingReminderNotifications',
                 function(response){
                     var measurements = response.measurements;
                     if(!measurements && response.data){measurements = response.data.measurements;}
@@ -7429,7 +7491,7 @@ var qm = {
             return userVariable;
         },
         setTrackingReminderNotifications: function(notifications){
-            if(!notifications){
+            if(!notifications || !notifications.length){
                 qm.qmLog.error("No notifications provided to qm.storage.setTrackingReminderNotifications");
                 return;
             }
@@ -7695,16 +7757,13 @@ var qm = {
             qm.storage.setItem(localStorageItemName, array);
         },
         deleteTrackingReminderNotification: function(body){
-            var trackingReminderNotificationId = body;
-            if(isNaN(trackingReminderNotificationId) && body.trackingReminderNotification){
-                trackingReminderNotificationId = body.trackingReminderNotification.id;
-            }
-            if(isNaN(trackingReminderNotificationId) && body.trackingReminderNotificationId){
-                trackingReminderNotificationId = body.trackingReminderNotificationId;
-            }
-            if(qm.storage.getTrackingReminderNotifications() && qm.storage.getTrackingReminderNotifications().length){
-                qm.qmLog.info(null, 'Deleting notification with id ' + trackingReminderNotificationId, null);
-                qm.storage.deleteById(qm.items.trackingReminderNotifications, trackingReminderNotificationId);
+            var id = body;
+            if(isNaN(id) && body.trackingReminderNotification){id = body.trackingReminderNotification.id;}
+            if(isNaN(id) && body.trackingReminderNotificationId){id = body.trackingReminderNotificationId;}
+            var notifications = qm.storage.getTrackingReminderNotifications();
+            if(notifications && notifications.length){
+                qm.qmLog.info('Deleting notification with id ' + id);
+                qm.storage.deleteById(qm.items.trackingReminderNotifications, id);
             }else{
                 qm.notifications.refreshIfEmpty();
             }
@@ -8471,6 +8530,13 @@ var qm = {
         }
     },
     timeHelper: {
+        toDate: function(timeAt){
+            var unixTime = qm.timeHelper.universalConversionToUnixTimeSeconds(timeAt);
+            return qm.timeHelper.convertUnixTimeStampToISOString(unixTime);
+        },
+        toUnixTime: function(timeAt){
+            return qm.timeHelper.universalConversionToUnixTimeSeconds(timeAt);
+        },
         getUnixTimestampInMilliseconds: function(dateTimeString){
             if(!dateTimeString){
                 return new Date().getTime();
@@ -8669,6 +8735,17 @@ var qm = {
         }
     },
     unitHelper: {
+        getInputType: function(unitAbbreviatedName, valence, variableName) {
+            var inputType = 'value';
+            if (variableName === 'Blood Pressure') {inputType = 'bloodPressure';}
+            if (unitAbbreviatedName === '/5') {
+                inputType = 'oneToFiveNumbers';
+                if (valence === 'positive') {inputType = 'happiestFaceIsFive';}
+                if (valence === 'negative') {inputType = 'saddestFaceIsFive';}
+            }
+            if (unitAbbreviatedName === 'yes/no') {inputType = 'yesOrNo';}
+            return inputType;
+        },
         getNonAdvancedUnits: function(){
             var nonAdvancedUnitObjects = [];
             var allUnits = qm.staticData.units;
@@ -8759,7 +8836,10 @@ var qm = {
                     if(objectProperty.toLowerCase().indexOf('unit') === -1){
                         continue;
                     }
-                    var lowerCaseObjectProperty = objectProperty.toLowerCase().replace('defaultUnit', '').replace('userUnit', '').replace('unit', '');
+                    var lowerCaseObjectProperty = objectProperty.toLowerCase()
+                        .replace('defaultUnit', '')
+                        .replace('userUnit', '')
+                        .replace('unit', '');
                     for(var unitProperty in unit){
                         if(unit.hasOwnProperty(unitProperty)){
                             var lowerCaseUnitProperty = unitProperty.toLowerCase();
@@ -8771,6 +8851,10 @@ var qm = {
                     }
                 }
             }
+            if(object.unitId){object.unitId = unit.id;}
+            if(object.unitName){object.unitName = unit.name;}
+            if(object.unitAbbreviatedName){object.unitAbbreviatedName = unit.abbreviatedName;}
+            if(object.unit){object.unit = unit;}
             return object;
         },
         getYesNo: function() {
@@ -8802,9 +8886,9 @@ var qm = {
             }
             return arr;
         },
-        find:function(v){
+        find: function(v) {
             var nameOrId;
-            if(typeof v === "string" || data === parseInt(data, 10)){
+            if(typeof v === "string" || v === parseInt(v, 10)){
                 nameOrId = v;
             } else {
                 nameOrId = v.unitId || v.defaultUnitId || v.defaultUnitAbbreviatedName || v.unitAbbreviatedName || v.id;
@@ -9895,6 +9979,16 @@ var qm = {
             }
             return arr;
         },
+        find: function(v) {
+            var nameOrId;
+            if(typeof v === "string" || v === parseInt(v, 10)){
+                nameOrId = v;
+            } else {
+                nameOrId = v.variableCategoryId || v.variableCategoryName;
+            }
+            if(!nameOrId){return null;}
+            return qm.variableCategoryHelper.getByNameOrId(nameOrId);
+        }
     },
     visualizer: {
         visualizerEnabled: true,
@@ -10412,7 +10506,7 @@ var qm = {
                     qm.webNotifications.getAndPostDeviceToken(messaging, force);
                 })
                 .catch(function(err){
-                    qm.qmLog.error('Unable to get permission to notify.', err);
+                    qm.qmLog.info('Unable to get permission to notify.', err);
                 });
         },
         postWebPushSubscriptionToServer: function(deviceTokenString){
