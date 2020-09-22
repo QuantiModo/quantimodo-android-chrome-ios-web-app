@@ -77,7 +77,7 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
         });
         $scope.$on('$ionicView.beforeLeave', function(){
             qmLog.debug('RemindersInboxCtrl beforeLeave');
-            qm.notifications.post();
+            qmService.syncTrackingReminderNotifications();
         });
         $scope.$on('$ionicView.afterLeave', function(){
             qmLog.debug('RemindersInboxCtrl afterLeave');

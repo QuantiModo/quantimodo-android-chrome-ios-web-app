@@ -2890,12 +2890,12 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                                 deferred.reject(error);
                             });
                         };
-                        qm.notifications.post(function(){
+                        qmService.syncTrackingReminderNotifications().then(function(){
                             postTrackingRemindersToApiAndHandleResponse();
-                        }, function(error){
+                        }, function (err){
                             postTrackingRemindersToApiAndHandleResponse();
                             deferred.reject(error);
-                        });
+                        })
                     }else{
                         qmLog.info('syncTrackingReminders: trackingReminderSyncQueue empty so just fetching trackingReminders from API', null);
                         qm.reminderHelper.getTrackingRemindersFromApi({force: force}, function(reminders){
@@ -5105,7 +5105,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             var deferred = $q.defer();
             if(params && params.noCache){qmService.notificationsPromise = false;}
             if(qmService.notificationsPromise){return qmService.notificationsPromise;}
-            qm.notifications.post(function(response){
+            qm.notifications.syncTrackingReminderNotifications(function(response){
                 var notifications = qm.notifications.getFromGlobalsOrLocalStorage();
                 if(notifications.length && $rootScope.platform.isMobile && getDeviceTokenToSync()){qmService.registerDeviceToken();}
                 qmService.notifications.broadcastGetTrackingReminderNotifications();
