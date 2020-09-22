@@ -2097,7 +2097,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 reconfigurePushNotificationsIfNoTokenOnServerOrToSync: function(){
                     //if(qm.platform.isMobile() && !qm.storage.getItem(qm.items.deviceTokenOnServer) && !qm.storage.getItem(qm.items.deviceTokenToSync)){
                     if(!qm.storage.getItem(qm.items.deviceTokenOnServer) && !qm.storage.getItem(qm.items.deviceTokenToSync)){
-                        qmLog.warn("No device token on deviceTokenOnServer or deviceTokenToSync! Going to reconfigure push notifications");
+                        qmLog.debug("No device token on deviceTokenOnServer or deviceTokenToSync! Going to reconfigure push notifications");
                         qmService.configurePushNotifications();
                     } else {
                         qmLog.info("NOT going to reconfigurePushNotifications because we have deviceTokenOnServer || deviceTokenToSync")
@@ -2833,7 +2833,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 syncPromise: null,
                 syncTrackingReminders: function(force){
                     if(qmService.trackingReminders.syncPromise){
-                        qmLog.error("Returning existing qmService.trackingReminders.syncPromise");
+                        qmLog.debug("Returning existing qmService.trackingReminders.syncPromise");
                         return qmService.trackingReminders.syncPromise;
                     }
                     var deferred = $q.defer();
@@ -7200,7 +7200,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             var deferred = $q.defer();
             qmService.getTrackingRemindersDeferred(variableCategoryName).then(function(reminders){
                 reminders = qm.reminderHelper.validateReminderArray(reminders);
-                qmLog.info('Got ' + reminders.length + ' unprocessed ' + variableCategoryName + ' category trackingReminders');
+                qmLog.debug('Got ' + reminders.length + ' unprocessed ' + variableCategoryName + ' category trackingReminders');
                 var separated = qm.reminderHelper.filterByCategoryAndSeparateFavoritesAndArchived(reminders, variableCategoryName);
                 if(type){
                     qmLog.info('Got ' + separated[type].length + ' ' + variableCategoryName + ' category ' + type + 's');
