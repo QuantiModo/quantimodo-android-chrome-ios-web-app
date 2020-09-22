@@ -5517,7 +5517,7 @@ var qm = {
         refreshIfEmpty: function(successHandler, errorHandler){
             if(!qm.notifications.getNumberInGlobalsOrLocalStorage()){
                 qm.qmLog.info('No notifications in local storage');
-                qm.notifications.post(successHandler, errorHandler);
+                qm.notifications.syncTrackingReminderNotifications(successHandler, errorHandler);
                 return true;
             }
             qm.qmLog.info(qm.notifications.getNumberInGlobalsOrLocalStorage() + ' notifications in local storage');
@@ -5528,7 +5528,7 @@ var qm = {
             qm.qmLog.info("qm.notifications.refreshIfEmptyOrStale");
             if(!qm.notifications.getNumberInGlobalsOrLocalStorage() || qm.notifications.getSecondsSinceLastNotificationsRefresh() > 3600){
                 qm.qmLog.info('Refreshing notifications because empty or last refresh was more than an hour ago');
-                qm.notifications.post(callback);
+                qm.notifications.syncTrackingReminderNotifications(callback);
             }else{
                 qm.qmLog.info('Not refreshing notifications because last refresh was last than an hour ago and we have notifications in local storage');
                 if(callback){
@@ -5620,7 +5620,7 @@ var qm = {
             }else{
                 console.info('No rating notifications for popup');
                 qm.notifications.getLastNotificationsRefreshTime();
-                qm.notifications.post();
+                qm.notifications.syncTrackingReminderNotifications();
                 return null;
             }
         },
@@ -5629,7 +5629,7 @@ var qm = {
         },
         promise: null,
         refreshAndShowPopupIfNecessary: function(notificationParams){
-            qm.notifications.post(function(response){
+            qm.notifications.syncTrackingReminderNotifications(function(response){
                 var uniqueNotification = qm.notifications.getMostRecentUniqueNotificationNotInSyncQueue();
                 function objectLength(obj){
                     var result = 0;
@@ -5747,7 +5747,7 @@ var qm = {
             if(!successHandler){
                 return null;
             }
-            qm.notifications.post(function(response){
+            qm.notifications.syncTrackingReminderNotifications(function(response){
                 var notification = qm.notifications.getMostRecentNotification();
                 if(notification){
                     successHandler(notification);
@@ -5759,7 +5759,7 @@ var qm = {
         schedulePost: function(delayInMilliseconds){
             var queue = qm.storage.getItem(qm.items.notificationsSyncQueue);
             if(queue && queue.length > 10){
-                qm.notifications.post();
+                qm.notifications.syncTrackingReminderNotifications();
                 return;
             }
             if(!delayInMilliseconds){
@@ -5775,7 +5775,7 @@ var qm = {
                 }
                 setTimeout(function(){
                     qm.qmLog.info("Notifications sync countdown completed.  Syncing now... ");
-                    qm.notifications.post();
+                    qm.notifications.syncTrackingReminderNotifications();
                 }, delayInMilliseconds);
             }else{
                 if(!qm.platform.isMobile()){ // Better performance
@@ -5804,8 +5804,8 @@ var qm = {
             qm.notifications.deleteByVariableName(n.variableName);
             qm.notifications.addToSyncQueue(n);
         },
-        post: function(successHandler, errorHandler){
-            qm.qmLog.debug("Called postNotifications...");
+        syncTrackingReminderNotifications: function(successHandler, errorHandler){
+            qm.qmLog.debug("Called syncTrackingReminderNotifications...");
             var notifications = qm.storage.getItem(qm.items.notificationsSyncQueue);
             qm.storage.removeItem(qm.items.notificationsSyncQueue);
             qm.storage.removeItem(qm.items.trackingReminderNotificationSyncScheduled);
