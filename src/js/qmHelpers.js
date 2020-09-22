@@ -5829,6 +5829,15 @@ var qm = {
             })
             qm.api.postToQuantiModo(body, 'v3/trackingReminderNotifications',
                 function(response){
+                    if(!response){
+                        var err = "No response from postToQuantiModo(body, 'v3/trackingReminderNotifications";
+                        if(errorHandler){
+                            errorHandler(err);
+                            return;
+                        } else {
+                            throw err;
+                        }
+                    }
                     var measurements = response.measurements || response.data.measurements;
                     if(measurements){qm.measurements.addMeasurementsToMemory(measurements);}
                     var trackingReminderNotifications = response.trackingReminderNotifications || response.data.trackingReminderNotifications;
