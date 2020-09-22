@@ -5517,7 +5517,7 @@ var qm = {
         refreshIfEmpty: function(successHandler, errorHandler){
             if(!qm.notifications.getNumberInGlobalsOrLocalStorage()){
                 qm.qmLog.info('No notifications in local storage');
-                qm.notifications.refreshNotifications(successHandler, errorHandler);
+                qm.notifications.syncTrackingReminderNotifications(successHandler, errorHandler);
                 return true;
             }
             qm.qmLog.info(qm.notifications.getNumberInGlobalsOrLocalStorage() + ' notifications in local storage');
@@ -5528,7 +5528,7 @@ var qm = {
             qm.qmLog.info("qm.notifications.refreshIfEmptyOrStale");
             if(!qm.notifications.getNumberInGlobalsOrLocalStorage() || qm.notifications.getSecondsSinceLastNotificationsRefresh() > 3600){
                 qm.qmLog.info('Refreshing notifications because empty or last refresh was more than an hour ago');
-                qm.notifications.refreshNotifications(callback);
+                qm.notifications.syncTrackingReminderNotifications(callback);
             }else{
                 qm.qmLog.info('Not refreshing notifications because last refresh was last than an hour ago and we have notifications in local storage');
                 if(callback){
@@ -5620,7 +5620,7 @@ var qm = {
             }else{
                 console.info('No rating notifications for popup');
                 qm.notifications.getLastNotificationsRefreshTime();
-                qm.notifications.refreshNotifications();
+                qm.notifications.syncTrackingReminderNotifications();
                 return null;
             }
         },
@@ -5628,31 +5628,8 @@ var qm = {
             return qm.storage.deleteByProperty(qm.items.trackingReminderNotifications, 'variableName', variableName);
         },
         promise: null,
-        refreshNotifications: function(successHandler, errorHandler, options){
-            var route = qm.apiPaths.trackingReminderNotificationsPast;
-            qm.api.getRequestUrl(route, function(url){
-                // Can't use QM SDK in service worker
-                qm.api.getViaXhrOrFetch(url, function(response){
-                    if(!response){
-                        qm.qmLog.error("No response from " + url);
-                        if(errorHandler){
-                            errorHandler("No response from " + url);
-                        }
-                        return;
-                    }
-                    if(response.status === 401){
-                        qm.chrome.showSignInNotification();
-                    }else{
-                        qm.storage.setTrackingReminderNotifications(response.data);
-                        if(successHandler){
-                            successHandler(response.data);
-                        }
-                    }
-                })
-            }, options);
-        },
         refreshAndShowPopupIfNecessary: function(notificationParams){
-            qm.notifications.refreshNotifications(notificationParams, function(trackingReminderNotifications){
+            qm.notifications.syncTrackingReminderNotifications(function(response){
                 var uniqueNotification = qm.notifications.getMostRecentUniqueNotificationNotInSyncQueue();
                 function objectLength(obj){
                     var result = 0;
@@ -5664,6 +5641,7 @@ var qm = {
                     }
                     return result;
                 }
+                var trackingReminderNotifications = qm.notifications.getFromGlobalsOrLocalStorage();
                 var numberOfWaitingNotifications = objectLength(trackingReminderNotifications);
                 if(uniqueNotification){
                     function getChromeRatingNotificationParams(trackingReminderNotification){
@@ -5769,7 +5747,7 @@ var qm = {
             if(!successHandler){
                 return null;
             }
-            qm.notifications.refreshNotifications(function(notifications){
+            qm.notifications.syncTrackingReminderNotifications(function(response){
                 var notification = qm.notifications.getMostRecentNotification();
                 if(notification){
                     successHandler(notification);
@@ -5781,7 +5759,7 @@ var qm = {
         schedulePost: function(delayInMilliseconds){
             var queue = qm.storage.getItem(qm.items.notificationsSyncQueue);
             if(queue && queue.length > 10){
-                qm.notifications.post();
+                qm.notifications.syncTrackingReminderNotifications();
                 return;
             }
             if(!delayInMilliseconds){
@@ -5797,7 +5775,7 @@ var qm = {
                 }
                 setTimeout(function(){
                     qm.qmLog.info("Notifications sync countdown completed.  Syncing now... ");
-                    qm.notifications.post();
+                    qm.notifications.syncTrackingReminderNotifications();
                 }, delayInMilliseconds);
             }else{
                 if(!qm.platform.isMobile()){ // Better performance
@@ -5826,8 +5804,8 @@ var qm = {
             qm.notifications.deleteByVariableName(n.variableName);
             qm.notifications.addToSyncQueue(n);
         },
-        post: function(successHandler, errorHandler){
-            qm.qmLog.debug("Called postNotifications...");
+        syncTrackingReminderNotifications: function(successHandler, errorHandler){
+            qm.qmLog.debug("Called syncTrackingReminderNotifications...");
             var notifications = qm.storage.getItem(qm.items.notificationsSyncQueue);
             qm.storage.removeItem(qm.items.notificationsSyncQueue);
             qm.storage.removeItem(qm.items.trackingReminderNotificationSyncScheduled);
@@ -5851,21 +5829,20 @@ var qm = {
             })
             qm.api.postToQuantiModo(body, 'v3/trackingReminderNotifications',
                 function(response){
-                    var measurements = response.measurements;
-                    if(!measurements && response.data){measurements = response.data.measurements;}
+                    var measurements = response.measurements || response.data.measurements;
                     if(measurements){qm.measurements.addMeasurementsToMemory(measurements);}
+                    var trackingReminderNotifications = response.trackingReminderNotifications || response.data.trackingReminderNotifications;
+                    if(trackingReminderNotifications){qm.storage.setTrackingReminderNotifications(notifications);}
                     if(successHandler){successHandler(response);}
                 }, function(response){
-                    if(!response.success){
-                        qm.qmLog.error(response.message)
-                        var newNotificationsSyncQueue = qm.storage.getItem(qm.items.notificationsSyncQueue);
-                        if(newNotificationsSyncQueue){notifications = notifications.concat(newNotificationsSyncQueue);}
-                        qm.storage.setItem(qm.items.notificationsSyncQueue, notifications);
-                        if(errorHandler){errorHandler(response.message || response.error);}
-                    } else{ // This happens when the error is a message saying the notification was already deleted
-                        // so we don't want to put notifications back in queue
-                        qm.qmLog.warn(response.message)
-                    }
+                    qm.qmLog.error(response.message)
+                    // This happens when the error is a message saying the notification was already deleted
+                    // so we don't want to put notifications back in queue
+                    // Don't return to queue or we cause an infinite loop if we get a no changes error
+                    // var newNotificationsSyncQueue = qm.storage.getItem(qm.items.notificationsSyncQueue);
+                    // if(newNotificationsSyncQueue){notifications = notifications.concat(newNotificationsSyncQueue);}
+                    // qm.storage.setItem(qm.items.notificationsSyncQueue, notifications);
+                    if(errorHandler){errorHandler(response.message || response.error);}
                 });
         },
         skip: function(trackingReminderNotification){
