@@ -5517,7 +5517,7 @@ var qm = {
         refreshIfEmpty: function(successHandler, errorHandler){
             if(!qm.notifications.getNumberInGlobalsOrLocalStorage()){
                 qm.qmLog.info('No notifications in local storage');
-                qm.notifications.refreshNotifications(successHandler, errorHandler);
+                qm.notifications.post(successHandler, errorHandler);
                 return true;
             }
             qm.qmLog.info(qm.notifications.getNumberInGlobalsOrLocalStorage() + ' notifications in local storage');
@@ -5528,7 +5528,7 @@ var qm = {
             qm.qmLog.info("qm.notifications.refreshIfEmptyOrStale");
             if(!qm.notifications.getNumberInGlobalsOrLocalStorage() || qm.notifications.getSecondsSinceLastNotificationsRefresh() > 3600){
                 qm.qmLog.info('Refreshing notifications because empty or last refresh was more than an hour ago');
-                qm.notifications.refreshNotifications(callback);
+                qm.notifications.post(callback);
             }else{
                 qm.qmLog.info('Not refreshing notifications because last refresh was last than an hour ago and we have notifications in local storage');
                 if(callback){
@@ -5620,7 +5620,7 @@ var qm = {
             }else{
                 console.info('No rating notifications for popup');
                 qm.notifications.getLastNotificationsRefreshTime();
-                qm.notifications.refreshNotifications();
+                qm.notifications.post();
                 return null;
             }
         },
@@ -5628,31 +5628,8 @@ var qm = {
             return qm.storage.deleteByProperty(qm.items.trackingReminderNotifications, 'variableName', variableName);
         },
         promise: null,
-        refreshNotifications: function(successHandler, errorHandler, options){
-            var route = qm.apiPaths.trackingReminderNotificationsPast;
-            qm.api.getRequestUrl(route, function(url){
-                // Can't use QM SDK in service worker
-                qm.api.getViaXhrOrFetch(url, function(response){
-                    if(!response){
-                        qm.qmLog.error("No response from " + url);
-                        if(errorHandler){
-                            errorHandler("No response from " + url);
-                        }
-                        return;
-                    }
-                    if(response.status === 401){
-                        qm.chrome.showSignInNotification();
-                    }else{
-                        qm.storage.setTrackingReminderNotifications(response.data);
-                        if(successHandler){
-                            successHandler(response.data);
-                        }
-                    }
-                })
-            }, options);
-        },
         refreshAndShowPopupIfNecessary: function(notificationParams){
-            qm.notifications.refreshNotifications(notificationParams, function(trackingReminderNotifications){
+            qm.notifications.post(function(response){
                 var uniqueNotification = qm.notifications.getMostRecentUniqueNotificationNotInSyncQueue();
                 function objectLength(obj){
                     var result = 0;
@@ -5664,6 +5641,7 @@ var qm = {
                     }
                     return result;
                 }
+                var trackingReminderNotifications = qm.notifications.getFromGlobalsOrLocalStorage();
                 var numberOfWaitingNotifications = objectLength(trackingReminderNotifications);
                 if(uniqueNotification){
                     function getChromeRatingNotificationParams(trackingReminderNotification){
@@ -5769,7 +5747,7 @@ var qm = {
             if(!successHandler){
                 return null;
             }
-            qm.notifications.refreshNotifications(function(notifications){
+            qm.notifications.post(function(response){
                 var notification = qm.notifications.getMostRecentNotification();
                 if(notification){
                     successHandler(notification);
