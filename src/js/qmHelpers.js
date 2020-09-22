@@ -9496,6 +9496,7 @@ var qm = {
         }
     },
     userVariables: {
+        defaultLimit: 20,
         updateLatestMeasurementTime: function(variableName, lastValue){
             qm.storage.getUserVariableByName(variableName, true, lastValue);
         },
@@ -9508,7 +9509,7 @@ var qm = {
                 params.sort = '-latestMeasurementTime';
             }
             if(!params.limit){
-                params.limit = 50;
+                params.limit = qm.userVariables.defaultLimit;
             }
             params = qm.api.addGlobalParams(params);
             var cacheKey = 'getUserVariablesFromApi';
