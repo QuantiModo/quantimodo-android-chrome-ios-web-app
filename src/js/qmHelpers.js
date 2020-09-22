@@ -60,8 +60,8 @@ var qm = {
             if(qm.userHelper.isTestUser()){
                 return true;
             }
-            var result = qm.urlHelper.indexOfCurrentUrl("medimodo.heroku") !== -1;
-            return result;
+            return qm.urlHelper.indexOfCurrentUrl("medimodo.heroku") !== -1 ||
+                qm.urlHelper.indexOfCurrentUrl("staging.quantimo.do");
         },
         isTestingOrDevelopment: function(){
             return qm.appMode.isTesting() || qm.appMode.isDevelopment();
@@ -709,7 +709,7 @@ var qm = {
                     if(qm.auth.getAccessTokenFromUrlUserOrStorage()){
                         url = addQueryParameter(url, 'access_token', qm.auth.getAccessTokenFromUrlUserOrStorage());
                     }else{
-                        qm.qmLog.error('No access token!');
+                        qm.qmLog.info('No access token for request!');
                         if(!qm.serviceWorker){
                             qm.chrome.showSignInNotification();
                         }
@@ -4751,13 +4751,12 @@ var qm = {
         },
         micAvailable: null,
         getMicEnabled: function(){
-            if(qm.mic.microphoneDisabled){
+            if(qm.mic.microphoneDisabled){return false;}
+            if(!qm.mic.getMicAvailable()){
+                qm.mic.setMicEnabled(false);
                 return false;
             }
-            if(!qm.mic.getMicAvailable()){
-                return qm.mic.setMicEnabled(false);
-            }
-            return qm.storage.getItem(qm.items.micEnabled);
+            return qm.storage.getItem(qm.items.micEnabled) || null;
         },
         setMicEnabled: function(micEnabled){
             qm.qmLog.info("set micEnabled " + micEnabled);
@@ -7702,7 +7701,7 @@ var qm = {
             }
             var fromGlobals = qm.storage.getGlobal(key);
             if(fromGlobals !== null && fromGlobals !== "undefined" && fromGlobals !== "null"){
-                qm.qmLog.debug("Got " + key + " from globals");
+                // Not sure why this keeps getting sent to bugsnag even though it's a debug log // qm.qmLog.debug("Got " + key + " from globals");
                 return fromGlobals;
             }
             if(typeof localStorage === "undefined" || localStorage === null){
@@ -9573,7 +9572,7 @@ var qm = {
         },
         getFromLocalStorage: function(params, successHandler, errorHandler){
             if(!qm.getUser()){
-                qm.qmLog.error("No user to get user variables!");
+                qm.qmLog.debug("No user to get user variables!");
                 qm.commonVariablesHelper.getFromLocalStorage(params, successHandler, errorHandler);
                 return;
             }
@@ -10470,7 +10469,7 @@ var qm = {
                     }
                 })
                 .catch(function(err){
-                    qm.qmLog.error('An error occurred while retrieving token because: '+err.message, null, err);
+                    qm.qmLog.debug('An error occurred while retrieving token because: '+err.message, null, err);
                     //showToken('Error retrieving Instance ID token. ', err);
                     //qm.webNotifications.postWebPushSubscriptionToServer(false);
                 });
