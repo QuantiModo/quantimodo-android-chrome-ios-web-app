@@ -7206,7 +7206,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     qmLog.info('Got ' + separated[type].length + ' ' + variableCategoryName + ' category ' + type + 's');
                     deferred.resolve(separated[type]);
                 }else{
-                    qmLog.info('Returning reminderTypesArray from getTrackingRemindersDeferred');
+                    qmLog.debug('Returning reminderTypesArray from getTrackingRemindersDeferred');
                     deferred.resolve(separated);
                 }
             });
