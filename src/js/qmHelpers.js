@@ -808,6 +808,11 @@ var qm = {
         addVariableCategoryAndUnit: function(arr){
             qm.variableCategoryHelper.addVariableCategoryProperties(arr)
             qm.unitHelper.addUnit(arr)
+            if(arr && arr.forEach){
+                arr.forEach(function (r){
+                    qm.unitHelper.setInputType(r);
+                })
+            }
         },
         removeVariableCategoryAndUnit: function(arr){
             if(!arr){return arr;}
@@ -4264,7 +4269,7 @@ var qm = {
                 variableCategoryName: src.variableCategoryName,
                 variableName: src.variableName || src.name,
             }
-            if(!m.inputType && unit){m.inputType = qm.unitHelper.getInputType(unit.abbreviatedName, m.valence, m.variableName);}
+            if(!m.inputType && unit){qm.unitHelper.setInputType(m);}
             return m;
         },
         fromNotification: function (n){
@@ -6427,6 +6432,9 @@ var qm = {
             var reminders = qm.storage.getElementsWithRequestParams(qm.items.trackingReminders, requestParams);
             reminders = reminders || [];
             reminders = qm.arrayHelper.removeDuplicatesById(reminders);
+            reminders.forEach(function (r){
+                qm.unitHelper.setInputType(r);
+            })
             return reminders;
         },
         getMostFrequentReminderIntervalInSeconds: function(trackingReminders){
@@ -8724,6 +8732,9 @@ var qm = {
         }
     },
     unitHelper: {
+        setInputType: function(obj){
+            obj.inputType = qm.unitHelper.getInputType(obj.unitAbbreviatedName, obj.valence, obj.variableName);
+        },
         getInputType: function(unitAbbreviatedName, valence, variableName) {
             var inputType = 'value';
             if (variableName === 'Blood Pressure') {inputType = 'bloodPressure';}
