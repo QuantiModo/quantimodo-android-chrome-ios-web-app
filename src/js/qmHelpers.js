@@ -8723,6 +8723,9 @@ var qm = {
         }
     },
     unitHelper: {
+        setInputType: function(obj){
+            obj.inputType = qm.unitHelper.getInputType(obj.unitAbbreviatedName, obj.valence, obj.variableName);
+        },
         getInputType: function(unitAbbreviatedName, valence, variableName) {
             var inputType = 'value';
             if (variableName === 'Blood Pressure') {inputType = 'bloodPressure';}
