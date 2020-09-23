@@ -1,6 +1,6 @@
-angular.module('starter').controller('VariableSearchCtrl', ["$scope", "$state", "$rootScope", "$stateParams", "$timeout",
-    "$filter", "qmService", "qmLogService", function($scope, $state, $rootScope, $stateParams, $timeout, $filter,
-                                                     qmService, qmLogService){
+angular.module('starter').controller('VariableSearchCtrl',
+    ["$scope", "$state", "$rootScope", "$stateParams", "$timeout", "$filter", "qmService", "qmLogService",
+        function($scope, $state, $rootScope, $stateParams, $timeout, $filter, qmService, qmLogService){
         $scope.controller_name = "VariableSearchCtrl";
         qmService.navBar.setFilterBarSearchIcon(false);
         $scope.$on('$ionicView.beforeEnter', function(e){

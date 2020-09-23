@@ -183,8 +183,9 @@ angular.module('starter').controller('MeasurementAddCtrl', ["$scope", "$q", "$ti
                 $scope.state.measurement.unitAbbreviatedName = unitAbbreviatedName;
                 $scope.state.measurement = qm.unitHelper.updateAllUnitPropertiesOnObject(unitAbbreviatedName, $scope.state.measurement);
                 qmLog.info("Setting $scope.state.measurement to ", $scope.state.measurement);
+                qm.unitHelper.setInputType($scope.state.measurement);
+                $scope.state.units = qm.unitHelper.getUnitArrayContaining(unitAbbreviatedName);
             }
-            setupValueFieldType(unitAbbreviatedName, valence);
         }
         $scope.selectPrimaryOutcomeVariableValue = function($event, newValue){
             // remove any previous primary outcome variables if present
@@ -297,15 +298,6 @@ angular.module('starter').controller('MeasurementAddCtrl', ["$scope", "$q", "$ti
                 measurement: $stateParams.measurement
             });
         };
-        function setupValueFieldType(unitAbbreviatedName, valence, variableName){
-            $scope.state.units = qm.unitHelper.getUnitArrayContaining(unitAbbreviatedName);
-            //if($scope.state.measurement.inputType){return;} Why is this here?  It prevents updating when we change a unit!  :(
-            if(!unitAbbreviatedName){
-                qmLogService.error('No unitAbbreviatedName provided to setupValueFieldType');
-                return false;
-            }
-            $scope.state.measurement.inputType = qm.unitHelper.getInputType(unitAbbreviatedName, valence, variableName);
-        }
         function setVariableObjectFromMeasurement(){
             $scope.state.variableObject = {
                 unitAbbreviatedName: $scope.state.measurement.unitAbbreviatedName,
