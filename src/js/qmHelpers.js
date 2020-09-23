@@ -5843,10 +5843,9 @@ var qm = {
                         throw err;
                     }
                 }
-                var measurements = response.measurements || response.data.measurements;
-                if(measurements){qm.measurements.addMeasurementsToMemory(measurements);}
-                var trackingReminderNotifications = response.trackingReminderNotifications || response.data.trackingReminderNotifications;
-                if(trackingReminderNotifications){qm.storage.setTrackingReminderNotifications(notifications);}
+                var data = response.data || response;
+                if(data.measurements){qm.measurements.addMeasurementsToMemory(data.measurements);}
+                if(data.trackingReminderNotifications){qm.storage.setTrackingReminderNotifications(data.trackingReminderNotifications);}
             }
             qm.api.postToQuantiModo(body, 'v3/trackingReminderNotifications', function(response){
                     saveResponse(response);
