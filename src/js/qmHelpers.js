@@ -4408,9 +4408,11 @@ var qm = {
             if(!Array.isArray(measurements)){measurements = Object.values(measurements);}
             function parseJsonIfPossible(str){
                 var object = false;
+                if(str === "{}"){return false;}
                 try{
                     object = JSON.parse(str);
                 }catch (e){
+                    qm.qmLog.error("Unrecognized note format. Could not properly format JSON note", str);
                     return false;
                 }
                 return object;
@@ -4420,12 +4422,8 @@ var qm = {
             for(index = 0; index < measurements.length; ++index){
                 var m = measurements[index];
                 var parsedNote = parseJsonIfPossible(m.note);
-                if(parsedNote){
-                    if(parsedNote.url && parsedNote.message){
-                        m.note = '<a href="' + parsedNote.url + '" target="_blank">' + parsedNote.message + '</a>';
-                    }else{
-                        qm.qmLog.error("Unrecognized note format", "Could not properly format JSON note", {note: m.note});
-                    }
+                if(parsedNote && parsedNote.url && parsedNote.message){
+                    m.note = '<a href="' + parsedNote.url + '" target="_blank">' + parsedNote.message + '</a>';
                 }
                 m.startTime = m.startTime || m.startTimeEpoch;
                 m.startAt = m.startAt || m.startTimeString;
