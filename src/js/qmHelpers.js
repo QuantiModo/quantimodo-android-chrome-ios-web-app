@@ -644,7 +644,11 @@ var qm = {
                     if ( xhr.status === 200 ) {
                         successHandler(responseObject);
                     } else {
-                        qm.qmLog.error("qm.api.get error from " + url + " request: " + xhr.responseText, null, responseObject);
+                        if ( xhr.status === 401 ) {
+                            qm.qmLog.info("qm.api.get error from " + url + " request: " + xhr.responseText, null, responseObject);
+                        } else {
+                            qm.qmLog.error("qm.api.get error from " + url + " request: " + xhr.responseText, null, responseObject);
+                        }
                         if(errorHandler){errorHandler(responseObject);}
                     }
                 }
