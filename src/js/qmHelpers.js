@@ -808,6 +808,11 @@ var qm = {
         addVariableCategoryAndUnit: function(arr){
             qm.variableCategoryHelper.addVariableCategoryProperties(arr)
             qm.unitHelper.addUnit(arr)
+            if(arr && arr.forEach){
+                arr.forEach(function (r){
+                    qm.unitHelper.setInputType(r);
+                })
+            }
         },
         removeVariableCategoryAndUnit: function(arr){
             if(!arr){return arr;}
@@ -4264,7 +4269,7 @@ var qm = {
                 variableCategoryName: src.variableCategoryName,
                 variableName: src.variableName || src.name,
             }
-            if(!m.inputType && unit){m.inputType = qm.unitHelper.getInputType(unit.abbreviatedName, m.valence, m.variableName);}
+            if(!m.inputType && unit){qm.unitHelper.setInputType(m);}
             return m;
         },
         fromNotification: function (n){
@@ -4412,9 +4417,11 @@ var qm = {
             if(!Array.isArray(measurements)){measurements = Object.values(measurements);}
             function parseJsonIfPossible(str){
                 var object = false;
+                if(str === "{}"){return false;}
                 try{
                     object = JSON.parse(str);
                 }catch (e){
+                    qm.qmLog.error("Unrecognized note format. Could not properly format JSON note", str);
                     return false;
                 }
                 return object;
@@ -4424,12 +4431,8 @@ var qm = {
             for(index = 0; index < measurements.length; ++index){
                 var m = measurements[index];
                 var parsedNote = parseJsonIfPossible(m.note);
-                if(parsedNote){
-                    if(parsedNote.url && parsedNote.message){
-                        m.note = '<a href="' + parsedNote.url + '" target="_blank">' + parsedNote.message + '</a>';
-                    }else{
-                        qm.qmLog.error("Unrecognized note format", "Could not properly format JSON note", {note: m.note});
-                    }
+                if(parsedNote && parsedNote.url && parsedNote.message){
+                    m.note = '<a href="' + parsedNote.url + '" target="_blank">' + parsedNote.message + '</a>';
                 }
                 m.startTime = m.startTime || m.startTimeEpoch;
                 m.startAt = m.startAt || m.startTimeString;
@@ -6426,6 +6429,9 @@ var qm = {
             var reminders = qm.storage.getElementsWithRequestParams(qm.items.trackingReminders, requestParams);
             reminders = reminders || [];
             reminders = qm.arrayHelper.removeDuplicatesById(reminders);
+            reminders.forEach(function (r){
+                qm.unitHelper.setInputType(r);
+            })
             return reminders;
         },
         getMostFrequentReminderIntervalInSeconds: function(trackingReminders){
