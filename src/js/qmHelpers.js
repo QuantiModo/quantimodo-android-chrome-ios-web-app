@@ -5828,24 +5828,27 @@ var qm = {
                     'timeZone': moment.tz.guess(),
                 }
             })
-            qm.api.postToQuantiModo(body, 'v3/trackingReminderNotifications',
-                function(response){
-                    if(!response){
-                        var err = "No response from postToQuantiModo(body, 'v3/trackingReminderNotifications";
-                        if(errorHandler){
-                            errorHandler(err);
-                            return;
-                        } else {
-                            throw err;
-                        }
+            function saveResponse(response){
+                if(!response){
+                    var err = "No response from postToQuantiModo(body, 'v3/trackingReminderNotifications";
+                    if(errorHandler){
+                        errorHandler(err);
+                        return;
+                    } else {
+                        throw err;
                     }
-                    var measurements = response.measurements || response.data.measurements;
-                    if(measurements){qm.measurements.addMeasurementsToMemory(measurements);}
-                    var trackingReminderNotifications = response.trackingReminderNotifications || response.data.trackingReminderNotifications;
-                    if(trackingReminderNotifications){qm.storage.setTrackingReminderNotifications(notifications);}
+                }
+                var measurements = response.measurements || response.data.measurements;
+                if(measurements){qm.measurements.addMeasurementsToMemory(measurements);}
+                var trackingReminderNotifications = response.trackingReminderNotifications || response.data.trackingReminderNotifications;
+                if(trackingReminderNotifications){qm.storage.setTrackingReminderNotifications(notifications);}
+            }
+            qm.api.postToQuantiModo(body, 'v3/trackingReminderNotifications', function(response){
+                    saveResponse(response);
                     if(successHandler){successHandler(response);}
                 }, function(response){
                     qm.qmLog.error(response.message)
+                    saveResponse(response); // Sometimes we still return notifications even with an error
                     // This happens when the error is a message saying the notification was already deleted
                     // so we don't want to put notifications back in queue
                     // Don't return to queue or we cause an infinite loop if we get a no changes error
