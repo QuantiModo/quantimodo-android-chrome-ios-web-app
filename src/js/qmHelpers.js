@@ -4282,7 +4282,9 @@ var qm = {
         },
         getLocalMeasurements: function(params, cb){
             var queue = qm.measurements.getMeasurementsFromQueue(params) || [];
+            qm.measurements.checkMeasurements(queue)
             var recent = qm.measurements.getRecentlyPostedMeasurements(params) || [];
+            qm.measurements.checkMeasurements(recent)
             qm.measurements.getPrimaryOutcomeMeasurements(function (measurements) {
                 measurements = measurements || [];
                 var indexed = {};
@@ -4344,9 +4346,19 @@ var qm = {
                     }
                 }
             }
-            var existing  = qm.measurements.recentlyPostedMeasurements;
+            var existing  = qm.measurements.recentlyPostedMeasurements || [];
+            qm.measurements.checkMeasurements(existing)
             var combined = qm.arrayHelper.concatenateUniqueId(measurementArray, existing);
+            qm.measurements.checkMeasurements(combined)
             qm.measurements.recentlyPostedMeasurements = combined;
+        },
+        checkMeasurements: function(arr){
+            arr.forEach(function (m){
+                if(typeof m === "function"){
+                    //throw "existing Measurement is a function"
+                    debugger
+                }
+            });
         },
         getMeasurementsFromApi: function(params, successHandler, errorHandler){
             params = qm.api.addGlobalParams(params);
@@ -4408,7 +4420,9 @@ var qm = {
         },
         getMeasurementsFromQueue: function(params){
             var measurements = qm.storage.getElementsWithRequestParams(qm.items.measurementsQueue, params) || []
+            qm.measurements.checkMeasurements(measurements)
             measurements = qm.measurements.addInfoAndImagesToMeasurements(measurements);
+            qm.measurements.checkMeasurements(measurements)
             qm.qmLog.info("Got " + measurements.length + " measurements from queue with params: " +
                 JSON.stringify(params), measurements);
             return measurements;
@@ -4430,6 +4444,7 @@ var qm = {
             var index;
             for(index = 0; index < measurements.length; ++index){
                 var m = measurements[index];
+                if(typeof m === "function"){throw "Measurement is a function"}
                 var parsedNote = parseJsonIfPossible(m.note);
                 if(parsedNote && parsedNote.url && parsedNote.message){
                     m.note = '<a href="' + parsedNote.url + '" target="_blank">' + parsedNote.message + '</a>';
@@ -4438,6 +4453,7 @@ var qm = {
                 m.startAt = m.startAt || m.startTimeString;
                 var unit = qm.unitHelper.getByNameAbbreviatedNameOrId(m.unitId || m.unitAbbreviatedName);
                 if(!unit){
+                    debugger
                     unit = qm.unitHelper.getByNameAbbreviatedNameOrId(m.unitId || m.unitAbbreviatedName);
                     qm.qmLog.errorAndExceptionTestingOrDevelopment("Could not get unit for this measurement: ", m)
                 } else {
