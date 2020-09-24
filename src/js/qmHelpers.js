@@ -5845,16 +5845,6 @@ var qm = {
                     }
                 })
             }
-            var body = notifications.map(function (n){
-                return {
-                    'value': n.modifiedValue || n.value,
-                    'trackingReminderNotificationId': n.trackingReminderNotificationId,
-                    'variableId': n.variableId,
-                    'trackingReminderId': n.trackingReminderId,
-                    'action': n.action,
-                    'timeZone': moment.tz.guess(),
-                }
-            })
             function saveResponse(response){
                 if(!response){
                     var err = "No response from postToQuantiModo(body, 'v3/trackingReminderNotifications";
