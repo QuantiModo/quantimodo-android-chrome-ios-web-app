@@ -4342,29 +4342,23 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             }
             var parsedMeasurementsQueue = qm.measurements.getMeasurementsFromQueue();
             if(!parsedMeasurementsQueue || parsedMeasurementsQueue.length < 1){
-                if(successHandler){
-                    successHandler();
-                }
-                return;
+                if(successHandler){successHandler();}
+            } else {
+                qmService.postMeasurementsToApi(parsedMeasurementsQueue, function(response){
+                    if(response && response.data && response.data.userVariables){
+                        qm.variablesHelper.saveToLocalStorage(response.data.userVariables);
+                    }
+                    qm.measurements.recentlyPostedMeasurements = qm.measurements.recentlyPostedMeasurements.concat(parsedMeasurementsQueue);  // Save these for history page
+                    qm.storage.setItem(qm.items.measurementsQueue, []);
+                    if(successHandler){successHandler();}
+                    defer.resolve();
+                }, function(error){
+                    qm.storage.setItem(qm.items.measurementsQueue, parsedMeasurementsQueue);
+                    if(errorHandler){errorHandler();}
+                    defer.reject(error);
+                });
+                return defer.promise;
             }
-            qmService.postMeasurementsToApi(parsedMeasurementsQueue, function(response){
-                if(response && response.data && response.data.userVariables){
-                    qm.variablesHelper.saveToLocalStorage(response.data.userVariables);
-                }
-                qm.measurements.recentlyPostedMeasurements = qm.measurements.recentlyPostedMeasurements.concat(parsedMeasurementsQueue);  // Save these for history page
-                qm.storage.setItem(qm.items.measurementsQueue, []);
-                if(successHandler){
-                    successHandler();
-                }
-                defer.resolve();
-            }, function(error){
-                qm.storage.setItem(qm.items.measurementsQueue, parsedMeasurementsQueue);
-                if(errorHandler){
-                    errorHandler();
-                }
-                defer.reject(error);
-            });
-            return defer.promise;
         };
         qmService.syncPrimaryOutcomeVariableMeasurements = function(minimumSecondsBetweenGets){
             function canWeSyncYet(localStorageItemName, minimumSecondsBetweenSyncs){
