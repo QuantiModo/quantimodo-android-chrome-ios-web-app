@@ -4344,6 +4344,7 @@ var qm = {
                     var measurementObject = measurements[variableName];
                     for (var date in measurementObject) {
                         measurementArray.push(measurementObject[date]);
+                        qm.measurements.checkMeasurements(measurementArray)
                     }
                 }
             }
