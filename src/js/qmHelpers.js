@@ -5831,13 +5831,19 @@ var qm = {
             var notifications = qm.storage.getItem(qm.items.notificationsSyncQueue);
             qm.storage.removeItem(qm.items.notificationsSyncQueue);
             qm.storage.removeItem(qm.items.trackingReminderNotificationSyncScheduled);
-            if(!notifications || !notifications.length){
-                if(successHandler){successHandler();}
-                return;
-            }
-            if(!(notifications instanceof Array)){notifications = [notifications];}
-            if(!notifications[0]){
-                qm.qmLog.error("notifications[0] is " + notifications[0], {notifications: notifications});
+            var body = [];
+            if(notifications){
+                if(!(notifications instanceof Array)){notifications = [notifications];}
+                body = notifications.map(function (n){
+                    return {
+                        'value': n.modifiedValue || n.value,
+                        'trackingReminderNotificationId': n.trackingReminderNotificationId,
+                        'variableId': n.variableId,
+                        'trackingReminderId': n.trackingReminderId,
+                        'action': n.action,
+                        'timeZone': moment.tz.guess(),
+                    }
+                })
             }
             var body = notifications.map(function (n){
                 return {
