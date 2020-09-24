@@ -4336,6 +4336,7 @@ var qm = {
         },
         addMeasurementsToMemory: function(measurements){
             var measurementArray = measurements;
+            qm.measurements.checkMeasurements(measurementArray)
             if(!Array.isArray(measurementArray)){
                 measurementArray = [];
                 for (var variableName in measurements) {
@@ -4346,6 +4347,7 @@ var qm = {
                     }
                 }
             }
+            qm.measurements.checkMeasurements(measurementArray)
             var existing  = qm.measurements.recentlyPostedMeasurements || [];
             qm.measurements.checkMeasurements(existing)
             var combined = qm.arrayHelper.concatenateUniqueId(measurementArray, existing);
