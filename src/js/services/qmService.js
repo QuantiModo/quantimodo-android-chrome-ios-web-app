@@ -2890,7 +2890,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                                 deferred.reject(error);
                             });
                         };
-                        qmService.syncTrackingReminderNotifications().then(function(){
+                        qmService.syncNotificationsIfQueued().then(function(){
                             postTrackingRemindersToApiAndHandleResponse();
                         }, function (err){
                             postTrackingRemindersToApiAndHandleResponse();
@@ -5101,9 +5101,34 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             });
             return deferred.promise;
         };
+        qmService.syncNotificationsIfQueued  =function (){
+            var deferred = $q.defer();
+            var notifications = qm.storage.getItem(qm.items.notificationsSyncQueue);
+            if(notifications && notifications.length){
+                return qmService.syncTrackingReminderNotifications();
+            } else {
+                deferred.resolve([]);
+            }
+            return deferred.promise;
+        };
+        qmService.syncNotificationsIfEmpty  =function (){
+            var deferred = $q.defer();
+            var notifications = qm.notifications.getFromGlobalsOrLocalStorage();
+            if(!notifications || !notifications.length){
+                return qmService.syncTrackingReminderNotifications();
+            } else {
+                deferred.resolve(notifications);
+            }
+            return deferred.promise;
+        };
         qmService.syncTrackingReminderNotifications = function(params){
             var deferred = $q.defer();
             if(params && params.noCache){qmService.notificationsPromise = false;}
+            if(!qm.getUser()){
+                deferred.reject("No user to get notifications");
+                qmService.notificationsPromise = false;
+                return deferred.promise;
+            }
             if(qmService.notificationsPromise){return qmService.notificationsPromise;}
             qm.notifications.syncTrackingReminderNotifications(function(response){
                 var notifications = qm.notifications.getFromGlobalsOrLocalStorage();
@@ -7797,7 +7822,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                             qmService.notifications.showAndroidPopupForMostRecentNotification();
                         }else{
                             qmLog.pushDebug('window.overApps for popups is undefined! ');
-                            qmService.syncTrackingReminderNotifications({}).then(function(){
+                            qmService.syncNotificationsIfEmpty({}).then(function(){
                                 qmLog.pushDebug('push.on.notification: successfully refreshed notifications');
                             }, function(error){
                                 qmLog.error('push.on.notification: ', error);
