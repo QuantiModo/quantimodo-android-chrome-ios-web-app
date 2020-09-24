@@ -4336,6 +4336,7 @@ var qm = {
         },
         addMeasurementsToMemory: function(measurements){
             var measurementArray = measurements;
+            qm.measurements.checkMeasurements(measurementArray)
             if(!Array.isArray(measurementArray)){
                 measurementArray = [];
                 for (var variableName in measurements) {
@@ -4343,9 +4344,11 @@ var qm = {
                     var measurementObject = measurements[variableName];
                     for (var date in measurementObject) {
                         measurementArray.push(measurementObject[date]);
+                        qm.measurements.checkMeasurements(measurementArray)
                     }
                 }
             }
+            qm.measurements.checkMeasurements(measurementArray)
             var existing  = qm.measurements.recentlyPostedMeasurements || [];
             qm.measurements.checkMeasurements(existing)
             var combined = qm.arrayHelper.concatenateUniqueId(measurementArray, existing);
@@ -4428,7 +4431,9 @@ var qm = {
             return measurements;
         },
         addInfoAndImagesToMeasurements: function(measurements){
+            qm.measurements.checkMeasurements(measurements);
             if(!Array.isArray(measurements)){measurements = Object.values(measurements);}
+            qm.measurements.checkMeasurements(measurements);
             function parseJsonIfPossible(str){
                 var object = false;
                 if(str === "{}"){return false;}
@@ -4444,7 +4449,11 @@ var qm = {
             var index;
             for(index = 0; index < measurements.length; ++index){
                 var m = measurements[index];
-                if(typeof m === "function"){throw "Measurement is a function"}
+                if(typeof m === "function"){
+                    qmLog.error("Measurement is a function")
+                    debugger
+                    continue;
+                }
                 var parsedNote = parseJsonIfPossible(m.note);
                 if(parsedNote && parsedNote.url && parsedNote.message){
                     m.note = '<a href="' + parsedNote.url + '" target="_blank">' + parsedNote.message + '</a>';
@@ -6527,6 +6536,9 @@ var qm = {
             if(typeof notifications.forEach !== "function"){
                 throw "Notifications is not an array!"
             }
+            var allIds = notifications.map(function(n){
+                return n.id;
+            })
             notifications.forEach(function(n){
                 if(n.id !== n.trackingReminderNotificationId){
                     qmLog.errorAndExceptionTestingOrDevelopment("notification id: "+n.id +
