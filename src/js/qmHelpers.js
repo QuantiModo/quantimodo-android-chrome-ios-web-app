@@ -1401,6 +1401,11 @@ var qm = {
             }
             return a;
         },
+        removeDuplicatesByProperty: function(myArr, prop) {
+            return myArr.filter((obj, pos, arr) => {
+                return arr.map(mapObj => mapObj[prop]).indexOf(obj[prop]) === pos;
+            });
+        },
         removeDuplicatesById: function(arr, type) {
             type = type || "[TYPE NOT PROVIDED]"
             if(!arr){
@@ -4336,7 +4341,6 @@ var qm = {
         },
         addMeasurementsToMemory: function(measurements){
             var measurementArray = measurements;
-            qm.measurements.checkMeasurements(measurementArray)
             if(!Array.isArray(measurementArray)){
                 measurementArray = [];
                 for (var variableName in measurements) {
@@ -4356,9 +4360,19 @@ var qm = {
             qm.measurements.recentlyPostedMeasurements = combined;
         },
         checkMeasurements: function(arr){
+            if(!arr){
+                qmLog.error("No measurements provided to checkMeasurements", {'measurements': arr})
+                debugger
+                return;
+            }
+            if(!arr.forEach){
+                qmLog.error("Measurements provided to checkMeasurements is not an array", {'measurements': arr})
+                debugger
+                return;
+            }
             arr.forEach(function (m){
                 if(typeof m === "function"){
-                    //throw "existing Measurement is a function"
+                    qmLog.error("existing Measurement is a function", {'measurements': arr})
                     debugger
                 }
             });
@@ -6502,9 +6516,10 @@ var qm = {
                 qm.qmLog.error("Cannot filter allReminders", {allReminders: allReminders});
                 return [];
             }
-            return allReminders.filter(function(trackingReminder){
+            var favorites = allReminders.filter(function(trackingReminder){
                 return trackingReminder.reminderFrequency === 0;
             });
+            return qm.arrayHelper.removeDuplicatesByProperty(favorites, 'variableId')
         },
         getActive: function(allReminders){
             if(!allReminders){
