@@ -6542,7 +6542,7 @@ var qm = {
                     trackingReminder.valueAndFrequencyTextDescription.toLowerCase().indexOf('ended') !== -1;
             });
         },
-        removeDuplicateNotifications:function(notifications){
+        removeDuplicateNotifications: function(notifications){
             var ids = [];
             var toKeep = [];
             if(!notifications){
@@ -9916,14 +9916,24 @@ var qm = {
             if(!nameOrId){nameOrId = qm.urlHelper.getParam('variableCategoryName');}
             if(!nameOrId){nameOrId = qm.urlHelper.getParam('variableCategoryId');}
             var categories = qm.variableCategoryHelper.getVariableCategories();
+            var id, name = null;
+            if(!nameOrId){
+                qmLog.error("No name or id provided!")
+                return null;
+            }
+            if(Number.isInteger(nameOrId)){
+                id = nameOrId;
+            } else {
+                name = nameOrId.toLowerCase();
+            }
             var c = categories.find(function(c){
-                if(c.id === nameOrId){return true;}
-                if(c.name.toLowerCase() === nameOrId.toLowerCase()){return true;}
+                if(c.id === id){return true;}
+                if(c.name.toLowerCase() === name){return true;}
                 for (var i = 0; i < c.synonyms.length; i++) {
                     var syn = c.synonyms[i];
-                    if(nameOrId.toLowerCase() === syn.toLowerCase()){return true;}
+                    if(name === syn.toLowerCase()){return true;}
                 }
-                return c.variableCategoryNameSingular && c.variableCategoryNameSingular.toLowerCase() === nameOrId.toLowerCase();
+                return c.variableCategoryNameSingular && c.variableCategoryNameSingular.toLowerCase() === name;
             });
             return c;
         },
