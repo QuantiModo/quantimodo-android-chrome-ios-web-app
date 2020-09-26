@@ -3268,8 +3268,13 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         }
         function addVariableCategoryInfo(array){
             angular.forEach(array, function(value, key){
-                if(!value){qmLog.error("no value for key " + key + " in array ", array);}
-                var cat = qm.variableCategoryHelper.findVariableCategory(value);
+                if(!value){
+                    qmLog.error("no value for key " + key + " in array: ", array);
+                    return;
+                }
+                var nameOrId = value.variableCategoryId || value.variableCategoryName || null;
+                if(!nameOrId){return;}
+                var cat = qm.variableCategoryHelper.findVariableCategory(nameOrId);
                 if(cat){
                     if(typeof value.iconClass === "undefined"){
                         value.iconClass = 'icon positive ' + cat.ionIcon;
