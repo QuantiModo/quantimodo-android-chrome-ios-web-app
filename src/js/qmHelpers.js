@@ -4339,23 +4339,27 @@ var qm = {
             if(id){recent = recent.filter(function(m){return m.id !== id;});}
             qm.measurements.recentlyPostedMeasurements = recent;
         },
-        addMeasurementsToMemory: function(measurements){
-            var measurementArray = measurements;
-            if(!Array.isArray(measurementArray)){
-                measurementArray = [];
-                for (var variableName in measurements) {
-                    if(!measurements.hasOwnProperty(variableName)){continue;}
-                    var measurementObject = measurements[variableName];
-                    for (var date in measurementObject) {
-                        measurementArray.push(measurementObject[date]);
-                        qm.measurements.checkMeasurements(measurementArray)
+        addMeasurementsToMemory: function(byVariableName){
+            var arr = [];
+            if(!Array.isArray(arr)){
+                arr = [];
+                for (var variableName in byVariableName) {
+                    if(!byVariableName.hasOwnProperty(variableName)){continue;}
+                    var byDate = byVariableName[variableName];
+                    for (var date in byDate) {
+                        if(byDate.hasOwnProperty(date)){
+                            arr.push(byDate[date]);
+                        } else {
+                            arr.push(byDate);
+                        }
+                        qm.measurements.checkMeasurements(arr)
                     }
                 }
             }
-            qm.measurements.checkMeasurements(measurementArray)
+            qm.measurements.checkMeasurements(arr)
             var existing  = qm.measurements.recentlyPostedMeasurements || [];
             qm.measurements.checkMeasurements(existing)
-            var combined = qm.arrayHelper.concatenateUniqueId(measurementArray, existing);
+            var combined = qm.arrayHelper.concatenateUniqueId(arr, existing);
             qm.measurements.checkMeasurements(combined)
             qm.measurements.recentlyPostedMeasurements = combined;
         },
@@ -4373,6 +4377,10 @@ var qm = {
             arr.forEach(function (m){
                 if(typeof m === "function"){
                     qmLog.error("existing Measurement is a function", {'measurements': arr})
+                    debugger
+                }
+                if(Array.isArray(m)){
+                    qmLog.error("existing Measurement is an array!", {'measurements': arr})
                     debugger
                 }
             });
