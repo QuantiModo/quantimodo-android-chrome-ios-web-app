@@ -142,7 +142,7 @@ angular.module('starter').controller('MeasurementAddCtrl', ["$scope", "$q", "$ti
             }
         };
         $scope.variableCategorySelectorChange = function(variableCategoryName){
-            var cat = qmService.getVariableCategoryInfo(variableCategoryName);
+            var cat = qm.variableCategoryHelper.findVariableCategory(variableCategoryName);
             setupUnit(cat.defaultUnitAbbreviatedName);
             $scope.state.defaultValuePlaceholderText = 'Enter a value';
             $scope.state.defaultValueLabel = 'Value';
@@ -246,7 +246,7 @@ angular.module('starter').controller('MeasurementAddCtrl', ["$scope", "$q", "$ti
             if(v.unitAbbreviatedName){
                 setupUnit(v.unitAbbreviatedName, v.valence);
             }else if(v.variableCategoryName){
-                var category = qmService.getVariableCategoryInfo(v.variableCategoryName);
+                var category = qm.variableCategoryHelper.findVariableCategory(v);
                 setupUnit(category.defaultUnitAbbreviatedName, v.valence);
             }
             var m = qm.measurements.newMeasurement(v);
@@ -402,6 +402,6 @@ angular.module('starter').controller('MeasurementAddCtrl', ["$scope", "$q", "$ti
             return name;
         }
         function getVariableCategory(){
-            return qmService.getVariableCategoryInfo(getVariableCategoryName());
+            return qm.variableCategoryHelper.findVariableCategory(getVariableCategoryName());
         }
     }]);

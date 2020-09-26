@@ -2291,11 +2291,12 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                         dialogParams.placeholder = "Enter a variable";
                     }
                     if(dialogParams.requestParams && dialogParams.requestParams.variableCategoryName){
-                        var variableCategory = qm.variableCategoryHelper.getVariableCategory(dialogParams.requestParams.variableCategoryName);
-                        if(variableCategory){
-                            dialogParams.title = 'Select ' + variableCategory.variableCategoryNameSingular.toLowerCase();
-                            dialogParams.placeholder = dialogParams.placeholder.replace('variable', variableCategory.variableCategoryNameSingular.toLowerCase());
-                            dialogParams.helpText = dialogParams.helpText.replace('variable', variableCategory.variableCategoryNameSingular.toLowerCase());
+                        var cat = qm.variableCategoryHelper.findVariableCategory(dialogParams.requestParams);
+                        if(cat){
+                            var name = cat.variableCategoryNameSingular.toLowerCase();
+                            dialogParams.title = 'Select ' + name;
+                            dialogParams.placeholder = dialogParams.placeholder.replace('variable', name);
+                            dialogParams.helpText = dialogParams.helpText.replace('variable', name);
                         }
                     }
                     if(qm.platform.isMobile()){
@@ -2590,7 +2591,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 getTitle: function(variableCategoryName){
                     var title = 'Enter a variable';
                     if(variableCategoryName){
-                        var variableCategory = qm.variableCategoryHelper.getVariableCategory(variableCategoryName);
+                        var variableCategory = qm.variableCategoryHelper.findVariableCategory(variableCategoryName);
                         if(variableCategory){
                             title = "Enter a " + variableCategory.variableCategoryNameSingular;
                         }
@@ -3267,23 +3268,22 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         }
         function addVariableCategoryInfo(array){
             angular.forEach(array, function(value, key){
-                if(!value){
-                    qmLog.error("no value for key " + key + " in array ", array);
-                }
-                if(value && value.variableCategoryName && qmService.variableCategories[value.variableCategoryName]){
+                if(!value){qmLog.error("no value for key " + key + " in array ", array);}
+                var cat = qm.variableCategoryHelper.findVariableCategory(value);
+                if(cat){
                     if(typeof value.iconClass === "undefined"){
-                        value.iconClass = 'icon positive ' + qmService.variableCategories[value.variableCategoryName].ionIcon;
+                        value.iconClass = 'icon positive ' + cat.ionIcon;
                     }
                     if(typeof value.ionIcon === "undefined"){
-                        value.ionIcon = qmService.variableCategories[value.variableCategoryName].ionIcon;
+                        value.ionIcon = cat.ionIcon;
                     }
                     if(typeof value.moreInfo === "undefined"){
-                        value.moreInfo = qmService.variableCategories[value.variableCategoryName].moreInfo;
+                        value.moreInfo = cat.moreInfo;
                     }
                     if(typeof value.image === "undefined"){
                         qmLog.info("Updating image to " + value.variableCategoryName);
                         value.image = {
-                            url: qmService.variableCategories[value.variableCategoryName].imageUrl,
+                            url: cat.imageUrl,
                             height: "96",
                             width: "96"
                         };
@@ -4294,13 +4294,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 return variableName;
             }
         };
-        qmService.getVariableCategoryInfo = function(variableCategoryName){
-            var selectedVariableCategoryObject = $rootScope.variableCategories.Anything;
-            if(variableCategoryName && $rootScope.variableCategories[variableCategoryName]){
-                selectedVariableCategoryObject = $rootScope.variableCategories[variableCategoryName];
-            }
-            return selectedVariableCategoryObject;
-        };
         qmService.getAndStorePrimaryOutcomeMeasurements = function(){
             var deferred = $q.defer();
             var errorMessage;
@@ -4564,43 +4557,24 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             });
             return deferred.promise;
         };
-        qmService.variableCategories = [];
-        $rootScope.variableCategories = [];
-        $rootScope.variableCategoryNames = []; // Dirty hack for variableCategoryNames because $rootScope.variableCategories is not an array we can ng-repeat through in selectors
-        $rootScope.variableCategories.Anything = qmService.variableCategories.Anything = {
-            defaultUnitAbbreviatedName: '',
-            helpText: "What do you want to record?",
-            variableCategoryNameSingular: "Anything",
-            defaultValuePlaceholderText: "Enter most common value here...",
-            defaultValueLabel: 'Value',
-            addNewVariableCardText: 'Add a new variable',
-            variableCategoryName: '',
-            defaultValue: '',
-            measurementSynonymSingularLowercase: "measurement",
-            ionIcon: "ion-speedometer"
-        };
         qmService.getVariableCategories = function(){
-            var deferred = $q.defer();
-            qm.variableCategoryHelper.getVariableCategoriesFromGlobalsOrApi(function(variableCategories){
-                angular.forEach(variableCategories, function(variableCategory, key){
-                    $rootScope.variableCategories[variableCategory.name] = variableCategory;
-                    $rootScope.variableCategoryNames.push(variableCategory.name);
-                    qmService.variableCategories[variableCategory.name] = variableCategory;
-                });
-                deferred.resolve(variableCategories);
-            });
-            return deferred.promise;
+            qmService.variableCategories = [];
+            $rootScope.variableCategories = [];
+            $rootScope.variableCategoryNames = []; // Dirty hack for variableCategoryNames because $rootScope.variableCategories is not an array we can ng-repeat through in selectors
+            $rootScope.variableCategories.Anything = qmService.variableCategories.Anything = {
+                defaultUnitAbbreviatedName: '',
+                helpText: "What do you want to record?",
+                variableCategoryNameSingular: "Anything",
+                defaultValuePlaceholderText: "Enter most common value here...",
+                defaultValueLabel: 'Value',
+                addNewVariableCardText: 'Add a new variable',
+                variableCategoryName: '',
+                defaultValue: '',
+                measurementSynonymSingularLowercase: "measurement",
+                ionIcon: "ion-speedometer"
+            };
         };
         qmService.getVariableCategories();
-        qmService.getVariableCategoryIcon = function(variableCategoryName){
-            var variableCategoryInfo = qmService.getVariableCategoryInfo(variableCategoryName);
-            if(variableCategoryInfo.ionIcon){
-                return variableCategoryInfo.ionIcon;
-            }else{
-                console.warn('Could not find icon for variableCategoryName ' + variableCategoryName);
-                return 'ion-speedometer';
-            }
-        };
         qmService.setPlatformVariables = function(){
             var platform = {};
             //qmLog.debug("ionic.Platform.platform() is " + ionic.Platform.platform());
