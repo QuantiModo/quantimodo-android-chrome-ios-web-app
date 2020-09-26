@@ -6559,6 +6559,11 @@ var qm = {
                     qmLog.errorAndExceptionTestingOrDevelopment("notification id: "+n.id +
                         " does not match trackingReminderNotificationId: "+n.trackingReminderNotificationId, null, n);
                 }
+                var before = n.actionArray;
+                n.actionArray = qm.arrayHelper.removeDuplicatesByProperty(before, 'title');
+                if(before.length !== n.actionArray.length){
+                    qmLog.error("Duplicate button titles", before);
+                }
                 var id = n.trackingReminderNotificationId || n.id;
                 if(ids.indexOf(id) !== -1) {
                     qmLog.errorAndExceptionTestingOrDevelopment("Duplicate notification id: "+id, null, n);
