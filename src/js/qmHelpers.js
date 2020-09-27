@@ -9919,14 +9919,25 @@ var qm = {
         },
         findVariableCategory: function(nameOrId){
             if(typeof nameOrId === 'object' && nameOrId !== null){
+                var obj = nameOrId;
                 nameOrId = nameOrId.variableCategoryName || nameOrId.variableCategoryId;
+                if(!nameOrId && obj.measurement){
+                    nameOrId = obj.measurement.variableCategoryName || obj.measurement.variableCategoryId;
+                }
+                if(!nameOrId && obj.variableObject){
+                    nameOrId = obj.variableObject.variableCategoryName || obj.variableObject.variableCategoryId;
+                }
+                if(!nameOrId){
+                    qmLog.debug("No name or id from object in findVariableCategory", obj)
+                    return null;
+                }
             }
             if(!nameOrId){nameOrId = qm.urlHelper.getParam('variableCategoryName');}
             if(!nameOrId){nameOrId = qm.urlHelper.getParam('variableCategoryId');}
             var categories = qm.variableCategoryHelper.getVariableCategories();
             var id, name = null;
             if(!nameOrId){
-                qmLog.error("No name or id provided!")
+                qmLog.error("No name or id provided to findVariableCategory")
                 return null;
             }
             if(Number.isInteger(nameOrId)){

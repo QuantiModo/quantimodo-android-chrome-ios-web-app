@@ -390,18 +390,20 @@ angular.module('starter').controller('MeasurementAddCtrl', ["$scope", "$q", "$ti
                 hideSheet();
             }, 20000);
         });
-        function getVariableCategoryName(object){
-            var name;
-            if(object && object.variableCategoryName){name = object.variableCategoryName;}
-            if(!name && $scope.state && $scope.state.measurement && $scope.state.measurement.variableCategoryName){
-                name = $scope.state.measurement.variableCategoryName;
-            }
-            if(!name){name = $stateParams.variableCategoryName;}
-            if(!name){name = qm.urlHelper.getParam('variableCategoryName');}
-            if(!name && $stateParams.variableObject){name = $stateParams.variableObject.variableCategoryName;}
-            return name;
+        function getVariableCategoryName(obj){
+            var cat = getVariableCategory(obj);
+            if(!cat){return null;}
+            return cat.name;
         }
-        function getVariableCategory(){
-            return qm.variableCategoryHelper.findVariableCategory(getVariableCategoryName());
+        function getVariableCategory(obj){
+            var cat;
+            if(obj){cat = qm.variableCategoryHelper.findVariableCategory(obj);}
+            if(!cat && $scope.state){cat = qm.variableCategoryHelper.findVariableCategory($scope.state);}
+            if(!cat){cat = qm.variableCategoryHelper.findVariableCategory($stateParams);}
+            if(!cat){
+                qmLog.error("No variable category name from getVariableCategory")
+                return null;
+            }
+            return cat;
         }
     }]);
