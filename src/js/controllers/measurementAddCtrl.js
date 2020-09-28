@@ -9,9 +9,6 @@ angular.module('starter').controller('MeasurementAddCtrl', ["$scope", "$q", "$ti
             showVariableCategorySelector: false,
             showUnits: false,
             unitCategories: [],
-            variableCategoryName: getVariableCategoryName(),
-            variableCategoryObject: getVariableCategory(),
-            helpText: getVariableCategory().helpText,
             unitAbbreviatedName: '',
             measurement: {},
             searchedUnits: [],
@@ -30,6 +27,16 @@ angular.module('starter').controller('MeasurementAddCtrl', ["$scope", "$q", "$ti
             qmService.navBar.showNavigationMenuIfHideUrlParamNotSet();
             qmService.rootScope.setProperty('bloodPressure', {systolicValue: null, diastolicValue: null, show: false});
             $scope.state.title = 'Record a Measurement';
+            setupMeasurement();
+            var cat = getVariableCategory();
+            if(cat){setupVariableCategory(cat);}
+        });
+        $scope.$on('$ionicView.enter', function(e){
+            qmLogService.debug('$ionicView.enter ' + $state.current.name);
+            qmService.hideLoader();
+            qmLog.info("$ionicView.enter $scope.state.measurement is ", $scope.state.measurement);
+        });
+        function setupMeasurement() {
             $scope.state.selectedDate = moment();
             $scope.state.units = qm.unitHelper.getNonAdvancedUnits();
             var reminderFromUrl = qm.urlHelper.getParam('trackingReminderObject', window.location.href, true);
@@ -39,33 +46,34 @@ angular.module('starter').controller('MeasurementAddCtrl', ["$scope", "$q", "$ti
             var v = $stateParams.variableObject;
             var n = $stateParams.reminderNotification;
             var id = qm.urlHelper.getParam('measurementId', location.href, true);
-            if(tr){
+            if (tr) {
                 setupTrackingByReminder(tr);
-            }else if(m){
+            } else if (m) {
                 setupTrackingByMeasurement(m);
-            }else if(measurementFromUrl){
+            } else if (measurementFromUrl) {
                 setupTrackingByMeasurement(JSON.parse(measurementFromUrl));
-            }else if(v){
+            } else if (v) {
                 setupFromVariable(v);
-            }else if(reminderFromUrl){
+            } else if (reminderFromUrl) {
                 setupTrackingByReminder(JSON.parse(reminderFromUrl));
-            }else if(n){
+            } else if (n) {
                 setupTrackingByReminder(n);
-            }else if(id){
-                setMeasurementVariablesByMeasurementId(id).then(function(){
-                    if(!$scope.state.measurementIsSetup){$scope.goBack();}
+            } else if (id) {
+                setMeasurementVariablesByMeasurementId(id).then(function () {
+                    if (!$scope.state.measurementIsSetup) {
+                        $scope.goBack();
+                    }
                 });
-            }else if($stateParams.variableName){
+            } else if ($stateParams.variableName) {
                 setupFromVariableName($stateParams.variableName);
             }
-            if(!$scope.state.measurementIsSetup){setupFromUrlParameters();}
-            if(!$scope.state.measurementIsSetup){setupFromVariable(qm.getPrimaryOutcomeVariable());}
-        });
-        $scope.$on('$ionicView.enter', function(e){
-            qmLogService.debug('$ionicView.enter ' + $state.current.name);
-            qmService.hideLoader();
-            qmLog.info("$ionicView.enter $scope.state.measurement is ", $scope.state.measurement);
-        });
+            if (!$scope.state.measurementIsSetup) {
+                setupFromUrlParameters();
+            }
+            if (!$scope.state.measurementIsSetup) {
+                setupFromVariable(qm.getPrimaryOutcomeVariable());
+            }
+        }
         var trackBloodPressure = function(){
             if(!$rootScope.bloodPressure.diastolicValue || !$rootScope.bloodPressure.systolicValue){
                 qmService.validationFailure('Please enter both values for blood pressure.', $scope.state.measurement);
@@ -149,9 +157,13 @@ angular.module('starter').controller('MeasurementAddCtrl', ["$scope", "$q", "$ti
             setupVariableCategory(variableCategoryName);
         };
         var setupVariableCategory = function(variableCategoryName){
+            var cat = getVariableCategory(variableCategoryName);
             qmLogService.debug($state.current.name + ': ' + 'variableCategoryName  is ' + variableCategoryName);
-            $scope.state.measurement.variableCategoryName = variableCategoryName;
-            var cat = getVariableCategory();
+            if($scope.state.measurement){
+                $scope.state.measurement.variableCategoryName = cat.name;
+            }
+            $scope.state.variableCategoryObject = cat;
+            $scope.state.helpText = cat.helpText;
             $scope.state.title = "Add Measurement";
             $scope.state.measurementSynonymSingularLowercase = cat.measurementSynonymSingularLowercase;
             if(cat.defaultValueLabel){$scope.state.defaultValueLabel = cat.defaultValueLabel;}
@@ -401,7 +413,7 @@ angular.module('starter').controller('MeasurementAddCtrl', ["$scope", "$q", "$ti
             if(!cat && $scope.state){cat = qm.variableCategoryHelper.findVariableCategory($scope.state);}
             if(!cat){cat = qm.variableCategoryHelper.findVariableCategory($stateParams);}
             if(!cat){
-                qmLog.error("No variable category name from getVariableCategory")
+                qmLog.debug("No variable category name from getVariableCategory")
                 return null;
             }
             return cat;
