@@ -1403,7 +1403,9 @@ var qm = {
         },
         removeDuplicatesByProperty: function(myArr, prop) {
             return myArr.filter(function(obj, pos, arr) {
-                return arr.map(mapObj => mapObj[prop]).indexOf(obj[prop]) === pos;
+                return arr.map(function(mapObj){
+                    return mapObj[prop]
+                }).indexOf(obj[prop]) === pos;
             });
         },
         removeDuplicatesById: function(arr, type) {
