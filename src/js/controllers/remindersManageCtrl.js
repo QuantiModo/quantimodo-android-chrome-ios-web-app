@@ -55,7 +55,7 @@ angular.module('starter').controller('RemindersManageCtrl', ["$scope", "$state",
             }else{
                 $scope.state.noRemindersTitle = "Add " + cat;
                 $scope.state.noRemindersText = "You haven't saved any " + cat.toLowerCase() + " favorites or reminders here, yet.";
-                $scope.state.noRemindersIcon = qmService.getVariableCategoryInfo(cat).ionIcon;
+                $scope.state.noRemindersIcon = qm.variableCategoryHelper.findVariableCategory(cat).ionIcon;
                 $scope.stateParams.title = document.title = cat;
                 if(!$scope.stateParams.addButtonText){
                     $scope.stateParams.addButtonText = 'Add New ' + pluralize($filter('wordAliases')(cat), 1) + " Reminder";

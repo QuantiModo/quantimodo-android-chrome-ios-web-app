@@ -258,6 +258,7 @@ var qmLog = {
         return false;
     },
     bugsnagNotify: function(name, message, errorSpecificMetaData, logLevel, stackTrace){
+        debugger
         if(typeof bugsnagClient === "undefined"){
             if(!qmLog.qm.appMode.isDevelopment()){
                 console.error('bugsnagClient not defined', errorSpecificMetaData);
