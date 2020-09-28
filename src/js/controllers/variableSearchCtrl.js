@@ -316,7 +316,7 @@ angular.module('starter').controller('VariableSearchCtrl',
         }
         function getVariableCategory(){
             var name = getVariableCategoryName();
-            if(name){return qm.variableCategoryHelper.getByNameOrId(name);}
+            if(name){return qm.variableCategoryHelper.findVariableCategory(name);}
             return null;
         }
         function getVariableCategoryName(){

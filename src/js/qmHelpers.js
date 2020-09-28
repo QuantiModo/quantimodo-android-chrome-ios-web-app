@@ -3622,7 +3622,7 @@ var qm = {
                 },
                 locationAndWeatherTracking: {
                     title: "Location and Weather Tracking",
-                    textContent: qm.variableCategoryHelper.getVariableCategory('Location').moreInfo
+                    textContent: qm.variableCategoryHelper.findVariableCategory('Location').moreInfo
                 },
                 minimumAllowedValue: {
                     title: "Minimum Allowed Value",
@@ -4251,7 +4251,7 @@ var qm = {
                 src.startTimeString ||
                 src.startTimeEpoch;
             var unit = qm.unitHelper.find(src);
-            var cat = qm.variableCategoryHelper.find(src);
+            var cat = qm.variableCategoryHelper.findVariableCategory(src);
             if(!unit && cat){
                 unit = qm.unitHelper.find(cat);
             }
@@ -4339,23 +4339,27 @@ var qm = {
             if(id){recent = recent.filter(function(m){return m.id !== id;});}
             qm.measurements.recentlyPostedMeasurements = recent;
         },
-        addMeasurementsToMemory: function(measurements){
-            var measurementArray = measurements;
-            if(!Array.isArray(measurementArray)){
-                measurementArray = [];
-                for (var variableName in measurements) {
-                    if(!measurements.hasOwnProperty(variableName)){continue;}
-                    var measurementObject = measurements[variableName];
-                    for (var date in measurementObject) {
-                        measurementArray.push(measurementObject[date]);
-                        qm.measurements.checkMeasurements(measurementArray)
+        addMeasurementsToMemory: function(byVariableName){
+            var arr = [];
+            if(!Array.isArray(arr)){
+                arr = [];
+                for (var variableName in byVariableName) {
+                    if(!byVariableName.hasOwnProperty(variableName)){continue;}
+                    var byDate = byVariableName[variableName];
+                    for (var date in byDate) {
+                        if(byDate.hasOwnProperty(date)){
+                            arr.push(byDate[date]);
+                        } else {
+                            arr.push(byDate);
+                        }
+                        qm.measurements.checkMeasurements(arr)
                     }
                 }
             }
-            qm.measurements.checkMeasurements(measurementArray)
+            qm.measurements.checkMeasurements(arr)
             var existing  = qm.measurements.recentlyPostedMeasurements || [];
             qm.measurements.checkMeasurements(existing)
-            var combined = qm.arrayHelper.concatenateUniqueId(measurementArray, existing);
+            var combined = qm.arrayHelper.concatenateUniqueId(arr, existing);
             qm.measurements.checkMeasurements(combined)
             qm.measurements.recentlyPostedMeasurements = combined;
         },
@@ -4373,6 +4377,10 @@ var qm = {
             arr.forEach(function (m){
                 if(typeof m === "function"){
                     qmLog.error("existing Measurement is a function", {'measurements': arr})
+                    debugger
+                }
+                if(Array.isArray(m)){
+                    qmLog.error("existing Measurement is an array!", {'measurements': arr})
                     debugger
                 }
             });
@@ -4489,7 +4497,7 @@ var qm = {
                 m.displayValueAndUnitString = qm.stringHelper.formatValueUnitDisplayText(m.displayValueAndUnitString)
                 m.valueUnitVariableName = m.displayValueAndUnitString + " " + m.variableName;
                 if(!m.variableCategoryName){
-                    m.variableCategoryName = qm.variableCategoryHelper.getByNameOrId(m.variableCategoryId).name;
+                    m.variableCategoryName = qm.variableCategoryHelper.findVariableCategory(m).name;
                 }
                 if(!m.image && m.roundedValue && ratingInfo[m.roundedValue]){
                     m.image = ratingInfo[m.roundedValue].numericImage;
@@ -4499,7 +4507,7 @@ var qm = {
                 if(m.image){m.pngPath = m.image;}
                 m.icon = m.icon || m.ionIcon;
                 if(m.variableCategoryName && !m.icon){
-                    var category = qm.variableCategoryHelper.getVariableCategory(m.variableCategoryName);
+                    var category = qm.variableCategoryHelper.findVariableCategory(m);
                     m.icon = category.ionIcon;
                     m.pngPath = category.pngPath;
                 }
@@ -4592,7 +4600,7 @@ var qm = {
         },
         setIonIcon: function(menuItem){
             if(menuItem.params.variableCategoryName){
-                var category = qm.variableCategoryHelper.getVariableCategory(menuItem.params.variableCategoryName);
+                var category = qm.variableCategoryHelper.findVariableCategory(menuItem.params);
                 if(category && category.ionIcon){
                     menuItem.params.ionIcon = category.ionIcon;
                 }
@@ -6542,7 +6550,7 @@ var qm = {
                     trackingReminder.valueAndFrequencyTextDescription.toLowerCase().indexOf('ended') !== -1;
             });
         },
-        removeDuplicateNotifications:function(notifications){
+        removeDuplicateNotifications: function(notifications){
             var ids = [];
             var toKeep = [];
             if(!notifications){
@@ -9903,70 +9911,54 @@ var qm = {
     variableCategoryHelper: {
         replaceCategoryAliasWithActualNameIfNecessary: function(provided){
             if(provided === "Anything"){return null;}
-            var category = qm.variableCategoryHelper.getByNameOrId(provided);
+            var category = qm.variableCategoryHelper.findVariableCategory(provided);
             if(!category){
                 qmLog.errorAndExceptionTestingOrDevelopment("Category "+provided+" not found!");
                 return null;
             }
             return category.name;
         },
-        getVariableCategoriesFromApi: function(successHandler, errorHandler){
-            qm.qmLog.info("Getting variable categories from API...");
-            function globalSuccessHandler(variableCategories){
-                qm.localForage.setItem(qm.items.variableCategories, variableCategories);
-                if(successHandler){
-                    successHandler(variableCategories);
+        getVariableCategories: function(){
+            return qm.staticData.variableCategories;
+        },
+        findVariableCategory: function(nameOrId){
+            if(typeof nameOrId === 'object' && nameOrId !== null){
+                var obj = nameOrId;
+                nameOrId = nameOrId.variableCategoryName || nameOrId.variableCategoryId;
+                if(!nameOrId && obj.measurement){
+                    nameOrId = obj.measurement.variableCategoryName || obj.measurement.variableCategoryId;
+                }
+                if(!nameOrId && obj.variableObject){
+                    nameOrId = obj.variableObject.variableCategoryName || obj.variableObject.variableCategoryId;
+                }
+                if(!nameOrId){
+                    qmLog.debug("No name or id from object in findVariableCategory", obj)
+                    return null;
                 }
             }
-            qm.api.configureClient(arguments.callee.name);
-            var apiInstance = new qm.Quantimodo.VariablesApi();
-            function callback(error, data, response){
-                qm.api.generalResponseHandler(error, data, response, globalSuccessHandler, errorHandler, {}, 'getVariableCategoriesFromApi');
+            if(!nameOrId){nameOrId = qm.urlHelper.getParam('variableCategoryName');}
+            if(!nameOrId){nameOrId = qm.urlHelper.getParam('variableCategoryId');}
+            var categories = qm.variableCategoryHelper.getVariableCategories();
+            var id, name = null;
+            if(!nameOrId){
+                qmLog.error("No name or id provided to findVariableCategory")
+                return null;
             }
-            apiInstance.getVariableCategories(callback);
-        },
-        getVariableCategoriesFromGlobalsOrApi: function(successHandler, errorHandler){
-            var categories = qm.variableCategoryHelper.getVariableCategoriesFromGlobals();
-            if(!categories && qm.staticData && qm.staticData.variableCategories){
-                categories = qm.staticData.variableCategories;
+            if(Number.isInteger(nameOrId)){
+                id = nameOrId;
+            } else {
+                name = nameOrId.toLowerCase();
             }
-            if(categories){
-                if(successHandler){
-                    successHandler(categories);
+            var c = categories.find(function(c){
+                if(c.id === id){return true;}
+                if(c.name.toLowerCase() === name){return true;}
+                for (var i = 0; i < c.synonyms.length; i++) {
+                    var syn = c.synonyms[i];
+                    if(name === syn.toLowerCase()){return true;}
                 }
-                return categories;
-            }
-            qm.variableCategoryHelper.getVariableCategoriesFromApi(function(variableCategories){
-                successHandler(variableCategories);
-            }, errorHandler);
-        },
-        getVariableCategoriesFromGlobals: function(){
-            if(qm.staticData.variableCategories){
-                return qm.staticData.variableCategories;
-            }
-            return qm.globalHelper.getItem(qm.items.variableCategories);
-        },
-        getVariableCategory: function(variableCategoryName, successHandler){
-            if(!successHandler){
-                var variableCategories = qm.variableCategoryHelper.getVariableCategoriesFromGlobals();
-                if(variableCategories){
-                    return variableCategories.find(function(variableCategory){
-                        if(variableCategory.name.toLowerCase() === variableCategoryName.toLowerCase()){
-                            return true;
-                        }
-                        if(variableCategory.synonyms && variableCategory.synonyms.indexOf(variableCategoryName) !== -1){
-                            return true;
-                        }
-                        return variableCategory.variableCategoryNameSingular && variableCategory.variableCategoryNameSingular.toLowerCase() === variableCategoryName.toLowerCase();
-                    });
-                }
-            }
-            qm.variableCategoryHelper.getVariableCategoriesFromGlobalsOrApi(function(variableCategories){
-                var match = variableCategories.find(function(category){
-                    category.name = variableCategoryName;
-                });
-                successHandler(match);
+                return c.variableCategoryNameSingular && c.variableCategoryNameSingular.toLowerCase() === name;
             });
+            return c;
         },
         getVariableCategoryNameFromStateParamsOrUrl: function(obj1, obj2, obj3){
             var name = qm.urlHelper.getParam('variableCategoryName');
@@ -9977,7 +9969,7 @@ var qm = {
             return name;
         },
         getByNameOrId: function(nameOrId){
-            var cats = qm.variableCategoryHelper.getVariableCategoriesFromGlobals();
+            var cats = qm.variableCategoryHelper.getVariableCategories();
             if(isNaN(nameOrId)){
                 nameOrId = nameOrId.toLowerCase();
                 nameOrId = nameOrId.replace("+", " ")
@@ -9985,10 +9977,7 @@ var qm = {
                     // noinspection EqualityComparisonWithCoercionJS
                     if(c.id == nameOrId){return true;}
                     if(c.name.toLowerCase() === nameOrId){return true;}
-                    for (var i = 0; i < c.synonyms.length; i++) {
-                        var syn = c.synonyms[i];
-                        if(nameOrId === syn.toLowerCase()){return true;}
-                    }
+
                     return false;
                 });
             } else {
@@ -10006,7 +9995,7 @@ var qm = {
                 var cat = obj.variableCategory;
                 if(!cat){
                     var nameOrId = obj.variableCategoryId || obj.variableCategoryName || null;
-                    if(nameOrId){cat = qm.variableCategoryHelper.getByNameOrId(nameOrId);}
+                    if(nameOrId){cat = qm.variableCategoryHelper.findVariableCategory(nameOrId);}
                 }
                 if(cat){
                     obj.fontAwesome = obj.fontAwesome || cat.fontAwesome
@@ -10020,16 +10009,6 @@ var qm = {
                 }
             }
             return arr;
-        },
-        find: function(v) {
-            var nameOrId;
-            if(typeof v === "string" || v === parseInt(v, 10)){
-                nameOrId = v;
-            } else {
-                nameOrId = v.variableCategoryId || v.variableCategoryName;
-            }
-            if(!nameOrId){return null;}
-            return qm.variableCategoryHelper.getByNameOrId(nameOrId);
         }
     },
     visualizer: {
