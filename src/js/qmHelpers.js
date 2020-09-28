@@ -8681,6 +8681,10 @@ var qm = {
     },
     toast: {
         errorAlert: function(errorMessage, callback){
+            if(typeof Swal === "undefined"){
+                console.error("Swal not defined to show errorAlert for: "+errorMessage)
+                return;
+            }
             var Toast = Swal.mixin({
                 toast: true,
                 icon: "error",
