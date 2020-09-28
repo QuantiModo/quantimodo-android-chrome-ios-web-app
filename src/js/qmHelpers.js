@@ -60,8 +60,8 @@ var qm = {
             if(qm.userHelper.isTestUser()){
                 return true;
             }
-            var result = qm.urlHelper.indexOfCurrentUrl("medimodo.heroku") !== -1;
-            return result;
+            return qm.urlHelper.indexOfCurrentUrl("medimodo.heroku") !== -1 ||
+                qm.urlHelper.indexOfCurrentUrl("staging.quantimo.do");
         },
         isTestingOrDevelopment: function(){
             return qm.appMode.isTesting() || qm.appMode.isDevelopment();
@@ -644,7 +644,11 @@ var qm = {
                     if ( xhr.status === 200 ) {
                         successHandler(responseObject);
                     } else {
-                        qm.qmLog.error("qm.api.get error from " + url + " request: " + xhr.responseText, null, responseObject);
+                        if ( xhr.status === 401 ) {
+                            qm.qmLog.info("qm.api.get error from " + url + " request: " + xhr.responseText, null, responseObject);
+                        } else {
+                            qm.qmLog.error("qm.api.get error from " + url + " request: " + xhr.responseText, null, responseObject);
+                        }
                         if(errorHandler){errorHandler(responseObject);}
                     }
                 }
@@ -709,7 +713,7 @@ var qm = {
                     if(qm.auth.getAccessTokenFromUrlUserOrStorage()){
                         url = addQueryParameter(url, 'access_token', qm.auth.getAccessTokenFromUrlUserOrStorage());
                     }else{
-                        qm.qmLog.error('No access token!');
+                        qm.qmLog.info('No access token for request!');
                         if(!qm.serviceWorker){
                             qm.chrome.showSignInNotification();
                         }
@@ -804,6 +808,11 @@ var qm = {
         addVariableCategoryAndUnit: function(arr){
             qm.variableCategoryHelper.addVariableCategoryProperties(arr)
             qm.unitHelper.addUnit(arr)
+            if(arr && arr.forEach){
+                arr.forEach(function (r){
+                    qm.unitHelper.setInputType(r);
+                })
+            }
         },
         removeVariableCategoryAndUnit: function(arr){
             if(!arr){return arr;}
@@ -1391,6 +1400,11 @@ var qm = {
                 }
             }
             return a;
+        },
+        removeDuplicatesByProperty: function(myArr, prop) {
+            return myArr.filter((obj, pos, arr) => {
+                return arr.map(mapObj => mapObj[prop]).indexOf(obj[prop]) === pos;
+            });
         },
         removeDuplicatesById: function(arr, type) {
             type = type || "[TYPE NOT PROVIDED]"
@@ -3608,7 +3622,7 @@ var qm = {
                 },
                 locationAndWeatherTracking: {
                     title: "Location and Weather Tracking",
-                    textContent: qm.variableCategoryHelper.getVariableCategory('Location').moreInfo
+                    textContent: qm.variableCategoryHelper.findVariableCategory('Location').moreInfo
                 },
                 minimumAllowedValue: {
                     title: "Minimum Allowed Value",
@@ -4237,7 +4251,7 @@ var qm = {
                 src.startTimeString ||
                 src.startTimeEpoch;
             var unit = qm.unitHelper.find(src);
-            var cat = qm.variableCategoryHelper.find(src);
+            var cat = qm.variableCategoryHelper.findVariableCategory(src);
             if(!unit && cat){
                 unit = qm.unitHelper.find(cat);
             }
@@ -4260,7 +4274,7 @@ var qm = {
                 variableCategoryName: src.variableCategoryName,
                 variableName: src.variableName || src.name,
             }
-            if(!m.inputType && unit){m.inputType = qm.unitHelper.getInputType(unit.abbreviatedName, m.valence, m.variableName);}
+            if(!m.inputType && unit){qm.unitHelper.setInputType(m);}
             return m;
         },
         fromNotification: function (n){
@@ -4273,7 +4287,9 @@ var qm = {
         },
         getLocalMeasurements: function(params, cb){
             var queue = qm.measurements.getMeasurementsFromQueue(params) || [];
+            qm.measurements.checkMeasurements(queue)
             var recent = qm.measurements.getRecentlyPostedMeasurements(params) || [];
+            qm.measurements.checkMeasurements(recent)
             qm.measurements.getPrimaryOutcomeMeasurements(function (measurements) {
                 measurements = measurements || [];
                 var indexed = {};
@@ -4323,21 +4339,51 @@ var qm = {
             if(id){recent = recent.filter(function(m){return m.id !== id;});}
             qm.measurements.recentlyPostedMeasurements = recent;
         },
-        addMeasurementsToMemory: function(measurements){
-            var measurementArray = measurements;
-            if(!Array.isArray(measurementArray)){
-                measurementArray = [];
-                for (var variableName in measurements) {
-                    if(!measurements.hasOwnProperty(variableName)){continue;}
-                    var measurementObject = measurements[variableName];
-                    for (var date in measurementObject) {
-                        measurementArray.push(measurementObject[date]);
+        addMeasurementsToMemory: function(byVariableName){
+            var arr = [];
+            if(!Array.isArray(arr)){
+                arr = [];
+                for (var variableName in byVariableName) {
+                    if(!byVariableName.hasOwnProperty(variableName)){continue;}
+                    var byDate = byVariableName[variableName];
+                    for (var date in byDate) {
+                        if(byDate.hasOwnProperty(date)){
+                            arr.push(byDate[date]);
+                        } else {
+                            arr.push(byDate);
+                        }
+                        qm.measurements.checkMeasurements(arr)
                     }
                 }
             }
-            var existing  = qm.measurements.recentlyPostedMeasurements;
-            var combined = qm.arrayHelper.concatenateUniqueId(measurementArray, existing);
+            qm.measurements.checkMeasurements(arr)
+            var existing  = qm.measurements.recentlyPostedMeasurements || [];
+            qm.measurements.checkMeasurements(existing)
+            var combined = qm.arrayHelper.concatenateUniqueId(arr, existing);
+            qm.measurements.checkMeasurements(combined)
             qm.measurements.recentlyPostedMeasurements = combined;
+        },
+        checkMeasurements: function(arr){
+            if(!arr){
+                qmLog.error("No measurements provided to checkMeasurements", {'measurements': arr})
+                debugger
+                return;
+            }
+            if(!arr.forEach){
+                qmLog.error("Measurements provided to checkMeasurements is not an array", {'measurements': arr})
+                debugger
+                return;
+            }
+            arr.forEach(function (m){
+                if(typeof m === "function"){
+                    qmLog.error("existing Measurement is a function", {'measurements': arr})
+                    debugger
+                }
+                if(Array.isArray(m)){
+                    qmLog.error("existing Measurement is an array!", {'measurements': arr})
+                    debugger
+                }
+            });
         },
         getMeasurementsFromApi: function(params, successHandler, errorHandler){
             params = qm.api.addGlobalParams(params);
@@ -4399,19 +4445,25 @@ var qm = {
         },
         getMeasurementsFromQueue: function(params){
             var measurements = qm.storage.getElementsWithRequestParams(qm.items.measurementsQueue, params) || []
+            qm.measurements.checkMeasurements(measurements)
             measurements = qm.measurements.addInfoAndImagesToMeasurements(measurements);
+            qm.measurements.checkMeasurements(measurements)
             qm.qmLog.info("Got " + measurements.length + " measurements from queue with params: " +
                 JSON.stringify(params), measurements);
             return measurements;
         },
         addInfoAndImagesToMeasurements: function(measurements){
+            qm.measurements.checkMeasurements(measurements);
             if(!Array.isArray(measurements)){measurements = Object.values(measurements);}
+            qm.measurements.checkMeasurements(measurements);
             function parseJsonIfPossible(str){
                 if(str === "{}"){return false;}
                 var object = false;
+                if(str === "{}"){return false;}
                 try{
                     object = JSON.parse(str);
                 }catch (e){
+                    qm.qmLog.error("Unrecognized note format. Could not properly format JSON note", str);
                     return false;
                 }
                 return object;
@@ -4420,18 +4472,20 @@ var qm = {
             var index;
             for(index = 0; index < measurements.length; ++index){
                 var m = measurements[index];
+                if(typeof m === "function"){
+                    qmLog.error("Measurement is a function")
+                    debugger
+                    continue;
+                }
                 var parsedNote = parseJsonIfPossible(m.note);
-                if(parsedNote){
-                    if(parsedNote.url && parsedNote.message){
-                        m.note = '<a href="' + parsedNote.url + '" target="_blank">' + parsedNote.message + '</a>';
-                    }else{
-                        qm.qmLog.error("Unrecognized note format", "Could not properly format JSON note", {note: m.note});
-                    }
+                if(parsedNote && parsedNote.url && parsedNote.message){
+                    m.note = '<a href="' + parsedNote.url + '" target="_blank">' + parsedNote.message + '</a>';
                 }
                 m.startTime = m.startTime || m.startTimeEpoch;
                 m.startAt = m.startAt || m.startTimeString;
                 var unit = qm.unitHelper.getByNameAbbreviatedNameOrId(m.unitId || m.unitAbbreviatedName);
                 if(!unit){
+                    debugger
                     unit = qm.unitHelper.getByNameAbbreviatedNameOrId(m.unitId || m.unitAbbreviatedName);
                     qm.qmLog.errorAndExceptionTestingOrDevelopment("Could not get unit for this measurement: ", m)
                 } else {
@@ -4444,7 +4498,7 @@ var qm = {
                 m.displayValueAndUnitString = qm.stringHelper.formatValueUnitDisplayText(m.displayValueAndUnitString)
                 m.valueUnitVariableName = m.displayValueAndUnitString + " " + m.variableName;
                 if(!m.variableCategoryName){
-                    m.variableCategoryName = qm.variableCategoryHelper.getByNameOrId(m.variableCategoryId).name;
+                    m.variableCategoryName = qm.variableCategoryHelper.findVariableCategory(m).name;
                 }
                 if(!m.image && m.roundedValue && ratingInfo[m.roundedValue]){
                     m.image = ratingInfo[m.roundedValue].numericImage;
@@ -4454,7 +4508,7 @@ var qm = {
                 if(m.image){m.pngPath = m.image;}
                 m.icon = m.icon || m.ionIcon;
                 if(m.variableCategoryName && !m.icon){
-                    var category = qm.variableCategoryHelper.getVariableCategory(m.variableCategoryName);
+                    var category = qm.variableCategoryHelper.findVariableCategory(m);
                     m.icon = category.ionIcon;
                     m.pngPath = category.pngPath;
                 }
@@ -4547,7 +4601,7 @@ var qm = {
         },
         setIonIcon: function(menuItem){
             if(menuItem.params.variableCategoryName){
-                var category = qm.variableCategoryHelper.getVariableCategory(menuItem.params.variableCategoryName);
+                var category = qm.variableCategoryHelper.findVariableCategory(menuItem.params);
                 if(category && category.ionIcon){
                     menuItem.params.ionIcon = category.ionIcon;
                 }
@@ -4752,13 +4806,12 @@ var qm = {
         },
         micAvailable: null,
         getMicEnabled: function(){
-            if(qm.mic.microphoneDisabled){
+            if(qm.mic.microphoneDisabled){return false;}
+            if(!qm.mic.getMicAvailable()){
+                qm.mic.setMicEnabled(false);
                 return false;
             }
-            if(!qm.mic.getMicAvailable()){
-                return qm.mic.setMicEnabled(false);
-            }
-            return qm.storage.getItem(qm.items.micEnabled);
+            return qm.storage.getItem(qm.items.micEnabled) || null;
         },
         setMicEnabled: function(micEnabled){
             qm.qmLog.info("set micEnabled " + micEnabled);
@@ -5518,7 +5571,7 @@ var qm = {
         refreshIfEmpty: function(successHandler, errorHandler){
             if(!qm.notifications.getNumberInGlobalsOrLocalStorage()){
                 qm.qmLog.info('No notifications in local storage');
-                qm.notifications.refreshNotifications(successHandler, errorHandler);
+                qm.notifications.syncTrackingReminderNotifications(successHandler, errorHandler);
                 return true;
             }
             qm.qmLog.info(qm.notifications.getNumberInGlobalsOrLocalStorage() + ' notifications in local storage');
@@ -5529,7 +5582,7 @@ var qm = {
             qm.qmLog.info("qm.notifications.refreshIfEmptyOrStale");
             if(!qm.notifications.getNumberInGlobalsOrLocalStorage() || qm.notifications.getSecondsSinceLastNotificationsRefresh() > 3600){
                 qm.qmLog.info('Refreshing notifications because empty or last refresh was more than an hour ago');
-                qm.notifications.refreshNotifications(callback);
+                qm.notifications.syncTrackingReminderNotifications(callback);
             }else{
                 qm.qmLog.info('Not refreshing notifications because last refresh was last than an hour ago and we have notifications in local storage');
                 if(callback){
@@ -5621,7 +5674,7 @@ var qm = {
             }else{
                 console.info('No rating notifications for popup');
                 qm.notifications.getLastNotificationsRefreshTime();
-                qm.notifications.refreshNotifications();
+                qm.notifications.syncTrackingReminderNotifications();
                 return null;
             }
         },
@@ -5629,31 +5682,8 @@ var qm = {
             return qm.storage.deleteByProperty(qm.items.trackingReminderNotifications, 'variableName', variableName);
         },
         promise: null,
-        refreshNotifications: function(successHandler, errorHandler, options){
-            var route = qm.apiPaths.trackingReminderNotificationsPast;
-            qm.api.getRequestUrl(route, function(url){
-                // Can't use QM SDK in service worker
-                qm.api.getViaXhrOrFetch(url, function(response){
-                    if(!response){
-                        qm.qmLog.error("No response from " + url);
-                        if(errorHandler){
-                            errorHandler("No response from " + url);
-                        }
-                        return;
-                    }
-                    if(response.status === 401){
-                        qm.chrome.showSignInNotification();
-                    }else{
-                        qm.storage.setTrackingReminderNotifications(response.data);
-                        if(successHandler){
-                            successHandler(response.data);
-                        }
-                    }
-                })
-            }, options);
-        },
         refreshAndShowPopupIfNecessary: function(notificationParams){
-            qm.notifications.refreshNotifications(notificationParams, function(trackingReminderNotifications){
+            qm.notifications.syncTrackingReminderNotifications(function(response){
                 var uniqueNotification = qm.notifications.getMostRecentUniqueNotificationNotInSyncQueue();
                 function objectLength(obj){
                     var result = 0;
@@ -5665,6 +5695,7 @@ var qm = {
                     }
                     return result;
                 }
+                var trackingReminderNotifications = qm.notifications.getFromGlobalsOrLocalStorage();
                 var numberOfWaitingNotifications = objectLength(trackingReminderNotifications);
                 if(uniqueNotification){
                     function getChromeRatingNotificationParams(trackingReminderNotification){
@@ -5770,7 +5801,7 @@ var qm = {
             if(!successHandler){
                 return null;
             }
-            qm.notifications.refreshNotifications(function(notifications){
+            qm.notifications.syncTrackingReminderNotifications(function(response){
                 var notification = qm.notifications.getMostRecentNotification();
                 if(notification){
                     successHandler(notification);
@@ -5782,7 +5813,7 @@ var qm = {
         schedulePost: function(delayInMilliseconds){
             var queue = qm.storage.getItem(qm.items.notificationsSyncQueue);
             if(queue && queue.length > 10){
-                qm.notifications.post();
+                qm.notifications.syncTrackingReminderNotifications();
                 return;
             }
             if(!delayInMilliseconds){
@@ -5798,7 +5829,7 @@ var qm = {
                 }
                 setTimeout(function(){
                     qm.qmLog.info("Notifications sync countdown completed.  Syncing now... ");
-                    qm.notifications.post();
+                    qm.notifications.syncTrackingReminderNotifications();
                 }, delayInMilliseconds);
             }else{
                 if(!qm.platform.isMobile()){ // Better performance
@@ -5827,46 +5858,52 @@ var qm = {
             qm.notifications.deleteByVariableName(n.variableName);
             qm.notifications.addToSyncQueue(n);
         },
-        post: function(successHandler, errorHandler){
-            qm.qmLog.debug("Called postNotifications...");
+        syncTrackingReminderNotifications: function(successHandler, errorHandler){
+            qm.qmLog.debug("Called syncTrackingReminderNotifications...");
             var notifications = qm.storage.getItem(qm.items.notificationsSyncQueue);
             qm.storage.removeItem(qm.items.notificationsSyncQueue);
             qm.storage.removeItem(qm.items.trackingReminderNotificationSyncScheduled);
-            if(!notifications || !notifications.length){
-                if(successHandler){successHandler();}
-                return;
+            var body = [];
+            if(notifications){
+                if(!(notifications instanceof Array)){notifications = [notifications];}
+                body = notifications.map(function (n){
+                    return {
+                        'value': n.modifiedValue || n.value,
+                        'trackingReminderNotificationId': n.trackingReminderNotificationId,
+                        'variableId': n.variableId,
+                        'trackingReminderId': n.trackingReminderId,
+                        'action': n.action,
+                        'timeZone': moment.tz.guess(),
+                    }
+                })
             }
-            if(!(notifications instanceof Array)){notifications = [notifications];}
-            if(!notifications[0]){
-                qm.qmLog.error("notifications[0] is " + notifications[0], {notifications: notifications});
-            }
-            var body = notifications.map(function (n){
-                return {
-                    'value': n.modifiedValue || n.value,
-                    'trackingReminderNotificationId': n.trackingReminderNotificationId,
-                    'variableId': n.variableId,
-                    'trackingReminderId': n.trackingReminderId,
-                    'action': n.action,
-                    'timeZone': moment.tz.guess(),
+            function saveResponse(response){
+                if(!response){
+                    var err = "No response from postToQuantiModo(body, 'v3/trackingReminderNotifications";
+                    if(errorHandler){
+                        errorHandler(err);
+                        return;
+                    } else {
+                        throw err;
+                    }
                 }
-            })
-            qm.api.postToQuantiModo(body, 'v3/trackingReminderNotifications',
-                function(response){
-                    var measurements = response.measurements;
-                    if(!measurements && response.data){measurements = response.data.measurements;}
-                    if(measurements){qm.measurements.addMeasurementsToMemory(measurements);}
+                var data = response.data || response;
+                if(data.measurements){qm.measurements.addMeasurementsToMemory(data.measurements);}
+                if(data.trackingReminderNotifications){qm.storage.setTrackingReminderNotifications(data.trackingReminderNotifications);}
+            }
+            qm.api.postToQuantiModo(body, 'v3/trackingReminderNotifications', function(response){
+                    saveResponse(response);
                     if(successHandler){successHandler(response);}
                 }, function(response){
-                    if(!response.success){
-                        qm.qmLog.error(response.message)
-                        var newNotificationsSyncQueue = qm.storage.getItem(qm.items.notificationsSyncQueue);
-                        if(newNotificationsSyncQueue){notifications = notifications.concat(newNotificationsSyncQueue);}
-                        qm.storage.setItem(qm.items.notificationsSyncQueue, notifications);
-                        if(errorHandler){errorHandler(response.message || response.error);}
-                    } else{ // This happens when the error is a message saying the notification was already deleted
-                        // so we don't want to put notifications back in queue
-                        qm.qmLog.warn(response.message)
-                    }
+                    qm.qmLog.error(response.message)
+                    saveResponse(response); // Sometimes we still return notifications even with an error
+                    // This happens when the error is a message saying the notification was already deleted
+                    // so we don't want to put notifications back in queue
+                    // Don't return to queue or we cause an infinite loop if we get a no changes error
+                    // var newNotificationsSyncQueue = qm.storage.getItem(qm.items.notificationsSyncQueue);
+                    // if(newNotificationsSyncQueue){notifications = notifications.concat(newNotificationsSyncQueue);}
+                    // qm.storage.setItem(qm.items.notificationsSyncQueue, notifications);
+                    if(errorHandler){errorHandler(response.message || response.error);}
                 });
         },
         skip: function(trackingReminderNotification){
@@ -6438,6 +6475,9 @@ var qm = {
             var reminders = qm.storage.getElementsWithRequestParams(qm.items.trackingReminders, requestParams);
             reminders = reminders || [];
             reminders = qm.arrayHelper.removeDuplicatesById(reminders);
+            reminders.forEach(function (r){
+                qm.unitHelper.setInputType(r);
+            })
             return reminders;
         },
         getMostFrequentReminderIntervalInSeconds: function(trackingReminders){
@@ -6485,9 +6525,10 @@ var qm = {
                 qm.qmLog.error("Cannot filter allReminders", {allReminders: allReminders});
                 return [];
             }
-            return allReminders.filter(function(trackingReminder){
+            var favorites = allReminders.filter(function(trackingReminder){
                 return trackingReminder.reminderFrequency === 0;
             });
+            return qm.arrayHelper.removeDuplicatesByProperty(favorites, 'variableId')
         },
         getActive: function(allReminders){
             if(!allReminders){
@@ -6510,7 +6551,7 @@ var qm = {
                     trackingReminder.valueAndFrequencyTextDescription.toLowerCase().indexOf('ended') !== -1;
             });
         },
-        removeDuplicateNotifications:function(notifications){
+        removeDuplicateNotifications: function(notifications){
             var ids = [];
             var toKeep = [];
             if(!notifications){
@@ -6519,10 +6560,18 @@ var qm = {
             if(typeof notifications.forEach !== "function"){
                 throw "Notifications is not an array!"
             }
+            var allIds = notifications.map(function(n){
+                return n.id;
+            })
             notifications.forEach(function(n){
                 if(n.id !== n.trackingReminderNotificationId){
                     qmLog.errorAndExceptionTestingOrDevelopment("notification id: "+n.id +
                         " does not match trackingReminderNotificationId: "+n.trackingReminderNotificationId, null, n);
+                }
+                var before = n.actionArray;
+                n.actionArray = qm.arrayHelper.removeDuplicatesByProperty(before, 'title');
+                if(before.length !== n.actionArray.length){
+                    qmLog.error("Duplicate button titles", before);
                 }
                 var id = n.trackingReminderNotificationId || n.id;
                 if(ids.indexOf(id) !== -1) {
@@ -7717,7 +7766,7 @@ var qm = {
             }
             var fromGlobals = qm.storage.getGlobal(key);
             if(fromGlobals !== null && fromGlobals !== "undefined" && fromGlobals !== "null"){
-                qm.qmLog.debug("Got " + key + " from globals");
+                // Not sure why this keeps getting sent to bugsnag even though it's a debug log // qm.qmLog.debug("Got " + key + " from globals");
                 return fromGlobals;
             }
             if(typeof localStorage === "undefined" || localStorage === null){
@@ -8735,6 +8784,9 @@ var qm = {
         }
     },
     unitHelper: {
+        setInputType: function(obj){
+            obj.inputType = qm.unitHelper.getInputType(obj.unitAbbreviatedName, obj.valence, obj.variableName);
+        },
         getInputType: function(unitAbbreviatedName, valence, variableName) {
             var inputType = 'value';
             if (variableName === 'Blood Pressure') {inputType = 'bloodPressure';}
@@ -9520,6 +9572,7 @@ var qm = {
         }
     },
     userVariables: {
+        defaultLimit: 20,
         updateLatestMeasurementTime: function(variableName, lastValue){
             qm.storage.getUserVariableByName(variableName, true, lastValue);
         },
@@ -9532,7 +9585,7 @@ var qm = {
                 params.sort = '-latestMeasurementTime';
             }
             if(!params.limit){
-                params.limit = 50;
+                params.limit = qm.userVariables.defaultLimit;
             }
             params = qm.api.addGlobalParams(params);
             var cacheKey = 'getUserVariablesFromApi';
@@ -9587,7 +9640,7 @@ var qm = {
         },
         getFromLocalStorage: function(params, successHandler, errorHandler){
             if(!qm.getUser()){
-                qm.qmLog.error("No user to get user variables!");
+                qm.qmLog.debug("No user to get user variables!");
                 qm.commonVariablesHelper.getFromLocalStorage(params, successHandler, errorHandler);
                 return;
             }
@@ -9855,70 +9908,54 @@ var qm = {
     variableCategoryHelper: {
         replaceCategoryAliasWithActualNameIfNecessary: function(provided){
             if(provided === "Anything"){return null;}
-            var category = qm.variableCategoryHelper.getByNameOrId(provided);
+            var category = qm.variableCategoryHelper.findVariableCategory(provided);
             if(!category){
                 qmLog.errorAndExceptionTestingOrDevelopment("Category "+provided+" not found!");
                 return null;
             }
             return category.name;
         },
-        getVariableCategoriesFromApi: function(successHandler, errorHandler){
-            qm.qmLog.info("Getting variable categories from API...");
-            function globalSuccessHandler(variableCategories){
-                qm.localForage.setItem(qm.items.variableCategories, variableCategories);
-                if(successHandler){
-                    successHandler(variableCategories);
+        getVariableCategories: function(){
+            return qm.staticData.variableCategories;
+        },
+        findVariableCategory: function(nameOrId){
+            if(typeof nameOrId === 'object' && nameOrId !== null){
+                var obj = nameOrId;
+                nameOrId = nameOrId.variableCategoryName || nameOrId.variableCategoryId;
+                if(!nameOrId && obj.measurement){
+                    nameOrId = obj.measurement.variableCategoryName || obj.measurement.variableCategoryId;
+                }
+                if(!nameOrId && obj.variableObject){
+                    nameOrId = obj.variableObject.variableCategoryName || obj.variableObject.variableCategoryId;
+                }
+                if(!nameOrId){
+                    qmLog.debug("No name or id from object in findVariableCategory", obj)
+                    return null;
                 }
             }
-            qm.api.configureClient(arguments.callee.name);
-            var apiInstance = new qm.Quantimodo.VariablesApi();
-            function callback(error, data, response){
-                qm.api.generalResponseHandler(error, data, response, globalSuccessHandler, errorHandler, {}, 'getVariableCategoriesFromApi');
+            if(!nameOrId){nameOrId = qm.urlHelper.getParam('variableCategoryName');}
+            if(!nameOrId){nameOrId = qm.urlHelper.getParam('variableCategoryId');}
+            var categories = qm.variableCategoryHelper.getVariableCategories();
+            var id, name = null;
+            if(!nameOrId){
+                qmLog.error("No name or id provided to findVariableCategory")
+                return null;
             }
-            apiInstance.getVariableCategories(callback);
-        },
-        getVariableCategoriesFromGlobalsOrApi: function(successHandler, errorHandler){
-            var categories = qm.variableCategoryHelper.getVariableCategoriesFromGlobals();
-            if(!categories && qm.staticData && qm.staticData.variableCategories){
-                categories = qm.staticData.variableCategories;
+            if(Number.isInteger(nameOrId)){
+                id = nameOrId;
+            } else {
+                name = nameOrId.toLowerCase();
             }
-            if(categories){
-                if(successHandler){
-                    successHandler(categories);
+            var c = categories.find(function(c){
+                if(c.id === id){return true;}
+                if(c.name.toLowerCase() === name){return true;}
+                for (var i = 0; i < c.synonyms.length; i++) {
+                    var syn = c.synonyms[i];
+                    if(name === syn.toLowerCase()){return true;}
                 }
-                return categories;
-            }
-            qm.variableCategoryHelper.getVariableCategoriesFromApi(function(variableCategories){
-                successHandler(variableCategories);
-            }, errorHandler);
-        },
-        getVariableCategoriesFromGlobals: function(){
-            if(qm.staticData.variableCategories){
-                return qm.staticData.variableCategories;
-            }
-            return qm.globalHelper.getItem(qm.items.variableCategories);
-        },
-        getVariableCategory: function(variableCategoryName, successHandler){
-            if(!successHandler){
-                var variableCategories = qm.variableCategoryHelper.getVariableCategoriesFromGlobals();
-                if(variableCategories){
-                    return variableCategories.find(function(variableCategory){
-                        if(variableCategory.name.toLowerCase() === variableCategoryName.toLowerCase()){
-                            return true;
-                        }
-                        if(variableCategory.synonyms && variableCategory.synonyms.indexOf(variableCategoryName) !== -1){
-                            return true;
-                        }
-                        return variableCategory.variableCategoryNameSingular && variableCategory.variableCategoryNameSingular.toLowerCase() === variableCategoryName.toLowerCase();
-                    });
-                }
-            }
-            qm.variableCategoryHelper.getVariableCategoriesFromGlobalsOrApi(function(variableCategories){
-                var match = variableCategories.find(function(category){
-                    category.name = variableCategoryName;
-                });
-                successHandler(match);
+                return c.variableCategoryNameSingular && c.variableCategoryNameSingular.toLowerCase() === name;
             });
+            return c;
         },
         getVariableCategoryNameFromStateParamsOrUrl: function(obj1, obj2, obj3){
             var name = qm.urlHelper.getParam('variableCategoryName');
@@ -9935,7 +9972,7 @@ var qm = {
             return qm.variableCategoryHelper.getVariableCategory(name);
         },
         getByNameOrId: function(nameOrId){
-            var cats = qm.variableCategoryHelper.getVariableCategoriesFromGlobals();
+            var cats = qm.variableCategoryHelper.getVariableCategories();
             if(isNaN(nameOrId)){
                 nameOrId = nameOrId.toLowerCase();
                 nameOrId = nameOrId.replace("+", " ")
@@ -9943,10 +9980,7 @@ var qm = {
                     // noinspection EqualityComparisonWithCoercionJS
                     if(c.id == nameOrId){return true;}
                     if(c.name.toLowerCase() === nameOrId){return true;}
-                    for (var i = 0; i < c.synonyms.length; i++) {
-                        var syn = c.synonyms[i];
-                        if(nameOrId === syn.toLowerCase()){return true;}
-                    }
+
                     return false;
                 });
             } else {
@@ -9964,7 +9998,7 @@ var qm = {
                 var cat = obj.variableCategory;
                 if(!cat){
                     var nameOrId = obj.variableCategoryId || obj.variableCategoryName || null;
-                    if(nameOrId){cat = qm.variableCategoryHelper.getByNameOrId(nameOrId);}
+                    if(nameOrId){cat = qm.variableCategoryHelper.findVariableCategory(nameOrId);}
                 }
                 if(cat){
                     obj.fontAwesome = obj.fontAwesome || cat.fontAwesome
@@ -9978,16 +10012,6 @@ var qm = {
                 }
             }
             return arr;
-        },
-        find: function(v) {
-            var nameOrId;
-            if(typeof v === "string" || v === parseInt(v, 10)){
-                nameOrId = v;
-            } else {
-                nameOrId = v.variableCategoryId || v.variableCategoryName;
-            }
-            if(!nameOrId){return null;}
-            return qm.variableCategoryHelper.getByNameOrId(nameOrId);
         }
     },
     visualizer: {
@@ -10490,7 +10514,7 @@ var qm = {
                     }
                 })
                 .catch(function(err){
-                    qm.qmLog.error('An error occurred while retrieving token because: '+err.message, null, err);
+                    qm.qmLog.debug('An error occurred while retrieving token because: '+err.message, null, err);
                     //showToken('Error retrieving Instance ID token. ', err);
                     //qm.webNotifications.postWebPushSubscriptionToServer(false);
                 });

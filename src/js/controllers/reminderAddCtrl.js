@@ -58,9 +58,7 @@ angular.module('starter').controller('ReminderAddCtrl', ["$scope", "$state", "$s
                 $scope.state.trackingReminder.id = $stateParams.trackingReminderId;
             }
             $scope.state.savingText = 'Save';
-            qm.variableCategoryHelper.getVariableCategoriesFromGlobalsOrApi(function(variableCategories){
-                $scope.state.variableCategories = variableCategories;
-            });
+            $scope.state.variableCategories = qm.variableCategoryHelper.getVariableCategories();
             qmService.navBar.showNavigationMenuIfHideUrlParamNotSet();
             qmService.login.sendToLoginIfNecessaryAndComeBack("beforeEnter in " + $state.current.name);
             $stateParams.variableCategoryName = getVariableCategoryName();
@@ -423,7 +421,7 @@ angular.module('starter').controller('ReminderAddCtrl', ["$scope", "$state", "$s
             setHideDefaultValueField();
         };
         $scope.variableCategorySelectorChange = function(variableCategoryName){
-            $scope.state.variableCategoryObject = qmService.getVariableCategoryInfo(variableCategoryName);
+            $scope.state.variableCategoryObject = qm.variableCategoryHelper.findVariableCategory(variableCategoryName);
             $scope.state.trackingReminder.unitAbbreviatedName = $scope.state.variableCategoryObject.defaultUnitAbbreviatedName;
             $scope.state.defaultValuePlaceholderText = 'Enter most common value';
             $scope.state.defaultValueLabel = 'Default Value';
@@ -444,7 +442,7 @@ angular.module('starter').controller('ReminderAddCtrl', ["$scope", "$state", "$s
             }
             var r = $scope.state.trackingReminder;
             r.variableCategoryName = variableCategoryName;
-            $scope.state.variableCategoryObject = qmService.getVariableCategoryInfo(variableCategoryName);
+            $scope.state.variableCategoryObject = qm.variableCategoryHelper.findVariableCategory(variableCategoryName);
             if(!r.unitAbbreviatedName){
                 r.unitAbbreviatedName = $scope.state.variableCategoryObject.defaultUnitAbbreviatedName;
             }

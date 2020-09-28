@@ -2,7 +2,7 @@
     <ion-nav-title>{{state.title}}</ion-nav-title>
     <ion-content scroll="true" overflow-scroll="true">
         <!--<ion-content style="background-color: #f2f2f2" ng-class="{ isBrowserView : platform.isWeb == true } "> This breaks pull down to refresh in browser-->
-        <ion-refresher on-refresh="refreshTrackingReminderNotifications({noCache: true})"></ion-refresher>
+        <ion-refresher on-refresh="syncTrackingReminderNotifications({noCache: true})"></ion-refresher>
         <div id="aboveAverageWords" ng-if="words">
             <word-cloud words="words.aboveAverageWords" width="width" height="height" padding="10"
                         on-click="wordClicked"></word-cloud>
@@ -33,7 +33,7 @@
                      class="item item-divider">
                     {{divider.name}}
                     <a style="float: right; margin: 5px; cursor: pointer;"
-                       ng-click="refreshTrackingReminderNotifications({noCache: true})">
+                       ng-click="syncTrackingReminderNotifications({noCache: true})">
                         <i class="icon ion-refresh">&nbsp;Refresh</i>
                     </a>
                 </div>
@@ -86,7 +86,7 @@
                 <div class="row">
                     <div class="button-bar">
                         <button class="button button-clear button-balanced" style="font-size: 14px;"
-                                ng-click="refreshTrackingReminderNotifications({noCache: true})"><i class="ion-refresh"> &nbsp; Refresh
+                                ng-click="syncTrackingReminderNotifications({noCache: true})"><i class="ion-refresh"> &nbsp; Refresh
                             &nbsp;</i></button>
                     </div>
                 </div>
