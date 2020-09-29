@@ -4403,47 +4403,40 @@ var qm = {
             }
             apiInstance.getMeasurements(params, callback);
         },
-        addLocationDataToMeasurement: function(measurementObject){
-            if(!measurementObject.latitude){
-                measurementObject.latitude = qm.storage.getItem(qm.items.lastLatitude);
-            }
-            if(!measurementObject.longitude){
-                measurementObject.longitude = qm.storage.getItem(qm.items.lastLongitude);
-            }
-            if(!measurementObject.location){
-                measurementObject.location = qm.storage.getItem(qm.items.lastLocationNameAndAddress);
-            }
-            return measurementObject;
+        addLocationDataToMeasurement: function(m){
+            if(!m.latitude){m.latitude = qm.storage.getItem(qm.items.lastLatitude);}
+            if(!m.longitude){m.longitude = qm.storage.getItem(qm.items.lastLongitude);}
+            if(!m.location){m.location = qm.storage.getItem(qm.items.lastLocationNameAndAddress);}
+            return m;
         },
-        addLocationAndSourceDataToMeasurement: function(measurementObject){
-            qm.measurements.addLocationDataToMeasurement(measurementObject);
-            if(!measurementObject.sourceName){
-                measurementObject.sourceName = qm.getSourceName();
-            }
-            return measurementObject;
+        addLocationAndSourceDataToMeasurement: function(m){
+            qm.measurements.addLocationDataToMeasurement(m);
+            if(!m.sourceName){m.sourceName = qm.getSourceName();}
+            return m;
         },
-        addToMeasurementsQueue: function(measurementObject){
-            qm.qmLog.info("Adding to measurements queue: ", measurementObject);
-            measurementObject = qm.measurements.addLocationAndSourceDataToMeasurement(measurementObject);
-            qm.measurements.addMeasurementsToMemory([measurementObject])
-            qm.storage.appendToArray(qm.items.measurementsQueue, measurementObject);
+        addToMeasurementsQueue: function(m){
+            qm.qmLog.info("Adding to measurements queue: ", m);
+            m = qm.measurements.addLocationAndSourceDataToMeasurement(m);
+            qm.measurements.addInfoAndImagesToMeasurement(m);
+            qm.measurements.addMeasurementsToMemory([m])
+            qm.storage.appendToArray(qm.items.measurementsQueue, m);
         },
-        updateMeasurementInQueue: function(measurementInfo){
-            var measurementsQueue = qm.storage.getItem(qm.items.measurementsQueue);
-            if(!measurementsQueue){measurementsQueue = [];}
+        updateMeasurementInQueue: function(m){
+            var queue = qm.storage.getItem(qm.items.measurementsQueue);
+            if(!queue){queue = [];}
             var i = 0;
-            while(i < measurementsQueue.length){
-                if(measurementsQueue[i].startTimeEpoch === measurementInfo.prevStartTimeEpoch){
-                    measurementsQueue[i].startTimeEpoch = measurementInfo.startTimeEpoch;
-                    measurementsQueue[i].value = measurementInfo.value;
-                    measurementsQueue[i].note = measurementInfo.note;
-                    qm.qmLog.info("Updating measurement in queue: ", measurementInfo);
+            while(i < queue.length){
+                if(queue[i].startTimeEpoch === m.prevStartTimeEpoch){
+                    queue[i].startTimeEpoch = m.startTimeEpoch;
+                    queue[i].value = m.value;
+                    queue[i].note = m.note;
+                    qm.qmLog.info("Updating measurement in queue: ", m);
                     break;
                 }
                 i++;
             }
-            qm.storage.setItem(qm.items.measurementsQueue, measurementsQueue);
-            qm.measurements.addMeasurementsToMemory(measurementsQueue)
+            qm.storage.setItem(qm.items.measurementsQueue, queue);
+            qm.measurements.addMeasurementsToMemory(queue)
         },
         getMeasurementsFromQueue: function(params){
             var measurements = qm.storage.getElementsWithRequestParams(qm.items.measurementsQueue, params) || []
@@ -4454,67 +4447,63 @@ var qm = {
                 JSON.stringify(params), measurements);
             return measurements;
         },
+        addInfoAndImagesToMeasurement: function(m){
+            var ratingInfo = qm.ratingImages.getRatingInfo();
+            if(typeof m === "function"){
+                qmLog.error("Measurement is a function")
+                debugger
+                return;
+            }
+            var parsedNote = qm.stringHelper.parseJsonIfPossible(m.note);
+            if(parsedNote && parsedNote.url && parsedNote.message){
+                m.note = '<a href="' + parsedNote.url + '" target="_blank">' + parsedNote.message + '</a>';
+            }
+            m.startTime = m.startTime || m.startTimeEpoch;
+            m.startAt = m.startAt || m.startTimeString;
+            var unit = qm.unitHelper.getByNameAbbreviatedNameOrId(m.unitId || m.unitAbbreviatedName);
+            if(!unit){
+                debugger
+                unit = qm.unitHelper.getByNameAbbreviatedNameOrId(m.unitId || m.unitAbbreviatedName);
+                qm.qmLog.errorAndExceptionTestingOrDevelopment("Could not get unit for this measurement: ", m)
+            } else {
+                if(!m.unitAbbreviatedName){m.unitAbbreviatedName = unit.abbreviatedName;}
+                if(unit.abbreviatedName === '/5'){m.roundedValue = Math.round(m.value);}
+            }
+            if(!m.variableName){m.variableName = m.variable;}
+            if(m.variableName === qm.getPrimaryOutcomeVariable().name){m.valence = qm.getPrimaryOutcomeVariable().valence;}
+            m.displayValueAndUnitString = m.displayValueAndUnitString || m.value + " " + unit.abbreviatedName;
+            m.displayValueAndUnitString = qm.stringHelper.formatValueUnitDisplayText(m.displayValueAndUnitString)
+            m.valueUnitVariableName = m.displayValueAndUnitString + " " + m.variableName;
+            if(!m.variableCategoryName){
+                m.variableCategoryName = qm.variableCategoryHelper.findVariableCategory(m).name;
+            }
+            //debugger
+            if(m.unitAbbreviatedName === "/5" && m.roundedValue && ratingInfo[m.roundedValue]){
+                m.image = ratingInfo[m.roundedValue].numericImage;
+                if(m.valence === 'positive'){m.image = ratingInfo[m.roundedValue].positiveImage;}
+                if(m.valence === 'negative'){m.image = ratingInfo[m.roundedValue].negativeImage;}
+            }
+            if(m.image){m.pngPath = m.image;}
+            if(m.image && m.image.indexOf("img/rating/face_rating_button_256_sad.png") !== -1 && m.roundedValue === 3){
+                qmLog.errorAndExceptionTestingOrDevelopment("value is "+m.roundedValue+" but image is "+m.image);
+            }
+            m.icon = m.icon || m.ionIcon;
+            if(m.variableCategoryName && !m.icon){
+                var category = qm.variableCategoryHelper.findVariableCategory(m);
+                m.icon = category.ionIcon;
+                if(!m.pngPath){
+                    m.pngPath = category.pngPath;
+                }
+            }
+        },
         addInfoAndImagesToMeasurements: function(measurements){
             qm.measurements.checkMeasurements(measurements);
             if(!Array.isArray(measurements)){measurements = Object.values(measurements);}
             qm.measurements.checkMeasurements(measurements);
-            function parseJsonIfPossible(str){
-                var object = false;
-                if(str === "{}"){return false;}
-                if(str === ""){return false;}
-                if(typeof str === "string" && str.indexOf("{") === -1){return false;}
-                try{
-                    object = JSON.parse(str);
-                }catch (e){
-                    qm.qmLog.error("Unrecognized note format. Could not properly format JSON note", str);
-                    return false;
-                }
-                return object;
-            }
-            var ratingInfo = qm.ratingImages.getRatingInfo();
             var index;
             for(index = 0; index < measurements.length; ++index){
                 var m = measurements[index];
-                if(typeof m === "function"){
-                    qmLog.error("Measurement is a function")
-                    debugger
-                    continue;
-                }
-                var parsedNote = parseJsonIfPossible(m.note);
-                if(parsedNote && parsedNote.url && parsedNote.message){
-                    m.note = '<a href="' + parsedNote.url + '" target="_blank">' + parsedNote.message + '</a>';
-                }
-                m.startTime = m.startTime || m.startTimeEpoch;
-                m.startAt = m.startAt || m.startTimeString;
-                var unit = qm.unitHelper.getByNameAbbreviatedNameOrId(m.unitId || m.unitAbbreviatedName);
-                if(!unit){
-                    debugger
-                    unit = qm.unitHelper.getByNameAbbreviatedNameOrId(m.unitId || m.unitAbbreviatedName);
-                    qm.qmLog.errorAndExceptionTestingOrDevelopment("Could not get unit for this measurement: ", m)
-                } else {
-                    if(!m.unitAbbreviatedName){m.unitAbbreviatedName = unit.abbreviatedName;}
-                    if(unit.abbreviatedName === '/5'){m.roundedValue = Math.round(m.value);}
-                }
-                if(!m.variableName){m.variableName = m.variable;}
-                if(m.variableName === qm.getPrimaryOutcomeVariable().name){m.valence = qm.getPrimaryOutcomeVariable().valence;}
-                m.displayValueAndUnitString = m.displayValueAndUnitString || m.value + " " + unit.abbreviatedName;
-                m.displayValueAndUnitString = qm.stringHelper.formatValueUnitDisplayText(m.displayValueAndUnitString)
-                m.valueUnitVariableName = m.displayValueAndUnitString + " " + m.variableName;
-                if(!m.variableCategoryName){
-                    m.variableCategoryName = qm.variableCategoryHelper.findVariableCategory(m).name;
-                }
-                if(!m.image && m.roundedValue && ratingInfo[m.roundedValue]){
-                    m.image = ratingInfo[m.roundedValue].numericImage;
-                    if(m.valence === 'positive'){m.image = m.image = ratingInfo[m.roundedValue].positiveImage;}
-                    if(m.valence === 'negative'){m.image = ratingInfo[m.roundedValue].negativeImage;}
-                }
-                if(m.image){m.pngPath = m.image;}
-                m.icon = m.icon || m.ionIcon;
-                if(m.variableCategoryName && !m.icon){
-                    var category = qm.variableCategoryHelper.findVariableCategory(m);
-                    m.icon = category.ionIcon;
-                    m.pngPath = category.pngPath;
-                }
+                qm.measurements.addInfoAndImagesToMeasurement(m)
             }
             return measurements;
         },
@@ -8076,7 +8065,20 @@ var qm = {
                 str = qm.stringHelper.replaceAll(str, search, replace);
             });
             return str;
-        }
+        },
+        parseJsonIfPossible: function(str){
+            var object = false;
+            if(str === "{}"){return false;}
+            if(str === ""){return false;}
+            if(typeof str === "string" && str.indexOf("{") === -1){return false;}
+            try{
+                object = JSON.parse(str);
+            }catch (e){
+                qm.qmLog.error("Unrecognized note format. Could not properly format JSON note", str);
+                return false;
+            }
+            return object;
+        },
     },
     studyHelper: {
         getStudiesApiInstance: function(params, functionName){
