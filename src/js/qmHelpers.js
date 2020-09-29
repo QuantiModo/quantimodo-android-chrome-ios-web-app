@@ -4461,6 +4461,8 @@ var qm = {
             function parseJsonIfPossible(str){
                 var object = false;
                 if(str === "{}"){return false;}
+                if(str === ""){return false;}
+                if(typeof str === "string" && str.indexOf("{") === -1){return false;}
                 try{
                     object = JSON.parse(str);
                 }catch (e){
