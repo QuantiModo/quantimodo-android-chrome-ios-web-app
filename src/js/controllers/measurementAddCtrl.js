@@ -9,9 +9,6 @@ angular.module('starter').controller('MeasurementAddCtrl', ["$scope", "$q", "$ti
             showVariableCategorySelector: false,
             showUnits: false,
             unitCategories: [],
-            variableCategoryName: getVariableCategoryName(),
-            variableCategoryObject: getVariableCategory(),
-            helpText: getVariableCategory().helpText,
             unitAbbreviatedName: '',
             measurement: {},
             searchedUnits: [],
@@ -30,41 +27,53 @@ angular.module('starter').controller('MeasurementAddCtrl', ["$scope", "$q", "$ti
             qmService.navBar.showNavigationMenuIfHideUrlParamNotSet();
             qmService.rootScope.setProperty('bloodPressure', {systolicValue: null, diastolicValue: null, show: false});
             $scope.state.title = 'Record a Measurement';
-            $scope.state.selectedDate = moment();
-            $scope.state.units = qm.unitHelper.getNonAdvancedUnits();
-            if($stateParams.trackingReminder){
-                setupTrackingByReminderNotification($stateParams.trackingReminder);
-            }else if($stateParams.measurement){
-                setupTrackingByMeasurement($stateParams.measurement);
-            }else if(qm.urlHelper.getParam('measurementObject', window.location.href, true)){
-                setupTrackingByMeasurement(JSON.parse(qm.urlHelper.getParam('measurementObject', window.location.href, true)));
-            }else if($stateParams.variableObject){
-                setupFromVariable($stateParams.variableObject);
-            }else if(qm.urlHelper.getParam('trackingReminderObject', window.location.href, true)){
-                setupTrackingByReminderNotification(JSON.parse(qm.urlHelper.getParam('trackingReminderObject', window.location.href, true)));
-            }else if($stateParams.reminderNotification){
-                setupTrackingByReminderNotification($stateParams.reminderNotification);
-            }else if(qm.urlHelper.getParam('measurementId', location.href, true)){
-                setMeasurementVariablesByMeasurementId().then(function(){
-                    if(!$scope.state.measurementIsSetup){
-                        $scope.goBack();
-                    }
-                });
-            }else if($stateParams.variableName){
-                setupFromVariableName($stateParams.variableName);
-            }
-            if(!$scope.state.measurementIsSetup){
-                setupFromUrlParameters();
-            }
-            if(!$scope.state.measurementIsSetup){
-                setupFromVariable(qm.getPrimaryOutcomeVariable());
-            }
+            setupMeasurement();
+            var cat = getVariableCategory();
+            if(cat){setupVariableCategory(cat);}
         });
         $scope.$on('$ionicView.enter', function(e){
             qmLogService.debug('$ionicView.enter ' + $state.current.name);
             qmService.hideLoader();
             qmLog.info("$ionicView.enter $scope.state.measurement is ", $scope.state.measurement);
         });
+        function setupMeasurement() {
+            $scope.state.selectedDate = moment();
+            $scope.state.units = qm.unitHelper.getNonAdvancedUnits();
+            var reminderFromUrl = qm.urlHelper.getParam('trackingReminderObject', window.location.href, true);
+            var measurementFromUrl = qm.urlHelper.getParam('measurementObject', window.location.href, true);
+            var tr = $stateParams.trackingReminder;
+            var m = $stateParams.measurement;
+            var v = $stateParams.variableObject;
+            var n = $stateParams.reminderNotification;
+            var id = qm.urlHelper.getParam('measurementId', location.href, true);
+            if (tr) {
+                setupTrackingByReminder(tr);
+            } else if (m) {
+                setupTrackingByMeasurement(m);
+            } else if (measurementFromUrl) {
+                setupTrackingByMeasurement(JSON.parse(measurementFromUrl));
+            } else if (v) {
+                setupFromVariable(v);
+            } else if (reminderFromUrl) {
+                setupTrackingByReminder(JSON.parse(reminderFromUrl));
+            } else if (n) {
+                setupTrackingByReminder(n);
+            } else if (id) {
+                setMeasurementVariablesByMeasurementId(id).then(function () {
+                    if (!$scope.state.measurementIsSetup) {
+                        $scope.goBack();
+                    }
+                });
+            } else if ($stateParams.variableName) {
+                setupFromVariableName($stateParams.variableName);
+            }
+            if (!$scope.state.measurementIsSetup) {
+                setupFromUrlParameters();
+            }
+            if (!$scope.state.measurementIsSetup) {
+                setupFromVariable(qm.getPrimaryOutcomeVariable());
+            }
+        }
         var trackBloodPressure = function(){
             if(!$rootScope.bloodPressure.diastolicValue || !$rootScope.bloodPressure.systolicValue){
                 qmService.validationFailure('Please enter both values for blood pressure.', $scope.state.measurement);
@@ -82,16 +91,12 @@ angular.module('starter').controller('MeasurementAddCtrl', ["$scope", "$q", "$ti
             $scope.goBack();
         };
         $scope.cancel = function(){
-            $scope.goBack({updatedMeasurementHistory: $stateParams.currentMeasurementHistory});
+            $scope.goBack();
         };
         $scope.deleteMeasurementFromMeasurementAddCtrl = function(){
-            var backStateParams = {};
-            if($stateParams.currentMeasurementHistory){
-                backStateParams.updatedMeasurementHistory = qm.arrayHelper.deleteById($scope.state.measurement.id, $stateParams.currentMeasurementHistory);
-            }
             qmService.showInfoToast('Deleting ' + $scope.state.measurement.variableName + ' measurement');
             qmService.deleteMeasurementFromServer($scope.state.measurement);
-            $scope.goBack(backStateParams);
+            $scope.goBack({});
         };
         $scope.done = function(){
             if($rootScope.bloodPressure.show){
@@ -129,11 +134,6 @@ angular.module('starter').controller('MeasurementAddCtrl', ["$scope", "$q", "$ti
             qmService.showInfoToast(toastMessage);
             // Measurement only - post measurement. This is for adding or editing
             var backStateParams = {};
-            if($stateParams.currentMeasurementHistory){
-                var updateMeasurement = qm.measurements.addInfoAndImagesToMeasurements([$scope.state.measurement])[0];
-                backStateParams.updatedMeasurementHistory =
-                    qm.arrayHelper.replaceElementInArrayById($stateParams.currentMeasurementHistory, updateMeasurement);
-            }
             qmService.postMeasurementDeferred(m, function(){
                 if(unitChanged){
                     qmLog.error("Syncing reminders because unit changed");
@@ -150,16 +150,20 @@ angular.module('starter').controller('MeasurementAddCtrl', ["$scope", "$q", "$ti
             }
         };
         $scope.variableCategorySelectorChange = function(variableCategoryName){
-            var cat = qmService.getVariableCategoryInfo(variableCategoryName);
+            var cat = qm.variableCategoryHelper.findVariableCategory(variableCategoryName);
             setupUnit(cat.defaultUnitAbbreviatedName);
             $scope.state.defaultValuePlaceholderText = 'Enter a value';
             $scope.state.defaultValueLabel = 'Value';
             setupVariableCategory(variableCategoryName);
         };
         var setupVariableCategory = function(variableCategoryName){
+            var cat = getVariableCategory(variableCategoryName);
             qmLogService.debug($state.current.name + ': ' + 'variableCategoryName  is ' + variableCategoryName);
-            $scope.state.measurement.variableCategoryName = variableCategoryName;
-            var cat = getVariableCategory();
+            if($scope.state.measurement){
+                $scope.state.measurement.variableCategoryName = cat.name;
+            }
+            $scope.state.variableCategoryObject = cat;
+            $scope.state.helpText = cat.helpText;
             $scope.state.title = "Add Measurement";
             $scope.state.measurementSynonymSingularLowercase = cat.measurementSynonymSingularLowercase;
             if(cat.defaultValueLabel){$scope.state.defaultValueLabel = cat.defaultValueLabel;}
@@ -191,8 +195,9 @@ angular.module('starter').controller('MeasurementAddCtrl', ["$scope", "$q", "$ti
                 $scope.state.measurement.unitAbbreviatedName = unitAbbreviatedName;
                 $scope.state.measurement = qm.unitHelper.updateAllUnitPropertiesOnObject(unitAbbreviatedName, $scope.state.measurement);
                 qmLog.info("Setting $scope.state.measurement to ", $scope.state.measurement);
+                qm.unitHelper.setInputType($scope.state.measurement);
+                $scope.state.units = qm.unitHelper.getUnitArrayContaining(unitAbbreviatedName);
             }
-            setupValueFieldType(unitAbbreviatedName, valence);
         }
         $scope.selectPrimaryOutcomeVariableValue = function($event, newValue){
             // remove any previous primary outcome variables if present
@@ -217,50 +222,58 @@ angular.module('starter').controller('MeasurementAddCtrl', ["$scope", "$q", "$ti
             var startTimeEpoch = qm.urlHelper.getParam('startTimeEpoch', location.href, true);
             var value = qm.urlHelper.getParam('value', location.href, true);
             if(unitAbbreviatedName || variableName || startTimeEpoch || value){
-                var measurementObject = {};
-                measurementObject.unitAbbreviatedName = unitAbbreviatedName;
-                measurementObject.variableName = variableName;
-                measurementObject.startTimeEpoch = startTimeEpoch;
-                measurementObject.value = value;
-                setupTrackingByMeasurement(measurementObject);
+                var m = {};
+                m.unitAbbreviatedName = unitAbbreviatedName;
+                m.variableName = variableName;
+                m.startTimeEpoch = startTimeEpoch;
+                m.value = value;
+                setupTrackingByMeasurement(m);
             }
         };
-        var setupFromVariable = function(v){
+        function isYesNo() {
+            var yesNo = qm.unitHelper.getYesNo();
+            return $scope.state.measurement.unitAbbreviatedName === yesNo.unitAbbreviatedName;
+        }
+        function setDefaultValue(v) {
+            var unitAbbreviatedName = $scope.state.measurement.unitAbbreviatedName;
+            if (v &&
+                unitAbbreviatedName !== '/5' &&
+                !$scope.state.measurement.value &&
+                typeof v.lastValue !== "undefined") {
+                $scope.state.measurement.value = Number((v.lastValueInUserUnit) ? v.lastValueInUserUnit : v.lastValue);
+            }
+            if(isYesNo()){
+                if(typeof $scope.state.measurement.value === "undefined"){
+                    $scope.state.measurement.value = 1;
+                }
+            }
+        }
+        function setupFromVariable(v){
             $stateParams.variableObject = v;
             // Gets version from local storage in case we just updated unit in variable settings
             var userVariables = qm.storage.getElementsWithRequestParams(qm.items.userVariables, {name: v.name});
             if(userVariables && userVariables.length){v = userVariables[0];}
             $scope.state.variableObject = v;
             $scope.state.title = "Record Measurement";
-            if(v.unit && v.unit.abbreviatedName){v.unitAbbreviatedName = v.unit.abbreviatedName;}
-            if(v.defaultUnitAbbreviatedName){v.unitAbbreviatedName = v.defaultUnitAbbreviatedName;}
             if(v.unitAbbreviatedName){
                 setupUnit(v.unitAbbreviatedName, v.valence);
             }else if(v.variableCategoryName){
-                var category = qmService.getVariableCategoryInfo(v.variableCategoryName);
+                var category = qm.variableCategoryHelper.findVariableCategory(v);
                 setupUnit(category.defaultUnitAbbreviatedName, v.valence);
             }
-            if(v.upc){$scope.state.measurement.upc = v.upc;}
-            if(v.inputType){$scope.state.measurement.inputType = v.inputType;}
-            $scope.state.measurement.variableName = v.name;
-            $scope.state.measurement.maximumAllowedValue = v.maximumAllowedValue;
-            $scope.state.measurement.minimumAllowedValue = v.minimumAllowedValue;
-            if(!$scope.state.measurement.variableName){$scope.state.measurement.variableName = v.variableName;}
-            if($scope.state.measurement.variableName.toLowerCase().indexOf('blood pressure') > -1){$rootScope.bloodPressure.show = true;}
-            if(v.variableCategoryName){
-                $scope.state.measurement.variableCategoryName = v.variableCategoryName;
-                setupVariableCategory(v.variableCategoryName);
+            var m = qm.measurements.newMeasurement(v);
+            if(m.variableName.toLowerCase().indexOf('blood pressure') > -1){$rootScope.bloodPressure.show = true;}
+            if(m.variableCategoryName){
+                setupVariableCategory(m.variableCategoryName);
             }else{
                 $scope.state.showVariableCategorySelector = true;
             }
-            $scope.state.measurement.combinationOperation = (v.combinationOperation) ? v.combinationOperation : 'MEAN';
+            $scope.state.measurement = m;
             $scope.state.measurementIsSetup = true;
             // Fill in default value as last value if not /5
             /** @namespace variableObject.lastValue */
-            if($scope.state.measurement.unitAbbreviatedName !== '/5' && !$scope.state.measurement.value && typeof v.lastValue !== "undefined"){
-                $scope.state.measurement.value = Number((v.lastValueInUserUnit) ? v.lastValueInUserUnit : v.lastValue);
-            }
-        };
+            setDefaultValue(v);
+        }
         var setupFromVariableName = function(variableName){
             qmService.showBlackRingLoader();
             qm.userVariables.getByName(variableName, {}, null, function(variable){
@@ -273,21 +286,20 @@ angular.module('starter').controller('MeasurementAddCtrl', ["$scope", "$q", "$ti
                 qmLogService.error(error);
             });
         };
-        var setMeasurementVariablesByMeasurementId = function(){
+        var setMeasurementVariablesByMeasurementId = function(id){
             var deferred = $q.defer();
             qmService.showBlackRingLoader();
-            qmService.getMeasurementById(qm.urlHelper.getParam('measurementId', location.href, true))
-                .then(function(measurementObject){
+            qmService.getMeasurementById(id)
+                .then(function(m){
                         qmService.hideLoader();
                         $scope.state.measurementIsSetup = true;
-                        setupTrackingByMeasurement(measurementObject);
+                        setupTrackingByMeasurement(m);
                         deferred.resolve();
                     }, function(error){
-                        qmService.hideLoader();
-                        qmLogService.error($state.current.name + ": " + "Error response: ", error);
-                        deferred.reject(error);
-                    }
-                );
+                    qmService.hideLoader();
+                    qmLogService.error($state.current.name + ": " + "Error response: ", error);
+                    deferred.reject(error);
+                });
             return deferred.promise;
         };
         $scope.goToAddReminder = function(){
@@ -298,15 +310,6 @@ angular.module('starter').controller('MeasurementAddCtrl', ["$scope", "$q", "$ti
                 measurement: $stateParams.measurement
             });
         };
-        function setupValueFieldType(unitAbbreviatedName, valence, variableName){
-            $scope.state.units = qm.unitHelper.getUnitArrayContaining(unitAbbreviatedName);
-            //if($scope.state.measurement.inputType){return;} Why is this here?  It prevents updating when we change a unit!  :(
-            if(!unitAbbreviatedName){
-                qmLogService.error('No unitAbbreviatedName provided to setupValueFieldType');
-                return false;
-            }
-            $scope.state.measurement.inputType = qmService.getInputType(unitAbbreviatedName, valence, variableName);
-        }
         function setVariableObjectFromMeasurement(){
             $scope.state.variableObject = {
                 unitAbbreviatedName: $scope.state.measurement.unitAbbreviatedName,
@@ -325,42 +328,29 @@ angular.module('starter').controller('MeasurementAddCtrl', ["$scope", "$q", "$ti
                 }
             }
         }
-        var setupTrackingByMeasurement = function(measurementObject){
-            if(isNaN(measurementObject.startTimeEpoch)){
-                measurementObject.startTimeEpoch = moment(measurementObject.startTimeEpoch).unix();
-            }
-            if(!measurementObject.id){
-                measurementObject.prevStartTimeEpoch = measurementObject.startTimeEpoch;
-            }
+        var setupTrackingByMeasurement = function(m){
+            if(isNaN(m.startTimeEpoch)){m.startTimeEpoch = moment(m.startTimeEpoch).unix();}
+            if(!m.id){m.prevStartTimeEpoch = m.startTimeEpoch;}
             $scope.state.title = "Edit Measurement";
-            $scope.state.selectedDate = moment(measurementObject.startTimeEpoch * 1000);
-            $scope.state.measurement = measurementObject;
-            qmLog.info("Setting $scope.state.measurement to ", $scope.state.measurement);
+            $scope.state.selectedDate = moment(m.startTimeEpoch * 1000);
+            $scope.state.measurement = m;
+            qmLog.info("Setting $scope.state.measurement to ", m);
             $scope.state.measurementIsSetup = true;
-            setupUnit($scope.state.measurement.unitAbbreviatedName, $scope.state.measurement.valence);
-            if($scope.state.measurement.variable){
-                $scope.state.measurement.variableName = $scope.state.measurement.variable;
-            }
+            setupUnit(m.unitAbbreviatedName, m.valence);
             setStateVariable();
         };
-        var setupTrackingByReminderNotification = function(n){
-            if(n){
-                $scope.state.title = "Record Measurement";
-                if(!$scope.state.measurement.unitAbbreviatedName){
-                    setupUnit(n.unitAbbreviatedName);
-                }
-                $scope.state.hideRemindMeButton = true;
-                $scope.state.measurement.value = n.defaultValue;
-                $scope.state.measurement.variableName = n.variableName;
-                $scope.state.measurement.variableCategoryName = getVariableCategoryName(n);
-                $scope.state.measurement.combinationOperation = n.combinationOperation;
-                if(n.trackingReminderNotificationTimeEpoch !== "undefined" && n.trackingReminderNotificationTimeEpoch){
-                    $scope.state.selectedDate = moment(n.trackingReminderNotificationTimeEpoch * 1000);
-                }
-                $scope.state.measurementIsSetup = true;
-                setupUnit(n.unitAbbreviatedName, n.valence);
-                setStateVariable();
+        var setupTrackingByReminder = function(n){
+            $scope.state.title = "Record Measurement";
+            if(!$scope.state.measurement.unitAbbreviatedName){
+                setupUnit(n.unitAbbreviatedName);
             }
+            $scope.state.hideRemindMeButton = true;
+            var m = qm.measurements.fromNotification(n);
+            $scope.state.measurement = m;
+            if(m.startTime){$scope.state.selectedDate = moment(m.startTime * 1000);}
+            $scope.state.measurementIsSetup = true;
+            setupUnit(n.unitAbbreviatedName, n.valence);
+            setStateVariable();
             // Create variableObject
             if(!$scope.state.variableObject){
                 if($stateParams.variableObject !== null && typeof $stateParams.variableObject !== "undefined"){
@@ -412,18 +402,20 @@ angular.module('starter').controller('MeasurementAddCtrl', ["$scope", "$q", "$ti
                 hideSheet();
             }, 20000);
         });
-        function getVariableCategoryName(object){
-            var name;
-            if(object && object.variableCategoryName){name = object.variableCategoryName;}
-            if(!name && $scope.state && $scope.state.measurement && $scope.state.measurement.variableCategoryName){
-                name = $scope.state.measurement.variableCategoryName;
-            }
-            if(!name){name = $stateParams.variableCategoryName;}
-            if(!name){name = qm.urlHelper.getParam('variableCategoryName');}
-            if(!name && $stateParams.variableObject){name = $stateParams.variableObject.variableCategoryName;}
-            return name;
+        function getVariableCategoryName(obj){
+            var cat = getVariableCategory(obj);
+            if(!cat){return null;}
+            return cat.name;
         }
-        function getVariableCategory(){
-            return qmService.getVariableCategoryInfo(getVariableCategoryName());
+        function getVariableCategory(obj){
+            var cat;
+            if(obj){cat = qm.variableCategoryHelper.findVariableCategory(obj);}
+            if(!cat && $scope.state){cat = qm.variableCategoryHelper.findVariableCategory($scope.state);}
+            if(!cat){cat = qm.variableCategoryHelper.findVariableCategory($stateParams);}
+            if(!cat){
+                qmLog.debug("No variable category name from getVariableCategory")
+                return null;
+            }
+            return cat;
         }
     }]);

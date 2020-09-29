@@ -1,8 +1,8 @@
-<div class="item"
+<div class="item item-avatar item-button-right"
      style="padding:0">
     <div class="row">
         <div id="favoriteItemIcon"
-             ng-click="showFavoriteActionSheet(trackingReminder, $index, null, state)"
+             ng-click="showVariableActionSheet(trackingReminder, [], state)"
              class="col col-10"
              style="text-align: left;">
             <img ng-src="{{trackingReminder.pngPath}}"
@@ -11,7 +11,7 @@
         </div>
         <div class="col col-80">
             <h2 id="favoriteItemTitle"
-                ng-click="showFavoriteActionSheet(trackingReminder, $index, null, state)"
+                ng-click="showVariableActionSheet(trackingReminder, [], state)"
                 style="text-align: center;  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: normal;">
                 {{trackingReminder.displayTotal}}&nbsp{{trackingReminder.variableName}}
             </h2>
@@ -27,7 +27,7 @@
             </button>
         </div>
         <div id="favoriteItemSettings"
-             ng-click="showFavoriteActionSheet(trackingReminder, $index, null, state)"
+             ng-click="showVariableActionSheet(trackingReminder, [], state)"
              class="col col-10">
             <i style="font-size: 20px; padding: 0;"
                class="icon positive ion-more"></i>
@@ -55,6 +55,7 @@
             <img id="{{'numericRatingOption-with-value-' + option.numericValue}}"
                  ng-repeat="option in numericRatingOptions"
                  ng-click="trackByFavorite(trackingReminder, option.numericValue)"
+                 title="{{option.numericValue}}/5"
                  ng-src="{{option.img}}">
         </div>
     </div>
@@ -65,6 +66,7 @@
             <img id="{{'positiveRatingOption-with-value-' + option.numericValue}}"
                  ng-repeat="option in positiveRatingOptions"
                  ng-click="trackByFavorite(trackingReminder, option.numericValue)"
+                 title="{{option.numericValue}}/5"
                  ng-src="{{option.img}}">
         </div>
     </div>
@@ -75,6 +77,7 @@
             <img id="{{'negativeRatingOption-with-value-' + option.numericValue}}"
                  ng-repeat="option in negativeRatingOptions"
                  ng-click="trackByFavorite(trackingReminder, option.numericValue)"
+                 title="{{option.numericValue}}/5"
                  ng-src="{{option.img}}">
         </div>
     </div>

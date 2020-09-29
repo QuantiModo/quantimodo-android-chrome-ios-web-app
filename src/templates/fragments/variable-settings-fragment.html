@@ -45,7 +45,7 @@
                         {{unit.name}}
                     </md-option>
                 </md-select>
-                <select id="unitSelector" ng-model="state.variableObject.unit.abbreviatedName"
+                <select id="unitSelector" ng-model="state.variableObject.unitAbbreviatedName"
                         ng-show="platform.isMobile"
                         ng-options="unit.abbreviatedName as unit.name for unit in state.variableObject.availableUnits">
                 </select>
@@ -106,7 +106,7 @@
                       md-on-remove="deleteJoinedVariable($chip)"
                       >
                 <md-chip-template>
-                    <em>{{$chip.name}}</em>
+                    <em ng-click="showVariableActionSheet($chip)">{{$chip.name}}</em>
                 </md-chip-template>
             </md-chips>
         </div>
@@ -146,7 +146,7 @@
                       readonly="false"
                       md-on-remove="deleteTagVariable($chip)"
                       >
-                <md-chip-template><em>{{$chip.name}}</em></md-chip-template>
+                <md-chip-template><em ng-click="showVariableActionSheet($chip)">{{$chip.name}}</em></md-chip-template>
             </md-chips>
         </div>
     </div>
@@ -185,7 +185,7 @@
                       readonly="false"
                       md-on-remove="deleteTaggedVariable($chip)"
                       >
-                <md-chip-template><em>{{$chip.name}}</em></md-chip-template>
+                <md-chip-template><em ng-click="showVariableActionSheet($chip)">{{$chip.name}}</em></md-chip-template>
             </md-chips>
         </div>
     </div>
@@ -226,7 +226,7 @@
                       readonly="false"
                       md-on-remove="deleteTagVariable($chip)"
                       >
-                <md-chip-template><em>{{$chip.name}}</em></md-chip-template>
+                <md-chip-template><em ng-click="showVariableActionSheet($chip)">{{$chip.name}}</em></md-chip-template>
             </md-chips>
         </div>
     </div>
@@ -267,7 +267,7 @@
                       readonly="false"
                       md-on-remove="deleteTaggedVariable($chip)"
                       >
-                <md-chip-template><em>{{$chip.name}}</em></md-chip-template>
+                <md-chip-template><em ng-click="showVariableActionSheet($chip)">{{$chip.name}}</em></md-chip-template>
             </md-chips>
         </div>
     </div>
@@ -294,6 +294,17 @@
                        ng-click="resetVariableToDefaultSettings(state.variableObject)">
                 Reset to Default Settings
             </md-button>
+        </div>
+    </div>
+    <div id="variable-info card" class="card variable-settings">
+        <div class="list">
+            <div class="item item-divider ng-binding">Additional Info</div>
+            <label class="item item-content" style="padding: 6px 10px 5px 16px;">
+                <span class="input-label left-text">Variable ID</span>
+                <span class="input-label right-text " id="variable-id">
+                    {{state.variableObject.id}}
+                </span>
+            </label>
         </div>
     </div>
 </div>

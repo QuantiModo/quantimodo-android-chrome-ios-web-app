@@ -9,13 +9,12 @@ angular.module('starter')// Parent Controller - This controller runs before ever
                  $locale, $mdDialog, $mdToast, $sce, wikipediaFactory, appSettingsResponse, $stateParams){
             $scope.controller_name = "AppCtrl";
             qmService.initializeApplication(appSettingsResponse);
-            qm.notifications.numberOfPendingNotifications = null;
             $scope.$on('$ionicView.enter', function(e){
                 qmLog.debug('appCtrl enter in state ' + $state.current.name + ' and url is ' + window.location.href);
             });
             $scope.$on('$ionicView.afterEnter', function(e){
-                qmLog.info($scope.controller_name + ".afterEnter so posting queued notifications if any");
-                qm.notifications.postNotifications();
+                qmLog.debug($scope.controller_name + ".afterEnter so posting queued notifications if any");
+                qmService.syncNotificationsIfQueued();
                 qmService.refreshUserUsingAccessTokenInUrlIfNecessary();
                 $rootScope.setMicAndSpeechEnabled(qm.mic.getMicEnabled());
                 qm.chatButton.setZohoChatButtonZIndex();
@@ -25,6 +24,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
                     qm.chatButton.hideDriftButton();
                 }
                 if(typeof drift !== "undefined"){drift.page();}
+                qm.storage.setItem(qm.items.lastUrl, window.location.href);
             });
             $scope.$on('$ionicView.beforeLeave', function(e){
                 qmService.stateHelper.previousUrl = window.location.href;
@@ -32,6 +32,9 @@ angular.module('starter')// Parent Controller - This controller runs before ever
             $scope.closeMenu = function(){
                 $ionicSideMenuDelegate.toggleLeft(false);
             };
+            $scope.showVariableActionSheet = function(v, extraButtons, state){
+                qmService.actionSheets.showVariableObjectActionSheet(v.name, v, extraButtons, state);
+            }
             $scope.generalButtonClickHandler = qmService.buttonClickHandlers.generalButtonClickHandler;
             $scope.$watch(function(){
                 return $ionicSideMenuDelegate.getOpenRatio();
@@ -127,7 +130,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
             $rootScope.setLocalStorageFlagTrue = function(flagName){
                 qmLogService.debug('Set ' + flagName + ' to true', null);
                 qmService.rootScope.setProperty(flagName, true);
-                qmService.storage.setItem(flagName, true);
+                qm.storage.setItem(flagName, true);
             };
             $scope.showHelpInfoPopup = function(explanationId, ev, modelName){
                 qmService.help.showExplanationsPopup(explanationId, ev, modelName);
@@ -284,8 +287,9 @@ angular.module('starter')// Parent Controller - This controller runs before ever
                     qmService.actionSheets.actionSheetButtons.variableSettings
                 ];
                 /** @namespace qm.getAppSettings().favoritesController */
-                if(qm.getAppSettings().favoritesController && qm.getAppSettings().favoritesController.actionMenuButtons){
-                    actionMenuButtons = qm.getAppSettings().favoritesController.actionMenuButtons;
+                var appSettings = qm.getAppSettings();
+                if(appSettings.favoritesController && appSettings.favoritesController.actionMenuButtons){
+                    actionMenuButtons = appSettings.favoritesController.actionMenuButtons;
                 }
                 if(bloodPressure){
                     actionMenuButtons = [];
@@ -297,36 +301,17 @@ angular.module('starter')// Parent Controller - This controller runs before ever
                     cancel: function(){
                         qmLogService.debug('CANCELLED', null);
                     },
-                    buttonClicked: function(index, button){
-                        qmLogService.debug('BUTTON CLICKED', null, index);
-                        if(index === 0){
-                            qmService.goToState('app.reminderAdd', {reminder: favorite});
-                        }
-                        if(index === 1){
-                            qmService.goToState('app.measurementAdd', {trackingReminder: favorite});
-                        }
-                        if(index === 2){
-                            qmService.goToState('app.charts', {
-                                trackingReminder: favorite,
-                                fromState: $state.current.name,
-                                fromUrl: window.location.href
-                            });
-                        }
-                        if(index === 3){
-                            qmService.goToState('app.historyAllVariable', {
-                                variableObject: variableObject,
-                                variableName: variableObject.name
-                            });
-                        }
-                        if(index === 4){
-                            qmService.goToVariableSettingsByName(favorite.variableName);
-                        }
+                    buttonClicked: function(i, button){
+                        qmLogService.debug('BUTTON CLICKED', null, i);
+                        if(i === 0){qmService.goToState('app.reminderAdd', {reminder: favorite});}
+                        if(i === 1){qmService.goToState('app.measurementAdd', {trackingReminder: favorite});}
+                        if(i === 2){qmService.goToState('app.charts', {trackingReminder: favorite, fromState: $state.current.name,});}
+                        if(i === 3){qmService.goToState('app.historyAllVariable', {variableObject: variableObject});}
+                        if(i === 4){qmService.goToVariableSettingsByName(favorite.variableName);}
                         return true;
                     },
                     destructiveButtonClicked: function(){
-                        state.favoritesArray = state.favoritesArray.filter(function(oneFavorite){
-                            return oneFavorite.id !== favorite.id;
-                        });
+                        state.favoritesArray = state.favoritesArray.filter(function(one){return one.id !== favorite.id;});
                         qmService.deleteTrackingReminderDeferred(favorite);
                         return true;
                     }
@@ -409,8 +394,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
                 function selectVariable(variable){
                     $scope.variableObject = variable;
                     qmLogService.debug('Selected variable: ' + variable.name);
-                    var showActionSheet = qmService.actionSheets.getVariableObjectActionSheet(variable.name, variable);
-                    showActionSheet();
+                    qmService.actionSheets.showVariableObjectActionSheet(variable.name, variable);
                 }
                 var dialogParameters = {
                     title: 'Select Variable',

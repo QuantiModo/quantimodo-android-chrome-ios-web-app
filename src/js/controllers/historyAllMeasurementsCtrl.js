@@ -3,15 +3,16 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
                                                                            $ionicActionSheet, qmService, qmLogService){
         $scope.controller_name = "historyAllMeasurementsCtrl";
         $scope.state = {
-            limit: 50,
-            history: [],
-            units: [],
-            showLocationToggle: false,
-            noHistory: false,
             helpCardTitle: "Past Measurements",
-            title: "History",
+            history: [],
+            limit: 50,
             loadingText: "Fetching measurements...",
-            moreDataCanBeLoaded: true
+            moreDataCanBeLoaded: true,
+            noHistory: false,
+            showLocationToggle: false,
+            sort: "-startTime",
+            title: "History",
+            units: [],
         };
         $scope.$on('$ionicView.beforeEnter', function(e){
             if (document.title !== $scope.state.title) {document.title = $scope.state.title;}
@@ -22,45 +23,32 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
                     icon: "ion-calendar"
                 };
             }
-            if($stateParams.refresh){$scope.state.history = null;}
-            $scope.state.history = addRecentlyPostedAndQueuedMeasurements($scope.state.history);
+            if($stateParams.refresh){$scope.state.history = [];}
+            qm.measurements.addLocalMeasurements($scope.state.history, getRequestParams(), function(combined){
+                $scope.safeApply(function () {
+                    $scope.state.history = combined;
+                })
+            })
             $scope.state.moreDataCanBeLoaded = true;
             // Need to use rootScope here for some reason
-            qmService.rootScope.setProperty('hideHistoryPageInstructionsCard', qm.storage.getItem('hideHistoryPageInstructionsCard'));
-            updateMeasurementIfNecessary();
+            qmService.rootScope.setProperty('hideHistoryPageInstructionsCard',
+                qm.storage.getItem('hideHistoryPageInstructionsCard'));
         });
         $scope.$on('$ionicView.enter', function(e){
-            qmLogService.debug($state.current.name + ': ' + 'Entering state ' + $state.current.name);
             qmService.navBar.showNavigationMenuIfHideUrlParamNotSet();
-            if($stateParams.variableCategoryName && $stateParams.variableCategoryName !== 'Anything'){
-                document.title = $scope.state.title = $stateParams.variableCategoryName + ' History';
-                $scope.state.showLocationToggle = $stateParams.variableCategoryName === "Location";
+            var cat = getVariableCategoryName();
+            if(cat && cat !== 'Anything'){
+                document.title = $scope.state.title = cat + ' History';
+                $scope.state.showLocationToggle = cat === "Location";
             }
-            if($stateParams.variableCategoryName){
-                setupVariableCategoryActionSheet();
-            }
+            if(cat){setupVariableCategoryActionSheet();}
             getScopedVariableObject();
             if(getVariableName()){$scope.state.title = getVariableName() + ' History';}
-            if(false && getVariableName()){
-                qmService.rootScope.setShowActionSheetMenu(function setActionSheet(){
-                    return qmService.actionSheets.showVariableObjectActionSheet(getVariableName(), getScopedVariableObject());
-                });
-            }else{
-                updateNavigationMenuButton();
-            }
+            updateNavigationMenuButton();
             if(!$scope.state.history || !$scope.state.history.length){ // Otherwise it keeps add more measurements whenever we edit one
                 $scope.getHistory();
             }
         });
-        function addRecentlyPostedAndQueuedMeasurements(history){
-            history = history || [];
-            var recentlyPosted = qm.measurements.getRecentlyPostedMeasurements(getRequestParams());
-            //qm.measurements.recentlyPostedMeasurements = [];  TODO: Why are we resetting recentlyPostedMeasurements?
-            if(recentlyPosted){history = qm.arrayHelper.addToOrReplaceByIdAndMoveToFront(history, recentlyPosted);}
-            var queue = qm.measurements.getMeasurementsFromQueue(getRequestParams());
-            if(queue){history = qm.arrayHelper.addToOrReplaceByIdAndMoveToFront(history, queue);}
-            return history;
-        }
         function updateNavigationMenuButton(){
             $timeout(function(){
                 qmService.rootScope.setShowActionSheetMenu(function(){
@@ -92,10 +80,10 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
                                 changeSortAndGetHistory('value');
                             }
                             if(button.text === qmService.actionSheets.actionSheetButtons.sortDescendingTime.text){
-                                changeSortAndGetHistory('-startTimeEpoch');
+                                changeSortAndGetHistory('-startTime');
                             }
                             if(button.text === qmService.actionSheets.actionSheetButtons.sortAscendingTime.text){
-                                changeSortAndGetHistory('startTimeEpoch');
+                                changeSortAndGetHistory('startTime');
                             }
                             return true;
                         }
@@ -104,14 +92,9 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
             }, 1);
         }
         function changeSortAndGetHistory(sort){
-            $scope.state.history = [];
+            $scope.state.history = qm.arrayHelper.sortByProperty($scope.state.history, sort)
             $scope.state.sort = sort;
             $scope.getHistory();
-        }
-        function updateMeasurementIfNecessary(){
-            if($stateParams.updatedMeasurementHistory){
-                $scope.state.history = $stateParams.updatedMeasurementHistory;
-            }
         }
         function hideLoader(){
             //Stop the ion-refresher from spinning
@@ -142,13 +125,7 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
             qmLog.info("Could not get variableName")
         }
         function getVariableCategoryName(){
-            if($stateParams.variableCategoryName){
-                return $stateParams.variableCategoryName;
-            }
-            if(qm.urlHelper.getParam('variableCategoryName')){
-                return qm.urlHelper.getParam('variableCategoryName');
-            }
-            qmLog.info("Could not get variableCategoryName")
+            return qm.variableCategoryHelper.getVariableCategoryNameFromStateParamsOrUrl($stateParams);
         }
         function getConnectorName(){
             if($stateParams.connectorName){
@@ -182,7 +159,7 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
             //measurement.hide = true;  // Hiding when we go to edit so we don't see the old value when we come back
             qmService.goToState('app.measurementAdd', {
                 measurement: measurement, fromState: $state.current.name,
-                fromUrl: window.location.href, currentMeasurementHistory: $scope.state.history
+                fromUrl: window.location.href
             });
         };
         $scope.refreshHistory = function(){
@@ -200,6 +177,7 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
             if(getVariableCategoryName()){
                 params.variableCategoryName = getVariableCategoryName();
             }
+            params.sort = $scope.state.sort;
             return params;
         }
         $scope.getHistory = function(){
@@ -217,7 +195,7 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
             var params = {
                 offset: $scope.state.history.length,
                 limit: $scope.state.limit,
-                sort: $scope.state.sort || "-startTimeEpoch",
+                sort: $scope.state.sort,
                 doNotProcess: true
             };
             params = getRequestParams(params);
@@ -237,24 +215,10 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
                 if(measurements.length < $scope.state.limit){
                     $scope.state.noHistory = measurements.length === 0;
                 }
-                measurements = addRecentlyPostedAndQueuedMeasurements(measurements);
-                measurements = qm.measurements.addInfoAndImagesToMeasurements(measurements);
-                if(!qm.arrayHelper.variableIsArray($scope.state.history)){
-                    qmLogService.error("$scope.state.history is not an array! $scope.state.history: " + JSON.stringify($scope.state.history));
-                    $scope.state.history = measurements;
-                }else{
-                    if(!$scope.state.history){
-                        $scope.state.history = [];
-                    }
-                    try{
-                        $scope.state.history = $scope.state.history.concat(measurements);
-                    }catch (error){
-                        qmLog.error(error);
-                        $scope.state.history = JSON.parse(JSON.stringify($scope.state.history));
-                        $scope.state.history = $scope.state.history.concat(measurements);
-                    }
-                }
-                hideLoader();
+                qm.measurements.addLocalMeasurements(measurements, getRequestParams(),function (combined) {
+                    $scope.state.history = combined;
+                    hideLoader();
+                })
             }
             function errorHandler(error){
                 qmLogService.error("History update error: ", error);
@@ -347,22 +311,13 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
                         $scope.editMeasurement($scope.state.measurement);
                     }
                     if(index === 1){
-                        qmService.goToState('app.reminderAdd', {
-                            variableObject: variableObject,
-                            variableName: variableObject.name
-                        });
+                        qmService.goToState('app.reminderAdd', {variableObject: variableObject});
                     }
                     if(index === 2){
-                        qmService.goToState('app.charts', {
-                            variableObject: variableObject,
-                            variableName: variableObject.name
-                        });
+                        qmService.goToState('app.charts', {variableObject: variableObject});
                     }
                     if(index === 3){
-                        qmService.goToState('app.historyAllVariable', {
-                            variableObject: variableObject,
-                            variableName: variableObject.name
-                        });
+                        qmService.goToState('app.historyAllVariable', {variableObject: variableObject});
                     }
                     if(index === 4){
                         qmService.goToVariableSettingsByName($scope.state.measurement.variableName);

@@ -66,7 +66,7 @@ var qmLog = {
             return;
         }
         qmLog.logLevel = value;
-        if(typeof localStorage !== "undefined"){
+        if(typeof localStorage !== "undefined" && localStorage){
             localStorage.setItem(qmLog.qm.items.logLevel, value); // Can't use qmLog.qm.storage because of recursion issue
         }
     },
@@ -113,8 +113,8 @@ var qmLog = {
         }
         return value;
     },
-    itemAndThrowException: function(item, message){
-        qmLog.itemProperties(item);
+    itemAndThrowException: function(item, message, propertiesToLog){
+        qmLog.itemProperties(item, propertiesToLog);
         throw message;
     },
     itemProperties: function(item, propertiesToLog, message){
@@ -248,7 +248,8 @@ var qmLog = {
         for(var i = 0; i < qmLog.secretAliases.length; i++){
             var secretAlias = qmLog.secretAliases[i];
             if(lowerCase.indexOf(secretAlias) !== -1){
-                censoredString = qmLog.qm.stringHelper.getStringBeforeSubstring(secretAlias, censoredString) + " " + secretAlias + "[redacted]";
+                censoredString = qmLog.qm.stringHelper.getStringBeforeSubstring(secretAlias, censoredString) +
+                    " " + secretAlias + "[redacted]";
             }
         }
         if(censoredString !== lowerCase){
@@ -257,6 +258,7 @@ var qmLog = {
         return false;
     },
     bugsnagNotify: function(name, message, errorSpecificMetaData, logLevel, stackTrace){
+        debugger
         if(typeof bugsnagClient === "undefined"){
             if(!qmLog.qm.appMode.isDevelopment()){
                 console.error('bugsnagClient not defined', errorSpecificMetaData);
@@ -286,6 +288,9 @@ var qmLog = {
         var consoleMessage = qmLog.getConsoleLogString("ERROR", errorSpecificMetaData);
         if(qmLog.color){
             consoleMessage = qmLog.color.red(consoleMessage);
+        }
+        if(qm.appMode.isTestingOrDevelopment()){
+            qm.toast.errorAlert(consoleMessage);
         }
         console.error(consoleMessage, errorSpecificMetaData);
         qmLog.globalMetaData = qmLog.addGlobalMetaDataAndLog(qmLog.name, qmLog.message, errorSpecificMetaData, qmLog.stackTrace);

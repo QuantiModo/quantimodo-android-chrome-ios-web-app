@@ -82,28 +82,16 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
                     },
                     buttonClicked: function(index, button){
                         if(index === 0){
-                            qmService.goToState('app.measurementAddVariable', {
-                                variableObject: variableObject,
-                                variableName: variableObject.name
-                            });
+                            qmService.goToState('app.measurementAddVariable', {variableObject: variableObject});
                         }
                         if(index === 1){
-                            qmService.goToState('app.reminderAdd', {
-                                variableObject: variableObject,
-                                variableName: variableObject.name
-                            });
+                            qmService.goToState('app.reminderAdd', {variableObject: variableObject});
                         }
                         if(index === 2){
-                            qmService.goToState('app.charts', {
-                                variableObject: variableObject,
-                                variableName: variableObject.name
-                            });
+                            qmService.goToState('app.charts', {variableObject: variableObject});
                         }
                         if(index === 3){
-                            qmService.goToState('app.historyAllVariable', {
-                                variableObject: variableObject,
-                                variableName: variableObject.name
-                            });
+                            qmService.goToState('app.historyAllVariable', {variableObject: variableObject});
                         }
                         if(index === 4){
                             qmService.goToState('app.tagSearch', {
@@ -130,7 +118,7 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
             minLength: 2
         };
         function getConversionFactor(conversionFactor){
-            if($scope.state.variableObject.unit.abbreviatedName === "/5"){
+            if($scope.state.variableObject.unitAbbreviatedName === "/5"){
                 return 1;
             }
             return conversionFactor;
@@ -261,7 +249,7 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
                 helpText: "Search for a duplicated or synonymous variable that you'd like to join to " +
                     $scope.state.variableObject.name + ". Once joined, its measurements will be included in the analysis of " +
                     $scope.state.variableObject.name + ".  You can only join variables that have the same unit " +
-                    $scope.state.variableObject.unit.abbreviatedName + ".",
+                    $scope.state.variableObject.unitAbbreviatedName + ".",
                 placeholder: "What variable would you like to join?",
                 buttonText: "Select Variable",
                 requestParams: requestParams,
@@ -442,10 +430,12 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
         };
         $scope.deleteTaggedVariable = function(taggedVariable){
             taggedVariable.hide = true;
+            var v = $scope.state.variableObject;
             var userTagData = {
-                userTagVariableId: $scope.state.variableObject.variableId,
+                userTagVariableId: v.variableId,
                 userTaggedVariableId: taggedVariable.variableId
             };
+            qmService.showInfoToast("Deleted "+v.name+" tag from "+taggedVariable.name+"!")
             qmService.deleteUserTagDeferred(userTagData);  // Delete doesn't return response for some reason
         };
         $scope.deleteTagVariable = function(tagVariable){
@@ -454,6 +444,7 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
                 userTaggedVariableId: $scope.state.variableObject.variableId,
                 userTagVariableId: tagVariable.variableId
             };
+            qmService.showInfoToast("Deleted "+tagVariable.name+" tag!")
             qmService.deleteUserTagDeferred(userTagData); // Delete doesn't return response for some reason
         };
         $scope.deleteJoinedVariable = function(tagVariable){
@@ -462,6 +453,7 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
                 currentVariableId: $scope.state.variableObject.variableId,
                 joinedUserTagVariableId: tagVariable.variableId
             };
+            qmService.showInfoToast("Deleted "+tagVariable.name+" join!")
             qmService.deleteVariableJoinDeferred(postBody); // Delete doesn't return response for some reason
         };
         $scope.editTag = function(userTagVariable){
