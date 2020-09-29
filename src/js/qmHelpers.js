@@ -1402,8 +1402,10 @@ var qm = {
             return a;
         },
         removeDuplicatesByProperty: function(myArr, prop) {
-            return myArr.filter((obj, pos, arr) => {
-                return arr.map(mapObj => mapObj[prop]).indexOf(obj[prop]) === pos;
+            return myArr.filter(function(obj, pos, arr) {
+                return arr.map(function(mapObj){
+                    return mapObj[prop]
+                }).indexOf(obj[prop]) === pos;
             });
         },
         removeDuplicatesById: function(arr, type) {
@@ -8689,6 +8691,10 @@ var qm = {
     },
     toast: {
         errorAlert: function(errorMessage, callback){
+            if(typeof Swal === "undefined"){
+                console.error("Swal not defined to show errorAlert for: "+errorMessage)
+                return;
+            }
             var Toast = Swal.mixin({
                 toast: true,
                 icon: "error",
