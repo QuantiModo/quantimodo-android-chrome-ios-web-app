@@ -112,6 +112,10 @@ angular.module('starter').controller('ReminderAddCtrl', ["$scope", "$state", "$s
             return qm.variableCategoryHelper.getVariableCategoryNameFromStateParamsOrUrl(
                 $scope.state.trackingReminder, $stateParams, $stateParams.variableObject);
         }
+        function getVariableCategory(){
+            return qm.variableCategoryHelper.getVariableCategoryFromStateParamsOrUrl(
+                $scope.state.trackingReminder, $stateParams, $stateParams.variableObject);
+        }
         $scope.openReminderStartTimePicker = function(order){
             var a = new Date();
             setupReminderTimes(order, a);
@@ -530,6 +534,8 @@ angular.module('starter').controller('ReminderAddCtrl', ["$scope", "$state", "$s
             if(!$scope.state.showMoreOptions){
                 var number = getNumberOfUniqueValues($scope);
                 if(number && number > 30){hide = true;}
+                var cat = getVariableCategory();
+                if(cat && number === null && cat.name === "Sleep"){hide = true;}
             }
             $scope.state.hideDefaultValueField = hide;
         }
