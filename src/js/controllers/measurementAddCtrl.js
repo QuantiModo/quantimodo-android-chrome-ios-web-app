@@ -286,7 +286,7 @@ angular.module('starter').controller('MeasurementAddCtrl', ["$scope", "$q", "$ti
                 qmLogService.error(error);
             });
         };
-        var setMeasurementVariablesByMeasurementId = function(id){
+        var setupByID = function(id){
             var deferred = $q.defer();
             qmService.showBlackRingLoader();
             qmService.getMeasurementById(id)
