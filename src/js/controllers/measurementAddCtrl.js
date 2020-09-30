@@ -45,25 +45,25 @@ angular.module('starter').controller('MeasurementAddCtrl', ["$scope", "$q", "$ti
             var m = $stateParams.measurement;
             var v = $stateParams.variableObject;
             var n = $stateParams.reminderNotification;
-            var id = qm.urlHelper.getParam('measurementId', location.href, true);
-            if (tr) {
-                setupTrackingByReminder(tr);
-            } else if (m) {
-                setupTrackingByMeasurement(m);
-            } else if (measurementFromUrl) {
-                setupTrackingByMeasurement(JSON.parse(measurementFromUrl));
-            } else if (v) {
-                setupFromVariable(v);
-            } else if (reminderFromUrl) {
-                setupTrackingByReminder(JSON.parse(reminderFromUrl));
-            } else if (n) {
-                setupTrackingByReminder(n);
-            } else if (id) {
-                setMeasurementVariablesByMeasurementId(id).then(function () {
+            var id = qm.urlHelper.getParam(['measurementId', 'id'], location.href, true);
+            if (id) {
+                setupByID(id).then(function () {
                     if (!$scope.state.measurementIsSetup) {
                         $scope.goBack();
                     }
                 });
+            } else if (tr) {
+                setupByReminder(tr);
+            } else if (m) {
+                setupByMeasurement(m);
+            } else if (measurementFromUrl) {
+                setupByMeasurement(JSON.parse(measurementFromUrl));
+            } else if (v) {
+                setupFromVariable(v);
+            } else if (reminderFromUrl) {
+                setupByReminder(JSON.parse(reminderFromUrl));
+            } else if (n) {
+                setupByReminder(n);
             } else if ($stateParams.variableName) {
                 setupFromVariableName($stateParams.variableName);
             }
@@ -227,7 +227,7 @@ angular.module('starter').controller('MeasurementAddCtrl', ["$scope", "$q", "$ti
                 m.variableName = variableName;
                 m.startTimeEpoch = startTimeEpoch;
                 m.value = value;
-                setupTrackingByMeasurement(m);
+                setupByMeasurement(m);
             }
         };
         function isYesNo() {
@@ -286,14 +286,14 @@ angular.module('starter').controller('MeasurementAddCtrl', ["$scope", "$q", "$ti
                 qmLogService.error(error);
             });
         };
-        var setMeasurementVariablesByMeasurementId = function(id){
+        var setupByID = function(id){
             var deferred = $q.defer();
             qmService.showBlackRingLoader();
             qmService.getMeasurementById(id)
                 .then(function(m){
                         qmService.hideLoader();
                         $scope.state.measurementIsSetup = true;
-                        setupTrackingByMeasurement(m);
+                        setupByMeasurement(m);
                         deferred.resolve();
                     }, function(error){
                     qmService.hideLoader();
@@ -310,7 +310,7 @@ angular.module('starter').controller('MeasurementAddCtrl', ["$scope", "$q", "$ti
                 measurement: $stateParams.measurement
             });
         };
-        function setVariableObjectFromMeasurement(){
+        function setVariableFromMeasurement(){
             $scope.state.variableObject = {
                 unitAbbreviatedName: $scope.state.measurement.unitAbbreviatedName,
                 variableCategoryName: getVariableCategoryName(),
@@ -324,11 +324,11 @@ angular.module('starter').controller('MeasurementAddCtrl', ["$scope", "$q", "$ti
                 if($stateParams.variableObject){
                     $scope.state.variableObject = $stateParams.variableObject;
                 }else{
-                    setVariableObjectFromMeasurement();
+                    setVariableFromMeasurement();
                 }
             }
         }
-        var setupTrackingByMeasurement = function(m){
+        var setupByMeasurement = function(m){
             if(isNaN(m.startTimeEpoch)){m.startTimeEpoch = moment(m.startTimeEpoch).unix();}
             if(!m.id){m.prevStartTimeEpoch = m.startTimeEpoch;}
             $scope.state.title = "Edit Measurement";
@@ -339,7 +339,7 @@ angular.module('starter').controller('MeasurementAddCtrl', ["$scope", "$q", "$ti
             setupUnit(m.unitAbbreviatedName, m.valence);
             setStateVariable();
         };
-        var setupTrackingByReminder = function(n){
+        var setupByReminder = function(n){
             $scope.state.title = "Record Measurement";
             if(!$scope.state.measurement.unitAbbreviatedName){
                 setupUnit(n.unitAbbreviatedName);
