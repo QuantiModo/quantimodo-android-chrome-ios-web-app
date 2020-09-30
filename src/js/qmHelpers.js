@@ -9596,11 +9596,12 @@ var qm = {
             }
             params = qm.api.addGlobalParams(params);
             var cacheKey = 'getUserVariablesFromApi';
-            var cachedData = qm.api.cacheGet(params, cacheKey);
-            if(cachedData && successHandler){
-                successHandler(cachedData);
-                return;
-            }
+            // We should just use build in HTTP cache because this is redundant and causes unexpected results
+            // var cachedData = qm.api.cacheGet(params, cacheKey);
+            // if(cachedData && successHandler){
+            //     successHandler(cachedData);
+            //     return;
+            // }
             qm.api.configureClient(cacheKey, null, params);
             var apiInstance = new qm.Quantimodo.VariablesApi();
             function callback(error, data, response){
