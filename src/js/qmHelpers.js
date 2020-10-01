@@ -4314,9 +4314,7 @@ var qm = {
             qm.localForage.getItem(qm.items.primaryOutcomeVariableMeasurements, cb);
         },
         filterAndSort: function(measurements, params){
-            if(!Array.isArray(measurements)){
-                measurements = qm.measurements.flattenMeasurements(measurements);
-            }
+            if(!Array.isArray(measurements)){measurements = qm.measurements.flattenMeasurements(measurements);}
             measurements = qm.measurements.addInfoAndImagesToMeasurements(measurements);
             measurements = qm.arrayHelper.filterByRequestParams(measurements, params);
             return measurements;
