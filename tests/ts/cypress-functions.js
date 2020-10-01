@@ -152,10 +152,10 @@ function logFailedTests(failedTests, context, cb) {
     for (var j = 0; j < failedTests.length; j++) {
         var test_1 = failedTests[j];
         var testName = test_1.title[1];
-        var errorMessage = test_1.error || test_1.message;
+        var errorMessage = test_1.error || test_1.message || test_1.displayError;
         if (!errorMessage) {
             errorMessage = JSON.stringify(test_1);
-            console.error("no test.error or test.message property in " + errorMessage);
+            console.error("no test.error or test.message or test.displayError property in " + errorMessage);
         }
         console.error("==============================================");
         console.error(testName + " FAILED");
