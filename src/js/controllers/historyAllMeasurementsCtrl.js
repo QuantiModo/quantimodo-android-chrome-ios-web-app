@@ -210,29 +210,24 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
             if(getVariableName()){
                 getVariable();
             }
-            qm.measurements.getLocalMeasurements(params, function(local){
-                $scope.state.history.concat(local);
-                function getFromApi() {
-                    qm.measurements.getMeasurementsFromApi(params, function (fromApi) {
-                        qm.measurements.addInfoAndImagesToMeasurements(fromApi);
-                        $scope.state.history.concat(fromApi);
-                        hideLoader();
-                        if (!fromApi || fromApi.length < params.limit) {
-                            $scope.state.moreDataCanBeLoaded = false;
-                        }
-                        if (fromApi.length < $scope.state.limit) {
-                            $scope.state.noHistory = fromApi.length === 0;
-                        }
-                    }, function (error) {
-                        qmLogService.error("History update error: ", error);
-                        $scope.state.noHistory = true;
-                        hideLoader();
-                    });
-                }
-                if(!local || local.length < params.limit){
-                    getFromApi();
-                }
-            });
+            function getFromApi() {
+                qm.measurements.getMeasurementsFromApi(params, function (fromApi) {
+                    qm.measurements.addInfoAndImagesToMeasurements(fromApi);
+                    $scope.state.history.concat(fromApi);
+                    hideLoader();
+                    if (!fromApi || fromApi.length < params.limit) {
+                        $scope.state.moreDataCanBeLoaded = false;
+                    }
+                    if (fromApi.length < $scope.state.limit) {
+                        $scope.state.noHistory = fromApi.length === 0;
+                    }
+                }, function (error) {
+                    qmLogService.error("History update error: ", error);
+                    $scope.state.noHistory = true;
+                    hideLoader();
+                });
+            }
+            getFromApi();
         };
         function setupVariableCategoryActionSheet(){
             qmService.rootScope.setShowActionSheetMenu(function(){
