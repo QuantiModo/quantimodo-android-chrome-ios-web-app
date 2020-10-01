@@ -411,10 +411,10 @@ angular.module('starter')// Parent Controller - This controller runs before ever
             };
             $rootScope.setMicAndSpeechEnabled = function(value, hideRobot){
                 if($rootScope.micEnabled === value && $rootScope.speechEnabled === value){
-                    qmLog.info("micEnabled and speechEnabled already set to " + value);
+                    qmLog.debug("micEnabled and speechEnabled already set to " + value);
                     return;
                 }
-                qmLog.info("$rootScope.setMicAndSpeechEnabled");
+                qmLog.debug("$rootScope.setMicAndSpeechEnabled");
                 if(value === 'toggle'){
                     value = !qm.mic.getMicEnabled();
                 }
