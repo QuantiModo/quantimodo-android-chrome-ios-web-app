@@ -4353,12 +4353,11 @@ var qm = {
             if(id){
                 qm.measurements.deleteLocalById(id);
             }else{
-                var startTime = toDelete.startTimeEpoch || toDelete.startTime;
-                var startAt = qm.timeHelper.fromUnixTime(startTime);
+                var startAt = toDelete.startAt || qm.timeHelper.fromUnixTime(toDelete.startTimeEpoch || toDelete.startTime);
                 var variableName = toDelete.variableName;
                 qm.storage.deleteByProperty(qm.items.measurementsQueue, 'startTimeEpoch', startTime);
                 qm.storage.deleteByProperty(qm.items.measurementsQueue, 'startTime', startTime);
-                var recent = qm.measurements.measurementCache || [];
+                var recent = qm.measurements.flattenMeasurements(qm.measurements.measurementCache);
                 recent = recent.filter(function(m){
                     return m.startTimeEpoch !== startTime && m.startTime !== startTime;
                 });
