@@ -4311,7 +4311,9 @@ var qm = {
             qm.localForage.getItem(qm.items.primaryOutcomeVariableMeasurements, cb);
         },
         filterAndSort: function(measurements, params){
-            if(!Array.isArray(measurements)){measurements = Object.values(measurements);}
+            if(!Array.isArray(measurements)){
+                measurements = qm.measurements.flattenMeasurements(measurements);
+            }
             measurements = qm.measurements.addInfoAndImagesToMeasurements(measurements);
             measurements = qm.arrayHelper.filterByRequestParams(measurements, params);
             return measurements;
@@ -4325,7 +4327,8 @@ var qm = {
                 local.forEach(function(m){
                     indexed[qm.measurements.getUniqueKey(m)] = m;
                 });
-                cb(qm.measurements.filterAndSort(indexed, params))
+                var filtered = qm.measurements.filterAndSort(indexed, params);
+                cb(filtered)
             })
         },
         flattenMeasurements: function(byVariableName){
