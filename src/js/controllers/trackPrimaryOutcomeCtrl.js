@@ -57,17 +57,17 @@ angular.module('starter').controller('TrackPrimaryOutcomeCtrl', ["$scope", "$sta
                 qmLog.info("Got 0 measurements from localforage");
             }
             $scope.state.primaryOutcomeMeasurements = measurements;
-            var measurementsQueue = qm.storage.getItem('measurementsQueue');
-            if(measurementsQueue){
-                qmLog.info("Got " + measurementsQueue.length + " measurements from measurementsQueue");
+            var queue = qm.storage.getItem('measurementsQueue');
+            if(queue){
+                qmLog.info("Got " + queue.length + " measurements from measurementsQueue");
             }else{
                 qmLog.info("Got 0 measurements from measurementsQueue");
             }
             if(!$scope.state.primaryOutcomeMeasurements){
                 $scope.state.primaryOutcomeMeasurements = [];
             }
-            if(measurementsQueue){
-                $scope.state.primaryOutcomeMeasurements = $scope.state.primaryOutcomeMeasurements.concat(measurementsQueue);
+            if(queue){
+                $scope.state.primaryOutcomeMeasurements = $scope.state.primaryOutcomeMeasurements.concat(queue);
             }
             if($scope.state.primaryOutcomeMeasurements){
                 $scope.state.distributionChartConfig = null; // Necessary to render update for some reason
