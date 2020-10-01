@@ -4328,42 +4328,54 @@ var qm = {
                 cb(qm.measurements.filterAndSort(indexed, params))
             })
         },
-        deleteLocally: function(toDelete){
-            var startTime = toDelete.startTimeEpoch || toDelete.startTime;
-            var id = toDelete.id;
-            if(startTime){
-                qm.storage.deleteByProperty(qm.items.measurementsQueue, 'startTimeEpoch', startTime);
-                qm.storage.deleteByProperty(qm.items.measurementsQueue, 'startTime', startTime);
-            }
-            if(id){qm.localForage.deleteById(qm.items.primaryOutcomeVariableMeasurements, id);}
-            var recent = qm.measurements.recentlyPostedMeasurements || [];
-            recent = recent.filter(function(m){return m.startTimeEpoch !== startTime && m.startTime !== startTime;});
-            if(id){recent = recent.filter(function(m){return m.id !== id;});}
-            qm.measurements.recentlyPostedMeasurements = recent;
-        },
-        addMeasurementsToMemory: function(byVariableName){
+        flattenMeasurements: function(byVariableName){
+            if(Array.isArray(byVariableName)){return byVariableName;}
             var arr = [];
-            if(!Array.isArray(arr)){
-                arr = [];
-                for (var variableName in byVariableName) {
-                    if(!byVariableName.hasOwnProperty(variableName)){continue;}
-                    var byDate = byVariableName[variableName];
-                    for (var date in byDate) {
-                        if(byDate.hasOwnProperty(date)){
-                            arr.push(byDate[date]);
-                        } else {
-                            arr.push(byDate);
-                        }
-                        qm.measurements.checkMeasurements(arr)
+            for (var variableName in byVariableName) {
+                if(!byVariableName.hasOwnProperty(variableName)){continue;}
+                var byDate = byVariableName[variableName];
+                for (var date in byDate) {
+                    if(byDate.hasOwnProperty(date)){
+                        arr.push(byDate[date]);
+                    } else {
+                        arr.push(byDate);
                     }
+                    qm.measurements.checkMeasurements(arr)
                 }
             }
+            return arr;
+        },
+        deleteLocalById: function(id){
+            qm.localForage.deleteById(qm.items.primaryOutcomeVariableMeasurements, id);
+            var recent = qm.measurements.measurementCache || [];
+            recent = recent.filter(function(m){return m.id !== id;});
+            qm.measurements.measurementCache = recent;
+        },
+        deleteLocally: function(toDelete){
+            var id = toDelete.id;
+            if(id){
+                qm.measurements.deleteLocalById(id);
+            }else{
+                var startTime = toDelete.startTimeEpoch || toDelete.startTime;
+                var startAt = qm.timeHelper.fromUnixTime(startTime);
+                var variableName = toDelete.variableName;
+                qm.storage.deleteByProperty(qm.items.measurementsQueue, 'startTimeEpoch', startTime);
+                qm.storage.deleteByProperty(qm.items.measurementsQueue, 'startTime', startTime);
+                var recent = qm.measurements.measurementCache || [];
+                recent = recent.filter(function(m){
+                    return m.startTimeEpoch !== startTime && m.startTime !== startTime;
+                });
+                qm.measurements.measurementCache = recent;
+            }
+        },
+        addMeasurementsToMemory: function(byVariableName){
+            var arr = qm.measurements.flattenMeasurements(byVariableName);
             qm.measurements.checkMeasurements(arr)
-            var existing  = qm.measurements.recentlyPostedMeasurements || [];
+            var existing  = qm.measurements.measurementCache || [];
             qm.measurements.checkMeasurements(existing)
             var combined = qm.arrayHelper.concatenateUniqueId(arr, existing);
             qm.measurements.checkMeasurements(combined)
-            qm.measurements.recentlyPostedMeasurements = combined;
+            qm.measurements.measurementCache = combined;
         },
         checkMeasurements: function(arr){
             if(!arr){
@@ -4507,9 +4519,9 @@ var qm = {
             }
             return measurements;
         },
-        recentlyPostedMeasurements: [],
+        measurementCache: [],
         getRecentlyPostedMeasurements: function(params){
-            var all = qm.measurements.addInfoAndImagesToMeasurements(qm.measurements.recentlyPostedMeasurements || []);
+            var all = qm.measurements.addInfoAndImagesToMeasurements(qm.measurements.measurementCache || []);
             var filtered = qm.arrayHelper.filterByRequestParams(all, params);
             qm.qmLog.info("Got " + filtered.length + " measurements from recentlyPostedMeasurements with params: " + JSON.stringify(params));
             return filtered;
@@ -8691,6 +8703,9 @@ var qm = {
                 });
                 if(cb){cb();}
             });
+        },
+        fromUnixTime: function(unixTime) {
+            return qm.timeHelper.convertUnixTimeStampToISOString(unixTime);
         }
     },
     toast: {
