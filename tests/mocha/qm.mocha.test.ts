@@ -9,6 +9,15 @@ import * as https from "https";
 import * as _str from "underscore.string";
 import * as simpleGit from 'simple-git/promise';
 import * as th from '../ts/test-helpers';
+import * as qmLog from './../../src/js/qmLogger';
+import * as qm from './../../src/js/qmHelpers';
+import * as qmStaticData from './../../src/data/qmStaticData';
+import * as Quantimodo from './../../node_modules/quantimodo';
+qm.Quantimodo = Quantimodo;
+// @ts-ignore
+qm.qmLog = qmLog;
+qmLog.qm = qm;
+qm.staticData = qmStaticData;
 const git = simpleGit();
 beforeEach(function (done) {
     let t = this.currentTest
@@ -126,5 +135,20 @@ describe("gi-tester", function () {
             process.env.API_URL = previouslySetApiUrl
         }
         done()
+    })
+})
+function setAccessToken(){
+    var t = process.env.QUANTIMODO_ACCESS_TOKEN;
+    if(!t){throw "Please set process.env.QUANTIMODO_ACCESS_TOKEN";}
+    qm.storage.setItem(qm.items.accessToken, t);
+}
+describe("measurements", function () {
+    it("runs tests on staging API", function (done) {
+        setAccessToken();
+        this.timeout(10000) // Default 2000 is too fast for Github API
+        qm.measurements.getMeasurementsFromApi({}, function (measurements){
+            expect(measurements).length(100)
+            done()
+        })
     })
 })
