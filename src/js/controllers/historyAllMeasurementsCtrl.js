@@ -190,9 +190,7 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
                 return qmLog.info("No more measurements!");
             }
             $scope.state.loading = true;
-            if(!$scope.state.history){
-                $scope.state.history = [];
-            }
+            if(!$scope.state.history){$scope.state.history = [];}
             var params = {
                 offset: $scope.state.history.length,
                 limit: $scope.state.limit,
@@ -200,34 +198,36 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
                 doNotProcess: true
             };
             params = getRequestParams(params);
-            if(getVariableName()){
-                if(!$scope.state.variableObject){
-                    qmService.searchUserVariablesDeferred('*', {variableName: getVariableName()}).then(function(variables){
+            function getVariable() {
+                if (!$scope.state.variableObject) {
+                    qmService.searchUserVariablesDeferred('*', {variableName: getVariableName()}).then(function (variables) {
                         $scope.state.variableObject = variables[0];
-                    }, function(error){
+                    }, function (error) {
                         qmLogService.error(error);
                     });
                 }
             }
-            function successHandler(measurements){
-                if(!measurements || measurements.length < params.limit){
-                    $scope.state.moreDataCanBeLoaded = false;
-                }
-                if(measurements.length < $scope.state.limit){
-                    $scope.state.noHistory = measurements.length === 0;
-                }
-                qm.measurements.addLocalMeasurements(measurements, getRequestParams(),function (combined) {
-                    $scope.state.history = combined;
+            if(getVariableName()){
+                getVariable();
+            }
+            function getFromApi() {
+                qm.measurements.getMeasurementsFromApi(params, function (fromApi) {
+                    qm.measurements.addInfoAndImagesToMeasurements(fromApi);
+                    $scope.state.history.concat(fromApi);
                     hideLoader();
-                })
+                    if (!fromApi || fromApi.length < params.limit) {
+                        $scope.state.moreDataCanBeLoaded = false;
+                    }
+                    if (fromApi.length < $scope.state.limit) {
+                        $scope.state.noHistory = fromApi.length === 0;
+                    }
+                }, function (error) {
+                    qmLogService.error("History update error: ", error);
+                    $scope.state.noHistory = true;
+                    hideLoader();
+                });
             }
-            function errorHandler(error){
-                qmLogService.error("History update error: ", error);
-                $scope.state.noHistory = true;
-                hideLoader();
-            }
-            //qmService.showBasicLoader();
-            qm.measurements.getMeasurementsFromApi(params, successHandler, errorHandler);
+            getFromApi();
         };
         function setupVariableCategoryActionSheet(){
             qmService.rootScope.setShowActionSheetMenu(function(){
