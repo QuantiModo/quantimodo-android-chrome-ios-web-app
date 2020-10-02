@@ -83,7 +83,7 @@
   },
   "dependencies": {
     "app-root-path": "3.0.0",
-    "ts-node": "8.5.4",
+    "ts-node": "8.10.2",
     "@octokit/rest": "16.35.2",
     "typescript": "3.7.2",
     "simple-git": "1.126.0"
