@@ -162,7 +162,7 @@
     "tslint": "5.20.1",
     "underscore.string": "3.3.5",
     "yaml-lint": "1.2.4",
-    "yargs": "15.0.2"
+    "yargs": "15.4.1"
   },
   "resolutions": {
     "set-value": "2.0.1",
