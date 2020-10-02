@@ -4346,7 +4346,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     if(response && response.data && response.data.userVariables){
                         qm.variablesHelper.saveToLocalStorage(response.data.userVariables);
                     }
-                    qm.measurements.recentlyPostedMeasurements = qm.measurements.recentlyPostedMeasurements.concat(queue);  // Save these for history page
+                    qm.measurements.measurementCache = qm.measurements.measurementCache.concat(queue);  // Save these for history page
                     qm.storage.setItem(qm.items.measurementsQueue, []);
                     if(successHandler){successHandler();}
                     defer.resolve();
