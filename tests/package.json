@@ -157,7 +157,7 @@
     "stop-only": "3.1.0",
     "superagent": "3.8.3",
     "swagger-js-codegen": "1.13.0",
-    "swagger-ts-generator": "1.2.6",
+    "swagger-ts-generator": "1.2.11",
     "ts-loader": "6.2.1",
     "tslint": "5.20.1",
     "underscore.string": "3.3.5",
