@@ -4314,9 +4314,7 @@ var qm = {
             qm.localForage.getItem(qm.items.primaryOutcomeVariableMeasurements, cb);
         },
         filterAndSort: function(measurements, params){
-            if(!Array.isArray(measurements)){
-                measurements = qm.measurements.flattenMeasurements(measurements);
-            }
+            if(!Array.isArray(measurements)){measurements = qm.measurements.flattenMeasurements(measurements);}
             measurements = qm.measurements.addInfoAndImagesToMeasurements(measurements);
             measurements = qm.arrayHelper.filterByRequestParams(measurements, params);
             return measurements;
@@ -4331,7 +4329,7 @@ var qm = {
         },
         flattenMeasurements: function(byVariableName){
             if(!byVariableName){
-                debugger
+                qmLog.info("Nothing provided to flattenMeasurements")
                 return [];
             }
             if(Array.isArray(byVariableName)){return byVariableName;}
@@ -4355,12 +4353,11 @@ var qm = {
             if(id){
                 qm.measurements.deleteLocalById(id);
             }else{
-                var startTime = toDelete.startTimeEpoch || toDelete.startTime;
-                var startAt = qm.timeHelper.fromUnixTime(startTime);
+                var startAt = toDelete.startAt || qm.timeHelper.fromUnixTime(toDelete.startTimeEpoch || toDelete.startTime);
                 var variableName = toDelete.variableName;
                 qm.storage.deleteByProperty(qm.items.measurementsQueue, 'startTimeEpoch', startTime);
                 qm.storage.deleteByProperty(qm.items.measurementsQueue, 'startTime', startTime);
-                var recent = qm.measurements.measurementCache || [];
+                var recent = qm.measurements.flattenMeasurements(qm.measurements.measurementCache);
                 recent = recent.filter(function(m){
                     return m.startTimeEpoch !== startTime && m.startTime !== startTime;
                 });
@@ -4369,7 +4366,7 @@ var qm = {
         },
         addMeasurementsToMemory: function(byVariableName){
             if(!byVariableName){
-                debugger
+                qmLog.info("Nothing provided to addMeasurementsToMemory")
                 return;
             }
             var arr = qm.measurements.flattenMeasurements(byVariableName);

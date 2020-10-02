@@ -1,0 +1,14 @@
+{
+  "extends": "tslint:recommended",
+  "linterOptions": {
+    "exclude": [
+    ]
+  },
+  "rules": {
+    "no-implicit-dependencies": false,
+    "no-console": false,
+    "only-arrow-functions": false,
+    "whitespace": false,
+    "semicolon": [true, "never"]
+  }
+}
