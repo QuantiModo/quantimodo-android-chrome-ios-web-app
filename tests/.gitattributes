@@ -1,0 +1,10 @@
+# Force .sh files for provisioning scripts to use LF, even on Windows
+*.sh text eol=lf
+#*.php text eol=lf
+#*.json text eol=lf
+
+# If this causes problems for you with git, refresh your repo according
+# to the instructions at https://help.github.com/articles/dealing-with-line-endings/
+
+# If you want files you check in to be normalized, do this: Set text=auto in your .gitattributes for all files:
+* text=auto

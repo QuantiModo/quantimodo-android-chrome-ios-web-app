@@ -4287,60 +4287,57 @@ var qm = {
             var startTime = m.startTime || m.startTimeEpoch;
             return startTime.toString()+":"+m.variableId;
         },
+        indexByVariableStartAt: function(arr, indexed){
+            if(!indexed){indexed = {}}
+            arr = qm.measurements.flattenMeasurements(arr);
+            arr.forEach(function(m){
+                var startAt = m.startAt ||  qm.timeHelper.fromUnixTime(m.startTime || m.startTimeEpoch);
+                if(!indexed[m.variableName]){indexed[m.variableName] = {};}
+                indexed[m.variableName][startAt] = m;
+            });
+            return indexed;
+        },
         getLocalMeasurements: function(params, cb){
             var queue = qm.measurements.getMeasurementsFromQueue(params) || [];
             qm.measurements.checkMeasurements(queue)
             var recent = qm.measurements.getRecentlyPostedMeasurements(params) || [];
             qm.measurements.checkMeasurements(recent)
             qm.measurements.getPrimaryOutcomeMeasurements(function (measurements) {
-                measurements = measurements || [];
-                var indexed = {};
-                measurements.forEach(function(m){
-                    indexed[qm.measurements.getUniqueKey(m)] = m;
-                });
-                recent.forEach(function(m){
-                    indexed[qm.measurements.getUniqueKey(m)] = m;
-                });
-                queue.forEach(function(m){
-                    indexed[qm.measurements.getUniqueKey(m)] = m;
-                });
-                cb(qm.measurements.filterAndSort(indexed, params));
+                var indexed = qm.measurements.indexByVariableStartAt(measurements || []);
+                indexed = qm.measurements.indexByVariableStartAt(recent, indexed);
+                indexed = qm.measurements.indexByVariableStartAt(queue, indexed);
+                var filtered = qm.measurements.filterAndSort(indexed, params)
+                cb(filtered);
             });
         },
         getPrimaryOutcomeMeasurements: function(cb){
             qm.localForage.getItem(qm.items.primaryOutcomeVariableMeasurements, cb);
         },
         filterAndSort: function(measurements, params){
-            if(!Array.isArray(measurements)){measurements = Object.values(measurements);}
+            if(!Array.isArray(measurements)){measurements = qm.measurements.flattenMeasurements(measurements);}
             measurements = qm.measurements.addInfoAndImagesToMeasurements(measurements);
             measurements = qm.arrayHelper.filterByRequestParams(measurements, params);
             return measurements;
         },
         addLocalMeasurements: function(arr, params, cb){
             qm.measurements.getLocalMeasurements(params, function(local){
-                var indexed = {};
-                arr.forEach(function(m){
-                    indexed[qm.measurements.getUniqueKey(m)] = m;
-                });
-                local.forEach(function(m){
-                    indexed[qm.measurements.getUniqueKey(m)] = m;
-                });
-                cb(qm.measurements.filterAndSort(indexed, params))
+                var indexed = qm.measurements.indexByVariableStartAt(arr);
+                indexed = qm.measurements.indexByVariableStartAt(local, indexed);
+                var filtered = qm.measurements.filterAndSort(indexed, params);
+                cb(filtered)
             })
         },
         flattenMeasurements: function(byVariableName){
+            if(!byVariableName){
+                qmLog.info("Nothing provided to flattenMeasurements")
+                return [];
+            }
             if(Array.isArray(byVariableName)){return byVariableName;}
             var arr = [];
-            for (var variableName in byVariableName) {
-                if(!byVariableName.hasOwnProperty(variableName)){continue;}
-                var byDate = byVariableName[variableName];
-                for (var date in byDate) {
-                    if(byDate.hasOwnProperty(date)){
-                        arr.push(byDate[date]);
-                    } else {
-                        arr.push(byDate);
-                    }
-                    qm.measurements.checkMeasurements(arr)
+            for(var variableName in byVariableName){
+                if(byVariableName.hasOwnProperty(variableName)){
+                    var byDate = byVariableName[variableName];
+                    arr = arr.concat(Object.values(byDate));
                 }
             }
             return arr;
@@ -4356,12 +4353,11 @@ var qm = {
             if(id){
                 qm.measurements.deleteLocalById(id);
             }else{
-                var startTime = toDelete.startTimeEpoch || toDelete.startTime;
-                var startAt = qm.timeHelper.fromUnixTime(startTime);
+                var startAt = toDelete.startAt || qm.timeHelper.fromUnixTime(toDelete.startTimeEpoch || toDelete.startTime);
                 var variableName = toDelete.variableName;
                 qm.storage.deleteByProperty(qm.items.measurementsQueue, 'startTimeEpoch', startTime);
                 qm.storage.deleteByProperty(qm.items.measurementsQueue, 'startTime', startTime);
-                var recent = qm.measurements.measurementCache || [];
+                var recent = qm.measurements.flattenMeasurements(qm.measurements.measurementCache);
                 recent = recent.filter(function(m){
                     return m.startTimeEpoch !== startTime && m.startTime !== startTime;
                 });
@@ -4369,6 +4365,10 @@ var qm = {
             }
         },
         addMeasurementsToMemory: function(byVariableName){
+            if(!byVariableName){
+                qmLog.info("Nothing provided to addMeasurementsToMemory")
+                return;
+            }
             var arr = qm.measurements.flattenMeasurements(byVariableName);
             qm.measurements.checkMeasurements(arr)
             var existing  = qm.measurements.measurementCache || [];
@@ -4509,14 +4509,10 @@ var qm = {
             }
         },
         addInfoAndImagesToMeasurements: function(measurements){
-            qm.measurements.checkMeasurements(measurements);
-            if(!Array.isArray(measurements)){measurements = Object.values(measurements);}
-            qm.measurements.checkMeasurements(measurements);
-            var index;
-            for(index = 0; index < measurements.length; ++index){
-                var m = measurements[index];
+            measurements = qm.measurements.flattenMeasurements(measurements);
+            measurements.forEach(function(m){
                 qm.measurements.addInfoAndImagesToMeasurement(m)
-            }
+            });
             return measurements;
         },
         measurementCache: [],
