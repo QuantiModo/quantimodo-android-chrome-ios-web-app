@@ -136,7 +136,7 @@
     "gulp-github": "0.3.6",
     "gulp-rimraf": "1.0.0",
     "gulp-s3-upload": "1.7.3",
-    "husky": "3.0.9",
+    "husky": "3.1.0",
     "js-beautify": "1.10.3",
     "lint-staged": "9.4.3",
     "mocha": "6.2.3",
