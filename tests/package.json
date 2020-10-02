@@ -152,7 +152,7 @@
     "request": "latest",
     "rimraf": "3.0.0",
     "run-sequence": "2.2.1",
-    "semantic-release": "15.13.32",
+    "semantic-release": "15.14.0",
     "shx": "0.3.2",
     "stop-only": "3.1.0",
     "superagent": "3.8.3",
