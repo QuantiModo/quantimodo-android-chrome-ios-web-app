@@ -1957,6 +1957,7 @@ var qm = {
                 qm.qmLog.info('afterLoginGoToState already set to ' + qm.storage.getItem(qm.items.afterLoginGoToState));
                 return false;
             }
+            if(!afterLoginGoToStateOrUrl){return false;}
             if(afterLoginGoToStateOrUrl.indexOf('login') !== -1){
                 qm.qmLog.debug('setAfterLoginGoToState: Why are we sending to login from login state?');
                 return false;
@@ -4354,6 +4355,7 @@ var qm = {
                 qm.measurements.deleteLocalById(id);
             }else{
                 var startAt = toDelete.startAt || qm.timeHelper.fromUnixTime(toDelete.startTimeEpoch || toDelete.startTime);
+                var startTime = qm.timeHelper.toUnixTime(startAt);
                 var variableName = toDelete.variableName;
                 qm.storage.deleteByProperty(qm.items.measurementsQueue, 'startTimeEpoch', startTime);
                 qm.storage.deleteByProperty(qm.items.measurementsQueue, 'startTime', startTime);
