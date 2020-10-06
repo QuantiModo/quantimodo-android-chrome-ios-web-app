@@ -147,7 +147,7 @@
     "mochawesome-merge": "2.1.0",
     "mochawesome-report-generator": "4.0.1",
     "pkg-fetch": "2.6.9",
-    "prettier": "1.19.1",
+    "prettier": "2.1.2",
     "q": "latest",
     "request": "latest",
     "rimraf": "3.0.0",
