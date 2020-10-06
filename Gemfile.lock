@@ -66,9 +66,6 @@ GEM
       xcodeproj (>= 1.5.7, < 2.0.0)
       xcpretty (~> 0.2.8)
       xcpretty-travis-formatter (>= 0.0.3)
-    fastlane-plugin-cordova (2.0.0)
-    fastlane-plugin-ionic (0.0.4)
-    fastlane-plugin-upgrade_super_old_xcode_project (0.0.2)
     ffi (1.9.25)
     gh (0.14.0)
       addressable
@@ -178,10 +175,7 @@ PLATFORMS
 
 DEPENDENCIES
   fastlane
-  fastlane-plugin-cordova
-  fastlane-plugin-ionic
-  fastlane-plugin-upgrade_super_old_xcode_project
   travis
 
 BUNDLED WITH
-   1.16.1
+   2.1.4
