@@ -6,7 +6,8 @@
     "enabled": false
   },
   "ignorePaths": [
-    "src/package.json"
+    "src/package.json",
+    "tests/package.json"
   ],
   "packageRules": [
     {
