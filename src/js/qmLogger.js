@@ -103,7 +103,7 @@ var qmLog = {
     },
     setDebugMode: function(value){
         if(value){
-            if(qm.getUser() && qm.getUser().id === 230){
+            if(qmLog.qm.getUser() && qmLog.qm.getUser().id === 230){
                 qmLog.qm.storage.setItem(qmLog.qm.items.apiUrl, 'utopia.quantimo.do');
             }
             qmLog.setLogLevelName("debug");
@@ -289,8 +289,8 @@ var qmLog = {
         if(qmLog.color){
             consoleMessage = qmLog.color.red(consoleMessage);
         }
-        if(qm.appMode.isTestingOrDevelopment()){
-            qm.toast.errorAlert(consoleMessage);
+        if(qmLog.qm.appMode.isTestingOrDevelopment()){
+            qmLog.qm.toast.errorAlert(consoleMessage);
         }
         console.error(consoleMessage, errorSpecificMetaData);
         qmLog.globalMetaData = qmLog.addGlobalMetaDataAndLog(qmLog.name, qmLog.message, errorSpecificMetaData, qmLog.stackTrace);

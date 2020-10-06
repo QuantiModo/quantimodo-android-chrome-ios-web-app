@@ -2633,7 +2633,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             stateHelper: {
                 previousUrl: null,
                 goBack: function(providedStateParams){
-                    qmLog.info("goBack: Called goBack with state params: " + JSON.stringify(providedStateParams));
+                    qmLog.info("goBack: Called goBack with state params: ", providedStateParams);
                     function skipSearchPages(){
                         if(stateId.toLowerCase().indexOf('search') !== -1){ // Skip search pages
                             $ionicHistory.removeBackView();
