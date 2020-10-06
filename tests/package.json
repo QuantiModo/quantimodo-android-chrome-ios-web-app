@@ -98,7 +98,7 @@
     "@types/angular": "latest",
     "@types/app-root-path": "1.2.4",
     "@types/bluebird": "3.5.32",
-    "@types/chai": "4.2.12",
+    "@types/chai": "4.2.13",
     "@types/dotenv": "6.1.1",
     "@types/gulp": "4.0.6",
     "@types/mocha": "5.2.7",
