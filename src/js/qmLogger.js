@@ -258,6 +258,7 @@ var qmLog = {
         return false;
     },
     bugsnagNotify: function(name, message, errorSpecificMetaData, logLevel, stackTrace){
+        // eslint-disable-next-line no-debugger
         debugger
         if(typeof bugsnagClient === "undefined"){
             if(!qmLog.qm.appMode.isDevelopment()){
