@@ -130,6 +130,7 @@
     "postinstall": "",
     "pretest": "npm run build",
     "pull-develop": "bash scripts/git-pull-develop.sh",
+    "start": "node app.js",
     "test": "npm run configure:app && npm run test:cypress && npm run test:gi",
     "test-unit": "cd tests && gulp _unit-tests",
     "test:cypress": "bash ./scripts/cypress.sh",
