@@ -128,12 +128,16 @@
     "heroku-prebuild": "echo This runs before Heroku installs your dependencies.",
     "heroku-push": "git push git@heroku.com:medimodo.git HEAD:master -f",
     "postinstall": "",
+    "preinstall": "npx npm-force-resolutions",
     "pretest": "npm run build",
     "pull-develop": "bash scripts/git-pull-develop.sh",
     "test": "npm run configure:app && npm run test:cypress && npm run test:gi",
     "test-unit": "cd tests && gulp _unit-tests",
     "test:cypress": "bash ./scripts/cypress.sh",
     "test:gi": "cd tests && gulp _unit-gi-failed-gi-all"
+  },
+  "resolutions": {
+    "graceful-fs": "^4.2.4"
   },
   "cordovaPlugins": [],
   "cordovaPlatforms": [
