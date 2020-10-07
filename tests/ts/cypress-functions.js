@@ -224,6 +224,7 @@ function runOneCypressSpec(specName, cb) {
     // noinspection JSUnresolvedFunction
     cypress.run({
         browser: browser,
+        record: true,
         spec: specPath,
     }).then(function (results) {
         // @ts-ignore
