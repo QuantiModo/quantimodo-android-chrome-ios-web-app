@@ -436,7 +436,7 @@ describe("unit-tests", function () {
         qmTests.runAllTestsForType('menu', done)
     })
     it("test-get-common-variable", function (done) {
-        this.timeout(20000) // Default 2000 is too fast for Github API
+        this.timeout(30000) // Default 2000 is too fast for Github API
         qmTests.tests.commonVariables.getCar(done)
     })
     it('test-get-manual-tracking-variable', function(done) {
