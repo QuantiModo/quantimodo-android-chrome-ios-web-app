@@ -104,6 +104,7 @@
     "no-var": "off",
     "no-useless-escape": "off",
     "prefer-rest-params": "off",
-    "eqeqeq": "off"
+    "eqeqeq": "off",
+    "no-prototype-builtins": "off"
   }
 }
