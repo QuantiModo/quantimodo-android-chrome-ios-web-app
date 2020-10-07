@@ -795,6 +795,7 @@ if(typeof window !== "undefined"){
     window.qmLog = qmLog;
 }else{
     module.exports = qmLog;
+    global.qmLog = qmLog;
 }
 if(typeof qm !== "undefined"){
     qmLog.qm = qm;
