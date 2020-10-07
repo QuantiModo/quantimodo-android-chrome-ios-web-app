@@ -161,34 +161,34 @@ var qm = {
             if(token){headers['Authorization'] = 'Bearer ' + token;}
             return headers;
         },
-        configureClient: function(functionName, errorHandler, requestParams){
-            requestParams = requestParams || {};
+        configureClient: function(functionName, errorHandler, params){
+            params = params || {};
             var qmApiClient = qm.Quantimodo.ApiClient.instance;
             var quantimodo_oauth2 = qmApiClient.authentications.quantimodo_oauth2;
             qmApiClient.basePath = qm.api.getBaseUrl() + '/api';
             quantimodo_oauth2.accessToken = qm.auth.getAccessTokenFromUrlUserOrStorage();
             var message = "API Request to " + qm.api.getBaseUrl() + " for " + functionName;
-            if(requestParams.reason){
-                message += " because " + requestParams.reason;
+            if(params.reason){
+                message += " because " + params.reason;
             }
             if(qm.qmLog.isDebugMode()){
                 message += ' with token: ' + qm.auth.getAccessTokenFromUrlUserOrStorage();
             }
-            delete requestParams.reason;
-            qm.qmLog.info(message, requestParams);
+            delete params.reason;
+            qm.qmLog.info(message, params);
             qm.api.requestLog.push({
                 time: qm.timeHelper.getCurrentLocalDateAndTime(),
                 name: functionName,
                 message: message,
-                params: requestParams
+                params: params
             });
             // TODO: Enable
             // qmApiClient.authentications.client_id.clientId = qm.getClientId();
             // qmApiClient.enableCookies = true;
             qmApiClient.defaultHeaders = qm.api.getDefaultHeaders();
             qmApiClient.cache = true;
-            if(requestParams){
-                if(requestParams.refresh || requestParams.recalculate || requestParams.noCache){
+            if(params){
+                if(params.refresh || params.recalculate || params.noCache){
                     qmApiClient.cache = false;
                 }
             }
@@ -1444,7 +1444,7 @@ var qm = {
                 return provided;
             }
             if(!params){
-                qm.qmLog.info("No requestParams provided to filterByRequestParams");
+                qm.qmLog.info("No params provided to filterByRequestParams");
                 return provided;
             }
             var allowedFilterParams = [
@@ -4155,15 +4155,15 @@ var qm = {
                 }
             });
         },
-        getElementsWithRequestParams: function(localStorageItemName, requestParams, successHandler, errorHandler){
+        getElementsWithRequestParams: function(localStorageItemName, params, successHandler, errorHandler){
             qm.localForage.getItem(localStorageItemName, function(unfiltered){
                 if(!unfiltered){
                     successHandler(unfiltered);
                     return;
                 }
-                var filtered = qm.arrayHelper.filterByRequestParams(unfiltered, requestParams);
+                var filtered = qm.arrayHelper.filterByRequestParams(unfiltered, params);
                 if(!filtered && qm.appMode.isTesting()){
-                    filtered = qm.arrayHelper.filterByRequestParams(unfiltered, requestParams);
+                    filtered = qm.arrayHelper.filterByRequestParams(unfiltered, params);
                     qm.qmLog.info("Nothing after filter");
                 }
                 successHandler(filtered);
@@ -6473,8 +6473,8 @@ var qm = {
             }
             return 0;
         },
-        getTrackingRemindersFromLocalStorage: function(requestParams){
-            var reminders = qm.storage.getElementsWithRequestParams(qm.items.trackingReminders, requestParams);
+        getTrackingRemindersFromLocalStorage: function(params){
+            var reminders = qm.storage.getElementsWithRequestParams(qm.items.trackingReminders, params);
             reminders = reminders || [];
             reminders = qm.arrayHelper.removeDuplicatesById(reminders);
             reminders.forEach(function (r){
@@ -7831,10 +7831,10 @@ var qm = {
             }
             return localStorageItemsArray;
         },
-        getElementsWithRequestParams: function(localStorageItemName, requestParams){
-            if(requestParams){
+        getElementsWithRequestParams: function(localStorageItemName, params){
+            if(params){
                 qm.qmLog.info("getElementsWithRequestParams: Getting " + localStorageItemName + " WithRequestParams: "+
-                    JSON.stringify(requestParams, null, 2) );
+                    JSON.stringify(params, null, 2) );
             } else{
                 qm.qmLog.info("getElementsWithRequestParams: Getting ALL " + localStorageItemName);
             }
@@ -7842,7 +7842,7 @@ var qm = {
             if(!array){
                 return array;
             }
-            array = qm.arrayHelper.filterByRequestParams(array, requestParams);
+            array = qm.arrayHelper.filterByRequestParams(array, params);
             return array;
         },
         clearStorageExceptForUnitsAndCommonVariables: function(){
@@ -9625,6 +9625,7 @@ var qm = {
                 }
                 qm.api.generalResponseHandler(error, data, response, successHandler, errorHandler, params, cacheKey);
             }
+            qmLog.info("apiInstance.getVariables with params: ", params)
             apiInstance.getVariables(params, callback);
         },
         getByNameFromApi: function(variableName, params, successHandler, errorHandler){
@@ -9861,11 +9862,11 @@ var qm = {
             });
             return variables;
         },
-        getUserAndCommonVariablesFromLocalStorage: function(requestParams, successHandler, errorHandler){
-            requestParams = requestParams || {};
-            qm.userVariables.getFromLocalStorage(requestParams, function(userVariables){
+        getUserAndCommonVariablesFromLocalStorage: function(params, successHandler, errorHandler){
+            params = params || {};
+            qm.userVariables.getFromLocalStorage(params, function(userVariables){
                 userVariables = userVariables || [];
-                qm.commonVariablesHelper.getFromLocalStorage(requestParams, function(commonVariables){
+                qm.commonVariablesHelper.getFromLocalStorage(params, function(commonVariables){
                     commonVariables = commonVariables || [];
                     var both = userVariables.concat(commonVariables);
                     both = qm.arrayHelper.getUnique(both, 'variableId');
@@ -9873,9 +9874,9 @@ var qm = {
                 });
             }, errorHandler);
         },
-        updateSubtitles: function(variables, requestParams){
-            if(requestParams && requestParams.sort){
-                var sort = requestParams.sort;
+        updateSubtitles: function(variables, params){
+            if(params && params.sort){
+                var sort = params.sort;
                 sort = sort.replace("-", "");
                 for(var i = 0; i < variables.length; i++){
                     if(sort.toLowerCase().indexOf("correlation")){
