@@ -8,6 +8,8 @@ var fileHelper = require("../ts/qm.file-helper")
 var cypressFunctions = require("../ts/cypress-functions")
 var urlParser = require("url")
 var https = require("https")
+global.fetch = require("../../node_modules/node-fetch/lib/index.js")
+global.Headers = fetch.Headers
 var _str = require("underscore.string")
 var simpleGit = require("simple-git/promise")
 var th = require("../ts/test-helpers")
@@ -181,7 +183,7 @@ var qmTests = {
                         var variable5 = variables[4]
                         var timestamp = qm.timeHelper.getUnixTimestampInSeconds()
                         qm.variablesHelper.setLastSelectedAtAndSave(variable5)
-                        var userVariables = qm.globalHelper.getItem(qm.items.userVariables)
+                        var userVariables = qm.globalHelper.getItem(qm.items.userVariables) || []
                         qmLog.info("There are " + userVariables.length + " user variables")
                         //qm.assert.isNull(userVariables, qm.items.userVariables);
                         qm.variablesHelper.getFromLocalStorageOrApi({id: variable5.id, includePublic: true}, function(variables){
