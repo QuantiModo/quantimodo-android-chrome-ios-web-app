@@ -12,7 +12,7 @@ function multiplyScreenWidth(factor){
     }
     return parseInt(factor * screen.height);
 }
-window.qm.chrome = {
+var qmChrome = {
     allowFocusing: false,
     debugEnabled: true,
     chromeDebug: function(){
@@ -439,8 +439,14 @@ if(typeof screen !== "undefined"){
         },
     };
 }
-if(qm.platform.isChromeExtension()){
+if(typeof qm !== "undefined" && qm.platform.isChromeExtension()){
     qm.chrome.initialize();
 } else {
     //console.debug("Not a chrome extension");
+}
+if(typeof window !== "undefined"){
+    window.qm.chrome = qmChrome;
+}else{
+    module.exports = qmChrome;
+    global.qmChrome = qmChrome;
 }
