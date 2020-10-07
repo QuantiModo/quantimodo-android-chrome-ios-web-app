@@ -2633,7 +2633,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             stateHelper: {
                 previousUrl: null,
                 goBack: function(providedStateParams){
-                    qmLog.info("goBack: Called goBack with state params: " + JSON.stringify(providedStateParams));
+                    qmLog.info("goBack: Called goBack with state params: ", providedStateParams);
                     function skipSearchPages(){
                         if(stateId.toLowerCase().indexOf('search') !== -1){ // Skip search pages
                             $ionicHistory.removeBackView();
@@ -4338,20 +4338,20 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 defer.reject(errorMessage);
                 return defer.promise;
             }
-            var parsedMeasurementsQueue = qm.measurements.getMeasurementsFromQueue();
-            if(!parsedMeasurementsQueue || parsedMeasurementsQueue.length < 1){
+            var queue = qm.measurements.getMeasurementsFromQueue();
+            if(!queue || queue.length < 1){
                 if(successHandler){successHandler();}
             } else {
-                qmService.postMeasurementsToApi(parsedMeasurementsQueue, function(response){
+                qmService.postMeasurementsToApi(queue, function(response){
                     if(response && response.data && response.data.userVariables){
                         qm.variablesHelper.saveToLocalStorage(response.data.userVariables);
                     }
-                    qm.measurements.recentlyPostedMeasurements = qm.measurements.recentlyPostedMeasurements.concat(parsedMeasurementsQueue);  // Save these for history page
+                    qm.measurements.measurementCache = qm.measurements.measurementCache.concat(queue);  // Save these for history page
                     qm.storage.setItem(qm.items.measurementsQueue, []);
                     if(successHandler){successHandler();}
                     defer.resolve();
                 }, function(error){
-                    qm.storage.setItem(qm.items.measurementsQueue, parsedMeasurementsQueue);
+                    qm.storage.setItem(qm.items.measurementsQueue, queue);
                     if(errorHandler){errorHandler();}
                     defer.reject(error);
                 });
@@ -4456,19 +4456,19 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             }
             return false;
         }
-        qmService.postMeasurementDeferred = function(measurementInfo, successHandler){
-            isStartTimeInMilliseconds(measurementInfo);
-            measurementInfo = qm.measurements.addLocationAndSourceDataToMeasurement(measurementInfo);
-            if(measurementInfo.prevStartTimeEpoch){ // Primary outcome variable - update through measurementsQueue
-                qm.measurements.updateMeasurementInQueue(measurementInfo);
-            }else if(measurementInfo.id){
-                qm.localForage.deleteById(qm.items.primaryOutcomeVariableMeasurements, measurementInfo.id);
-                qm.measurements.addToMeasurementsQueue(measurementInfo);
+        qmService.postMeasurementDeferred = function(m, successHandler){
+            isStartTimeInMilliseconds(m);
+            m = qm.measurements.addLocationAndSourceDataToMeasurement(m);
+            if(m.prevStartTimeEpoch){ // Primary outcome variable - update through measurementsQueue
+                qm.measurements.updateMeasurementInQueue(m);
+            }else if(m.id){
+                qm.localForage.deleteById(qm.items.primaryOutcomeVariableMeasurements, m.id);
+                qm.measurements.addToMeasurementsQueue(m);
             }else{
-                qm.measurements.addToMeasurementsQueue(measurementInfo);
+                qm.measurements.addToMeasurementsQueue(m);
             }
-            qm.userVariables.updateLatestMeasurementTime(measurementInfo.variableName, measurementInfo.value);
-            if(measurementInfo.variableName === qm.getPrimaryOutcomeVariable().name){
+            qm.userVariables.updateLatestMeasurementTime(m.variableName, m.value);
+            if(m.variableName === qm.getPrimaryOutcomeVariable().name){
                 qmService.syncPrimaryOutcomeVariableMeasurements();
             }else{
                 qmService.postMeasurementQueueToServer(successHandler);
