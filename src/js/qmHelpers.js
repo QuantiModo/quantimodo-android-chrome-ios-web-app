@@ -608,10 +608,6 @@ var qm = {
         },
         getViaFetch: function(url, successHandler, errorHandler){
             qm.qmLog.pushDebug("Making get request to " + url);
-            if(typeof fetch === "undefined") { // For testing in nodejs
-                var fetch = require("../../node_modules/node-fetch/lib/index.js");
-                global.Headers = fetch.Headers;
-            }
             fetch(url, {
                 method: 'get',
                 headers: new Headers(qm.api.getDefaultHeaders())
