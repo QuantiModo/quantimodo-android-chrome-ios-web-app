@@ -448,6 +448,15 @@ var qmLog = {
     },
     getConsoleLogString: function(logLevel, errorSpecificMetaData){
         var logString = qmLog.name;
+        if(typeof logString === 'object' && logString !== null){
+            if(logString.message){
+                logString = logString.message;
+            } else if (logString.errorMessage) {
+                logString = logString.errorMessage;
+            } else {
+                logString = qm.stringHelper.prettyJsonStringify(logString);
+            }
+        }
         if(qmLog.message && logString !== qmLog.message){
             logString = logString + ": " + qmLog.message;
         }

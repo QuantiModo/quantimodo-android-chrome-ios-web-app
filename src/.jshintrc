@@ -42,7 +42,6 @@
     "qm": false,
     "qm.appsManager" : false,
     "qmAnalytics": false,
-    "qmChrome": false,
     "qmItems": false,
     "qmLog": false,
     "qmNotifications": false,

@@ -1,5 +1,4 @@
 // noinspection JSUnusedGlobalSymbols,JSUnusedGlobalSymbols
-import appRoot from "app-root-path"
 import AWS from "aws-sdk"
 import * as fs from "fs"
 import * as path from "path"
@@ -75,5 +74,9 @@ export  function writeToFile(filePath: string, contents: any, cb?: () => void) {
 }
 
 export function getAbsolutePath(relativePath: string) {
-  return path.resolve(appRoot.toString(), relativePath)
+    if(path.isAbsolute(relativePath)) {
+        return relativePath
+    } else {
+        return path.resolve(".", relativePath)
+    }
 }

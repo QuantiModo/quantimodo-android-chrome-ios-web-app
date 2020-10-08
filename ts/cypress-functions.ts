@@ -1,4 +1,4 @@
-import sdkRepo from "app-root-path"
+import repoPath from "app-root-path"
 import * as cypress from "cypress"
 import {slackRunner} from "cypress-slack-reporter/bin/slack/slack-alert.js"
 import * as fs from "fs"
@@ -15,12 +15,12 @@ import {createSuccessFile, deleteEnvFile, deleteSuccessFile, getBuildLink, getCi
 loadEnv("local") // https://github.com/motdotla/dotenv#what-happens-to-environment-variables-that-were-already-set
 const ciProvider = getCiProvider()
 const isWin = process.platform === "win32"
-const outputReportDir = sdkRepo + "/mochawesome-report"
-const screenshotDirectory = `${sdkRepo}/mochawesome-report/assets`
-const unmerged = sdkRepo + "/cypress/reports/mocha"
+const outputReportDir = repoPath + "/mochawesome-report"
+const screenshotDirectory = `${repoPath}/mochawesome-report/assets`
+const unmerged = repoPath + "/cypress/reports/mocha"
 const vcsProvider = "github"
 const verbose = true
-const videoDirectory = `${sdkRepo}/cypress/videos`
+const videoDirectory = `${repoPath}/cypress/videos`
 const mergedJsonPath = outputReportDir + "/mochawesome.json"
 const lastFailedCypressTestPath = "last-failed-cypress-test"
 const cypressJson = fileHelper.getAbsolutePath("tests/cypress.json")
@@ -256,7 +256,7 @@ export function runOneCypressSpec(specName: string, cb: ((err: any) => void)) {
 }
 
 function getSpecsPath() {
-    return sdkRepo + "/cypress/integration"
+    return repoPath + "/cypress/integration"
 }
 
 export function runCypressTests(cb?: (err: any) => void) {
