@@ -116,13 +116,16 @@ export const githubStatusStates = {
 // tslint:disable-next-line:max-line-length
 export function setGithubStatus(testState: "error" | "failure" | "pending" | "success", context: string,
                                 description: string, url?: string | null, cb?: ((arg0: any) => void) | undefined) {
+    if (testState === "error") {
+        console.error(description + " " + context)
+    }
     description = _str.truncate(description, 135)
     url = url || getBuildLink()
     if(!url) {
         const message = "No build link or target url for status!"
         console.error(message)
-        if (cb) {cb(message)}
-        return
+        // if (cb) {cb(message)}
+        // return
     }
     // @ts-ignore
     const params: Octokit.ReposCreateStatusParams = {
