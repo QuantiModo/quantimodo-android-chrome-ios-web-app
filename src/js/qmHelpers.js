@@ -9550,13 +9550,17 @@ var qm = {
             //params.includeAuthorizedClients = true;  // To big for $rootScope!
             //qm.api.executeWithRateLimit(function () {apiInstance.getUser(params, userSdkCallback);});  // Seems to have a delay before first call
             params = qm.api.addGlobalParams(params);
-            apiInstance.getUsers(params, function(error, user, response){
-                qm.api.generalResponseHandler(error, user, response, function(){
-                    if(user){
-                        userSuccessHandler(user);
-                    }
-                }, errorHandler, params, 'getUsersFromApi');
-            });
+            try {
+                apiInstance.getUsers(params, function(error, user, response){
+                    qm.api.generalResponseHandler(error, user, response, function(){
+                        if(user){
+                            userSuccessHandler(user);
+                        }
+                    }, errorHandler, params, 'getUsersFromApi');
+                });
+            } catch(e) {
+                throw "Could not get users from "+ qm.api.getBaseUrl()+ " because "+e.message
+            }
         },
         updateUserSettings: function(params, successHandler, errorHandler){
             qm.api.postToQuantiModo(params, 'v3/userSettings', function (response) {
