@@ -1,5 +1,7 @@
 "use strict"
 Object.defineProperty(exports, "__esModule", { value: true })
+var path = require('path')
+var appDir = path.resolve(".")
 var chai = require("chai")
 var qmGit = require("../../ts/qm.git")
 var qmShell = require("../../ts/qm.shell")
@@ -413,7 +415,7 @@ describe("API tests", function (){
 })
 describe("uploader", function () {
     it("uploads a file", function (done) {
-        fileHelper.uploadToS3("ionIcons.js", "tests", function (uploadResponse) {
+        fileHelper.uploadToS3(appDir + "/tests/ionIcons.js", "tests", function (uploadResponse) {
             downloadFileContains(uploadResponse.Location, "iosArrowUp", done)
         })
     })
