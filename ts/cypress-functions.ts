@@ -15,21 +15,21 @@ import {createSuccessFile, deleteEnvFile, deleteSuccessFile, getBuildLink, getCi
 loadEnv("local") // https://github.com/motdotla/dotenv#what-happens-to-environment-variables-that-were-already-set
 const ciProvider = getCiProvider()
 const isWin = process.platform === "win32"
-const outputReportDir = repoPath + "/mochawesome-report"
-const screenshotDirectory = `${repoPath}/mochawesome-report/assets`
-const unmerged = repoPath + "/cypress/reports/mocha"
+const outputReportDir = repoPath + "/tests/mochawesome-report"
+const screenshotDirectory = `${repoPath}/tests/mochawesome-report/assets`
+const unmerged = repoPath + "tests/cypress/reports/mocha"
 const vcsProvider = "github"
 const verbose = true
-const videoDirectory = `${repoPath}/cypress/videos`
-const mergedJsonPath = outputReportDir + "/mochawesome.json"
+const videoDirectory = `${repoPath}/tests/cypress/videos`
+const mergedJsonPath = outputReportDir + "/tests/mochawesome.json"
 const lastFailedCypressTestPath = "last-failed-cypress-test"
 const cypressJson = fileHelper.getAbsolutePath("tests/cypress.json")
 const releaseStage = process.env.RELEASE_STAGE || "production"
 const envPath = fileHelper.getAbsolutePath(`tests/cypress/config/cypress.${releaseStage}.json`)
 const paths = {
     reports: {
-        junit: "./cypress/reports/junit",
-        mocha: "./cypress/reports/mocha",
+        junit: "./tests/cypress/reports/junit",
+        mocha: "./tests/cypress/reports/mocha",
     },
 }
 function getReportUrl() {
@@ -256,7 +256,7 @@ export function runOneCypressSpec(specName: string, cb: ((err: any) => void)) {
 }
 
 function getSpecsPath() {
-    return repoPath + "/cypress/integration"
+    return repoPath + "/tests/cypress/integration"
 }
 
 export function runCypressTests(cb?: (err: any) => void) {
