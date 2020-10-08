@@ -387,6 +387,12 @@ var qmChrome = {
         }
     }
 };
+if(typeof window !== "undefined"){
+    window.qm.chrome = qmChrome;
+}else{
+    module.exports = qmChrome;
+    global.qmChrome = qmChrome;
+}
 if(typeof screen !== "undefined"){
     qm.chrome.windowParams = {
         introWindowParams: {
@@ -444,9 +450,4 @@ if(typeof qm !== "undefined" && qm.platform.isChromeExtension()){
 } else {
     //console.debug("Not a chrome extension");
 }
-if(typeof window !== "undefined"){
-    window.qm.chrome = qmChrome;
-}else{
-    module.exports = qmChrome;
-    global.qmChrome = qmChrome;
-}
+
