@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 called=$_ && [[ ${called} != $0 ]] && echo "${BASH_SOURCE[@]} is being sourced" || echo "${0} is being run"
 SCRIPT_PATH="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/$(basename "${BASH_SOURCE[0]}")"
-SCRIPT_FOLDER=`dirname ${SCRIPT_PATH}` && cd ${SCRIPT_FOLDER} && cd .. && export REPO_DIR="$PWD"
+SCRIPT_FOLDER=`dirname ${SCRIPT_PATH}` && cd "${SCRIPT_FOLDER}" && cd ../.. && export REPO_DIR="$PWD"
 set -x
 rm cypress.env.json || true
 set +x
@@ -21,9 +21,9 @@ set -e
 npm install
 set +x
 echo "Saving host environment variables to host.env to access within docker"
-printenv > ${REPO_DIR}/.env
+printenv > "${REPO_DIR}/.env"
 echo "Creating /etc/asound.conf to deal with cannot find card '0' error message spam output"
-sudo cp asound.conf /etc/asound.conf
+sudo cp "${REPO_DIR}/tests/asound.conf" /etc/asound.conf
 echo -e 'pcm.!default {\n type hw\n card 0\n}\n\nctl.!default {\n type hw\n card 0\n}' > ~/.asoundrc
 echo "Deleting videos because they take a ton of space..."
 set -x
