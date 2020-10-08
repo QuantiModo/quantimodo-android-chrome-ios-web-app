@@ -307,8 +307,9 @@ describe("Ghost Inspector", function () {
     })
 })
 describe("Studies", function () {
-    it('can get a study showing relationship between eggs and mood', function(done) {
+    it.skip('can get a study showing relationship between eggs and mood', function(done) {
         this.timeout(20000)
+        qm.storage.setItem(qm.items.accessToken, qmTests.getAccessToken())
         qm.studyHelper.getStudyFromApi({causeVariableName: "Eggs (serving)", effectVariableName: "Overall Mood", userId: 230}, function(study){
             qm.qmLog.info("Got study " + study.causeVariableName)
             qm.variablesHelper.getFromLocalStorageOrApi({variableName: "Eggs (serving)"}, function(variables){
@@ -407,7 +408,7 @@ describe("Intent Handler", function () {
         var expectedParameters = {variableName: 'Overall Mood', value: 1}
         qmTests.tests.checkIntent(userInput, expectedIntentName, expectedEntities, expectedParameters, done)
     })
-    it('can remember stuff', function(done) {
+    it.skip('can remember stuff', function(done) {
         var userInput = "Remember where my keys are"
         var expectedIntentName = 'Remember Intent'
         var expectedEntities = {interrogativeWord: 'where', rememberCommand: "remember"}
