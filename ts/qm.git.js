@@ -11,9 +11,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var rest_1 = __importDefault(require("@octokit/rest"));
-var app_root_path_1 = __importDefault(require("app-root-path"));
-var path = __importStar(require("path"));
-var remote_origin_url_1 = __importDefault(require("remote-origin-url"));
 // @ts-ignore
 var git = __importStar(require("simple-git"));
 var underscore_string_1 = __importDefault(require("underscore.string"));
@@ -68,14 +65,7 @@ function getRepoUrl() {
     if (process.env.GIT_URL) {
         return process.env.GIT_URL;
     }
-    var appRootString = app_root_path_1.default.toString();
-    var configPath = path.resolve(appRootString, ".git/config");
-    // @ts-ignore
-    var gitUrl = remote_origin_url_1.default.sync({ path: configPath, cwd: app_root_path_1.default });
-    if (!gitUrl) {
-        throw new Error('cannot find ".git/config"');
-    }
-    return gitUrl;
+    return "https://github.com/QuantiModo/quantimodo-android-chrome-ios-web-app.git";
 }
 exports.getRepoUrl = getRepoUrl;
 function getRepoParts() {
