@@ -23,9 +23,9 @@ const verbose = true
 const videoDirectory = `${sdkRepo}/cypress/videos`
 const mergedJsonPath = outputReportDir + "/mochawesome.json"
 const lastFailedCypressTestPath = "last-failed-cypress-test"
-const cypressJson = fileHelper.getAbsolutePath("cypress.json")
+const cypressJson = fileHelper.getAbsolutePath("tests/cypress.json")
 const releaseStage = process.env.RELEASE_STAGE || "production"
-const envPath = fileHelper.getAbsolutePath(`cypress/config/cypress.${releaseStage}.json`)
+const envPath = fileHelper.getAbsolutePath(`tests/cypress/config/cypress.${releaseStage}.json`)
 const paths = {
     reports: {
         junit: "./cypress/reports/junit",
