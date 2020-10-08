@@ -134,15 +134,16 @@ exports.githubStatusStates = {
  */
 // tslint:disable-next-line:max-line-length
 function setGithubStatus(testState, context, description, url, cb) {
+    if (testState === "error") {
+        console.error(description + " " + context);
+    }
     description = underscore_string_1.default.truncate(description, 135);
     url = url || test_helpers_1.getBuildLink();
     if (!url) {
         var message = "No build link or target url for status!";
         console.error(message);
-        if (cb) {
-            cb(message);
-        }
-        return;
+        // if (cb) {cb(message)}
+        // return
     }
     // @ts-ignore
     var params = {
