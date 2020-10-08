@@ -26,21 +26,21 @@ var test_helpers_1 = require("./test-helpers");
 env_helper_1.loadEnv("local"); // https://github.com/motdotla/dotenv#what-happens-to-environment-variables-that-were-already-set
 var ciProvider = test_helpers_1.getCiProvider();
 var isWin = process.platform === "win32";
-var outputReportDir = app_root_path_1.default + "/mochawesome-report";
-var screenshotDirectory = app_root_path_1.default + "/mochawesome-report/assets";
-var unmerged = app_root_path_1.default + "/cypress/reports/mocha";
+var outputReportDir = app_root_path_1.default + "/tests/mochawesome-report";
+var screenshotDirectory = app_root_path_1.default + "/tests/mochawesome-report/assets";
+var unmerged = app_root_path_1.default + "tests/cypress/reports/mocha";
 var vcsProvider = "github";
 var verbose = true;
-var videoDirectory = app_root_path_1.default + "/cypress/videos";
-var mergedJsonPath = outputReportDir + "/mochawesome.json";
+var videoDirectory = app_root_path_1.default + "/tests/cypress/videos";
+var mergedJsonPath = outputReportDir + "/tests/mochawesome.json";
 var lastFailedCypressTestPath = "last-failed-cypress-test";
 var cypressJson = fileHelper.getAbsolutePath("tests/cypress.json");
 var releaseStage = process.env.RELEASE_STAGE || "production";
 var envPath = fileHelper.getAbsolutePath("tests/cypress/config/cypress." + releaseStage + ".json");
 var paths = {
     reports: {
-        junit: "./cypress/reports/junit",
-        mocha: "./cypress/reports/mocha",
+        junit: "./tests/cypress/reports/junit",
+        mocha: "./tests/cypress/reports/mocha",
     },
 };
 function getReportUrl() {
@@ -264,7 +264,7 @@ function runOneCypressSpec(specName, cb) {
 }
 exports.runOneCypressSpec = runOneCypressSpec;
 function getSpecsPath() {
-    return app_root_path_1.default + "/cypress/integration";
+    return app_root_path_1.default + "/tests/cypress/integration";
 }
 function runCypressTests(cb) {
     test_helpers_1.deleteSuccessFile();
