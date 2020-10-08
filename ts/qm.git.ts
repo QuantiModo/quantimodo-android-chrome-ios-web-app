@@ -1,7 +1,4 @@
 import Octokit from "@octokit/rest"
-import appRoot from "app-root-path"
-import * as path from "path"
-import origin from "remote-origin-url"
 // @ts-ignore
 import * as git from "simple-git"
 import _str from "underscore.string"
@@ -52,14 +49,7 @@ export function getRepoUrl() {
     if (process.env.GIT_URL) {
         return process.env.GIT_URL
     }
-    const appRootString = appRoot.toString()
-    const configPath = path.resolve(appRootString, ".git/config")
-    // @ts-ignore
-    const gitUrl = origin.sync({path: configPath, cwd: appRoot})
-    if (!gitUrl) {
-        throw new Error('cannot find ".git/config"')
-    }
-    return gitUrl
+    return "https://github.com/QuantiModo/quantimodo-android-chrome-ios-web-app.git"
 }
 export function getRepoParts() {
     let gitUrl = getRepoUrl()

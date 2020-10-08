@@ -457,6 +457,7 @@ describe("unit-tests", function () {
     })
     it('test-get-users', function(done) {
         this.timeout(10000)
+        chai.expect(qm.api.getApiUrl()).to.eq("https://app.quantimo.do")
         qmTests.tests.getUsersTest(done)
     })
     it('test-push-parsing', function(done) {
