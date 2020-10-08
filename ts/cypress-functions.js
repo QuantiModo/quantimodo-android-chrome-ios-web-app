@@ -34,9 +34,9 @@ var verbose = true;
 var videoDirectory = app_root_path_1.default + "/cypress/videos";
 var mergedJsonPath = outputReportDir + "/mochawesome.json";
 var lastFailedCypressTestPath = "last-failed-cypress-test";
-var cypressJson = fileHelper.getAbsolutePath("cypress.json");
+var cypressJson = fileHelper.getAbsolutePath("tests/cypress.json");
 var releaseStage = process.env.RELEASE_STAGE || "production";
-var envPath = fileHelper.getAbsolutePath("cypress/config/cypress." + releaseStage + ".json");
+var envPath = fileHelper.getAbsolutePath("tests/cypress/config/cypress." + releaseStage + ".json");
 var paths = {
     reports: {
         junit: "./cypress/reports/junit",
