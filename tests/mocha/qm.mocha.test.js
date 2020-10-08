@@ -1,7 +1,6 @@
 "use strict"
 Object.defineProperty(exports, "__esModule", { value: true })
-var chai_1 = require("chai")
-var chai_2 = require("chai")
+var chai = require("chai")
 var qmGit = require("../ts/qm.git")
 var qmShell = require("../ts/qm.shell")
 var fileHelper = require("../ts/qm.file-helper")
@@ -355,7 +354,7 @@ afterEach(function (done) {
 describe("git", function () {
     it.skip("sets commit status", function (done) {
         qmGit.setGithubStatus("pending", "test context", "test description", "https://get-bent.com", function (res) {
-            chai_1.expect(res.status).to.eq(201)
+            chai.expect(res.status).to.eq(201)
             done()
         })
     })
@@ -364,11 +363,11 @@ describe("git", function () {
         var branchName = "feature/" + featureName
         qmGit.createFeatureBranch("test-feature")
         git.branchLocal().then(function (branchSummary) {
-            chai_1.expect(branchSummary.all).to.contain(branchName)
+            chai.expect(branchSummary.all).to.contain(branchName)
             qmShell.executeSynchronously("git checkout -B develop", true)
             git.deleteLocalBranch(branchName).then(function () {
                 git.branchLocal().then(function (branchSummary) {
-                    chai_1.expect(branchSummary.all).not.to.contain(branchName)
+                    chai.expect(branchSummary.all).not.to.contain(branchName)
                     done()
                 })
             })
@@ -377,7 +376,7 @@ describe("git", function () {
 })
 function downloadFileContains(url, expectedToContain, cb) {
     downloadFile(url, function (str) {
-        chai_1.expect(str).to.contain(expectedToContain)
+        chai.expect(str).to.contain(expectedToContain)
         cb()
     })
 }
@@ -391,7 +390,7 @@ function downloadFile(url, cb) {
     }
     var req = https.request(options, function (res) {
         console.log("statusCode: " + res.statusCode)
-        chai_1.expect(res.statusCode).to.eq(200)
+        chai.expect(res.statusCode).to.eq(200)
         var str = ""
         res.on("data", function (chunk) {
             str += chunk
@@ -406,6 +405,12 @@ function downloadFile(url, cb) {
     })
     req.end()
 }
+describe("API tests", function (){
+    it("Makes sure api url is app.quantimo.do", function (done) {
+        chai.expect(qm.api.getApiUrl()).to.eq("https://app.quantimo.do")
+        done()
+    })
+})
 describe("uploader", function () {
     it("uploads a file", function (done) {
         fileHelper.uploadToS3("ionIcons.js", "tests", function (uploadResponse) {
@@ -423,10 +428,10 @@ describe("gi-tester", function () {
     it("runs tests on staging API", function (done) {
         var previouslySetApiUrl = process.env.API_URL || null
         delete process.env.API_URL
-        chai_2.assert.isUndefined(process.env.API_URL)
+        chai.assert.isUndefined(process.env.API_URL)
         process.env.RELEASE_STAGE = "staging"
         var url = th.getApiUrl()
-        chai_1.expect(url).to.contain("https://staging.quantimo.do")
+        chai.expect(url).to.contain("https://staging.quantimo.do")
         if (previouslySetApiUrl) {
             process.env.API_URL = previouslySetApiUrl
         }
