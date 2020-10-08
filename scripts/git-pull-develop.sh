@@ -35,4 +35,4 @@ sleep 3
 unstash;
 echo "Deleting local branches that have been merged to develop already"
 git branch --merged | egrep -v "(^\*|master|dev)" | xargs -r git branch -d
-sleep 10
+#sleep 10
