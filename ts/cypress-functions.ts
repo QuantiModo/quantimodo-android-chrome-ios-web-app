@@ -33,8 +33,9 @@ const paths = {
     },
 }
 function getReportUrl() {
-    if (process.env.JOB_URL && process.env.JOB_URL.indexOf("DEPLOY-") === 0) {
-        return process.env.JOB_URL + "ws/tmp/quantimodo-sdk-javascript/mochawesome-report/mochawesome.html"
+    const url = process.env.JOB_URL
+    if (url && url.indexOf("DEPLOY-") === 0) {
+        return url + "ws/tmp/quantimodo-sdk-javascript/mochawesome-report/mochawesome.html"
     }
     return getBuildLink()
 }

@@ -1,26 +1,26 @@
 "use strict"
 Object.defineProperty(exports, "__esModule", { value: true })
 var chai = require("chai")
-var qmGit = require("../ts/qm.git")
-var qmShell = require("../ts/qm.shell")
-var fileHelper = require("../ts/qm.file-helper")
-var cypressFunctions = require("../ts/cypress-functions")
+var qmGit = require("../../ts/qm.git")
+var qmShell = require("../../ts/qm.shell")
+var fileHelper = require("../../ts/qm.file-helper")
+var cypressFunctions = require("../../ts/cypress-functions")
 var urlParser = require("url")
 var https = require("https")
 global.fetch = require("../../node_modules/node-fetch/lib/index.js")
 global.Headers = fetch.Headers
 var _str = require("underscore.string")
 var simpleGit = require("simple-git/promise")
-var th = require("../ts/test-helpers")
+var th = require("../../ts/test-helpers")
 var git = simpleGit()
 global.bugsnagClient = require('./../../node_modules/bugsnag')
 //global.Swal = require('./../../src/lib/swee')
-var argv = require('./../node_modules/yargs').argv
+var argv = require('./../../node_modules/yargs').argv
 global.qm = require('./../../src/js/qmHelpers')
 qm.appMode.mode = 'testing'
 var qmLog = require('./../../src/js/qmLogger')
-qmLog.color = require('./../node_modules/ansi-colors')
-qm.github = require('./../node_modules/gulp-github')
+qmLog.color = require('./../../node_modules/ansi-colors')
+qm.github = require('./../../node_modules/gulp-github')
 qm.Quantimodo = require('./../../node_modules/quantimodo')
 require('./../../src/data/qmStaticData')
 qm.stateNames = qm.staticData.stateNames
