@@ -1624,6 +1624,7 @@ var qm = {
             }
             var combinedMessage = testMessage + customMessage;
             console.error("FAILED: " + combinedMessage + "\n");
+            debugger
             var e = new Error(combinedMessage);
             e.stack = qm.stringHelper.getStringBeforeSubstring('at Gulp', e.stack, e.stack);
             e.stack = qm.stringHelper.getStringBeforeSubstring('at Object.runAllTestsForType', e.stack, e.stack);
@@ -8367,14 +8368,16 @@ var qm = {
                 return false;
             }
             function callback(error, data, response){
-                var study = qm.studyHelper.processAndSaveStudy(data);
-                if(!study.causeVariable || !study.effectVariable){
-                    if(error){
-                        errorHandler(error);
-                    } else {
-                        errorHandler("No study cause and effect variable properties!");
+                if(data){
+                    var study = qm.studyHelper.processAndSaveStudy(data);
+                    if(!study.causeVariable || !study.effectVariable){
+                        if(error){
+                            errorHandler(error);
+                        } else {
+                            errorHandler("No study cause and effect variable properties!");
+                        }
+                        return;
                     }
-                    return;
                 }
                 qm.api.generalResponseHandler(error, study, response, successHandler, errorHandler, params, cacheKey);
             }
@@ -8458,134 +8461,9 @@ var qm = {
         }
     },
     tests: {
-        menu: {
-            testMoveMenuItemDown: function(){
-                var original = JSON.parse(JSON.stringify(qm.menu.getMenu()));
-                var reordered = qm.menu.moveMenuItemDown(JSON.parse(JSON.stringify(original)), 0);
-                qm.assert.doesNotEqual(original[0].id, reordered[0].id);
-                qm.assert.doesNotEqual(original[1].id, reordered[1].id);
-                qm.assert.equals(original[0].id, reordered[1].id);
-            },
-            testMoveFirstMenuItemUp: function(){
-                var original = JSON.parse(JSON.stringify(qm.menu.getMenu()));
-                var reordered = qm.menu.moveMenuItemUp(JSON.parse(JSON.stringify(original)), 0);
-                qm.assert.equals(original[0].id, reordered[0].id);
-            },
-            testMoveMenuItemUp: function(){
-                var original = JSON.parse(JSON.stringify(qm.menu.getMenu()));
-                var reordered = qm.menu.moveMenuItemUp(JSON.parse(JSON.stringify(original)), 1);
-                qm.assert.equals(original[1].id, reordered[0].id);
-                qm.assert.doesNotEqual(original[0].id, reordered[0].id);
-                qm.assert.doesNotEqual(original[1].id, reordered[1].id);
-            },
-            testChangeVariableCategory: function(){
-                var before = {
-                    "stateName": "app.historyAllCategory",
-                    "href": "#/app/history-all-category/Physical+Activity",
-                    "url": "/history-all-category/:variableCategoryName",
-                    "icon": "ion-ios-body-outline",
-                    "subMenu": null,
-                    "params": {
-                        "showAds": true,
-                        "variableCategoryName": null,
-                        "refresh": null,
-                        "title": "History",
-                        "ionIcon": "ion-ios-list-outline"
-                    },
-                    "title": "Activity History",
-                    "id": "history-all-category-physical-activity",
-                    "showSubMenu": true,
-                    "$$hashKey": "object:3482",
-                    "cache": true,
-                    "views": {
-                        "menuContent": {
-                            "templateUrl": "templates/history-all.html",
-                            "controller": "historyAllMeasurementsCtrl"
-                        }
-                    },
-                    "name": "app.historyAllCategory"
-                };
-                before.params.variableCategoryName = "Nutrients";
-                var updated = qm.menu.onParameterChange(JSON.parse(JSON.stringify(before)));
-                qm.assert.contains("Nutrients", updated.href);
-                qm.assert.equals("history-all-category-nutrients", updated.id);
-                qm.assert.equals("Nutrients History", updated.title);
-                qm.assert.doesNotContain(":variableCategory", updated.href);
-                return updated;
-            },
-            testChangeState: function(){
-                var before = {
-                    "stateName": "app.historyAllCategory",
-                    "href": "#/app/history-all-category/Physical+Activity",
-                    "url": "/history-all-category/:variableCategoryName",
-                    "icon": "ion-ios-body-outline",
-                    "subMenu": null,
-                    "params": {
-                        "showAds": true,
-                        "variableCategoryName": null,
-                        "refresh": null,
-                        "title": "History",
-                        "ionIcon": "ion-ios-list-outline"
-                    },
-                    "title": "Activity History",
-                    "id": "history-all-category-physical-activity",
-                    "showSubMenu": true,
-                    "$$hashKey": "object:3482",
-                    "cache": true,
-                    "views": {
-                        "menuContent": {
-                            "templateUrl": "templates/history-all.html",
-                            "controller": "historyAllMeasurementsCtrl"
-                        }
-                    },
-                    "name": "app.historyAllCategory"
-                };
-                before.stateName = qm.staticData.stateNames.charts;
-                var updated = qm.menu.onStateChange(JSON.parse(JSON.stringify(before)));
-                qm.assert.contains("charts", updated.href);
-                qm.assert.contains("charts", updated.id);
-                qm.assert.equals("Charts", updated.title);
-                qm.assert.doesNotContain(":variableCategory", updated.href);
-                updated.params.variableName = "Overall Mood";
-                updated = qm.menu.onStateChange(JSON.parse(JSON.stringify(before)));
-                qm.assert.contains("Overall", updated.href);
-                qm.assert.equals("charts-overall-mood", updated.id);
-                qm.assert.equals("Overall Mood Charts", updated.title);
-                qm.assert.doesNotContain(":variableName", updated.href);
-                qm.assert.doesNotHaveProperty(updated.params, 'variableCategoryName');
-                return updated;
-            }
-        },
         chrome: {
             testPopupWindow: function(){
                 qm.chrome.createPopup(qm.chrome.windowParams.introWindowParams);
-            }
-        },
-        urlHelper: {
-            testGetQueryParamsFromQueryBeforeHash: function(){
-                var url = 'https://dev-web.quantimo.do/?clientId=preve-wellness-tracker#/app/onboarding';
-                var params = qm.urlHelper.getQueryParams(url);
-                qm.assert.equals('preve-wellness-tracker', params.clientId);
-            }
-        },
-        study: {
-            testGetVariableAfterGettingStudy: function(callback){
-                qm.studyHelper.getStudyFromApi({causeVariableName: "Eggs (serving)", effectVariableName: "Overall Mood", userId: 230}, function(study){
-                    qm.qmLog.info("Got study "+study.causeVariableName);
-                    qm.variablesHelper.getFromLocalStorageOrApi({variableName: "Eggs (serving)"}, function(variables){
-                        if(variables.length > 1){
-                            throw "Why did we get "+variables.length+" variables for Eggs (serving)?!?!?"
-                        }
-                        var user = qm.getUser();
-                        qm.qmLog.info("Got variable for user "+ variables[0].userId);
-                        qm.assert.equals(user.id, variables[0].userId, "We should have saved the user variable from the study!");
-                        if(callback){callback();}
-                    }, function(error){
-                        throw error;
-                    });
-                }, function(error){
-                    throw error;
-                });
             }
         }
     },

@@ -61,7 +61,8 @@ module.exports = {
         "firebase": false,
         "qmStates": false,
         "chcp": false,
-        "jQuery": false
+        "jQuery": false,
+        "bugsnagClient": false
     },
     "rules": {
         "accessor-pairs": "error",

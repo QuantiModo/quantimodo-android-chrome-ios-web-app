@@ -264,22 +264,22 @@ var qmLog = {
             if(!qmLog.qm.appMode.isDevelopment()){
                 console.error('bugsnagClient not defined', errorSpecificMetaData);
             }
-            return;
+        } else {
+            var combinedMetaData = qmLog.getCombinedMetaData(name, message, errorSpecificMetaData, stackTrace);
+            if(!name){
+                name = "No error name provided";
+            }
+            if(!message){
+                message = "No error message provided";
+            }
+            if(typeof name !== "string"){
+                name = message;
+            }
+            if(typeof message !== "string"){
+                message = JSON.stringify(message);
+            }
+            bugsnagClient.notify({name: name, message: message}, {severity: logLevel, metaData: combinedMetaData});
         }
-        var combinedMetaData = qmLog.getCombinedMetaData(name, message, errorSpecificMetaData, stackTrace);
-        if(!name){
-            name = "No error name provided";
-        }
-        if(!message){
-            message = "No error message provided";
-        }
-        if(typeof name !== "string"){
-            name = message;
-        }
-        if(typeof message !== "string"){
-            message = JSON.stringify(message);
-        }
-        bugsnagClient.notify({name: name, message: message}, {severity: logLevel, metaData: combinedMetaData});
     },
     error: function(name, message, errorSpecificMetaData, stackTrace){
         if(!qmLog.shouldWeLog("error")){
