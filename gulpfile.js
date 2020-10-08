@@ -2234,7 +2234,7 @@ function minifyJsGenerateCssAndIndexHtml(sourceIndexFileName) {
         .pipe(gulp.dest('www'))
         ;
 }
-gulp.task('minify-js-generate-css-and-index-html', ['cleanCombinedFiles'], function() {
+gulp.task('minify-js-generate-css-and-index-html', [], function() {
     if(!qmGulp.buildSettings.weShouldMinify()){return copyFiles('src/**/*', 'www', []);}
     return minifyJsGenerateCssAndIndexHtml('index.html');
 });
@@ -2888,7 +2888,11 @@ gulp.task('cleanChromeBuildFolder', [], function () {
 });
 gulp.task('cleanCombinedFiles', [], function () {
     qmLog.info("Running cleanCombinedFiles...");
-    return cleanFiles(['www/css/combined*', paths.www.scripts + '/combined*', paths.www.scripts + '/*combined-*']);
+    return cleanFiles([
+        'www/css/combined*',
+        paths.www.scripts + '/combined*',
+        paths.www.scripts + '/*combined-*'
+    ]);
 });
 gulp.task('cleanBuildFolder', [], function () {
     qmLog.info("Cleaning build folder...");
@@ -3172,6 +3176,7 @@ gulp.task('configureApp', [], function (callback) {
         //'uncommentOpbeatInIndexHtml',
         'staticDataFile',
         //'uglify-error-debugging',
+        'cleanCombinedFiles',
         // Is 'minify-js-generate-css-and-index-html' necessary?  it randomly results in SyntaxError: Unexpected token: keyword (const) 'minify-js-generate-css-and-index-html',
         'minify-js-generate-css-and-android-popup-html',
         'upload-source-maps',
