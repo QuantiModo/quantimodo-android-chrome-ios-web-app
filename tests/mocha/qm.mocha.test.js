@@ -30,7 +30,6 @@ qm.qmLog = qmLog
 qmLog.qm = qm
 qm.qmLog.setLogLevelName(process.env.LOG_LEVEL || 'info')
 qm.nlp = require('./../../src/lib/compromise')
-qm.chrome = require('./../../src/js/qmChrome')
 const chrome = require('sinon-chrome/extensions')
 var qmTests = {
     getAccessToken(){
@@ -219,29 +218,6 @@ afterEach(function (done) {
         done()
     })
 })
-describe("Git Helper", function () {
-    it.skip("sets commit status", function (done) {
-        qmGit.setGithubStatus("pending", "test context", "test description", "https://get-bent.com", function (res) {
-            chai.expect(res.status).to.eq(201)
-            done()
-        })
-    })
-    it.skip("creates a feature branch and deletes it", function (done) {
-        var featureName = "test-feature"
-        var branchName = "feature/" + featureName
-        qmGit.createFeatureBranch("test-feature")
-        git.branchLocal().then(function (branchSummary) {
-            chai.expect(branchSummary.all).to.contain(branchName)
-            qmShell.executeSynchronously("git checkout -B develop", true)
-            git.deleteLocalBranch(branchName).then(function () {
-                git.branchLocal().then(function (branchSummary) {
-                    chai.expect(branchSummary.all).not.to.contain(branchName)
-                    done()
-                })
-            })
-        })
-    })
-})
 function downloadFileContains(url, expectedToContain, cb) {
     downloadFile(url, function (str) {
         chai.expect(str).to.contain(expectedToContain)
@@ -279,7 +255,23 @@ describe("API", function (){
         done()
     })
 })
-describe("File Uploader", function () {
+describe("Chrome Extension", function () {
+    before(function () {
+        global.chrome = chrome
+    })
+    it('can create a popup window', function(done) {
+        console.log("TODO: Figure out how to mock chrome.extension.onMessage")
+        done()
+        //qm.chrome.initialize()
+        //qmTests.runAllTestsForType('chrome', done)
+    })
+})
+describe("File Helper", function () {
+    it("determines the absolute path", function (done) {
+        var abs = fileHelper.getAbsolutePath("tests/ionIcons.js")
+        chai.expect(abs).contains(appDir)
+        done()
+    })
     it("uploads a file", function (done) {
         fileHelper.uploadToS3(appDir + "/tests/ionIcons.js", "tests", function (uploadResponse) {
             downloadFileContains(uploadResponse.Location, "iosArrowUp", done)
@@ -306,96 +298,25 @@ describe("Ghost Inspector", function () {
         done()
     })
 })
-describe("Studies", function () {
-    it.skip('can get a study showing relationship between eggs and mood', function(done) {
-        this.timeout(20000)
-        qm.storage.setItem(qm.items.accessToken, qmTests.getAccessToken())
-        qm.studyHelper.getStudyFromApi({causeVariableName: "Eggs (serving)", effectVariableName: "Overall Mood", userId: 230}, function(study){
-            qm.qmLog.info("Got study " + study.causeVariableName)
-            qm.variablesHelper.getFromLocalStorageOrApi({variableName: "Eggs (serving)"}, function(variables){
-                if(variables.length > 1){
-                    throw "Why did we get " + variables.length + " variables for Eggs (serving)?!?!?"
-                }
-                var user = qm.getUser()
-                qm.qmLog.info("Got variable for user " + variables[0].userId)
-                qm.assert.equals(user.id, variables[0].userId, "We should have saved the user variable from the study!")
-                done()
-            }, function(error){
-                throw error
-            })
-        }, function(error){
-            throw error
+describe("Git Helper", function () {
+    it.skip("sets commit status", function (done) {
+        qmGit.setGithubStatus("pending", "test context", "test description", "https://get-bent.com", function (res) {
+            chai.expect(res.status).to.eq(201)
+            done()
         })
     })
-})
-describe("Variables", function () {
-    it("can search for common variables containing partial string", function (done) {
-        this.timeout(30000) // Default 2000 is too fast for Github API
-        //qm.qmLog.setLogLevelName("debug");
-        var alreadyCalledBack = false
-        qm.storage.setItem(qm.items.accessToken, qmTests.getAccessToken())
-        qm.userHelper.getUserFromLocalStorageOrApi(function (user) {
-            qmLog.debug("User: ", user)
-            if(!qm.getUser()){ throw "No user!" }
-            var requestParams = {
-                excludeLocal: null,
-                includePublic: true,
-                minimumNumberOfResultsRequiredToAvoidAPIRequest: 20,
-                searchPhrase: "car",
-            }
-            qm.variablesHelper.getFromLocalStorageOrApi(requestParams, function(variables){
-                qmLog.info('=== Got ' + variables.length + ' variables matching ' + requestParams.searchPhrase)
-                // Why? qm.assert.doesNotHaveUserId(variables);
-                qm.assert.variables.descendingOrder(variables, 'lastSelectedAt')
-                qm.assert.greaterThan(5, variables.length)
-                var variable5 = variables[4]
-                var timestamp = qm.timeHelper.getUnixTimestampInSeconds()
-                qm.variablesHelper.setLastSelectedAtAndSave(variable5)
-                var userVariables = qm.globalHelper.getItem(qm.items.userVariables) || []
-                qmLog.info("There are " + userVariables.length + " user variables")
-                //qm.assert.isNull(userVariables, qm.items.userVariables);
-                qm.variablesHelper.getFromLocalStorageOrApi({id: variable5.id, includePublic: true}, function(variables){
-                    // Why? qm.assert.doesNotHaveProperty(variables, 'userId');
-                    qm.assert.variables.descendingOrder(variables, 'lastSelectedAt')
-                    qm.assert.equals(timestamp, variables[0].lastSelectedAt, 'lastSelectedAt')
-                    qm.assert.equals(variable5.name, variables[0].name, 'name')
-                    qm.variablesHelper.getFromLocalStorageOrApi(requestParams, function(variables){
-                        qm.assert.variables.descendingOrder(variables, 'lastSelectedAt')
-                        var variable1 = variables[0]
-                        qmLog.info("Variable 1 is " + variable1.name)
-                        //qm.assert.equals(variable1.lastSelectedAt, timestamp);
-                        //qm.assert.equals(variable1.variableId, variable5.variableId);
-                        //qm.assert.equals(1, qm.api.requestLog.length, "We should have made 1 request but have "+ JSON.stringify(qm.api.requestLog));
-                        if(done && !alreadyCalledBack){
-                            alreadyCalledBack = true
-                            done()
-                        }
-                    })
-                }, function(error){
-                    qm.qmLog.error(error)
+    it.skip("creates a feature branch and deletes it", function (done) {
+        var featureName = "test-feature"
+        var branchName = "feature/" + featureName
+        qmGit.createFeatureBranch("test-feature")
+        git.branchLocal().then(function (branchSummary) {
+            chai.expect(branchSummary.all).to.contain(branchName)
+            qmShell.executeSynchronously("git checkout -B develop", true)
+            git.deleteLocalBranch(branchName).then(function () {
+                git.branchLocal().then(function (branchSummary) {
+                    chai.expect(branchSummary.all).not.to.contain(branchName)
+                    done()
                 })
-            })
-        })
-    })
-    it('can search manual tracking variables', function(done) {
-        qm.storage.setItem(qm.items.accessToken, qmTests.getAccessToken())
-        qm.userHelper.getUserFromLocalStorageOrApi(function (user) {
-            qmLog.info("Got user " + user.loginName)
-            if(!qm.getUser()){ throw "No user!" }
-            var requestParams = {
-                limit: 100,
-                includePublic: true,
-                manualTracking: true,
-            }
-            qm.variablesHelper.getFromLocalStorageOrApi(requestParams, function(variables){
-                qmLog.info('Got ' + variables.length + ' variables')
-                qm.assert.count(requestParams.limit, variables)
-                var manual = variables.filter(function (v) {
-                    return v.manualTracking
-                })
-                qm.assert.count(requestParams.limit, manual)
-                qm.assert.variables.descendingOrder(variables, 'lastSelectedAt')
-                done()
             })
         })
     })
@@ -550,15 +471,23 @@ describe("Menu", function () {
         done()
     })
 })
-describe("Users", function () {
-    it('can get users', function(done) {
-        this.timeout(10000)
-        chai.expect(qm.api.getApiUrl()).to.eq("https://app.quantimo.do")
+describe("Studies", function () {
+    it.skip('can get a study showing relationship between eggs and mood', function(done) {
+        this.timeout(20000)
         qm.storage.setItem(qm.items.accessToken, qmTests.getAccessToken())
-        qm.userHelper.getUsersFromApi(function(users){
-            qmLog.debug("users:", users)
-            qm.assert.greaterThan(0, users.length)
-            done()
+        qm.studyHelper.getStudyFromApi({causeVariableName: "Eggs (serving)", effectVariableName: "Overall Mood", userId: 230}, function(study){
+            qm.qmLog.info("Got study " + study.causeVariableName)
+            qm.variablesHelper.getFromLocalStorageOrApi({variableName: "Eggs (serving)"}, function(variables){
+                if(variables.length > 1){
+                    throw "Why did we get " + variables.length + " variables for Eggs (serving)?!?!?"
+                }
+                var user = qm.getUser()
+                qm.qmLog.info("Got variable for user " + variables[0].userId)
+                qm.assert.equals(user.id, variables[0].userId, "We should have saved the user variable from the study!")
+                done()
+            }, function(error){
+                throw error
+            })
         }, function(error){
             throw error
         })
@@ -580,14 +509,89 @@ describe("URL Helper", function () {
         done()
     })
 })
-describe("Chrome Extension", function () {
-    before(function () {
-        global.chrome = chrome
+describe("Users", function () {
+    it('can get users', function(done) {
+        this.timeout(10000)
+        chai.expect(qm.api.getApiUrl()).to.eq("https://app.quantimo.do")
+        qm.storage.setItem(qm.items.accessToken, qmTests.getAccessToken())
+        qm.userHelper.getUsersFromApi(function(users){
+            qmLog.debug("users:", users)
+            qm.assert.greaterThan(0, users.length)
+            done()
+        }, function(error){
+            throw error
+        })
     })
-    it('can create a popup window', function(done) {
-        console.log("TODO: Figure out how to mock chrome.extension.onMessage")
-        done()
-        //qm.chrome.initialize()
-        //qmTests.runAllTestsForType('chrome', done)
+})
+describe("Variables", function () {
+    it("can search for common variables containing partial string", function (done) {
+        this.timeout(30000) // Default 2000 is too fast for Github API
+        //qm.qmLog.setLogLevelName("debug");
+        var alreadyCalledBack = false
+        qm.storage.setItem(qm.items.accessToken, qmTests.getAccessToken())
+        qm.userHelper.getUserFromLocalStorageOrApi(function (user) {
+            qmLog.debug("User: ", user)
+            if(!qm.getUser()){ throw "No user!" }
+            var requestParams = {
+                excludeLocal: null,
+                includePublic: true,
+                minimumNumberOfResultsRequiredToAvoidAPIRequest: 20,
+                searchPhrase: "car",
+            }
+            qm.variablesHelper.getFromLocalStorageOrApi(requestParams, function(variables){
+                qmLog.info('=== Got ' + variables.length + ' variables matching ' + requestParams.searchPhrase)
+                // Why? qm.assert.doesNotHaveUserId(variables);
+                qm.assert.variables.descendingOrder(variables, 'lastSelectedAt')
+                qm.assert.greaterThan(5, variables.length)
+                var variable5 = variables[4]
+                var timestamp = qm.timeHelper.getUnixTimestampInSeconds()
+                qm.variablesHelper.setLastSelectedAtAndSave(variable5)
+                var userVariables = qm.globalHelper.getItem(qm.items.userVariables) || []
+                qmLog.info("There are " + userVariables.length + " user variables")
+                //qm.assert.isNull(userVariables, qm.items.userVariables);
+                qm.variablesHelper.getFromLocalStorageOrApi({id: variable5.id, includePublic: true}, function(variables){
+                    // Why? qm.assert.doesNotHaveProperty(variables, 'userId');
+                    qm.assert.variables.descendingOrder(variables, 'lastSelectedAt')
+                    qm.assert.equals(timestamp, variables[0].lastSelectedAt, 'lastSelectedAt')
+                    qm.assert.equals(variable5.name, variables[0].name, 'name')
+                    qm.variablesHelper.getFromLocalStorageOrApi(requestParams, function(variables){
+                        qm.assert.variables.descendingOrder(variables, 'lastSelectedAt')
+                        var variable1 = variables[0]
+                        qmLog.info("Variable 1 is " + variable1.name)
+                        //qm.assert.equals(variable1.lastSelectedAt, timestamp);
+                        //qm.assert.equals(variable1.variableId, variable5.variableId);
+                        //qm.assert.equals(1, qm.api.requestLog.length, "We should have made 1 request but have "+ JSON.stringify(qm.api.requestLog));
+                        if(done && !alreadyCalledBack){
+                            alreadyCalledBack = true
+                            done()
+                        }
+                    })
+                }, function(error){
+                    qm.qmLog.error(error)
+                })
+            })
+        })
+    })
+    it('can search manual tracking variables', function(done) {
+        qm.storage.setItem(qm.items.accessToken, qmTests.getAccessToken())
+        qm.userHelper.getUserFromLocalStorageOrApi(function (user) {
+            qmLog.info("Got user " + user.loginName)
+            if(!qm.getUser()){ throw "No user!" }
+            var requestParams = {
+                limit: 100,
+                includePublic: true,
+                manualTracking: true,
+            }
+            qm.variablesHelper.getFromLocalStorageOrApi(requestParams, function(variables){
+                qmLog.info('Got ' + variables.length + ' variables')
+                qm.assert.count(requestParams.limit, variables)
+                var manual = variables.filter(function (v) {
+                    return v.manualTracking
+                })
+                qm.assert.count(requestParams.limit, manual)
+                qm.assert.variables.descendingOrder(variables, 'lastSelectedAt')
+                done()
+            })
+        })
     })
 })

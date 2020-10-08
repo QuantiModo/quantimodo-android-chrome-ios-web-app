@@ -11,7 +11,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 // noinspection JSUnusedGlobalSymbols,JSUnusedGlobalSymbols
-var app_root_path_1 = __importDefault(require("app-root-path"));
 var aws_sdk_1 = __importDefault(require("aws-sdk"));
 var fs = __importStar(require("fs"));
 var path = __importStar(require("path"));
@@ -82,7 +81,12 @@ function writeToFile(filePath, contents, cb) {
 }
 exports.writeToFile = writeToFile;
 function getAbsolutePath(relativePath) {
-    return path.resolve(app_root_path_1.default.toString(), relativePath);
+    if (path.isAbsolute(relativePath)) {
+        return relativePath;
+    }
+    else {
+        return path.resolve(".", relativePath);
+    }
 }
 exports.getAbsolutePath = getAbsolutePath;
 //# sourceMappingURL=qm.file-helper.js.map

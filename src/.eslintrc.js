@@ -50,7 +50,6 @@ module.exports = {
         "timeHelper": false,
         "qm": false,
         "qmNotifications": false,
-        "qmChrome": false,
         "qmPush": false,
         "qmUser": false,
         "userHelper": false,

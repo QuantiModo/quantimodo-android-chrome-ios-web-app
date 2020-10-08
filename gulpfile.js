@@ -1375,7 +1375,6 @@ var chromeScripts = [
     'js/qmLogger.js',
     'js/qmHelpers.js',
     'data/qmStaticData.js', // Must come after qmHelpers because we assign to qm.staticData
-    'js/qmChrome.js',
     'lib/underscore/underscore-min.js'
 ];
 //if(qmGit.accessToken){chromeScripts.push('qm-amazon/qmUrlUpdater.js');}
@@ -2252,7 +2251,6 @@ var serviceWorkerFirebaseLocalForage = [
     'src/lib/localforage/dist/localforage.js',
     'src/js/qmLogger.js',
     'src/js/qmHelpers.js',
-    'src/js/qmChrome.js',
 ];
 gulp.task('upload-source-maps', [], function(callback) {
     fs.readdir(paths.www.scripts, function (err, files) {
