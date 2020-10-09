@@ -245,7 +245,7 @@ export function runOneCypressSpec(specName: string, cb: ((err: any) => void)) {
             const failedTests = getFailedTestsFromResults(results)
             if (failedTests.length) {
                 process.env.LOGROCKET = "1"
-                fileHelper.uploadToS3InSubFolderWithCurrentDateTime("cypress/recordings/"+specName+".mp4",
+                fileHelper.uploadToS3InSubFolderWithCurrentDateTime(getVideoPath(specName),
                     "cypress", function(err, SendData) {
                     runWithRecording(specName, function(recordResults) {
                         const failedRecordedTests = getFailedTestsFromResults(recordResults)
