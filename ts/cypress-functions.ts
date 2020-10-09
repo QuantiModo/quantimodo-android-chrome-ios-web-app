@@ -208,6 +208,7 @@ function handleTestSuccess(results: any, context: string, cb: (err: any) => void
     console.info(results.totalPassed + " tests PASSED!")
     qmGit.setGithubStatus("success", context, results.totalPassed +
         " tests passed")
+    createSuccessFile()
     cb(false)
 }
 
