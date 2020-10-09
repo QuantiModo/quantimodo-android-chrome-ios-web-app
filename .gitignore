@@ -138,3 +138,4 @@ secrets/*
 /last-failed-cypress-test
 /cypress/videos/
 /success-file
+/cypress/recordings/test_spec.mp4
