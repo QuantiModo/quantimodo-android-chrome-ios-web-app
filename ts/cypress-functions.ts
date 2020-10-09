@@ -17,19 +17,19 @@ const ciProvider = getCiProvider()
 const isWin = process.platform === "win32"
 const outputReportDir = repoPath + "/tests/mochawesome-report"
 const screenshotDirectory = `${repoPath}/tests/mochawesome-report/assets`
-const unmerged = repoPath + "tests/cypress/reports/mocha"
+const unmerged = repoPath + "cypress/reports/mocha"
 const vcsProvider = "github"
 const verbose = true
-const videoDirectory = `${repoPath}/tests/cypress/videos`
+const videoDirectory = `${repoPath}/cypress/videos`
 const mergedJsonPath = outputReportDir + "/tests/mochawesome.json"
 const lastFailedCypressTestPath = "last-failed-cypress-test"
-const cypressJson = fileHelper.getAbsolutePath("tests/cypress.json")
+const cypressJson = fileHelper.getAbsolutePath("cypress.json")
 const releaseStage = process.env.RELEASE_STAGE || "production"
-const envPath = fileHelper.getAbsolutePath(`tests/cypress/config/cypress.${releaseStage}.json`)
+const envPath = fileHelper.getAbsolutePath(`cypress/config/cypress.${releaseStage}.json`)
 const paths = {
     reports: {
-        junit: "./tests/cypress/reports/junit",
-        mocha: "./tests/cypress/reports/mocha",
+        junit: "./cypress/reports/junit",
+        mocha: "./cypress/reports/mocha",
     },
 }
 function getReportUrl() {
@@ -217,11 +217,12 @@ export function runOneCypressSpec(specName: string, cb: ((err: any) => void)) {
     const browser = process.env.CYPRESS_BROWSER || "electron"
     const context = specName.replace("_spec.js", "") + "-" + releaseStage
     qmGit.setGithubStatus("pending", context, `Running ${context} Cypress tests...`)
+    console.info("Running " + specPath + "...")
     // noinspection JSUnresolvedFunction
     cypress.run({
         browser,
         record: true,
-        spec: specPath,
+        spec: "cypress/integration/"+specName,
     }).then((results) => {
         // @ts-ignore
         if (!results.runs || !results.runs[0]) {
@@ -256,7 +257,7 @@ export function runOneCypressSpec(specName: string, cb: ((err: any) => void)) {
 }
 
 function getSpecsPath() {
-    return repoPath + "/tests/cypress/integration"
+    return repoPath + "/cypress/integration"
 }
 
 export function runCypressTests(cb?: (err: any) => void) {

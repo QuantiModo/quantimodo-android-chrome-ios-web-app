@@ -28,19 +28,19 @@ var ciProvider = test_helpers_1.getCiProvider();
 var isWin = process.platform === "win32";
 var outputReportDir = app_root_path_1.default + "/tests/mochawesome-report";
 var screenshotDirectory = app_root_path_1.default + "/tests/mochawesome-report/assets";
-var unmerged = app_root_path_1.default + "tests/cypress/reports/mocha";
+var unmerged = app_root_path_1.default + "cypress/reports/mocha";
 var vcsProvider = "github";
 var verbose = true;
-var videoDirectory = app_root_path_1.default + "/tests/cypress/videos";
+var videoDirectory = app_root_path_1.default + "/cypress/videos";
 var mergedJsonPath = outputReportDir + "/tests/mochawesome.json";
 var lastFailedCypressTestPath = "last-failed-cypress-test";
-var cypressJson = fileHelper.getAbsolutePath("tests/cypress.json");
+var cypressJson = fileHelper.getAbsolutePath("cypress.json");
 var releaseStage = process.env.RELEASE_STAGE || "production";
-var envPath = fileHelper.getAbsolutePath("tests/cypress/config/cypress." + releaseStage + ".json");
+var envPath = fileHelper.getAbsolutePath("cypress/config/cypress." + releaseStage + ".json");
 var paths = {
     reports: {
-        junit: "./tests/cypress/reports/junit",
-        mocha: "./tests/cypress/reports/mocha",
+        junit: "./cypress/reports/junit",
+        mocha: "./cypress/reports/mocha",
     },
 };
 function getReportUrl() {
@@ -222,11 +222,12 @@ function runOneCypressSpec(specName, cb) {
     var browser = process.env.CYPRESS_BROWSER || "electron";
     var context = specName.replace("_spec.js", "") + "-" + releaseStage;
     qmGit.setGithubStatus("pending", context, "Running " + context + " Cypress tests...");
+    console.info("Running " + specPath + "...");
     // noinspection JSUnresolvedFunction
     cypress.run({
         browser: browser,
         record: true,
-        spec: specPath,
+        spec: "cypress/integration/" + specName,
     }).then(function (results) {
         // @ts-ignore
         if (!results.runs || !results.runs[0]) {
@@ -264,7 +265,7 @@ function runOneCypressSpec(specName, cb) {
 }
 exports.runOneCypressSpec = runOneCypressSpec;
 function getSpecsPath() {
-    return app_root_path_1.default + "/tests/cypress/integration";
+    return app_root_path_1.default + "/cypress/integration";
 }
 function runCypressTests(cb) {
     test_helpers_1.deleteSuccessFile();

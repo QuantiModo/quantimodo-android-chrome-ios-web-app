@@ -132,8 +132,10 @@ function setGithubStatus(testState, context, description, url, cb) {
     if (!url) {
         var message = "No build link or target url for status!";
         console.error(message);
-        // if (cb) {cb(message)}
-        // return
+        if (cb) {
+            cb(message);
+        }
+        return;
     }
     // @ts-ignore
     var params = {
