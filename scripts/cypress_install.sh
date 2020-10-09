@@ -2,8 +2,6 @@
 called=$_ && [[ ${called} != $0 ]] && echo "${BASH_SOURCE[@]} is being sourced" || echo "${0} is being run"
 SCRIPT_PATH="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/$(basename "${BASH_SOURCE[0]}")"
 SCRIPT_FOLDER=`dirname ${SCRIPT_PATH}` && cd "${SCRIPT_FOLDER}" && cd .. && export REPO_DIR="$PWD"
-set -x
-rm cypress.env.json || true
 set +x
 PKG_OK=$(dpkg-query -W --showformat='${Status}\n' xvfb|grep "install ok installed")
 if [[ "" == "$PKG_OK" ]]; then
@@ -16,9 +14,7 @@ if [[ "" == "$PKG_OK" ]]; then
     curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash -
     sudo apt-get install -y nodejs
 fi
-set -x
 set -e
-npm install
 set +x
 echo "Saving host environment variables to host.env to access within docker"
 printenv > "${REPO_DIR}/.env"
@@ -27,4 +23,3 @@ sudo cp "${REPO_DIR}/tests/asound.conf" /etc/asound.conf
 echo -e 'pcm.!default {\n type hw\n card 0\n}\n\nctl.!default {\n type hw\n card 0\n}' > ~/.asoundrc
 echo "Deleting videos because they take a ton of space..."
 set -x
-rm cypress/videos/* || true
