@@ -276,14 +276,14 @@ function runOneCypressSpec(specName, cb) {
     });
 }
 exports.runOneCypressSpec = runOneCypressSpec;
-function getRecordingPath(specName) {
-    return "cypress/recordings/" + specName + ".mp4";
+function getVideoPath(specName) {
+    return "cypress/videos/" + specName + ".mp4";
 }
-exports.getRecordingPath = getRecordingPath;
-function uploadCypressRecording(specName, cb) {
-    fileHelper.uploadToS3InSubFolderWithCurrentDateTime("cypress/recordings/" + specName + ".mp4", "cypress", cb);
+exports.getVideoPath = getVideoPath;
+function uploadCypressVideo(specName, cb) {
+    fileHelper.uploadToS3InSubFolderWithCurrentDateTime(getVideoPath(specName), "cypress", cb);
 }
-exports.uploadCypressRecording = uploadCypressRecording;
+exports.uploadCypressVideo = uploadCypressVideo;
 function getSpecsPath() {
     return app_root_path_1.default + "/cypress/integration";
 }

@@ -272,13 +272,12 @@ export function runOneCypressSpec(specName: string, cb: ((err: any) => void)) {
     })
 }
 
-export function getRecordingPath(specName: string) {
-    return "cypress/recordings/"+specName+".mp4"
+export function getVideoPath(specName: string) {
+    return "cypress/videos/"+specName+".mp4"
 }
 
-export function uploadCypressRecording(specName: string, cb: (err: Error, data: ManagedUpload.SendData) => void) {
-    fileHelper.uploadToS3InSubFolderWithCurrentDateTime("cypress/recordings/"+specName+".mp4",
-        "cypress", cb)
+export function uploadCypressVideo(specName: string, cb: (err: Error, data: ManagedUpload.SendData) => void) {
+    fileHelper.uploadToS3InSubFolderWithCurrentDateTime(getVideoPath(specName), "cypress", cb)
 }
 
 function getSpecsPath() {
