@@ -39,7 +39,8 @@ exports.getBuildLink = getBuildLink;
 var successFilename = "success-file";
 function createSuccessFile() {
     fileHelper.writeToFile("lastCommitBuilt", qmGit.getCurrentGitCommitSha());
-    return fs.writeFileSync(successFilename, qmGit.getCurrentGitCommitSha());
+    var successPath = fileHelper.getAbsolutePath(successFilename);
+    return fs.writeFileSync(successPath, qmGit.getCurrentGitCommitSha());
 }
 exports.createSuccessFile = createSuccessFile;
 function deleteSuccessFile() {

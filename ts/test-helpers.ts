@@ -26,7 +26,8 @@ export function getBuildLink() {
 const successFilename = "success-file"
 export function createSuccessFile() {
     fileHelper.writeToFile("lastCommitBuilt", qmGit.getCurrentGitCommitSha())
-    return fs.writeFileSync(successFilename, qmGit.getCurrentGitCommitSha())
+    const successPath = fileHelper.getAbsolutePath(successFilename)
+    return fs.writeFileSync(successPath, qmGit.getCurrentGitCommitSha())
 }
 export function deleteSuccessFile() {
     qmLog.info("Deleting success file so we know if build completed...")

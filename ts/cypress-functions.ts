@@ -40,10 +40,11 @@ function getReportUrl() {
     return getBuildLink()
 }
 export function mochawesome(failedTests: any[], cb: (err: any) => void) {
-    // console.log("Merging reports...")
+    const abs = fileHelper.getAbsolutePath(unmerged)
+    console.log("Merging reports in " + abs)
     merge({
         inline: true,
-        reportDir: unmerged,
+        reportDir: abs,
         saveJson: true,
     }).then((mergedJson: any) => {
         fs.writeFileSync(mergedJsonPath, JSON.stringify(mergedJson, null, 2))

@@ -51,10 +51,11 @@ function getReportUrl() {
     return test_helpers_1.getBuildLink();
 }
 function mochawesome(failedTests, cb) {
-    // console.log("Merging reports...")
+    var abs = fileHelper.getAbsolutePath(unmerged);
+    console.log("Merging reports in " + abs);
     mochawesome_merge_1.merge({
         inline: true,
-        reportDir: unmerged,
+        reportDir: abs,
         saveJson: true,
     }).then(function (mergedJson) {
         fs.writeFileSync(mergedJsonPath, JSON.stringify(mergedJson, null, 2));
