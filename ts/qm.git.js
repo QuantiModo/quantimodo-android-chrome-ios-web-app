@@ -131,6 +131,7 @@ function setGithubStatus(testState, context, description, url, cb) {
     description = underscore_string_1.default.truncate(description, 135);
     url = url || test_helpers_1.getBuildLink();
     if (!url) {
+        url = "No url from getBuildLink()";
         var message = "No build link or target url for status!";
         console.error(message);
         if (cb) {
@@ -154,7 +155,10 @@ function setGithubStatus(testState, context, description, url, cb) {
             cb(data);
         }
     }).catch(function (err) {
-        console.error(err);
+        qmLog.error(err);
+        if (cb) {
+            cb(err);
+        }
         // Don't fail when we trigger abuse detection mechanism
         // process.exit(1)
         // throw err
