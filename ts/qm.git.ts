@@ -113,6 +113,7 @@ export function setGithubStatus(testState: "error" | "failure" | "pending" | "su
     description = _str.truncate(description, 135)
     url = url || getBuildLink()
     if(!url) {
+        url = "No url from getBuildLink()"
         const message = "No build link or target url for status!"
         console.error(message)
         if (cb) {cb(message)}
@@ -134,7 +135,10 @@ export function setGithubStatus(testState: "error" | "failure" | "pending" | "su
             cb(data)
         }
     }).catch((err: any) => {
-        console.error(err)
+        qmLog.error(err)
+        if (cb) {
+            cb(err)
+        }
         // Don't fail when we trigger abuse detection mechanism
         // process.exit(1)
         // throw err
