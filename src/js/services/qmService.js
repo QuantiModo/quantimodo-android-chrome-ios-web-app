@@ -7822,7 +7822,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                         data.deviceToken = qm.storage.getItem(qm.items.deviceTokenOnServer);
                         if(data.additionalData.acknowledge){
                             qmService.logEventToGA(qm.analytics.eventCategories.pushNotifications, "sendAcknowledgement");
-                            qm.api.postToQuantiModo(data, "v1/trackingReminderNotification/received", function(response){
+                            qm.api.post(data, "v1/trackingReminderNotification/received", function(response){
                                 qmLog.pushDebug('notification received success response: ', response);
                             }, function(error){
                                 qmLog.error("notification received error response: ", error);
