@@ -254,7 +254,7 @@ describe("API", function (){
         chai.expect(qm.api.getApiUrl()).to.eq("https://app.quantimo.do")
         done()
     })
-})
+}).timeout(10000)
 describe("Chrome Extension", function () {
     before(function () {
         global.chrome = chrome
