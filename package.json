@@ -31,7 +31,6 @@
     "aws-sdk": "2.580.0",
     "aws-sdk-mock": "4.5.0",
     "beautify": "0.0.8",
-    "bluebird": "^3.7.2",
     "chai": "4.2.0",
     "compromise": "12.3.0",
     "cordova-ios-plugin-no-export-compliance": "0.0.6",
