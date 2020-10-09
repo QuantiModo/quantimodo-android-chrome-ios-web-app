@@ -21,6 +21,10 @@
                 <i style="font-size: 20px;"
                    class="icon positive ion-more"></i>
             </div>
+            <button ng-if="connector.errorMessage"
+                    class="button icon ion-android-warning">
+                <md-tooltip md-direction="left">{{connector.errorMessage}}</md-tooltip>
+            </button>
         </div>
         <p class="col col-90"
            id="{{connector.name}}-message"
@@ -28,11 +32,13 @@
            ng-bind-html="connector.message">
         </p>
     </div>
-</div><!--<div ng-if="connector.updateError" class="item item-avatar">
+</div>
+<div ng-if="connector.errorMessage" class="item item-avatar">
     <img src="img/rating/face_rating_button_256_sad.png">
     <h2>IMPORT ISSUE</h2>
-    <p ng-bind-html="connector.updateError"></p>
-</div>-->
+    <p ng-bind-html="connector.errorMessage"></p>
+
+</div>
 <div class="buttons"
      style="text-align: center;"
      ng-if="connector.spreadsheetUploadLink">
