@@ -251,7 +251,7 @@ describe("API", function (){
         chai.expect(qm.api.getApiUrl()).to.eq("https://app.quantimo.do")
         done()
     })
-}).timeout(10000)
+})
 describe("Chrome Extension", function () {
     before(function () {
         global.chrome = chrome
@@ -314,7 +314,7 @@ describe("File Helper", function () {
             downloadFileContains(uploadResponse.Location, "mocha", done)
         })
     })
-}).timeout(10000)
+})
 describe("Ghost Inspector", function () {
     it("runs tests on staging API", function (done) {
         var previouslySetApiUrl = process.env.API_URL || null
@@ -328,7 +328,7 @@ describe("Ghost Inspector", function () {
         }
         done()
     })
-}).timeout(10000)
+})
 describe("Git Helper", function () {
     it("sets commit status", function (done) {
         qmGit.setGithubStatus("pending", "test context", "test description", "https://get-bent.com", function (res) {
@@ -351,7 +351,7 @@ describe("Git Helper", function () {
             })
         })
     })
-}).timeout(10000)
+})
 describe("Intent Handler", function () {
     it('can record measurement from user speech command', function(done) {
         var userInput = "Record 1 Overall Mood"
@@ -367,7 +367,7 @@ describe("Intent Handler", function () {
         var expectedParameters = {memoryQuestion: 'where my keys are'}
         qmTests.tests.checkIntent(userInput, expectedIntentName, expectedEntities, expectedParameters, done)
     })
-}).timeout(10000)
+})
 describe("Notifications", function () {
     it('can parse pushed tracking reminder notification', function(done) {
         // noinspection HtmlRequiredAltAttribute,RequiredAttributes,HtmlUnknownAttribute
@@ -399,7 +399,7 @@ describe("Notifications", function () {
         qm.assert.equals(3, notificationOptions.actions.length)
         qm.assert.equals("Overall Mood", notificationOptions.title)
         qmTests.tests.parseCorrelationNotificationTest(done)
-    }).timeout(10000)
+    })
 })
 describe("Menu", function () {
     it("can move menu item down", function (done) {
@@ -501,7 +501,7 @@ describe("Menu", function () {
         qm.assert.doesNotHaveProperty(updated.params, 'variableCategoryName')
         done()
     })
-}).timeout(10000)
+})
 describe("Studies", function () {
     it.skip('can get a study showing relationship between eggs and mood', function(done) {
         this.timeout(20000)
@@ -523,7 +523,7 @@ describe("Studies", function () {
             throw error
         })
     })
-}).timeout(10000)
+})
 describe("Units", function () {
     it('can get units', function(done) {
         var units = qm.unitHelper.getAllUnits()
@@ -531,7 +531,7 @@ describe("Units", function () {
         qm.assert.greaterThan(5, units.length)
         done()
     })
-}).timeout(10000)
+})
 describe("URL Helper", function () {
     it('can get query params before hash', function(done) {
         var url = 'https://dev-web.quantimo.do/?clientId=preve-wellness-tracker#/app/onboarding'
@@ -539,7 +539,7 @@ describe("URL Helper", function () {
         qm.assert.equals('preve-wellness-tracker', params.clientId)
         done()
     })
-}).timeout(10000)
+})
 describe("Users", function () {
     it('can get users', function(done) {
         this.timeout(10000)
@@ -553,7 +553,7 @@ describe("Users", function () {
             throw error
         })
     })
-}).timeout(10000)
+})
 describe("Variables", function () {
     it("can search for common variables containing partial string", function (done) {
         this.timeout(30000) // Default 2000 is too fast for Github API
@@ -625,4 +625,4 @@ describe("Variables", function () {
             })
         })
     })
-}).timeout(10000)
+})
