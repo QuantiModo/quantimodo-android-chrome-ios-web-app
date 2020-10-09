@@ -31,9 +31,7 @@ export function createSuccessFile() {
 }
 export function deleteSuccessFile() {
     qmLog.info("Deleting success file so we know if build completed...")
-    rimraf(successFilename, function() {
-        qmLog.info("Deleted success file!")
-    })
+    fileHelper.deleteFile(successFilename)
 }
 export function deleteEnvFile() {
     rimraf(".env", function() {
