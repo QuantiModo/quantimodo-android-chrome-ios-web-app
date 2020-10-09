@@ -2,6 +2,17 @@
 import AWS from "aws-sdk"
 import * as fs from "fs"
 import * as path from "path"
+import rimraf from "rimraf"
+import * as qmLog from "./qm.log"
+
+export function deleteFile(filename: string,
+                           cb?: () => void) {
+    const filepath = getAbsolutePath(filename)
+    rimraf(filepath, function() {
+        qmLog.info("Deleted " + filepath)
+        if(cb) {cb()}
+    })
+}
 
 export function getS3Client() {
   const AWS_ACCESS_KEY_ID =
@@ -53,7 +64,7 @@ export function uploadToS3(
   })
 }
 
-export  function writeToFile(filePath: string, contents: any, cb?: () => void) {
+export function writeToFile(filePath: string, contents: any, cb?: () => void) {
   function ensureDirectoryExistence(filePathToCheck: string) {
     const dirname = path.dirname(filePathToCheck)
     if (fs.existsSync(dirname)) {

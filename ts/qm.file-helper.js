@@ -14,6 +14,18 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var aws_sdk_1 = __importDefault(require("aws-sdk"));
 var fs = __importStar(require("fs"));
 var path = __importStar(require("path"));
+var rimraf_1 = __importDefault(require("rimraf"));
+var qmLog = __importStar(require("./qm.log"));
+function deleteFile(filename, cb) {
+    var filepath = getAbsolutePath(filename);
+    rimraf_1.default(filepath, function () {
+        qmLog.info("Deleted " + filepath);
+        if (cb) {
+            cb();
+        }
+    });
+}
+exports.deleteFile = deleteFile;
 function getS3Client() {
     var AWS_ACCESS_KEY_ID = process.env.QM_AWS_ACCESS_KEY_ID || process.env.AWS_ACCESS_KEY_ID; // Netlify has their own
     if (!AWS_ACCESS_KEY_ID) {
