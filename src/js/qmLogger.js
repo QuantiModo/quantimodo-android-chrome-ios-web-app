@@ -258,27 +258,28 @@ var qmLog = {
         return false;
     },
     bugsnagNotify: function(name, message, errorSpecificMetaData, logLevel, stackTrace){
+        // eslint-disable-next-line no-debugger
         debugger
         if(typeof bugsnagClient === "undefined"){
             if(!qmLog.qm.appMode.isDevelopment()){
                 console.error('bugsnagClient not defined', errorSpecificMetaData);
             }
-            return;
+        } else {
+            var combinedMetaData = qmLog.getCombinedMetaData(name, message, errorSpecificMetaData, stackTrace);
+            if(!name){
+                name = "No error name provided";
+            }
+            if(!message){
+                message = "No error message provided";
+            }
+            if(typeof name !== "string"){
+                name = message;
+            }
+            if(typeof message !== "string"){
+                message = JSON.stringify(message);
+            }
+            bugsnagClient.notify({name: name, message: message}, {severity: logLevel, metaData: combinedMetaData});
         }
-        var combinedMetaData = qmLog.getCombinedMetaData(name, message, errorSpecificMetaData, stackTrace);
-        if(!name){
-            name = "No error name provided";
-        }
-        if(!message){
-            message = "No error message provided";
-        }
-        if(typeof name !== "string"){
-            name = message;
-        }
-        if(typeof message !== "string"){
-            message = JSON.stringify(message);
-        }
-        bugsnagClient.notify({name: name, message: message}, {severity: logLevel, metaData: combinedMetaData});
     },
     error: function(name, message, errorSpecificMetaData, stackTrace){
         if(!qmLog.shouldWeLog("error")){
@@ -447,6 +448,15 @@ var qmLog = {
     },
     getConsoleLogString: function(logLevel, errorSpecificMetaData){
         var logString = qmLog.name;
+        if(typeof logString === 'object' && logString !== null){
+            if(logString.message){
+                logString = logString.message;
+            } else if (logString.errorMessage) {
+                logString = logString.errorMessage;
+            } else {
+                logString = qm.stringHelper.prettyJsonStringify(logString);
+            }
+        }
         if(qmLog.message && logString !== qmLog.message){
             logString = logString + ": " + qmLog.message;
         }
@@ -795,6 +805,7 @@ if(typeof window !== "undefined"){
     window.qmLog = qmLog;
 }else{
     module.exports = qmLog;
+    global.qmLog = qmLog;
 }
 if(typeof qm !== "undefined"){
     qmLog.qm = qm;
