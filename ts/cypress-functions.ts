@@ -17,7 +17,7 @@ const ciProvider = getCiProvider()
 const isWin = process.platform === "win32"
 const outputReportDir = repoPath + "/tests/mochawesome-report"
 const screenshotDirectory = `${repoPath}/tests/mochawesome-report/assets`
-const unmerged = repoPath + "cypress/reports/mocha"
+const unmerged = repoPath + "/cypress/reports/mocha"
 const vcsProvider = "github"
 const verbose = true
 const videoDirectory = `${repoPath}/cypress/videos`
@@ -156,8 +156,10 @@ function logFailedTests(failedTests: any[], context: string, cb: (err: any) => v
         console.error(errorMessage)
         console.error("==============================================")
     }
-    mochawesome(failedTests, function() {
-        setGithubStatusAndUploadTestResults(failedTests, context, cb)
+    deleteSuccessFile(function() {
+        mochawesome(failedTests, function() {
+            setGithubStatusAndUploadTestResults(failedTests, context, cb)
+        })
     })
 }
 
