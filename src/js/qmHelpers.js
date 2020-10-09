@@ -9,6 +9,11 @@ String.prototype.toCamelCase = function(){
     });
 };
 var qm = {
+    alert: {
+        validationFailureAlert: function(){
+
+        },
+    },
     analytics: {
         eventCategories: {
             pushNotifications: "pushNotifications",
@@ -4665,6 +4670,9 @@ var qm = {
         }
     },
     measurements: {
+        recordMeasurement: function(m){
+            var m = qm.measurements.newMeasurement(m)
+        },
         newMeasurement: function(src){
             var value;
             if(typeof src.modifiedValue !== "undefined" && src.modifiedValue !== null){
@@ -4953,6 +4961,12 @@ var qm = {
             qm.qmLog.info("Got " + filtered.length + " measurements from recentlyPostedMeasurements with params: " + JSON.stringify(params));
             return filtered;
         },
+        postMeasurements: function (measurementSet, successHandler, errorHandler) {
+            measurementSet = qm.measurements.addLocationAndSourceDataToMeasurement(measurementSet);
+            qm.api.post('api/v3/measurements',
+                //['measurements', 'variableName', 'source', 'variableCategoryName', 'unitAbbreviatedName'],
+                [], measurementSet, successHandler, errorHandler);
+        }
     },
     manualTrackingVariableCategoryNames: [,
         'Emotions',
@@ -8897,6 +8911,9 @@ var qm = {
         }
     },
     timeHelper: {
+        getDateTime: function(timeAt){
+            return qm.timeHelper.toDate(timeAt);
+        },
         toDate: function(timeAt){
             var unixTime = qm.timeHelper.universalConversionToUnixTimeSeconds(timeAt);
             return qm.timeHelper.convertUnixTimeStampToISOString(unixTime);
