@@ -61,7 +61,8 @@
     "underscore": "^1.9.1",
     "moment-timezone": "^0.5.23",
     "qm-redirector": "*",
-    "q": "^2.0.2"
+    "q": "^2.0.2",
+    "sweetalert2": "^10.3.7"
   },
   "resolutions": {
     "angular": "1.5.9",
