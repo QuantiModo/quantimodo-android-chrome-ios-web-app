@@ -4564,9 +4564,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         };
         qmService.getVariableCategories = function(){
             qmService.variableCategories = [];
-            $rootScope.variableCategories = [];
             $rootScope.variableCategoryNames = []; // Dirty hack for variableCategoryNames because $rootScope.variableCategories is not an array we can ng-repeat through in selectors
-            $rootScope.variableCategories.Anything = qmService.variableCategories.Anything = {
+            qmService.variableCategories.Anything = {
                 defaultUnitAbbreviatedName: '',
                 helpText: "What do you want to record?",
                 variableCategoryNameSingular: "Anything",
@@ -6205,7 +6204,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         };
         qmService.resetUserVariableDeferred = function(variableId){
             var deferred = $q.defer();
-            qmService.post('api/v3/userVariables/reset', ['variableId'], {variableId: variableId}, function(response){
+            qmService.post('api/v3/userVariables/reset', ['variableId'],
+                {variableId: variableId}, function(response){
                 qm.variablesHelper.setLastSelectedAtAndSave(response.data.userVariable);
                 deferred.resolve(response.data.userVariable);
             }, function(error){
@@ -6727,7 +6727,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     "backgroundColor": "#0f9d58",
                     circleColor: "#03c466",
                     bodyText: "Would you like to automatically log location? ",
-                    moreInfo: $rootScope.variableCategories.Locations.moreInfo,
+                    moreInfo: staticData.variableCategories.Locations.moreInfo,
                     buttons: [
                         {
                             id: "hideLocationTrackingInfoCardButton",
