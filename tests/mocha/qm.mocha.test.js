@@ -29,7 +29,7 @@ qm.stateNames = qm.staticData.stateNames
 qm.qmLog = qmLog
 qmLog.qm = qm
 qm.qmLog.setLogLevelName(process.env.LOG_LEVEL || 'info')
-qm.nlp = require('./../../src/lib/compromise')
+global.nlp = require('./../../src/lib/compromise')
 const chrome = require('sinon-chrome/extensions')
 var qmTests = {
     getAccessToken(){
@@ -189,9 +189,9 @@ beforeEach(function (done) {
     this.timeout(10000) // Default 2000 is too fast for Github API
     // @ts-ignore
     qmGit.setGithubStatus("pending", t.title, "Running...", null, function (res) {
-        var logResult = false
+        var logResult = true
         if (logResult) {
-            console.debug(res)
+            console.info(res)
         }
         done()
     })
@@ -211,10 +211,7 @@ afterEach(function (done) {
     }
     // @ts-ignore
     qmGit.setGithubStatus(githubState, t.title, t.title, null, function (res) {
-        var logResult = false
-        if (logResult) {
-            console.debug(res)
-        }
+        qmLog.debug(res)
         done()
     })
 })
@@ -266,6 +263,28 @@ describe("Chrome Extension", function () {
         //qmTests.runAllTestsForType('chrome', done)
     })
 })
+describe("Recordings", function () {
+    it('can upload Cypress recording', function(done) {
+        const specName = "test_spec"
+        const relative = cypressFunctions.getVideoPath(specName)
+        fileHelper.deleteFile(relative, function (){
+            let exists = fileHelper.exists(relative)
+            chai.expect(exists).to.be.false
+            fileHelper.createFile(relative, "test video", function (){
+                cypressFunctions.uploadCypressVideo(specName, function (err, SendData){
+                    const downloadPath = 'tmp/download.mp4'
+                    fileHelper.deleteFile(downloadPath, function (){
+                        fileHelper.assertDoesNotExist(downloadPath)
+                        fileHelper.download(SendData.Location, downloadPath, function (){
+                            fileHelper.assertExists(downloadPath)
+                            done()
+                        })
+                    })
+                })
+            })
+        })
+    })
+})
 describe("File Helper", function () {
     it("creates success file", function (done) {
         const filename = "success-file"
@@ -285,8 +304,8 @@ describe("File Helper", function () {
         done()
     })
     it("uploads a file", function (done) {
-        fileHelper.uploadToS3(appDir + "/tests/ionIcons.js", "tests", function (uploadResponse) {
-            downloadFileContains(uploadResponse.Location, "iosArrowUp", done)
+        fileHelper.uploadToS3(appDir + "/tests/ionIcons.js", "tests", function (err, SendData) {
+            downloadFileContains(SendData.Location, "iosArrowUp", done)
         })
     })
     it.skip("uploads test results", function (done) {
@@ -311,7 +330,7 @@ describe("Ghost Inspector", function () {
     })
 })
 describe("Git Helper", function () {
-    it.skip("sets commit status", function (done) {
+    it("sets commit status", function (done) {
         qmGit.setGithubStatus("pending", "test context", "test description", "https://get-bent.com", function (res) {
             chai.expect(res.status).to.eq(201)
             done()
@@ -350,7 +369,7 @@ describe("Intent Handler", function () {
     })
 })
 describe("Notifications", function () {
-    it('test-push-parsing', function(done) {
+    it('can parse pushed tracking reminder notification', function(done) {
         // noinspection HtmlRequiredAltAttribute,RequiredAttributes,HtmlUnknownAttribute
         var pushData = {
             actions: '[{"longTitle":"Rate 3\\/5","callback":"trackThreeRatingAction","modifiedValue":3,"action":"track","foreground":false,"shortTitle":"3\\/5","image":"https:\\/\\/web.quantimo.do\\/img\\/rating\\/100\\/face_rating_button_100_ok.png","accessibilityText":"3\\/5","functionName":"track","html":"<md-tooltip>Rate 3\\/5<\\/md-tooltip><img class=\\"md-user-avatar\\" style=\\"height: 100%;\\" ng-src=\\"https:\\/\\/web.quantimo.do\\/img\\/rating\\/100\\/face_rating_button_100_ok.png\\"\\/>","id":"ratingnotificationbutton-button","parameters":{"value":3,"modifiedValue":3,"action":"track","unitAbbreviatedName":"\\/5","trackingReminderNotificationId":99354},"successToastText":"Recorded 3 out of 5","text":"3\\/5","title":"3\\/5","tooltip":"Rate 3\\/5"},{"longTitle":"Rate 2\\/5","callback":"trackTwoRatingAction","modifiedValue":2,"action":"track","foreground":false,"shortTitle":"2\\/5","image":"https:\\/\\/web.quantimo.do\\/img\\/rating\\/100\\/face_rating_button_100_sad.png","accessibilityText":"2\\/5","functionName":"track","html":"<md-tooltip>Rate 2\\/5<\\/md-tooltip><img class=\\"md-user-avatar\\" style=\\"height: 100%;\\" ng-src=\\"https:\\/\\/web.quantimo.do\\/img\\/rating\\/100\\/face_rating_button_100_sad.png\\"\\/>","id":"ratingnotificationbutton-button","parameters":{"value":2,"modifiedValue":2,"action":"track","unitAbbreviatedName":"\\/5","trackingReminderNotificationId":99354},"successToastText":"Recorded 2 out of 5","text":"2\\/5","title":"2\\/5","tooltip":"Rate 2\\/5"},{"longTitle":"Rate 4\\/5","callback":"trackFourRatingAction","modifiedValue":4,"action":"track","foreground":false,"shortTitle":"4\\/5","image":"https:\\/\\/web.quantimo.do\\/img\\/rating\\/100\\/face_rating_button_100_happy.png","accessibilityText":"4\\/5","functionName":"track","html":"<md-tooltip>Rate 4\\/5<\\/md-tooltip><img class=\\"md-user-avatar\\" style=\\"height: 100%;\\" ng-src=\\"https:\\/\\/web.quantimo.do\\/img\\/rating\\/100\\/face_rating_button_100_happy.png\\"\\/>","id":"ratingnotificationbutton-button","parameters":{"value":4,"modifiedValue":4,"action":"track","unitAbbreviatedName":"\\/5","trackingReminderNotificationId":99354},"successToastText":"Recorded 4 out of 5","text":"4\\/5","title":"4\\/5","tooltip":"Rate 4\\/5"}]',

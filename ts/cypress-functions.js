@@ -21,6 +21,9 @@ var mochawesome_report_generator_1 = __importDefault(require("mochawesome-report
 var rimraf_1 = __importDefault(require("rimraf"));
 var env_helper_1 = require("./env-helper");
 var fileHelper = __importStar(require("./qm.file-helper"));
+// require untyped library file
+// tslint:disable-next-line:no-var-requires
+var qm = require("../src/js/qmHelpers.js");
 var qmGit = __importStar(require("./qm.git"));
 var test_helpers_1 = require("./test-helpers");
 env_helper_1.loadEnv("local"); // https://github.com/motdotla/dotenv#what-happens-to-environment-variables-that-were-already-set
@@ -245,18 +248,20 @@ function runOneCypressSpec(specName, cb) {
             var failedTests = getFailedTestsFromResults(results);
             if (failedTests.length) {
                 process.env.LOGROCKET = "1";
-                runWithRecording(specName, function (recordResults) {
-                    var failedRecordedTests = getFailedTestsFromResults(recordResults);
-                    if (failedRecordedTests.length) {
-                        logFailedTests(failedRecordedTests, context, function (errorMessage) {
-                            cb(errorMessage);
-                            process.exit(1);
-                        });
-                    }
-                    else {
-                        delete process.env.LOGROCKET;
-                        handleTestSuccess(results, context, cb);
-                    }
+                fileHelper.uploadToS3InSubFolderWithCurrentDateTime(getVideoPath(specName), "cypress", function (err, SendData) {
+                    runWithRecording(specName, function (recordResults) {
+                        var failedRecordedTests = getFailedTestsFromResults(recordResults);
+                        if (failedRecordedTests.length) {
+                            logFailedTests(failedRecordedTests, context, function (errorMessage) {
+                                cb(errorMessage);
+                                process.exit(1);
+                            });
+                        }
+                        else {
+                            delete process.env.LOGROCKET;
+                            handleTestSuccess(results, context, cb);
+                        }
+                    });
                 });
             }
             else {
@@ -271,6 +276,14 @@ function runOneCypressSpec(specName, cb) {
     });
 }
 exports.runOneCypressSpec = runOneCypressSpec;
+function getVideoPath(specName) {
+    return "cypress/videos/" + specName + ".mp4";
+}
+exports.getVideoPath = getVideoPath;
+function uploadCypressVideo(specName, cb) {
+    fileHelper.uploadToS3InSubFolderWithCurrentDateTime(getVideoPath(specName), "cypress", cb);
+}
+exports.uploadCypressVideo = uploadCypressVideo;
 function getSpecsPath() {
     return app_root_path_1.default + "/cypress/integration";
 }
