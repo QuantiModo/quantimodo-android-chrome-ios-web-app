@@ -13,9 +13,27 @@ Object.defineProperty(exports, "__esModule", { value: true });
 // noinspection JSUnusedGlobalSymbols,JSUnusedGlobalSymbols
 var aws_sdk_1 = __importDefault(require("aws-sdk"));
 var fs = __importStar(require("fs"));
+var https = __importStar(require("https"));
 var path = __importStar(require("path"));
 var rimraf_1 = __importDefault(require("rimraf"));
 var qmLog = __importStar(require("./qm.log"));
+function assertDoesNotExist(relative) {
+    var abs = getAbsolutePath(relative);
+    if (fs.existsSync(abs)) {
+        throw Error(abs + " exists!");
+    }
+}
+exports.assertDoesNotExist = assertDoesNotExist;
+function assertExists(relative) {
+    var abs = getAbsolutePath(relative);
+    if (!fs.existsSync(abs)) {
+        throw Error(abs + " does not exist!");
+    }
+}
+exports.assertExists = assertExists;
+// require untyped library file
+// tslint:disable-next-line:no-var-requires
+var qm = require("../src/js/qmHelpers.js");
 function exists(filename) {
     var filepath = getAbsolutePath(filename);
     return fs.existsSync(filepath);
@@ -51,7 +69,7 @@ function getS3Client() {
     return new aws_sdk_1.default.S3(s3Options);
 }
 exports.getS3Client = getS3Client;
-function download(filePath, bucketName, key, cb) {
+function downloadFromS3(filePath, bucketName, key, cb) {
     var s3 = new aws_sdk_1.default.S3();
     s3.getObject({
         Bucket: bucketName,
@@ -69,13 +87,23 @@ function download(filePath, bucketName, key, cb) {
         }
     });
 }
-exports.download = download;
-function uploadToS3(filePath, s3BasePath, cb, s3Bucket, accessControlLevel, ContentType) {
+exports.downloadFromS3 = downloadFromS3;
+function uploadToS3InSubFolderWithCurrentDateTime(filePath, s3BasePath, cb, s3Bucket, accessControlLevel, ContentType) {
+    if (s3Bucket === void 0) { s3Bucket = "quantimodo"; }
+    if (accessControlLevel === void 0) { accessControlLevel = "public-read"; }
+    var at = new Date();
+    var dateTime = at.toISOString();
+    uploadToS3(filePath, s3BasePath + "/" + dateTime, cb, s3Bucket, accessControlLevel, ContentType);
+}
+exports.uploadToS3InSubFolderWithCurrentDateTime = uploadToS3InSubFolderWithCurrentDateTime;
+function uploadToS3(relative, s3BasePath, cb, s3Bucket, accessControlLevel, ContentType) {
     if (s3Bucket === void 0) { s3Bucket = "quantimodo"; }
     if (accessControlLevel === void 0) { accessControlLevel = "public-read"; }
     var s3 = getS3Client();
-    var fileContent = fs.readFileSync(filePath);
-    var fileName = path.basename(filePath);
+    var abs = getAbsolutePath(relative);
+    assertExists(abs);
+    var fileContent = fs.readFileSync(abs);
+    var fileName = path.basename(relative);
     var s3Key = s3BasePath + "/" + fileName;
     var params = {
         ACL: accessControlLevel,
@@ -93,7 +121,7 @@ function uploadToS3(filePath, s3BasePath, cb, s3Bucket, accessControlLevel, Cont
         }
         console.log("File uploaded successfully. " + data.Location);
         if (cb) {
-            cb(data);
+            cb(err, data);
         }
     });
 }
@@ -131,4 +159,17 @@ function getAbsolutePath(relativePath) {
     }
 }
 exports.getAbsolutePath = getAbsolutePath;
+function download(url, relative, cb) {
+    var absolutePath = getAbsolutePath(relative);
+    var file = fs.createWriteStream(absolutePath);
+    qmLog.info("Downloading " + url + " to " + absolutePath + "...");
+    https.get(url, function (response) {
+        response.pipe(file);
+        file.on("finish", function () {
+            file.on("close", cb);
+            file.close();
+        });
+    });
+}
+exports.download = download;
 //# sourceMappingURL=qm.file-helper.js.map
