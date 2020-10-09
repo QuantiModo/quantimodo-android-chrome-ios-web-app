@@ -29,7 +29,7 @@ qm.stateNames = qm.staticData.stateNames
 qm.qmLog = qmLog
 qmLog.qm = qm
 qm.qmLog.setLogLevelName(process.env.LOG_LEVEL || 'info')
-qm.nlp = require('./../../src/lib/compromise')
+global.nlp = require('./../../src/lib/compromise')
 const chrome = require('sinon-chrome/extensions')
 var qmTests = {
     getAccessToken(){

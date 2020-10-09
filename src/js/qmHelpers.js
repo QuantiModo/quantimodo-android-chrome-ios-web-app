@@ -564,13 +564,41 @@ var qm = {
             url = url.replace('http://', '');
             return url;
         },
-        postToQuantiModo: function(body, path, successHandler, errorHandler){
+        post: function(body, path, successHandler, errorHandler){
             qm.api.getRequestUrl(path, function(url){
                 qm.qmLog.info("Making POST request to " + url);
                 if(typeof XMLHttpRequest !== "undefined"){
-                    qm.api.postViaXhr(body, url, successHandler, errorHandler);
+                    var xhr = new XMLHttpRequest();   // new HttpRequest instance
+                    xhr.open("POST", url);
+                    xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+                    xhr = qm.api.addXhrHeaders(xhr);
+                    xhr.onreadystatechange = function(){//Call a function when the state changes.
+                        if(xhr.readyState === XMLHttpRequest.DONE){
+                            var fallback = xhr.responseText;
+                            var responseObject = qm.stringHelper.parseIfJsonString(xhr.responseText, fallback);
+                            if ( xhr.status === 201 || responseObject.success === true) {
+                                if(successHandler){successHandler(responseObject);}
+                            } else {
+                                qm.qmLog.error("qm.api.get error from " + url + " request: " + xhr.responseText, null, responseObject);
+                                if(errorHandler){errorHandler(responseObject);}
+                            }
+                        }
+                    };
+                    xhr.send(JSON.stringify(body));
                 }else{
-                    qm.api.postViaFetch(body, url, successHandler, errorHandler);  // Need fetch for service worker
+                    fetch(url, {
+                        method: 'post',
+                        body: JSON.stringify(body),
+                        headers: new Headers(qm.api.getDefaultHeaders())
+                    }).then(function(response){
+                        qm.qmLog.info("Got " + response.status + " response from POST to " + url);
+                        if(successHandler){
+                            successHandler(response);
+                        }
+                    }).catch(function(err){
+                        qm.qmLog.error("Error from POST to " + url + ": " + err);
+                        if(errorHandler){errorHandler(err)}
+                    });
                 }
             });
         },
@@ -612,8 +640,8 @@ var qm = {
                 method: 'get',
                 headers: new Headers(qm.api.getDefaultHeaders())
             }).then(function(response){
-                    return response.json();
-                }).then(function(data){
+                return response.json();
+            }).then(function(data){
                 if(successHandler){
                     successHandler(data);
                 }
@@ -651,20 +679,6 @@ var qm = {
             };
             xhr.send(null);
         },
-        postViaFetch: function(body, url, successHandler){
-            fetch(url, {
-                method: 'post',
-                body: JSON.stringify(body),
-                headers: new Headers(qm.api.getDefaultHeaders())
-            }).then(function(response){
-                qm.qmLog.info("Got " + response.status + " response from POST to " + url);
-                if(successHandler){
-                    successHandler(response);
-                }
-            }).catch(function(err){
-                qm.qmLog.error("Error from POST to " + url + ": " + err);
-            });
-        },
         addXhrHeaders: function(xhr){
             var headers = qm.api.getDefaultHeaders();
             for (var headerName in headers) {
@@ -675,27 +689,8 @@ var qm = {
             }
             return xhr;
         },
-        postViaXhr: function(body, url, successHandler, errorHandler){
-            var xhr = new XMLHttpRequest();   // new HttpRequest instance
-            xhr.open("POST", url);
-            xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-            xhr = qm.api.addXhrHeaders(xhr);
-            xhr.onreadystatechange = function(){//Call a function when the state changes.
-                if(xhr.readyState === XMLHttpRequest.DONE){
-                    var fallback = xhr.responseText;
-                    var responseObject = qm.stringHelper.parseIfJsonString(xhr.responseText, fallback);
-                    if ( xhr.status === 201 || responseObject.success === true) {
-                        if(successHandler){successHandler(responseObject);}
-                    } else {
-                        qm.qmLog.error("qm.api.get error from " + url + " request: " + xhr.responseText, null, responseObject);
-                        if(errorHandler){errorHandler(responseObject);}
-                    }
-                }
-            };
-            xhr.send(JSON.stringify(body));
-        },
         postMeasurements: function(measurements, onDoneListener){
-            qm.api.postToQuantiModo(measurements, "v1/measurements", onDoneListener);
+            qm.api.post(measurements, "v1/measurements", onDoneListener);
         },
         getRequestUrl: function(path, successHandler, params){
             qm.userHelper.getUserFromLocalStorage(function(user){
@@ -2031,9 +2026,11 @@ var qm = {
         setTooltipFormatterFunction: function(highchartConfig) {
             if (highchartConfig.tooltip &&
                 highchartConfig.tooltip.formatter &&
+                // eslint-disable-next-line no-underscore-dangle
                 highchartConfig.tooltip.formatter._expression) {
                 var exp = highchartConfig.tooltip.formatter._expression;
                 var def = exp.substring(exp.indexOf("{") + 1, exp.lastIndexOf("}"));
+                // eslint-disable-next-line no-new-func
                 highchartConfig.tooltip.formatter = new Function(def);
             }
         }
@@ -2825,7 +2822,7 @@ var qm = {
             return bravy;
         },
         post: function(body, successHandler, errorHandler){
-            qm.api.postToQuantiModo(body, "v1/dialogflow", function(response){
+            qm.api.post(body, "v1/dialogflow", function(response){
                 qm.dialogFlow.lastApiResponse = response;
                 successHandler(response);
             }, function(error){
@@ -3220,7 +3217,7 @@ var qm = {
                 qm.qmLog.error("No userInput given to calculateScoreAndFillParameters");
                 return false;
             }
-            var doc = qm.nlp(userInput);
+            var doc = nlp(userInput);
             if(!doc){
                 qm.qmLog.error("Maybe nlp package isn't available?  qm.nlp("+userInput+") returns "+JSON.stringify(doc));
                 return false;
@@ -4256,7 +4253,7 @@ var qm = {
     loaders: {
         robots: function(){
             var tm = new TimelineMax({repeat: -1, repeatDelay: 2})
-            //.to('#redBot',2,{x:500,ease:Power3.easeInOut},'+=2')
+                //.to('#redBot',2,{x:500,ease:Power3.easeInOut},'+=2')
                 .fromTo('#blueBot', 2, {x: 0}, {x: 0, ease: Power3.easeInOut}, '-=1.5')
                 //.to('body',2,{backgroundColor:'#FFDC6D'},'-=2')
                 .to('#blueBot', 2, {x: 0, onStart: newBot, ease: Power3.easeInOut}, '+=2');
@@ -5705,9 +5702,6 @@ var qm = {
             }, 100);
         }
     },
-    nlp: function(){
-        return nlp;
-    },
     nodeHelper: {
         execute: function(command, callback, suppressErrors, lotsOfOutput){
             qm.qmLog.debug('executing ' + command);
@@ -6170,7 +6164,7 @@ var qm = {
             }
             // Get rid of card objects, available unit array and variable category object to decrease size of body
             trackingReminderNotifications = qm.objectHelper.removeObjectAndArrayPropertiesForArray(trackingReminderNotifications);
-            qm.api.postToQuantiModo(trackingReminderNotifications, "v1/trackingReminderNotifications", onDoneListener);
+            qm.api.post(trackingReminderNotifications, "v1/trackingReminderNotifications", onDoneListener);
             if(timeout){
                 setTimeout(function(){
                     qm.qmLog.info("Timeout expired so closing");
@@ -6325,20 +6319,20 @@ var qm = {
                 if(data.measurements){qm.measurements.addMeasurementsToMemory(data.measurements);}
                 if(data.trackingReminderNotifications){qm.storage.setTrackingReminderNotifications(data.trackingReminderNotifications);}
             }
-            qm.api.postToQuantiModo(body, 'v3/trackingReminderNotifications', function(response){
-                    saveResponse(response);
-                    if(successHandler){successHandler(response);}
-                }, function(response){
-                    qm.qmLog.error(response.message)
-                    saveResponse(response); // Sometimes we still return notifications even with an error
-                    // This happens when the error is a message saying the notification was already deleted
-                    // so we don't want to put notifications back in queue
-                    // Don't return to queue or we cause an infinite loop if we get a no changes error
-                    // var newNotificationsSyncQueue = qm.storage.getItem(qm.items.notificationsSyncQueue);
-                    // if(newNotificationsSyncQueue){notifications = notifications.concat(newNotificationsSyncQueue);}
-                    // qm.storage.setItem(qm.items.notificationsSyncQueue, notifications);
-                    if(errorHandler){errorHandler(response.message || response.error);}
-                });
+            qm.api.post(body, 'v3/trackingReminderNotifications', function(response){
+                saveResponse(response);
+                if(successHandler){successHandler(response);}
+            }, function(response){
+                qm.qmLog.error(response.message)
+                saveResponse(response); // Sometimes we still return notifications even with an error
+                // This happens when the error is a message saying the notification was already deleted
+                // so we don't want to put notifications back in queue
+                // Don't return to queue or we cause an infinite loop if we get a no changes error
+                // var newNotificationsSyncQueue = qm.storage.getItem(qm.items.notificationsSyncQueue);
+                // if(newNotificationsSyncQueue){notifications = notifications.concat(newNotificationsSyncQueue);}
+                // qm.storage.setItem(qm.items.notificationsSyncQueue, notifications);
+                if(errorHandler){errorHandler(response.message || response.error);}
+            });
         },
         skip: function(trackingReminderNotification){
             trackingReminderNotification.action = 'skip';
@@ -6410,7 +6404,7 @@ var qm = {
                 pushData = pushData.data;
             }
             qm.appsManager.getAppSettingsLocallyOrFromApi(function (appSettings) {
-                notificationOptions = qm.notifications.convertPushDataToWebNotificationOptions(pushData, appSettings);
+                var notificationOptions = qm.notifications.convertPushDataToWebNotificationOptions(pushData, appSettings);
                 self.registration.showNotification(notificationOptions.title, notificationOptions);
             });
         }
@@ -9876,7 +9870,7 @@ var qm = {
             }
         },
         updateUserSettings: function(params, successHandler, errorHandler){
-            qm.api.postToQuantiModo(params, 'v3/userSettings', function (response) {
+            qm.api.post(params, 'v3/userSettings', function (response) {
                 var user = response.user || response.data || response;
                 if(!user.email){
                     qmLog.errorAndExceptionTestingOrDevelopment("no user returned from userSettings.  Here's the response: ", response);
@@ -10926,9 +10920,6 @@ if(typeof qmLog !== "undefined"){
     qmLog.qm = qm;
 }
 //if(typeof window !== "undefined" && typeof window.qmLog === "undefined"){window.qmLog = qm.qmLog;}  // Need to use qm.qmLog so it's available in node.js modules
-if(typeof nlp !== "undefined"){
-    qm.nlp = nlp;
-}
 if(typeof Quantimodo !== "undefined"){
     qm.Quantimodo = Quantimodo;
 }
