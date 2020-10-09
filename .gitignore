@@ -136,3 +136,4 @@ secrets/*
 /ionic.iml
 /cypress/reports/merged/mochawesome.json
 /last-failed-cypress-test
+/cypress/videos/
