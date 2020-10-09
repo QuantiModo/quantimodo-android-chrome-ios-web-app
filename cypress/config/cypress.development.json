@@ -1,15 +1,15 @@
 {
   "chromeWebSecurity": false,
-  "baseUrl": "https://app.quantimo.do",
+  "baseUrl": "https://local.quantimo.do",
   "projectId": "ee8wan",
   "pageLoadTimeout": 60000,
   "videoCompression": false,
   "videoUploadOnPasses": false,
-  "video": true,
+  "video": false,
   "env": {
-    "API_HOST": "app.quantimo.do",
-    "OAUTH_APP_HOST": "web.quantimo.do",
-    "BUILDER_HOST": "builder.quantimo.do",
+    "API_HOST": "local.quantimo.do",
+    "OAUTH_APP_HOST": "dev-web.quantimo.do",
+    "BUILDER_HOST": "dev-builder.quantimo.do",
     "abort_strategy": true
   },
   "reporter": "cypress-multi-reporters",
