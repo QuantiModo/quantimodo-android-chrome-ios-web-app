@@ -8,7 +8,7 @@ var middleware = bugsnagClient.getPlugin('express');
 // This must be the first piece of middleware in the stack.
 // It can only capture errors in downstream middleware
 app.use(middleware.requestHandler);
-app.use(express.static('www'));
+app.use(express.static('src'));
 // CORS (Cross-Origin Resource Sharing) headers to support Cross-site HTTP requests
 app.all('*', function(req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");
