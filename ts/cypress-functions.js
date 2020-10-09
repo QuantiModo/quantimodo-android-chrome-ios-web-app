@@ -248,7 +248,7 @@ function runOneCypressSpec(specName, cb) {
             var failedTests = getFailedTestsFromResults(results);
             if (failedTests.length) {
                 process.env.LOGROCKET = "1";
-                fileHelper.uploadToS3InSubFolderWithCurrentDateTime("cypress/recordings/" + specName + ".mp4", "cypress", function (err, SendData) {
+                fileHelper.uploadToS3InSubFolderWithCurrentDateTime(getVideoPath(specName), "cypress", function (err, SendData) {
                     runWithRecording(specName, function (recordResults) {
                         var failedRecordedTests = getFailedTestsFromResults(recordResults);
                         if (failedRecordedTests.length) {
