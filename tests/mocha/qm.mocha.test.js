@@ -269,12 +269,12 @@ describe("Chrome Extension", function () {
 describe("Recordings", function () {
     it('can upload Cypress recording', function(done) {
         const specName = "test_spec"
-        const relative = cypressFunctions.getRecordingPath(specName)
+        const relative = cypressFunctions.getVideoPath(specName)
         fileHelper.deleteFile(relative, function (){
             let exists = fileHelper.exists(relative)
             chai.expect(exists).to.be.false
             fileHelper.createFile(relative, "test video", function (){
-                cypressFunctions.uploadCypressRecording(specName, function (err, SendData){
+                cypressFunctions.uploadCypressVideo(specName, function (err, SendData){
                     const downloadPath = 'tmp/download.mp4'
                     fileHelper.deleteFile(downloadPath, function (){
                         fileHelper.assertDoesNotExist(downloadPath)
