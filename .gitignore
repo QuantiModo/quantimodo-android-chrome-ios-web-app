@@ -137,3 +137,4 @@ secrets/*
 /cypress/reports/merged/mochawesome.json
 /last-failed-cypress-test
 /cypress/videos/
+/success-file
