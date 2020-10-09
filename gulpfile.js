@@ -1375,7 +1375,6 @@ var chromeScripts = [
     'js/qmLogger.js',
     'js/qmHelpers.js',
     'data/qmStaticData.js', // Must come after qmHelpers because we assign to qm.staticData
-    'js/qmChrome.js',
     'lib/underscore/underscore-min.js'
 ];
 //if(qmGit.accessToken){chromeScripts.push('qm-amazon/qmUrlUpdater.js');}
@@ -2234,7 +2233,7 @@ function minifyJsGenerateCssAndIndexHtml(sourceIndexFileName) {
         .pipe(gulp.dest('www'))
         ;
 }
-gulp.task('minify-js-generate-css-and-index-html', ['cleanCombinedFiles'], function() {
+gulp.task('minify-js-generate-css-and-index-html', [], function() {
     if(!qmGulp.buildSettings.weShouldMinify()){return copyFiles('src/**/*', 'www', []);}
     return minifyJsGenerateCssAndIndexHtml('index.html');
 });
@@ -2252,7 +2251,6 @@ var serviceWorkerFirebaseLocalForage = [
     'src/lib/localforage/dist/localforage.js',
     'src/js/qmLogger.js',
     'src/js/qmHelpers.js',
-    'src/js/qmChrome.js',
 ];
 gulp.task('upload-source-maps', [], function(callback) {
     fs.readdir(paths.www.scripts, function (err, files) {
@@ -2888,7 +2886,11 @@ gulp.task('cleanChromeBuildFolder', [], function () {
 });
 gulp.task('cleanCombinedFiles', [], function () {
     qmLog.info("Running cleanCombinedFiles...");
-    return cleanFiles(['www/css/combined*', paths.www.scripts + '/combined*', paths.www.scripts + '/*combined-*']);
+    return cleanFiles([
+        'www/css/combined*',
+        paths.www.scripts + '/combined*',
+        paths.www.scripts + '/*combined-*'
+    ]);
 });
 gulp.task('cleanBuildFolder', [], function () {
     qmLog.info("Cleaning build folder...");
@@ -3171,8 +3173,9 @@ gulp.task('configureApp', [], function (callback) {
         'uncommentBugsnagInIndexHtml',
         //'uncommentOpbeatInIndexHtml',
         'staticDataFile',
-        'uglify-error-debugging',
-        'minify-js-generate-css-and-index-html',
+        //'uglify-error-debugging',
+        'cleanCombinedFiles',
+        // Is 'minify-js-generate-css-and-index-html' necessary?  it randomly results in SyntaxError: Unexpected token: keyword (const) 'minify-js-generate-css-and-index-html',
         'minify-js-generate-css-and-android-popup-html',
         'upload-source-maps',
         'downloadIcon',
