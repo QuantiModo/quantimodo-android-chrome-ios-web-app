@@ -17,7 +17,7 @@ export function createFile(filePath: string, contents: any, cb?: () => void) {
 export function deleteFile(filename: string, cb?: () => void) {
     const filepath = getAbsolutePath(filename)
     rimraf(filepath, function() {
-        qmLog.info("Deleted " + filepath)
+        qmLog.info("Deleted " + filepath + " in deleteFile")
         if(cb) {cb()}
     })
 }
@@ -99,11 +99,11 @@ export function writeToFile(filePath: string, contents: any, cb?: () => void) {
   }
   filePath = getAbsolutePath(filePath)
   ensureDirectoryExistence(filePath)
-  console.info("Writing to " + filePath)
+  console.log("Writing to " + filePath)
   fs.writeFile(filePath, contents, (err) => {
     if (err) { throw err }
     // tslint:disable-next-line:no-console
-    console.log(filePath + " saved!")
+    console.log(filePath + " saved in writeToFile!")
     if (cb) {
       cb()
     }

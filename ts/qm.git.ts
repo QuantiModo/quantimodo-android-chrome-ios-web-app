@@ -107,8 +107,9 @@ export const githubStatusStates = {
 export function setGithubStatus(testState: "error" | "failure" | "pending" | "success", context: string,
                                 description: string, url?: string | null, cb?: ((arg0: any) => void) | undefined) {
     if (testState === "error") {
-        console.error(description + " " + context)
+        qmLog.error(description + " " + context)
     }
+    qmLog.info("Setting status on Github: "+ description + " " + context)
     description = _str.truncate(description, 135)
     url = url || getBuildLink()
     if(!url) {

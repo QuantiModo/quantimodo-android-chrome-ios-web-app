@@ -28,7 +28,7 @@ exports.createFile = createFile;
 function deleteFile(filename, cb) {
     var filepath = getAbsolutePath(filename);
     rimraf_1.default(filepath, function () {
-        qmLog.info("Deleted " + filepath);
+        qmLog.info("Deleted " + filepath + " in deleteFile");
         if (cb) {
             cb();
         }
@@ -109,13 +109,13 @@ function writeToFile(filePath, contents, cb) {
     }
     filePath = getAbsolutePath(filePath);
     ensureDirectoryExistence(filePath);
-    console.info("Writing to " + filePath);
+    console.log("Writing to " + filePath);
     fs.writeFile(filePath, contents, function (err) {
         if (err) {
             throw err;
         }
         // tslint:disable-next-line:no-console
-        console.log(filePath + " saved!");
+        console.log(filePath + " saved in writeToFile!");
         if (cb) {
             cb();
         }

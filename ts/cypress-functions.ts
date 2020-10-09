@@ -177,10 +177,12 @@ export function runWithRecording(specName: string, cb: (err: any) => void) {
             runUrl = recordingResults.runUrl
         }
         qmGit.setGithubStatus("error", context, "View recording of "+specName,
-            getBuildLink() || runUrl)
-        qmGit.createCommitComment(context, "\nView recording of "+specName+"\n"+
-            "[Cypress Dashboard]("+runUrl+") or [Build Log]("+getBuildLink()+")")
-        cb(recordingResults)
+            getBuildLink() || runUrl, function() {
+                qmGit.createCommitComment(context, "\nView recording of "+specName+"\n"+
+                    "[Cypress Dashboard]("+runUrl+") or [Build Log]("+getBuildLink()+")", function() {
+                    cb(recordingResults)
+                })
+            })
     })
 }
 
