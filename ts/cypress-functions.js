@@ -183,10 +183,12 @@ function runWithRecording(specName, cb) {
         if ("runUrl" in recordingResults) {
             runUrl = recordingResults.runUrl;
         }
-        qmGit.setGithubStatus("error", context, "View recording of " + specName, test_helpers_1.getBuildLink() || runUrl);
-        qmGit.createCommitComment(context, "\nView recording of " + specName + "\n" +
-            "[Cypress Dashboard](" + runUrl + ") or [Build Log](" + test_helpers_1.getBuildLink() + ")");
-        cb(recordingResults);
+        qmGit.setGithubStatus("error", context, "View recording of " + specName, test_helpers_1.getBuildLink() || runUrl, function () {
+            qmGit.createCommitComment(context, "\nView recording of " + specName + "\n" +
+                "[Cypress Dashboard](" + runUrl + ") or [Build Log](" + test_helpers_1.getBuildLink() + ")", function () {
+                cb(recordingResults);
+            });
+        });
     });
 }
 exports.runWithRecording = runWithRecording;
