@@ -1242,7 +1242,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     });
                     myPopup.then(function(res){
                         qmService.showInfoToast("Inviting "+$scope.data.email+" via email");
-                        qm.api.postToQuantiModo({email: $scope.data.email}, 'v1/shares/invitePatient',
+                        qm.api.post({email: $scope.data.email}, 'v1/shares/invitePatient',
                             function(response){
                                 if(callback){callback();}
                             }, function(error){
