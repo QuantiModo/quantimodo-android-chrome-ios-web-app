@@ -206,10 +206,11 @@ function getFailedTestsFromResults(results: any) {
 function handleTestSuccess(results: any, context: string, cb: (err: any) => void) {
     deleteLastFailedCypressTest()
     console.info(results.totalPassed + " tests PASSED!")
-    qmGit.setGithubStatus("success", context, results.totalPassed +
-        " tests passed")
-    createSuccessFile()
-    cb(false)
+    qmGit.setGithubStatus("success", context, results.totalPassed + " tests passed", null,function() {
+        createSuccessFile(function() {
+            cb(false)
+        })
+    })
 }
 
 export function runOneCypressSpec(specName: string, cb: ((err: any) => void)) {
@@ -287,11 +288,12 @@ export function runCypressTests(cb?: (err: any) => void) {
                 p = p.then((_) => new Promise((resolve) => {
                     runOneCypressSpec(specName,function() {
                         if (i === specFileNames.length - 1) {
-                            createSuccessFile()
-                            deleteEnvFile()
-                            if (cb) {
-                                cb(false)
-                            }
+                            createSuccessFile(function() {
+                                deleteEnvFile()
+                                if (cb) {
+                                    cb(false)
+                                }
+                            })
                         }
                         resolve()
                     })

@@ -267,6 +267,18 @@ describe("Chrome Extension", function () {
     })
 })
 describe("File Helper", function () {
+    it("creates success file", function (done) {
+        const filename = "success-file"
+        fileHelper.deleteFile(filename, function (){
+            let exists = fileHelper.exists(filename)
+            chai.expect(exists).to.be.false
+            th.createSuccessFile(function (){
+                exists = fileHelper.exists(filename)
+                chai.expect(exists).to.be.true
+                done()
+            })
+        })
+    })
     it("determines the absolute path", function (done) {
         var abs = fileHelper.getAbsolutePath("tests/ionIcons.js")
         chai.expect(abs).contains(appDir)
