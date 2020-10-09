@@ -36,4 +36,26 @@ function getSecondsAgo(unixTimestamp) {
     return Math.round((getUnixTimestampInSeconds() - unixTimestamp));
 }
 exports.getSecondsAgo = getSecondsAgo;
+function getHumanDateTime(timeAt) {
+    var at = new Date();
+    if (timeAt) {
+        at = new Date(timeAt);
+    }
+    var datetime = "Last Sync: " + at.getDate() + "/"
+        + (at.getMonth() + 1) + "/"
+        + at.getFullYear() + " "
+        + at.getHours() + ":"
+        + at.getMinutes() + ":"
+        + at.getSeconds();
+    return datetime;
+}
+exports.getHumanDateTime = getHumanDateTime;
+function getISO(timeAt) {
+    var at = new Date();
+    if (timeAt) {
+        at = new Date(timeAt);
+    }
+    return at.toISOString();
+}
+exports.getISO = getISO;
 //# sourceMappingURL=qm.time-helper.js.map
