@@ -190,10 +190,7 @@ afterEach(function (done) {
     }
     // @ts-ignore
     qmGit.setGithubStatus(githubState, t.title, t.title, null, function (res) {
-        var logResult = false
-        if (logResult) {
-            console.debug(res)
-        }
+        qmLog.debug(res)
         done()
     })
 })
