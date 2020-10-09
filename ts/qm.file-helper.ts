@@ -5,8 +5,16 @@ import * as path from "path"
 import rimraf from "rimraf"
 import * as qmLog from "./qm.log"
 
-export function deleteFile(filename: string,
-                           cb?: () => void) {
+export function exists(filename: string) {
+    const filepath = getAbsolutePath(filename)
+    return fs.existsSync(filepath)
+}
+
+export function createFile(filePath: string, contents: any, cb?: () => void) {
+    writeToFile(filePath, contents, cb)
+}
+
+export function deleteFile(filename: string, cb?: () => void) {
     const filepath = getAbsolutePath(filename)
     rimraf(filepath, function() {
         qmLog.info("Deleted " + filepath)
@@ -30,6 +38,22 @@ export function getS3Client() {
     secretAccessKey: AWS_SECRET_ACCESS_KEY,
   }
   return new AWS.S3(s3Options)
+}
+
+export function download(filePath: string, bucketName: string, key: string, cb: (arg0: any) => void) {
+    const s3 = new AWS.S3()
+    s3.getObject({
+        Bucket: bucketName,
+        Key: key,
+    }, (err, data) => {
+        if (err) { throw err }
+        if(data && data.Body) {
+            fs.writeFileSync(filePath, data.Body.toString())
+            console.log(`${filePath} has been created!`)
+        } else {
+            throw Error("File not found")
+        }
+    })
 }
 export function uploadToS3(
   filePath: string,
@@ -73,7 +97,9 @@ export function writeToFile(filePath: string, contents: any, cb?: () => void) {
     ensureDirectoryExistence(dirname)
     fs.mkdirSync(dirname)
   }
+  filePath = getAbsolutePath(filePath)
   ensureDirectoryExistence(filePath)
+  console.info("Writing to " + filePath)
   fs.writeFile(filePath, contents, (err) => {
     if (err) { throw err }
     // tslint:disable-next-line:no-console

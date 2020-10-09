@@ -1,4 +1,7 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 var __importStar = (this && this.__importStar) || function (mod) {
     if (mod && mod.__esModule) return mod;
     var result = {};
@@ -6,11 +9,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
     result["default"] = mod;
     return result;
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-var fs = __importStar(require("fs"));
 var rimraf_1 = __importDefault(require("rimraf"));
 var qmEnv = __importStar(require("./env-helper"));
 var fileHelper = __importStar(require("./qm.file-helper"));
@@ -37,20 +36,23 @@ function getBuildLink() {
 }
 exports.getBuildLink = getBuildLink;
 var successFilename = "success-file";
-function createSuccessFile() {
-    fileHelper.writeToFile("lastCommitBuilt", qmGit.getCurrentGitCommitSha());
-    var successPath = fileHelper.getAbsolutePath(successFilename);
-    return fs.writeFileSync(successPath, qmGit.getCurrentGitCommitSha());
+function createSuccessFile(cb) {
+    fileHelper.writeToFile("lastCommitBuilt", qmGit.getCurrentGitCommitSha(), function () {
+        fileHelper.createFile(successFilename, qmGit.getCurrentGitCommitSha(), cb);
+    });
 }
 exports.createSuccessFile = createSuccessFile;
-function deleteSuccessFile() {
+function deleteSuccessFile(cb) {
     qmLog.info("Deleting success file so we know if build completed...");
-    fileHelper.deleteFile(successFilename);
+    fileHelper.deleteFile(successFilename, cb);
 }
 exports.deleteSuccessFile = deleteSuccessFile;
-function deleteEnvFile() {
+function deleteEnvFile(cb) {
     rimraf_1.default(".env", function () {
         qmLog.info("Deleted env file!");
+        if (cb) {
+            cb();
+        }
     });
 }
 exports.deleteEnvFile = deleteEnvFile;

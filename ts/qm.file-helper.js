@@ -16,6 +16,15 @@ var fs = __importStar(require("fs"));
 var path = __importStar(require("path"));
 var rimraf_1 = __importDefault(require("rimraf"));
 var qmLog = __importStar(require("./qm.log"));
+function exists(filename) {
+    var filepath = getAbsolutePath(filename);
+    return fs.existsSync(filepath);
+}
+exports.exists = exists;
+function createFile(filePath, contents, cb) {
+    writeToFile(filePath, contents, cb);
+}
+exports.createFile = createFile;
 function deleteFile(filename, cb) {
     var filepath = getAbsolutePath(filename);
     rimraf_1.default(filepath, function () {
@@ -42,6 +51,25 @@ function getS3Client() {
     return new aws_sdk_1.default.S3(s3Options);
 }
 exports.getS3Client = getS3Client;
+function download(filePath, bucketName, key, cb) {
+    var s3 = new aws_sdk_1.default.S3();
+    s3.getObject({
+        Bucket: bucketName,
+        Key: key,
+    }, function (err, data) {
+        if (err) {
+            throw err;
+        }
+        if (data && data.Body) {
+            fs.writeFileSync(filePath, data.Body.toString());
+            console.log(filePath + " has been created!");
+        }
+        else {
+            throw Error("File not found");
+        }
+    });
+}
+exports.download = download;
 function uploadToS3(filePath, s3BasePath, cb, s3Bucket, accessControlLevel, ContentType) {
     if (s3Bucket === void 0) { s3Bucket = "quantimodo"; }
     if (accessControlLevel === void 0) { accessControlLevel = "public-read"; }
@@ -79,7 +107,9 @@ function writeToFile(filePath, contents, cb) {
         ensureDirectoryExistence(dirname);
         fs.mkdirSync(dirname);
     }
+    filePath = getAbsolutePath(filePath);
     ensureDirectoryExistence(filePath);
+    console.info("Writing to " + filePath);
     fs.writeFile(filePath, contents, function (err) {
         if (err) {
             throw err;

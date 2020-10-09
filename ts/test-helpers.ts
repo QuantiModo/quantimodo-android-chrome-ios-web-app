@@ -24,18 +24,19 @@ export function getBuildLink() {
     }
 }
 const successFilename = "success-file"
-export function createSuccessFile() {
-    fileHelper.writeToFile("lastCommitBuilt", qmGit.getCurrentGitCommitSha())
-    const successPath = fileHelper.getAbsolutePath(successFilename)
-    return fs.writeFileSync(successPath, qmGit.getCurrentGitCommitSha())
+export function createSuccessFile(cb?: () => void) {
+    fileHelper.writeToFile("lastCommitBuilt", qmGit.getCurrentGitCommitSha(), function() {
+        fileHelper.createFile(successFilename, qmGit.getCurrentGitCommitSha(), cb)
+    })
 }
-export function deleteSuccessFile() {
+export function deleteSuccessFile(cb?: () => void) {
     qmLog.info("Deleting success file so we know if build completed...")
-    fileHelper.deleteFile(successFilename)
+    fileHelper.deleteFile(successFilename, cb)
 }
-export function deleteEnvFile() {
+export function deleteEnvFile(cb?: () => void) {
     rimraf(".env", function() {
         qmLog.info("Deleted env file!")
+        if(cb) {cb()}
     })
 }
 export function getCiProvider(): string {
