@@ -28,7 +28,7 @@ var ciProvider = test_helpers_1.getCiProvider();
 var isWin = process.platform === "win32";
 var outputReportDir = app_root_path_1.default + "/tests/mochawesome-report";
 var screenshotDirectory = app_root_path_1.default + "/tests/mochawesome-report/assets";
-var unmerged = app_root_path_1.default + "cypress/reports/mocha";
+var unmerged = app_root_path_1.default + "/cypress/reports/mocha";
 var vcsProvider = "github";
 var verbose = true;
 var videoDirectory = app_root_path_1.default + "/cypress/videos";
@@ -164,8 +164,10 @@ function logFailedTests(failedTests, context, cb) {
         console.error(errorMessage);
         console.error("==============================================");
     }
-    mochawesome(failedTests, function () {
-        setGithubStatusAndUploadTestResults(failedTests, context, cb);
+    test_helpers_1.deleteSuccessFile(function () {
+        mochawesome(failedTests, function () {
+            setGithubStatusAndUploadTestResults(failedTests, context, cb);
+        });
     });
 }
 function runWithRecording(specName, cb) {
