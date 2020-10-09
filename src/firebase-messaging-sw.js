@@ -16,7 +16,6 @@ importScripts(libUrl+'localforage/dist/localforage.js');
 importScripts(getIonicAppBaseUrl()+'js/qmLogger.js');
 importScripts(getIonicAppBaseUrl()+'js/qmHelpers.js');
 importScripts(getIonicAppBaseUrl()+'data/qmStaticData.js');
-importScripts(getIonicAppBaseUrl()+'js/qmChrome.js');
 var config = {
     apiKey: "AIzaSyAro7_WyPa9ymH5znQ6RQRU2CW5K46XaTg",
     authDomain: "quantimo-do.firebaseapp.com",

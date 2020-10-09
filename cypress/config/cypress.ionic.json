@@ -8,7 +8,7 @@
   "video": true,
   "env": {
     "API_HOST": "app.quantimo.do",
-    "OAUTH_APP_HOST": "web.quantimo.do",
+    "OAUTH_APP_HOST": "medimodo.herokuapp.com",
     "BUILDER_HOST": "builder.quantimo.do",
     "abort_strategy": true
   },
