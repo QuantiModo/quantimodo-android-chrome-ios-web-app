@@ -214,6 +214,7 @@ function handleTestSuccess(results, context, cb) {
     console.info(results.totalPassed + " tests PASSED!");
     qmGit.setGithubStatus("success", context, results.totalPassed +
         " tests passed");
+    test_helpers_1.createSuccessFile();
     cb(false);
 }
 function runOneCypressSpec(specName, cb) {
