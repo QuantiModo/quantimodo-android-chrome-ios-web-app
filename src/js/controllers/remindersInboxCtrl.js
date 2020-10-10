@@ -157,9 +157,8 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
             n.modifiedValue = n.total;
             var lastAction = 'Recorded ' + n.modifiedValue + ' ' + n.unitAbbreviatedName;
             qm.notifications.lastAction = qm.stringHelper.formatValueUnitDisplayText(lastAction) + ' for '+n.variableName;
-            notificationAction(n, function (params) {
-                qm.notifications.track(params);
-            }, undoOne);
+            qm.notifications.track(n);
+            notificationAction(n, undoOne);
         };
         function getFavorites(){
             var cat = getVariableCategoryName();
@@ -238,7 +237,7 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
                 });
             }
         };
-        var notificationAction = function(n, cb, undoFunction){
+        var notificationAction = function(n, undoFunction){
             qmLog.info("Clicked " + qm.notifications.lastAction + " for " + n.variableName);
             hideNotification(n)
             qmService.showToastWithButton(qm.notifications.lastAction, 'UNDO', function(){
@@ -264,10 +263,9 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
             var valueUnit = qm.stringHelper.formatValueUnitDisplayText(n.modifiedValue + ' ' + n.unitAbbreviatedName);
             var variableName = n.variableName;
             qm.notifications.lastAction = 'Recorded ' + valueUnit + ' for '+ variableName;
-            notificationAction(n, function (params) {
-                if(value !== null){params.modifiedValue = value;}
-                qm.notifications.track(params);
-            }, undoOne);
+            if(value !== null){n.modifiedValue = value;}
+            qm.notifications.track(n);
+            notificationAction(n, undoOne);
             if($scope.state.showTrackAllButtons){
                 qm.toast.showQuestionToast('Want to record ' + valueUnit + " for ALL remaining " + variableName + " notifications?",
                 'Recorded ' + valueUnit + " for ALL remaining " + variableName + " notifications!", function () {
@@ -282,9 +280,8 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
             var valueUnit = qm.stringHelper.formatValueUnitDisplayText(n.modifiedValue + ' ' + n.unitAbbreviatedName);
             qm.notifications.lastAction = 'Recorded ' + valueUnit + ' for all '+n.variableName;
             hideByVariableId(n.variableId);
-            notificationAction(n, function (params) {
-                qm.notifications.trackAll(params, value, $ev);
-            }, undoByVariableId);
+            qm.notifications.trackAll(n, value, $ev);
+            notificationAction(n, undoByVariableId);
         }
         $scope.skipAll = function(n, $ev){
             if(isGhostClick($ev)){return false;}
@@ -292,9 +289,8 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
             qm.notifications.lastAction = 'Skipped all remaining '+n.variableName+" notifications";
             qm.ui.preventDragAfterAlert($ev);
             hideByVariableId(n.variableId);
-            notificationAction(n, function (params) {
-                qm.notifications.skipAll(params);
-            }, undoByVariableId);
+            qm.notifications.skipAll(n);
+            notificationAction(n, undoByVariableId);
             return true;
         };
         $scope.trackAllWithConfirmation = function(n, value, ev){
@@ -314,19 +310,15 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
             if(isGhostClick($event)){return;}
             n.action = 'skip';
             qm.notifications.lastAction = 'Skipped '+n.variableName;
-            notificationAction(n, function (params) {
-                qm.notifications.skip(params);
-                qmService.logEventToGA(qm.analytics.eventCategories.inbox, "skip");
-            }, undoOne);
+            qm.notifications.skip(n);
+            notificationAction(n, undoOne);
         };
         $scope.snooze = function(n, $event){
             if(isGhostClick($event)){return;}
             n.action = 'snooze';
             qm.notifications.lastAction = 'Snoozed '+n.variableName;
-            notificationAction(n, function (params) {
-                qm.notifications.snooze(params);
-            }, undoOne);
-            qmService.logEventToGA(qm.analytics.eventCategories.inbox, "snooze");
+            qm.notifications.snooze(n);
+            notificationAction(n, undoOne);
         };
         function wordClicked(word){
             alert(word.text + " appears " + word.count + " times and the average " + qm.getPrimaryOutcomeVariable().name +
