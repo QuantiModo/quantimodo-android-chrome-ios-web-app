@@ -62,6 +62,11 @@ exports.gi = {
             defaultValue = "https://dev-web.quantimo.do";
         }
         if (process.env.RELEASE_STAGE === "ionic") {
+            var CYPRESS_OAUTH_APP_HOST = process.env.CYPRESS_OAUTH_APP_HOST;
+            if (CYPRESS_OAUTH_APP_HOST) {
+                qmLog.info("Using startUrl " + CYPRESS_OAUTH_APP_HOST + " from process.env.CYPRESS_OAUTH_APP_HOST");
+                return CYPRESS_OAUTH_APP_HOST;
+            }
             return "https://medimodo.herokuapp.com";
         }
         var startUrl = qmEnv.getArgumentOrEnv("START_URL", defaultValue);
