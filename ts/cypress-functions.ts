@@ -184,13 +184,16 @@ export function runWithRecording(specName: string, cb: (err: any) => void) {
         if ("runUrl" in recordingResults) {
             runUrl = recordingResults.runUrl
         }
-        qmGit.setGithubStatus("error", context, "View recording of "+specName,
-            getBuildLink() || runUrl, function() {
-                qmGit.createCommitComment(context, "\nView recording of "+specName+"\n"+
-                    "[Cypress Dashboard]("+runUrl+") or [Build Log]("+getBuildLink()+")", function() {
-                    cb(recordingResults)
+        uploadCypressVideo(specName, function(err, s3Url) {
+            qmGit.setGithubStatus("error", context, "View recording of "+specName,
+                s3Url || getBuildLink() || runUrl, function() {
+                    qmGit.createCommitComment(context, "\nView recording of "+specName+"\n"+
+                        "[Cypress Dashboard]("+runUrl+") or [Build Log]("+getBuildLink()+") or [S3]("+s3Url+")",
+                        function() {
+                        cb(recordingResults)
+                    })
                 })
-            })
+        })
     })
 }
 
@@ -246,7 +249,7 @@ export function runOneCypressSpec(specName: string, cb: ((err: any) => void)) {
             if (failedTests.length) {
                 process.env.LOGROCKET = "1"
                 fileHelper.uploadToS3InSubFolderWithCurrentDateTime(getVideoPath(specName),
-                    "cypress", function(err, SendData) {
+                    "cypress", function(err, url) {
                     runWithRecording(specName, function(recordResults) {
                         const failedRecordedTests = getFailedTestsFromResults(recordResults)
                         if (failedRecordedTests.length) {
@@ -276,7 +279,7 @@ export function getVideoPath(specName: string) {
     return "cypress/videos/"+specName+".mp4"
 }
 
-export function uploadCypressVideo(specName: string, cb: (err: Error, data: ManagedUpload.SendData) => void) {
+export function uploadCypressVideo(specName: string, cb: (err: Error, url: string) => void) {
     fileHelper.uploadToS3InSubFolderWithCurrentDateTime(getVideoPath(specName), "cypress", cb)
 }
 
@@ -396,7 +399,7 @@ export function runLastFailedCypressTest(cb: (err: any) => void) {
     }
     runOneCypressSpec(name, cb)
 }
-export function uploadTestResults(cb: (err: Error, data: ManagedUpload.SendData) => void) {
+export function uploadTestResults(cb: (err: Error, url: string) => void) {
     const path = "mochawesome/" + qmGit.getCurrentGitCommitSha()
     fileHelper.uploadToS3("./mochawesome-report/mochawesome.html", path, cb, "quantimodo",
         "public-read", "text/html")
