@@ -5943,7 +5943,7 @@ var qm = {
                 buttons: notification.card.buttons
             }
         },
-        getFromGlobalsOrLocalStorage: function(variableCategoryName){
+        getLocalNotifications: function(variableCategoryName){
             var notifications = qm.storage.getItem(qm.items.trackingReminderNotifications);
             if(!notifications || !notifications.length){
                 return [];
@@ -6069,7 +6069,7 @@ var qm = {
         refreshIfEmpty: function(successHandler, errorHandler){
             if(!qm.notifications.getNumberInGlobalsOrLocalStorage()){
                 qm.qmLog.info('No notifications in local storage');
-                qm.notifications.syncTrackingReminderNotifications(successHandler, errorHandler);
+                qm.notifications.syncNotifications(successHandler, errorHandler);
                 return true;
             }
             qm.qmLog.info(qm.notifications.getNumberInGlobalsOrLocalStorage() + ' notifications in local storage');
@@ -6080,11 +6080,11 @@ var qm = {
             qm.qmLog.info("qm.notifications.refreshIfEmptyOrStale");
             if(!qm.notifications.getNumberInGlobalsOrLocalStorage() || qm.notifications.getSecondsSinceLastNotificationsRefresh() > 3600){
                 qm.qmLog.info('Refreshing notifications because empty or last refresh was more than an hour ago');
-                qm.notifications.syncTrackingReminderNotifications(callback);
+                qm.notifications.syncNotifications(callback);
             }else{
                 qm.qmLog.info('Not refreshing notifications because last refresh was last than an hour ago and we have notifications in local storage');
                 if(callback){
-                    callback(qm.notifications.getFromGlobalsOrLocalStorage());
+                    callback(qm.notifications.getLocalNotifications());
                 }
             }
         },
@@ -6175,7 +6175,7 @@ var qm = {
             }else{
                 console.info('No rating notifications for popup');
                 qm.notifications.getLastNotificationsRefreshTime();
-                qm.notifications.syncTrackingReminderNotifications();
+                qm.notifications.syncNotifications();
                 return null;
             }
         },
@@ -6184,7 +6184,7 @@ var qm = {
         },
         promise: null,
         refreshAndShowPopupIfNecessary: function(notificationParams){
-            qm.notifications.syncTrackingReminderNotifications(function(response){
+            qm.notifications.syncNotifications(function(response){
                 var uniqueNotification = qm.notifications.getMostRecentUniqueNotificationNotInSyncQueue();
                 function objectLength(obj){
                     var result = 0;
@@ -6196,7 +6196,7 @@ var qm = {
                     }
                     return result;
                 }
-                var trackingReminderNotifications = qm.notifications.getFromGlobalsOrLocalStorage();
+                var trackingReminderNotifications = qm.notifications.getLocalNotifications();
                 var numberOfWaitingNotifications = objectLength(trackingReminderNotifications);
                 if(uniqueNotification){
                     function getChromeRatingNotificationParams(trackingReminderNotification){
@@ -6219,7 +6219,7 @@ var qm = {
             return notificationParams;
         },
         getNumberInGlobalsOrLocalStorage: function(variableCategoryName){
-            var notifications = qm.notifications.getFromGlobalsOrLocalStorage(variableCategoryName);
+            var notifications = qm.notifications.getLocalNotifications(variableCategoryName);
             if(notifications){
                 return notifications.length;
             }
@@ -6302,7 +6302,7 @@ var qm = {
             if(!successHandler){
                 return null;
             }
-            qm.notifications.syncTrackingReminderNotifications(function(response){
+            qm.notifications.syncNotifications(function(response){
                 var notification = qm.notifications.getMostRecentNotification();
                 if(notification){
                     successHandler(notification);
@@ -6312,9 +6312,9 @@ var qm = {
             }, errorHandler);
         },
         schedulePost: function(delayInMilliseconds){
-            var queue = qm.storage.getItem(qm.items.notificationsSyncQueue);
+            var queue = qm.notifications.getQueue();
             if(queue && queue.length > 10){
-                qm.notifications.syncTrackingReminderNotifications();
+                qm.notifications.syncNotifications();
                 return;
             }
             if(!delayInMilliseconds){
@@ -6330,7 +6330,7 @@ var qm = {
                 }
                 setTimeout(function(){
                     qm.qmLog.info("Notifications sync countdown completed.  Syncing now... ");
-                    qm.notifications.syncTrackingReminderNotifications();
+                    qm.notifications.syncNotifications();
                 }, delayInMilliseconds);
             }else{
                 if(!qm.platform.isMobile()){ // Better performance
@@ -6359,15 +6359,15 @@ var qm = {
             qm.notifications.deleteByVariableName(n.variableName);
             qm.notifications.addToSyncQueue(n);
         },
-        syncTrackingReminderNotifications: function(successHandler, errorHandler){
-            qm.qmLog.debug("Called syncTrackingReminderNotifications...");
-            var notifications = qm.storage.getItem(qm.items.notificationsSyncQueue);
+        syncNotifications: function(successHandler, errorHandler){
+            qm.qmLog.debug("Called syncNotifications...");
+            var queue = qm.notifications.getQueue();
             qm.storage.removeItem(qm.items.notificationsSyncQueue);
             qm.storage.removeItem(qm.items.trackingReminderNotificationSyncScheduled);
             var body = [];
-            if(notifications){
-                if(!(notifications instanceof Array)){notifications = [notifications];}
-                body = notifications.map(function (n){
+            if(queue){
+                if(!(queue instanceof Array)){queue = [queue];}
+                body = queue.map(function (n){
                     return {
                         'value': n.modifiedValue || n.value,
                         'trackingReminderNotificationId': n.trackingReminderNotificationId,
@@ -6398,12 +6398,6 @@ var qm = {
             }, function(response){
                 qm.qmLog.error(response.message)
                 saveResponse(response); // Sometimes we still return notifications even with an error
-                // This happens when the error is a message saying the notification was already deleted
-                // so we don't want to put notifications back in queue
-                // Don't return to queue or we cause an infinite loop if we get a no changes error
-                // var newNotificationsSyncQueue = qm.storage.getItem(qm.items.notificationsSyncQueue);
-                // if(newNotificationsSyncQueue){notifications = notifications.concat(newNotificationsSyncQueue);}
-                // qm.storage.setItem(qm.items.notificationsSyncQueue, notifications);
                 if(errorHandler){errorHandler(response.message || response.error);}
             });
         },
