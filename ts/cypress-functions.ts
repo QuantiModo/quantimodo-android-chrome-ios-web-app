@@ -284,6 +284,47 @@ function getSpecsPath() {
     return repoPath + "/cypress/integration"
 }
 
+export function runCypressTestsInParallel(cb?: (err: any) => void) {
+    deleteSuccessFile()
+    try {
+        copyCypressEnvConfigIfNecessary()
+    } catch (e) {
+        console.error(e.message+"!  Going to try again...")
+        copyCypressEnvConfigIfNecessary()
+    }
+    deleteJUnitTestResults()
+    rimraf(paths.reports.mocha + "/*.json", function() {
+        const specsPath = getSpecsPath()
+        fs.readdir(specsPath, function(err: any, specFileNames: string[]) {
+            if (!specFileNames) {
+                throw new Error("No specFileNames in " + specsPath)
+            }
+            const promises = []
+            for (const specName of specFileNames) {
+                if (releaseStage === "ionic" && specName.indexOf("ionic_") === -1) {
+                    console.debug("skipping " + specName + " because it doesn't test ionic app and release stage is "+
+                        releaseStage)
+                    continue
+                }
+                promises.push(new Promise((resolve) => {
+                    runOneCypressSpec(specName,function() {
+                        resolve()
+                    })
+                }))
+            }
+            Promise.all(promises).then((values) => {
+                console.log(values)
+                createSuccessFile(function() {
+                    deleteEnvFile()
+                    if (cb) {
+                        cb(false)
+                    }
+                })
+            })
+        })
+    })
+}
+
 export function runCypressTests(cb?: (err: any) => void) {
     deleteSuccessFile()
     try {
