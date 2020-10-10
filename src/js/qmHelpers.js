@@ -259,22 +259,25 @@ var qm = {
         },
         getErrorMessageFromResponse: function(error, response){
             var errorMessage = '';
-            if(error && error.message){
+            if(typeof error === "string"){
+                errorMessage = error;
+            } else if(error && error.message){
                 errorMessage += error.message + ' ';
             }
             if(response && response.error && response.error.message){
-                errorMessage += response.error.message + ' ';
+                errorMessage += "\n" + response.error.message + ' ';
             }
             if(response && response.body && response.body.errorMessage){
-                errorMessage += response.body.errorMessage + ' ';
+                errorMessage += "\n" + response.body.errorMessage + ' ';
             }
             if(response && response.body && response.body.error && response.body.error.message){
-                errorMessage += response.body.error.message + ' ';
+                errorMessage += "\n" + response.body.error.message + ' ';
             }
             return errorMessage;
         },
         generalErrorHandler: function(error, data, response, options){
             var errorMessage = qm.api.getErrorMessageFromResponse(error, response);
+            errorMessage = qm.api.getErrorMessageFromResponse(errorMessage, data);
             if(!response){
                 return qm.qmLog.error("No API response provided to qmApiGeneralErrorHandler",
                     {errorMessage: errorMessage, responseData: data, apiResponse: response, requestOptions: options});
@@ -587,15 +590,22 @@ var qm = {
                     };
                     xhr.send(JSON.stringify(body));
                 }else{
+                    var headers = new Headers(qm.api.getDefaultHeaders())
                     fetch(url, {
                         method: 'post',
                         body: JSON.stringify(body),
-                        headers: new Headers(qm.api.getDefaultHeaders())
+                        headers: headers
                     }).then(function(response){
                         qm.qmLog.info("Got " + response.status + " response from POST to " + url);
-                        if(successHandler){
-                            successHandler(response);
-                        }
+                        response.json().then(function(data){
+                            if (response.status === 201 || data.success === true) {
+                                if(successHandler){successHandler(data);}
+                            } else {
+                                var err = "qm.api error "+response.status+" from POST to " + url
+                                err = qm.api.generalErrorHandler(err, data, response)
+                                if(errorHandler){errorHandler(err);}
+                            }
+                        })
                     }).catch(function(err){
                         qm.qmLog.error("Error from POST to " + url + ": " + err);
                         if(errorHandler){errorHandler(err)}
@@ -745,6 +755,7 @@ var qm = {
                 if(params){
                     url = qm.urlHelper.addUrlQueryParamsToUrlString(params, url);
                 }
+                url = url.replace('/api/api/', '/api/');
                 qm.qmLog.debug("Making API request to " + url);
                 successHandler(url);
             })
@@ -4666,8 +4677,8 @@ var qm = {
         }
     },
     measurements: {
-        recordMeasurement: function(m){
-            var m = qm.measurements.newMeasurement(m)
+        recordMeasurement: function(m, successHandler, errorHandler){
+            qm.measurements.postMeasurement(m, successHandler, errorHandler)
         },
         newMeasurement: function(src){
             var value;
@@ -4856,14 +4867,17 @@ var qm = {
             if(!m.location){m.location = qm.storage.getItem(qm.items.lastLocationNameAndAddress);}
             return m;
         },
-        addLocationAndSourceDataToMeasurement: function(m){
-            qm.measurements.addLocationDataToMeasurement(m);
-            if(!m.sourceName){m.sourceName = qm.getSourceName();}
-            return m;
+        addLocationAndSource: function(m){
+            var arr = m;
+            if(!Array.isArray(arr)){arr = [arr];}
+            for(m in arr){
+                qm.measurements.addLocationDataToMeasurement(m);
+                if(!m.sourceName){m.sourceName = qm.getSourceName();}
+            }
         },
         addToMeasurementsQueue: function(m){
             qm.qmLog.info("Adding to measurements queue: ", m);
-            m = qm.measurements.addLocationAndSourceDataToMeasurement(m);
+            qm.measurements.addLocationAndSource(m);
             qm.measurements.addInfoAndImagesToMeasurement(m);
             qm.measurements.addMeasurementsToMemory([m])
             qm.storage.appendToArray(qm.items.measurementsQueue, m);
@@ -4922,7 +4936,8 @@ var qm = {
             m.displayValueAndUnitString = qm.stringHelper.formatValueUnitDisplayText(m.displayValueAndUnitString)
             m.valueUnitVariableName = m.displayValueAndUnitString + " " + m.variableName;
             if(!m.variableCategoryName){
-                m.variableCategoryName = qm.variableCategoryHelper.findVariableCategory(m).name;
+                var cat = qm.variableCategoryHelper.findVariableCategory(m);
+                if(cat){m.variableCategoryName = cat.name;}
             }
             //debugger
             if(m.unitAbbreviatedName === "/5" && m.roundedValue && ratingInfo[m.roundedValue]){
@@ -4957,14 +4972,59 @@ var qm = {
             qm.qmLog.info("Got " + filtered.length + " measurements from recentlyPostedMeasurements with params: " + JSON.stringify(params));
             return filtered;
         },
-        postMeasurements: function (measurementSet, successHandler, errorHandler) {
-            measurementSet = qm.measurements.addLocationAndSourceDataToMeasurement(measurementSet);
-            qm.api.post('api/v3/measurements',
-                //['measurements', 'variableName', 'source', 'variableCategoryName', 'unitAbbreviatedName'],
-                [], measurementSet, successHandler, errorHandler);
+        postMeasurement: function(m, successHandler, errorHandler){
+            function isStartTimeInMilliseconds(m){
+                var oneWeekInFuture = qm.timeHelper.getUnixTimestampInSeconds() + 7 * 86400;
+                if(m.startTimeEpoch > oneWeekInFuture){
+                    m.startTimeEpoch = m.startTimeEpoch / 1000;
+                    console.warn('Assuming startTime is in milliseconds since it is more than 1 week in the future');
+                    return true;
+                }
+                return false;
+            }
+            isStartTimeInMilliseconds(m);
+            qm.measurements.addLocationAndSource(m);
+            if(!m.startAt && !m.startTime && !m.startTimeEpoch){
+                m.startAt = qm.timeHelper.iso();
+            }
+            if(m.prevStartTimeEpoch){ // Primary outcome variable - update through measurementsQueue
+                qm.measurements.updateMeasurementInQueue(m);
+            }else if(m.id){
+                qm.localForage.deleteById(qm.items.primaryOutcomeVariableMeasurements, m.id);
+                qm.measurements.addToMeasurementsQueue(m);
+            }else{
+                qm.measurements.addToMeasurementsQueue(m);
+            }
+            qm.userVariables.updateLatestMeasurementTime(m.variableName, m.value);
+            qm.measurements.postMeasurementQueue(successHandler, errorHandler);
+        },
+        postMeasurements: function (measurements, successHandler, errorHandler) {
+            qm.measurements.addLocationAndSource(measurements);
+            qm.api.post(measurements, 'api/v3/measurements', function(response){
+                var data = (response) ? response.data : null;
+                if(data && data.userVariables){
+                    qm.variablesHelper.saveToLocalStorage(data.userVariables);
+                }
+                if(successHandler){successHandler(data);}
+            }, errorHandler);
+        },
+        postMeasurementQueue: function(successHandler, errorHandler){
+            var queue = qm.measurements.getMeasurementsFromQueue();
+            if(!queue || queue.length < 1){
+                if(successHandler){successHandler();}
+            } else {
+                qm.measurements.postMeasurements(queue, function(data){
+                    qm.measurements.measurementCache = qm.measurements.measurementCache.concat(queue);  // Save these for history page
+                    qm.storage.setItem(qm.items.measurementsQueue, []);
+                    if(successHandler){successHandler(data);}
+                }, function(error){
+                    qm.storage.setItem(qm.items.measurementsQueue, queue);
+                    if(errorHandler){errorHandler(error);}
+                });
+            }
         }
     },
-    manualTrackingVariableCategoryNames: [,
+    manualTrackingVariableCategoryNames: [
         'Emotions',
         'Environment',
         'Foods',
@@ -8517,6 +8577,7 @@ var qm = {
         },
         parseJsonIfPossible: function(str){
             var object = false;
+            if(!str){return false;}
             if(str === "{}"){return false;}
             if(str === ""){return false;}
             if(typeof str === "string" && str.indexOf("{") === -1){return false;}
@@ -8910,12 +8971,19 @@ var qm = {
         }
     },
     timeHelper: {
+        iso: function(timeAt){
+            if(!timeAt){
+                var d = new Date();
+                return d.toISOString();
+            }
+            return qm.timeHelper.toISO(timeAt);
+        },
         getDateTime: function(timeAt){
             return qm.timeHelper.toDate(timeAt);
         },
         toDate: function(timeAt){
             var unixTime = qm.timeHelper.universalConversionToUnixTimeSeconds(timeAt);
-            return qm.timeHelper.convertUnixTimeStampToISOString(unixTime);
+            return qm.timeHelper.toISO(unixTime);
         },
         toUnixTime: function(timeAt){
             return qm.timeHelper.universalConversionToUnixTimeSeconds(timeAt);
@@ -8977,8 +9045,9 @@ var qm = {
         getCurrentLocalDateAndTime: function(){
             return new Date().toLocaleString();
         },
-        convertUnixTimeStampToISOString: function(UNIX_timestamp){
-            var a = new Date(UNIX_timestamp * 1000);
+        toISO: function(timeAt){
+            var unixTime = qm.timeHelper.universalConversionToUnixTimeSeconds(timeAt);
+            var a = new Date(unixTime * 1000);
             var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
             var year = a.getFullYear();
             var month = months[a.getMonth()];
@@ -9022,7 +9091,7 @@ var qm = {
             });
         },
         fromUnixTime: function(unixTime) {
-            return qm.timeHelper.convertUnixTimeStampToISOString(unixTime);
+            return qm.timeHelper.toISO(unixTime);
         }
     },
     toast: {

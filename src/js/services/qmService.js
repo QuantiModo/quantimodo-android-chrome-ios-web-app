@@ -1777,7 +1777,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     }
                     var toastMessage = 'Recorded ' + measurement.value + ' ' + measurement.unitAbbreviatedName;
                     qmService.showInfoToast(toastMessage.replace(' /', '/'));
-                    qmService.postMeasurementDeferred(measurement, successHandler, errorHandler);
+                    qm.measurements.postMeasurement(measurement, successHandler, errorHandler);
                 },
                 measurementValid: function(measurement){
                     var message;
@@ -3609,13 +3609,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         qmService.postMeasurementsExport = function(type, successHandler, errorHandler){
             qmService.post('api/v2/measurements/request_' + type, [], [], successHandler, errorHandler);
         };
-        // post new Measurements for user
-        qmService.postMeasurementsToApi = function(measurementSet, successHandler, errorHandler){
-            measurementSet = qm.measurements.addLocationAndSourceDataToMeasurement(measurementSet);
-            qmService.post('api/v3/measurements',
-                //['measurements', 'variableName', 'source', 'variableCategoryName', 'unitAbbreviatedName'],
-                [], measurementSet, successHandler, errorHandler);
-        };
         qmService.getNotesFromApi = function(params, successHandler, errorHandler){
             var options = {};
             qmService.get('api/v3/notes', ['variableName'], params, successHandler, errorHandler, options);
@@ -4319,34 +4312,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             }
             return startTimeEpoch;
         }
-        qmService.postMeasurementQueueToServer = function(successHandler, errorHandler){
-            var defer = $q.defer();
-            if(!qm.auth.getAccessTokenFromUrlUserOrStorage()){
-                var errorMessage = 'Not doing syncPrimaryOutcomeVariableMeasurements because we do not have a $rootScope.user or access token in url';
-                qmLog.error(errorMessage);
-                defer.reject(errorMessage);
-                return defer.promise;
-            }
-            var queue = qm.measurements.getMeasurementsFromQueue();
-            if(!queue || queue.length < 1){
-                if(successHandler){successHandler();}
-            } else {
-                qmService.postMeasurementsToApi(queue, function(response){
-                    if(response && response.data && response.data.userVariables){
-                        qm.variablesHelper.saveToLocalStorage(response.data.userVariables);
-                    }
-                    qm.measurements.measurementCache = qm.measurements.measurementCache.concat(queue);  // Save these for history page
-                    qm.storage.setItem(qm.items.measurementsQueue, []);
-                    if(successHandler){successHandler();}
-                    defer.resolve();
-                }, function(error){
-                    qm.storage.setItem(qm.items.measurementsQueue, queue);
-                    if(errorHandler){errorHandler();}
-                    defer.reject(error);
-                });
-                return defer.promise;
-            }
-        };
         qmService.syncPrimaryOutcomeVariableMeasurements = function(minimumSecondsBetweenGets){
             function canWeSyncYet(localStorageItemName, minimumSecondsBetweenSyncs){
                 if(qm.storage.getItem(localStorageItemName) && window.qm.timeHelper.getUnixTimestampInSeconds() - qm.storage.getItem(localStorageItemName) < minimumSecondsBetweenSyncs){
@@ -4370,7 +4335,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 defer.reject('Cannot sync because already did within the last ' + minimumSecondsBetweenGets + ' seconds');
                 return defer.promise;
             }
-            qmService.postMeasurementQueueToServer(function(){
+            qm.measurements.postMeasurementQueue(function(){
                 qmService.getAndStorePrimaryOutcomeMeasurements().then(function(primaryOutcomeMeasurementsFromApi){
                     defer.resolve(primaryOutcomeMeasurementsFromApi);
                 }, function(error){
@@ -4422,7 +4387,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 numericRatingValue = qm.getPrimaryOutcomeVariable().ratingTextToValueConversionDataSet[numericRatingValue] ?
                     qm.getPrimaryOutcomeVariable().ratingTextToValueConversionDataSet[numericRatingValue] : false;
             }
-            var measurementObject = {
+            var m = {
                 id: null,
                 variable: qm.getPrimaryOutcomeVariable().name,
                 variableName: qm.getPrimaryOutcomeVariable().name,
@@ -4433,35 +4398,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 value: numericRatingValue,
                 note: null
             };
-            measurementObject = qm.measurements.addLocationAndSourceDataToMeasurement(measurementObject);
-            return measurementObject;
-        };
-        function isStartTimeInMilliseconds(measurementInfo){
-            var oneWeekInFuture = window.qm.timeHelper.getUnixTimestampInSeconds() + 7 * 86400;
-            if(measurementInfo.startTimeEpoch > oneWeekInFuture){
-                measurementInfo.startTimeEpoch = measurementInfo.startTimeEpoch / 1000;
-                console.warn('Assuming startTime is in milliseconds since it is more than 1 week in the future');
-                return true;
-            }
-            return false;
-        }
-        qmService.postMeasurementDeferred = function(m, successHandler){
-            isStartTimeInMilliseconds(m);
-            m = qm.measurements.addLocationAndSourceDataToMeasurement(m);
-            if(m.prevStartTimeEpoch){ // Primary outcome variable - update through measurementsQueue
-                qm.measurements.updateMeasurementInQueue(m);
-            }else if(m.id){
-                qm.localForage.deleteById(qm.items.primaryOutcomeVariableMeasurements, m.id);
-                qm.measurements.addToMeasurementsQueue(m);
-            }else{
-                qm.measurements.addToMeasurementsQueue(m);
-            }
-            qm.userVariables.updateLatestMeasurementTime(m.variableName, m.value);
-            if(m.variableName === qm.getPrimaryOutcomeVariable().name){
-                qmService.syncPrimaryOutcomeVariableMeasurements();
-            }else{
-                qmService.postMeasurementQueueToServer(successHandler);
-            }
+            qm.measurements.addLocationAndSource(m);
+            return m;
         };
         qmService.postMeasurementByReminder = function(trackingReminder, modifiedValue){
             var deferred = $q.defer();
@@ -4489,7 +4427,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 deferred.reject('Value is not valid');
                 return deferred.promise;
             }
-            qmService.postMeasurementsToApi(measurementSet, function(response){
+            qm.measurements.postMeasurements(measurementSet, function(response){
                 if(response.success){
                     qmLog.debug('qmService.postMeasurementsToApi success: ', response);
                     if(response && response.data && response.data.userVariables){
@@ -4538,7 +4476,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 }
             ];
             measurementSets[0] = qm.measurements.addLocationDataToMeasurement(measurementSets[0]);
-            qmService.postMeasurementsToApi(measurementSets, function(response){
+            qm.measurements.postMeasurements(measurementSets, function(response){
                 if(response.success){
                     if(response && response.data && response.data.userVariables){
                         qm.variablesHelper.saveToLocalStorage(response.data.userVariables);
@@ -4779,7 +4717,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     location: qm.storage.getItem(qm.items.lastLocationAddress),
                     combinationOperation: "SUM"
                 };
-                qmService.postMeasurementDeferred(newMeasurement);
+                qm.measurements.postMeasurement(newMeasurement);
             }else{
                 if(geoLocationDebug && $rootScope.user && $rootScope.user.id === 230){
                     qmLog.error('Not posting location getLastLocationNameFromLocalStorage returns ' + getLastLocationNameFromLocalStorage());
@@ -6585,7 +6523,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             qmLog.debug('Checking weather forecast at ' + url);
             $http.jsonp(url).success(function(data){
                 var measurementSets = getWeatherMeasurementSets(data);
-                qmService.postMeasurementsToApi(measurementSets, function(response){
+                qm.measurements.postMeasurements(measurementSets, function(response){
                     qmLog.debug('posted weather measurements');
                     if(response && response.data && response.data.userVariables){
                         qm.variablesHelper.saveToLocalStorage(response.data.userVariables);
