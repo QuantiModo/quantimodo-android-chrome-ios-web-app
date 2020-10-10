@@ -263,8 +263,8 @@ describe("Chrome Extension", function () {
         //qmTests.runAllTestsForType('chrome', done)
     })
 })
-describe("Recordings", function () {
-    it('can upload Cypress recording', function(done) {
+describe("Cypress", function () {
+    it('can upload Cypress video', function(done) {
         const specName = "test_spec"
         const relative = cypressFunctions.getVideoPath(specName)
         fileHelper.deleteFile(relative, function (){
@@ -366,6 +366,15 @@ describe("Intent Handler", function () {
         var expectedEntities = {interrogativeWord: 'where', rememberCommand: "remember"}
         var expectedParameters = {memoryQuestion: 'where my keys are'}
         qmTests.tests.checkIntent(userInput, expectedIntentName, expectedEntities, expectedParameters, done)
+    })
+})
+describe("Measurement", function () {
+    it('can record a measurement', function(done){
+        qm.measurements.recordMeasurement({
+            value: 1,
+            variableName: "Overall Mood",
+            unitAbbreviatedName: "/5",
+        })
     })
 })
 describe("Notifications", function () {
