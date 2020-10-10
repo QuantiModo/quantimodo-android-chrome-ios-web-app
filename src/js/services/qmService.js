@@ -5002,9 +5002,9 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         };
         qmService.syncNotificationsIfQueued  =function (){
             var deferred = $q.defer();
-            var notifications = qm.storage.getItem(qm.items.notificationsSyncQueue);
+            var notifications = qm.notifications.getQueue();
             if(notifications && notifications.length){
-                return qmService.syncTrackingReminderNotifications();
+                return qmService.syncNotifications();
             } else {
                 deferred.resolve([]);
             }
@@ -5012,15 +5012,15 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         };
         qmService.syncNotificationsIfEmpty  =function (){
             var deferred = $q.defer();
-            var notifications = qm.notifications.getFromGlobalsOrLocalStorage();
+            var notifications = qm.notifications.getLocalNotifications();
             if(!notifications || !notifications.length){
-                return qmService.syncTrackingReminderNotifications();
+                return qmService.syncNotifications();
             } else {
                 deferred.resolve(notifications);
             }
             return deferred.promise;
         };
-        qmService.syncTrackingReminderNotifications = function(params){
+        qmService.syncNotifications = function(params){
             var deferred = $q.defer();
             if(params && params.noCache){qmService.notificationsPromise = false;}
             if(!qm.getUser()){
@@ -5029,8 +5029,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 return deferred.promise;
             }
             if(qmService.notificationsPromise){return qmService.notificationsPromise;}
-            qm.notifications.syncTrackingReminderNotifications(function(response){
-                var notifications = qm.notifications.getFromGlobalsOrLocalStorage();
+            qm.notifications.syncNotifications(function(response){
+                var notifications = qm.notifications.getLocalNotifications();
                 if(notifications.length && $rootScope.platform.isMobile && getDeviceTokenToSync()){qmService.registerDeviceToken();}
                 qmService.notifications.broadcastGetTrackingReminderNotifications();
                 if($rootScope.platform.isAndroid){qmService.notifications.showAndroidPopupForMostRecentNotification(true);}
