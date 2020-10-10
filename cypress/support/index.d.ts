@@ -31,5 +31,7 @@ declare namespace Cypress {
         visitWithApiUrlParam(url: string, options?: Partial<VisitOptions>): Chainable<Element>
         visitIonicAndSetApiUrl(path: string): Chainable<Element>
         toastContains(str: string): Chainable<Element>
+        getOAuthAppUrl(): string
+        oauthAppIsHTTPS(): boolean
     }
 }

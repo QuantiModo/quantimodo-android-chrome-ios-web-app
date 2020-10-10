@@ -71,9 +71,6 @@
         "SpeechKITT": false,
         "speechUtteranceChunker": false,
         "StatusBar": false,
-        "timeHelper": false,
-        "urlHelper": false,
-        "userHelper": false,
         "UserVoice": false,
         "window": false,
         "XMLHttpRequest": false
