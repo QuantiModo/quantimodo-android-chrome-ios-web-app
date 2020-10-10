@@ -4398,7 +4398,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 numericRatingValue = qm.getPrimaryOutcomeVariable().ratingTextToValueConversionDataSet[numericRatingValue] ?
                     qm.getPrimaryOutcomeVariable().ratingTextToValueConversionDataSet[numericRatingValue] : false;
             }
-            var measurementObject = {
+            var m = {
                 id: null,
                 variable: qm.getPrimaryOutcomeVariable().name,
                 variableName: qm.getPrimaryOutcomeVariable().name,
@@ -4409,8 +4409,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 value: numericRatingValue,
                 note: null
             };
-            measurementObject = qm.measurements.addLocationAndSourceDataToMeasurement(measurementObject);
-            return measurementObject;
+            qm.measurements.addLocationAndSource(m);
+            return m;
         };
         qmService.postMeasurementByReminder = function(trackingReminder, modifiedValue){
             var deferred = $q.defer();
