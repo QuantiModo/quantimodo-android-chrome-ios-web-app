@@ -46,7 +46,7 @@ exports.createFile = createFile;
 function deleteFile(filename, cb) {
     var filepath = getAbsolutePath(filename);
     rimraf_1.default(filepath, function () {
-        qmLog.info("Deleted " + filepath + " in deleteFile");
+        qmLog.info(filepath + "\n\tdeleted!");
         if (cb) {
             cb();
         }
@@ -115,13 +115,13 @@ function uploadToS3(relative, s3BasePath, cb, s3Bucket, accessControlLevel, Cont
         // @ts-ignore
         params.ContentType = ContentType;
     }
-    s3.upload(params, function (err, data) {
+    s3.upload(params, function (err, SendData) {
         if (err) {
             throw err;
         }
-        console.log("File uploaded successfully. " + data.Location);
+        qmLog.info(s3Key + "\n\tuploaded to\t\n" + SendData.Location);
         if (cb) {
-            cb(err, data);
+            cb(err, SendData.Location);
         }
     });
 }
@@ -143,7 +143,7 @@ function writeToFile(filePath, contents, cb) {
             throw err;
         }
         // tslint:disable-next-line:no-console
-        console.log(filePath + " saved in writeToFile!");
+        console.log(filePath + "\n\tsaved!");
         if (cb) {
             cb();
         }

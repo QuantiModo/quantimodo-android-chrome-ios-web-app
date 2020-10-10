@@ -28,13 +28,19 @@ const PERMANENT_TEST_USER_ACCESS_TOKEN_FOR_18535 = '42ff4170172357b7312bb127fb58
 const ACCESS_TOKEN_TO_GET_OR_CREATE_REFERRER_SPECIFIC_USER = 'test-token';
 let accessToken = Cypress.env('ACCESS_TOKEN') || PERMANENT_TEST_USER_ACCESS_TOKEN_FOR_18535 || ACCESS_TOKEN_TO_GET_OR_CREATE_REFERRER_SPECIFIC_USER
 let API_HOST = Cypress.env('API_HOST')  // API_HOST must be a quantimo.do domain so cypress can clear cookies
-let oauthAppBaseUrl = Cypress.env('OAUTH_APP_HOST')
-if(oauthAppBaseUrl.indexOf("http") === -1){
-    oauthAppBaseUrl = "https://"+oauthAppBaseUrl
-}
 let baseUrl = Cypress.config('baseUrl')
 let testUserName = 'testuser'
 let testUserPassword = 'testing123'
+cy.getOAuthAppUrl = function (){
+    let oauthAppBaseUrl = Cypress.env('OAUTH_APP_HOST')
+    if(oauthAppBaseUrl.indexOf("http") === -1){
+        oauthAppBaseUrl = "https://"+oauthAppBaseUrl
+    }
+    return oauthAppBaseUrl;
+}
+cy.oauthAppIsHTTPS = function (){
+    return cy.getOAuthAppUrl().indexOf("https://") === 0;
+}
 Cypress.Commands.add('goToApiLoginPageAndLogin', (email = testUserName, password = testUserPassword) => {
     cy.log(`=== goToApiLoginPageAndLogin as ${email} ===`)
     cy.visitApi(`/api/v2/auth/login?logout=1`)
@@ -84,7 +90,7 @@ Cypress.Commands.add('visitIonicAndSetApiUrl', (path = '/#/app/reminders-inbox')
     path = UpdateQueryString('logLevel', logLevel, path)
     if(Cypress.env('LOGROCKET')){path = UpdateQueryString('logrocket', 1, path)}
     let url = path
-    if(path.indexOf('http') !== 0){url = oauthAppBaseUrl + path}
+    if(path.indexOf('http') !== 0){url = cy.getOAuthAppUrl() + path}
     cy.log(`${url} - visitIonicAndSetApiUrl`)
     cy.visit(url)
 })
