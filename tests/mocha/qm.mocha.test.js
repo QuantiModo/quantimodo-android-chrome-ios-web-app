@@ -189,10 +189,7 @@ beforeEach(function (done) {
     this.timeout(10000) // Default 2000 is too fast for Github API
     // @ts-ignore
     qmGit.setGithubStatus("pending", t.title, "Running...", null, function (res) {
-        var logResult = true
-        if (logResult) {
-            console.info(res)
-        }
+        qmLog.debug(res)
         done()
     })
 })
