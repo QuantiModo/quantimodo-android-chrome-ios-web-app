@@ -60,7 +60,7 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
             });
             $scope.stateParams = $stateParams;
             qmService.actionSheet.setDefaultActionSheet(function(){
-                    $scope.syncTrackingReminderNotifications();
+                    $scope.syncNotifications();
                 }, getVariableCategoryName());
             qmService.splash.hideSplashScreen();
         });
@@ -68,7 +68,7 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
             qmLog.info('RemindersInboxCtrl afterEnter: ' + window.location.href);
             setPageTitle(); // Setting title afterEnter doesn't fix cutoff on Android
             if(needToRefresh()){
-                $scope.syncTrackingReminderNotifications();
+                $scope.syncNotifications();
             }
             if($rootScope.platform.isWeb){
                 qm.webNotifications.registerServiceWorker();
@@ -105,7 +105,7 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
         function autoRefresh(){
             $timeout(function(){
                 if($state.current.name.toLowerCase().indexOf('inbox') !== -1){
-                    $scope.syncTrackingReminderNotifications();
+                    $scope.syncNotifications();
                     autoRefresh();
                 }
             }, 30 * 60 * 1000);
@@ -147,7 +147,7 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
                 if(qm.notifications.getNumberInGlobalsOrLocalStorage(cat)){
                     getTrackingReminderNotifications();
                 }else{
-                    $scope.syncTrackingReminderNotifications();
+                    $scope.syncNotifications();
                 }
             }
         }
@@ -222,7 +222,7 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
         }
         var closeWindowIfNecessary = function(){
             if($state.current.name === "app.remindersInboxCompact" && !getNumberOfDisplayedNotifications()){
-                $scope.syncTrackingReminderNotifications();
+                $scope.syncNotifications();
                 window.close();
             }
         };
@@ -422,16 +422,16 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
                 }
             }, 10000);
         };
-        $scope.syncTrackingReminderNotifications = function(params){
+        $scope.syncNotifications = function(params){
             showLoader();
-            qmService.syncTrackingReminderNotifications(params).then(function(){
+            qmService.syncNotifications(params).then(function(){
                 getTrackingReminderNotifications();
                 if(!getNumberOfDisplayedNotifications()){
                     getFallbackInboxContentIfNecessary();
                 }
             }, function(error){
                 getFallbackInboxContentIfNecessary();
-                qmLog.info('$scope.syncTrackingReminderNotifications: ', error);
+                qmLog.info('$scope.syncNotifications: ', error);
                 hideInboxLoader();
             });
         };
