@@ -9497,7 +9497,10 @@ var qm = {
             if(!qm.platform.getWindow()){
                 return false;
             }
-            if(qm.urlHelper.indexOfCurrentUrl("http://") === 0 && qm.urlHelper.indexOfCurrentUrl("http://localhost") === -1){
+            if(qm.urlHelper.indexOfCurrentUrl("http://") === 0 &&
+                qm.urlHelper.indexOfCurrentUrl(".com:") === -1 &&
+                qm.urlHelper.indexOfCurrentUrl("http://192.168") === -1 &&
+                qm.urlHelper.indexOfCurrentUrl("http://localhost") === -1){
                 location.href = 'https:' + qm.urlHelper.getCurrentUrl().substring(window.location.protocol.length);
             }
         },
