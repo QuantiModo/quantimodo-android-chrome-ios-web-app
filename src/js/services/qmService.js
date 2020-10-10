@@ -2120,17 +2120,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     return true;
                 },
                 lastAction: "",
-                showUndoToast: function(callback){
-                    if(!callback){
-                        throw "No undo action provided to showUndoToast to refresh view!";
-                    }
-                    qmService.showToastWithButton(qm.notifications.lastAction, 'UNDO', function(){
-                        qm.notifications.removeNotificationFromSyncQueueAndUnhide();
-                        if(callback){
-                            callback();
-                        }
-                    });
-                },
                 skip: function(trackingReminderNotification){
                     qmService.notification.skip(trackingReminderNotification);
                     qmService.showInfoToast("Skipped " + trackingReminderNotification.variableName);
