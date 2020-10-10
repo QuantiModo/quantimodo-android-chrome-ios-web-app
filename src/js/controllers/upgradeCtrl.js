@@ -1,7 +1,7 @@
 angular.module('starter').controller('UpgradeCtrl', ["$scope", "$state", "$ionicSlideBoxDelegate", "$ionicLoading",
-    "$mdDialog", "$rootScope", "$stateParams", "qmService", "qmLogService", "$locale",
+    "$mdDialog", "$rootScope", "$stateParams", "qmService", "$locale",
     function($scope, $state, $ionicSlideBoxDelegate, $ionicLoading, $mdDialog,
-             $rootScope, $stateParams, qmService, qmLogService, $locale){
+             $rootScope, $stateParams, qmService, $locale){
     WebUpgradeDialogController.$inject = ["$scope", "$mdDialog"];
     MobileUpgradeDialogController.$inject = ["$scope", "$mdDialog"];
     $scope.state = {
@@ -27,7 +27,7 @@ angular.module('starter').controller('UpgradeCtrl', ["$scope", "$state", "$ionic
     ];
     $scope.$on('$ionicView.beforeEnter', function(e){
         if (document.title !== $scope.state.title) {document.title = $scope.state.title;}
-        qmLogService.debug('Entering state ' + $state.current.name, null);
+        qmLog.debug('Entering state ' + $state.current.name, null);
         qmService.navBar.setFilterBarSearchIcon(false);
         if(qmService.login.sendToLoginIfNecessaryAndComeBack("beforeEnter in " + $state.current.name)){
             return;
@@ -44,7 +44,7 @@ angular.module('starter').controller('UpgradeCtrl', ["$scope", "$state", "$ionic
         qmService.hideLoader();
     });
     $scope.$on('$ionicView.afterEnter', function(e){
-        qmLogService.debug('afterEnter state ' + $state.current.name, null);
+        qmLog.debug('afterEnter state ' + $state.current.name, null);
         if(qm.platform.isWebOrChrome() || qm.platform.isChromeExtension()){
             stripeSetup();
         }
@@ -91,7 +91,7 @@ angular.module('starter').controller('UpgradeCtrl', ["$scope", "$state", "$ionic
     };
     // Deprecated
     var webUpgrade = function(ev){
-        qmLogService.error('User clicked upgrade button');
+        qmLog.error('User clicked upgrade button');
         $mdDialog.show({
             controller: WebUpgradeDialogController,
             //templateUrl: 'templates/fragments/web-upgrade-dialog-fragment.html',
@@ -101,7 +101,7 @@ angular.module('starter').controller('UpgradeCtrl', ["$scope", "$state", "$ionic
             clickOutsideToClose: false,
             fullscreen: false
         }).then(function(answer){
-            qmLogService.error('User submitted credit card info');
+            qmLog.error('User submitted credit card info');
             var body = {
                 "card_number": answer.creditCardInfo.cardNumber,
                 "card_month": answer.creditCardInfo.month,
@@ -194,24 +194,24 @@ angular.module('starter').controller('UpgradeCtrl', ["$scope", "$state", "$ionic
             $mdDialog.hide();
         };
         $scope.cancel = function(){
-            qmLogService.error('User cancelled upgrade!  What happened?');
+            qmLog.error('User cancelled upgrade!  What happened?');
             $mdDialog.cancel();
         };
         $scope.webSubscribe = function(productId, coupon, creditCardInfo, event){
             if(!creditCardInfo.securityCode){
-                qmLogService.error('Please enter card number');
+                qmLog.error('Please enter card number');
                 return;
             }
             if(!creditCardInfo.cardNumber){
-                qmLogService.error('Please enter card number');
+                qmLog.error('Please enter card number');
                 return;
             }
             if(!creditCardInfo.month){
-                qmLogService.error('Please enter card month');
+                qmLog.error('Please enter card month');
                 return;
             }
             if(!creditCardInfo.year){
-                qmLogService.error('Please enter card year');
+                qmLog.error('Please enter card year');
                 return;
             }
             var answer = {productId: productId, coupon: coupon, creditCardInfo: creditCardInfo};
@@ -219,13 +219,13 @@ angular.module('starter').controller('UpgradeCtrl', ["$scope", "$state", "$ionic
         };
     }
     function MobileUpgradeDialogController($scope, $mdDialog){
-        qmLogService.debug('$scope.productId is ' + $scope.productId, null);
+        qmLog.debug('$scope.productId is ' + $scope.productId, null);
         $scope.productId = 'monthly7';
         $scope.hide = function(){
             $mdDialog.hide();
         };
         $scope.cancel = function(){
-            qmLogService.error('User cancelled upgrade!  What happened?');
+            qmLog.error('User cancelled upgrade!  What happened?');
             $mdDialog.cancel();
         };
         $scope.subscribe = function(answer){
@@ -234,7 +234,7 @@ angular.module('starter').controller('UpgradeCtrl', ["$scope", "$state", "$ionic
     }
     var mobileUpgrade = function(ev){
         if(!window.inAppPurchase && !mobilePurchaseDebug){
-            qmLogService.error('inAppPurchase not available');
+            qmLog.error('inAppPurchase not available');
             webUpgrade(ev);
             return;
         }
@@ -249,7 +249,7 @@ angular.module('starter').controller('UpgradeCtrl', ["$scope", "$state", "$ionic
             //makeInAppPurchase(baseProductId);  // iOS requires us to get products first or we get "unknown product id" error
             getProductsAndMakeInAppPurchase(baseProductId);
         }, function(){
-            qmLogService.error('User cancelled mobileUpgrade subscription selection');
+            qmLog.error('User cancelled mobileUpgrade subscription selection');
             $scope.status = 'You cancelled the dialog.';
         });
     };
@@ -276,7 +276,7 @@ angular.module('starter').controller('UpgradeCtrl', ["$scope", "$state", "$ionic
         return baseProductId;
     }
     function handleSubscribeResponse(baseProductId, data){
-        qmLogService.error('inAppPurchase.subscribe response: ' + JSON.stringify(data));
+        qmLog.error('inAppPurchase.subscribe response: ' + JSON.stringify(data));
         qmService.hideLoader();
         var alert;
         function showSuccessAlert(){
@@ -289,7 +289,7 @@ angular.module('starter').controller('UpgradeCtrl', ["$scope", "$state", "$ionic
                 });
         }
         showSuccessAlert();
-        qmLogService.error('User subscribed to ' + getProductId(baseProductId) + ': ' + JSON.stringify(data));
+        qmLog.error('User subscribed to ' + getProductId(baseProductId) + ': ' + JSON.stringify(data));
         qmService.updateUserSettingsDeferred({
             subscriptionProvider: getSubscriptionProvider(),
             productId: getProductId(baseProductId),
@@ -308,10 +308,10 @@ angular.module('starter').controller('UpgradeCtrl', ["$scope", "$state", "$ionic
                 if(getReceipt){
                     inAppPurchase.getReceipt()
                         .then(function(receipt){
-                            qmLogService.error('inAppPurchase.getReceipt response: ' + JSON.stringify(receipt));
-                            qmLogService.debug('inAppPurchase.getReceipt ' + receipt, null);
+                            qmLog.error('inAppPurchase.getReceipt response: ' + JSON.stringify(receipt));
+                            qmLog.debug('inAppPurchase.getReceipt ' + receipt, null);
                         }).catch(function(error){
-                        qmLogService.error('inAppPurchase.getReceipt error response: ' + JSON.stringify(error));
+                        qmLog.error('inAppPurchase.getReceipt error response: ' + JSON.stringify(error));
                     });
                 }
                 handleSubscribeResponse(baseProductId, data);
@@ -334,7 +334,7 @@ angular.module('starter').controller('UpgradeCtrl', ["$scope", "$state", "$ionic
             if($rootScope.platform.isAndroid){
                 handleSubscribeResponse(baseProductId, error);
             } // Sometimes Android has an error message even though it actually succeeds
-            qmLogService.error('inAppPurchase.catch error ' + JSON.stringify(error));
+            qmLog.error('inAppPurchase.catch error ' + JSON.stringify(error));
         });
     }
     var getProductsAndMakeInAppPurchase = function(baseProductId){
@@ -350,7 +350,7 @@ angular.module('starter').controller('UpgradeCtrl', ["$scope", "$state", "$ionic
         inAppPurchase
             .getProducts([getProductId(baseProductId)])
             .then(function(products){
-                qmLogService.error('inAppPurchase.getProducts response: ' + JSON.stringify(products));
+                qmLog.error('inAppPurchase.getProducts response: ' + JSON.stringify(products));
                 if(purchaseDebugMode){
                     alert('Available Products: ' + JSON.stringify(products));
                 }
@@ -358,7 +358,7 @@ angular.module('starter').controller('UpgradeCtrl', ["$scope", "$state", "$ionic
                 makeInAppPurchase(baseProductId);
             }).catch(function(err){
             qmService.hideLoader();
-            qmLogService.error('couldn\'t get product ' + getProductId(baseProductId) + ': ' + JSON.stringify(err));
+            qmLog.error('couldn\'t get product ' + getProductId(baseProductId) + ': ' + JSON.stringify(err));
         });
     };
 }]);

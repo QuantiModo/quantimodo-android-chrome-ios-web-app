@@ -4,9 +4,9 @@
 /** @namespace window.qm.storage */
 /* global chcp $ionicDeploy qm.stateNames chcp qm.stateNames */
 angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$ionicPopup", "$state", "$timeout",
-    "$ionicPlatform", "$mdDialog", "$mdToast", "qmLogService", "$cordovaGeolocation", "CacheFactory", "$ionicLoading",
+    "$ionicPlatform", "$mdDialog", "$mdToast", "$cordovaGeolocation", "CacheFactory", "$ionicLoading",
     "Analytics", "wikipediaFactory", "$ionicHistory", "$ionicActionSheet", "clipboard",
-    function($http, $q, $rootScope, $ionicPopup, $state, $timeout, $ionicPlatform, $mdDialog, $mdToast, qmLogService,
+    function($http, $q, $rootScope, $ionicPopup, $state, $timeout, $ionicPlatform, $mdDialog, $mdToast,
              $cordovaGeolocation, CacheFactory, $ionicLoading, Analytics, wikipediaFactory, $ionicHistory,
              $ionicActionSheet, clipboard){
         var allStates = $state.get();
@@ -2537,7 +2537,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     querySearch();
                 };
                 SelectVariableDialogController.$inject = ["$scope", "$state", "$rootScope", "$stateParams", "$filter",
-                    "qmService", "qmLogService", "$q", "$log", "dialogParameters", "$timeout"];
+                    "qmService", "$q", "$log", "dialogParameters", "$timeout"];
                 $mdDialog.show({
                     controller: SelectVariableDialogController,
                     controllerAs: 'ctrl',
