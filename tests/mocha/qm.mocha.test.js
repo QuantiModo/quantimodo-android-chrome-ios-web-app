@@ -330,7 +330,7 @@ describe("Ghost Inspector", function () {
     })
 })
 describe("Git Helper", function () {
-    it("sets commit status", function (done) {
+    it.skip("sets commit status", function (done) {
         qmGit.setGithubStatus("pending", "test context", "test description", "https://get-bent.com", function (res) {
             chai.expect(res.status).to.eq(201)
             done()
