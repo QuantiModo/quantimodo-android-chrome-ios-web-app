@@ -4670,8 +4670,8 @@ var qm = {
         }
     },
     measurements: {
-        recordMeasurement: function(m){
-            var m = qm.measurements.newMeasurement(m)
+        recordMeasurement: function(m, successHandler, errorHandler){
+            qm.measurements.postMeasurement(m, successHandler, errorHandler)
         },
         newMeasurement: function(src){
             var value;
@@ -4961,7 +4961,7 @@ var qm = {
             qm.qmLog.info("Got " + filtered.length + " measurements from recentlyPostedMeasurements with params: " + JSON.stringify(params));
             return filtered;
         },
-        postMeasurement: function(m, successHandler){
+        postMeasurement: function(m, successHandler, errorHandler){
             function isStartTimeInMilliseconds(m){
                 var oneWeekInFuture = window.qm.timeHelper.getUnixTimestampInSeconds() + 7 * 86400;
                 if(m.startTimeEpoch > oneWeekInFuture){
@@ -4982,7 +4982,7 @@ var qm = {
                 qm.measurements.addToMeasurementsQueue(m);
             }
             qm.userVariables.updateLatestMeasurementTime(m.variableName, m.value);
-            qm.measurements.postMeasurementQueue(successHandler);
+            qm.measurements.postMeasurementQueue(successHandler, errorHandler);
         },
         postMeasurements: function (measurementSet, successHandler, errorHandler) {
             measurementSet = qm.measurements.addLocationAndSourceDataToMeasurement(measurementSet);
@@ -5001,7 +5001,7 @@ var qm = {
                 qm.measurements.postMeasurements(queue, function(response){
                     qm.measurements.measurementCache = qm.measurements.measurementCache.concat(queue);  // Save these for history page
                     qm.storage.setItem(qm.items.measurementsQueue, []);
-                    if(successHandler){successHandler();}
+                    if(successHandler){successHandler(response);}
                 }, function(error){
                     qm.storage.setItem(qm.items.measurementsQueue, queue);
                     if(errorHandler){errorHandler(error);}
