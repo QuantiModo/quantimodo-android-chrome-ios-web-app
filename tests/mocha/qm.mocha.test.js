@@ -260,8 +260,8 @@ describe("Chrome Extension", function () {
         //qmTests.runAllTestsForType('chrome', done)
     })
 })
-describe("Recordings", function () {
-    it('can upload Cypress recording', function(done) {
+describe("Cypress", function () {
+    it('can upload Cypress video', function(done) {
         const specName = "test_spec"
         const relative = cypressFunctions.getVideoPath(specName)
         fileHelper.deleteFile(relative, function (){
