@@ -37,8 +37,8 @@ export function createFile(filePath: string, contents: any, cb?: () => void) {
 
 export function deleteFile(filename: string, cb?: () => void) {
     const filepath = getAbsolutePath(filename)
-    rimraf(filepath, function () {
-        qmLog.info("Deleted " + filepath + " in deleteFile")
+    rimraf(filepath, function() {
+        qmLog.info(filepath + "\n\tdeleted!")
         if (cb) {
             cb()
         }
@@ -83,7 +83,7 @@ export function downloadFromS3(filePath: string, bucketName: string, key: string
 
 export function uploadToS3InSubFolderWithCurrentDateTime(filePath: string,
                                                          s3BasePath: string,
-                                                         cb: (err: Error, data: ManagedUpload.SendData) => void,
+                                                         cb: (err: Error, url: string) => void,
                                                          s3Bucket = "quantimodo",
                                                          accessControlLevel = "public-read",
                                                          ContentType?: string | undefined) {
@@ -95,7 +95,7 @@ export function uploadToS3InSubFolderWithCurrentDateTime(filePath: string,
 export function uploadToS3(
     relative: string,
     s3BasePath: string,
-    cb: (err: Error, data: ManagedUpload.SendData) => void,
+    cb: (err: Error, url: string) => void,
     s3Bucket = "quantimodo",
     accessControlLevel = "public-read",
     ContentType?: string | undefined,
@@ -116,13 +116,13 @@ export function uploadToS3(
         // @ts-ignore
         params.ContentType = ContentType
     }
-    s3.upload(params, (err: any, data: any) => {
+    s3.upload(params, (err: any, SendData: any) => {
         if (err) {
             throw err
         }
-        console.log(`File uploaded successfully. ${data.Location}`)
+        qmLog.info(s3Key + "\n\tuploaded to\t\n"+ SendData.Location)
         if (cb) {
-            cb(err, data)
+            cb(err, SendData.Location)
         }
     })
 }
@@ -145,7 +145,7 @@ export function writeToFile(filePath: string, contents: any, cb?: () => void) {
             throw err
         }
         // tslint:disable-next-line:no-console
-        console.log(filePath + " saved in writeToFile!")
+        console.log(filePath + "\n\tsaved!")
         if (cb) {
             cb()
         }

@@ -194,10 +194,7 @@ beforeEach(function (done) {
     this.timeout(10000) // Default 2000 is too fast for Github API
     // @ts-ignore
     qmGit.setGithubStatus("pending", t.title, "Running...", null, function (res) {
-        var logResult = true
-        if (logResult) {
-            console.info(res)
-        }
+        qmLog.debug(res)
         done()
     })
 })
@@ -268,19 +265,19 @@ describe("Chrome Extension", function () {
         //qmTests.runAllTestsForType('chrome', done)
     })
 })
-describe("Recordings", function () {
-    it('can upload Cypress recording', function(done) {
+describe("Cypress", function () {
+    it('can upload Cypress video', function(done) {
         const specName = "test_spec"
         const relative = cypressFunctions.getVideoPath(specName)
         fileHelper.deleteFile(relative, function (){
             let exists = fileHelper.exists(relative)
             chai.expect(exists).to.be.false
             fileHelper.createFile(relative, "test video", function (){
-                cypressFunctions.uploadCypressVideo(specName, function (err, SendData){
+                cypressFunctions.uploadCypressVideo(specName, function (err, s3Url){
                     const downloadPath = 'tmp/download.mp4'
                     fileHelper.deleteFile(downloadPath, function (){
                         fileHelper.assertDoesNotExist(downloadPath)
-                        fileHelper.download(SendData.Location, downloadPath, function (){
+                        fileHelper.download(s3Url, downloadPath, function (){
                             fileHelper.assertExists(downloadPath)
                             done()
                         })
@@ -309,8 +306,8 @@ describe("File Helper", function () {
         done()
     })
     it("uploads a file", function (done) {
-        fileHelper.uploadToS3(appDir + "/tests/ionIcons.js", "tests", function (err, SendData) {
-            downloadFileContains(SendData.Location, "iosArrowUp", done)
+        fileHelper.uploadToS3(appDir + "/tests/ionIcons.js", "tests", function (err, url) {
+            downloadFileContains(url, "iosArrowUp", done)
         })
     })
     it.skip("uploads test results", function (done) {
