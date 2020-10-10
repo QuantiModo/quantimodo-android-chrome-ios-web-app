@@ -6063,8 +6063,18 @@ var qm = {
             qm.notifications.deleteById(n.id);
             qm.userVariables.updateLatestMeasurementTime(n.variableName, n.modifiedValue);
             var res = qm.storage.addToOrReplaceByIdAndMoveToFront(qm.items.notificationsSyncQueue, n);
-            qm.notifications.schedulePost();
+            setTimeout(qm.notifications.syncIfQueued, 15000);
             return res;
+        },
+        syncIfQueued: function(successHandler, errorHandler){
+            var queue = qm.notifications.getQueue();
+            if(queue && queue.length){
+                qm.notifications.syncNotifications(successHandler, errorHandler);
+            } else {
+                if(successHandler){
+                    successHandler();
+                }
+            }
         },
         refreshIfEmpty: function(successHandler, errorHandler){
             if(!qm.notifications.getNumberInGlobalsOrLocalStorage()){
@@ -6311,34 +6321,6 @@ var qm = {
                 }
             }, errorHandler);
         },
-        schedulePost: function(delayInMilliseconds){
-            var queue = qm.notifications.getQueue();
-            if(queue && queue.length > 10){
-                qm.notifications.syncNotifications();
-                return;
-            }
-            if(!delayInMilliseconds){
-                delayInMilliseconds = 3 * 60 * 1000; // 3 minutes
-                //delayBeforePostingNotificationsInMilliseconds = 15 * 1000;
-            }
-            var scheduledAtMillis = qm.storage.getItem(qm.items.trackingReminderNotificationSyncScheduled);
-            var currentMillis = qm.timeHelper.getUnixTimestampInMilliseconds();
-            if(!scheduledAtMillis || parseInt(scheduledAtMillis) < currentMillis - delayInMilliseconds){
-                qm.storage.setItem(qm.items.trackingReminderNotificationSyncScheduled, currentMillis);
-                if(!qm.platform.isMobile()){ // Better performance
-                    qm.qmLog.info("Scheduling notifications sync for " + delayInMilliseconds / 1000 + " seconds from now..");
-                }
-                setTimeout(function(){
-                    qm.qmLog.info("Notifications sync countdown completed.  Syncing now... ");
-                    qm.notifications.syncNotifications();
-                }, delayInMilliseconds);
-            }else{
-                if(!qm.platform.isMobile()){ // Better performance
-                    qm.qmLog.info("Not scheduling sync because one is already scheduled " +
-                        qm.timeHelper.getTimeSinceString(scheduledAtMillis));
-                }
-            }
-        },
         track: function(n){
             n.action = 'track';
             qm.qmLog.debug('trackTrackingReminderNotificationDeferred: Going to track ', n);
@@ -6389,8 +6371,10 @@ var qm = {
                     }
                 }
                 var data = response.data || response;
-                if(data.measurements){qm.measurements.addMeasurementsToMemory(data.measurements);}
-                if(data.trackingReminderNotifications){qm.storage.setTrackingReminderNotifications(data.trackingReminderNotifications);}
+                var measurements = data.measurements;
+                if(measurements && measurements.length){qm.measurements.addMeasurementsToMemory(measurements);}
+                var notifications = data.trackingReminderNotifications;
+                if(notifications && notifications.length){qm.storage.setTrackingReminderNotifications(notifications);}
             }
             qm.api.post(body, 'v3/trackingReminderNotifications', function(response){
                 saveResponse(response);
