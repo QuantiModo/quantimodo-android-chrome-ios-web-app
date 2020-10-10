@@ -368,15 +368,6 @@ describe("Intent Handler", function () {
         qmTests.tests.checkIntent(userInput, expectedIntentName, expectedEntities, expectedParameters, done)
     })
 })
-describe("Measurement", function () {
-    it('can record a measurement', function(done){
-        qm.measurements.recordMeasurement({
-            value: 1,
-            variableName: "Overall Mood",
-            unitAbbreviatedName: "/5",
-        })
-    })
-})
 describe("Notifications", function () {
     it('can parse pushed tracking reminder notification', function(done) {
         // noinspection HtmlRequiredAltAttribute,RequiredAttributes,HtmlUnknownAttribute
