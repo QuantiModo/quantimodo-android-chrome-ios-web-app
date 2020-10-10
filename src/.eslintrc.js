@@ -205,6 +205,7 @@ module.exports = {
         "no-throw-literal": "off",
         "no-trailing-spaces": "error",
         "no-undef-init": "error",
+        "no-debugger": "off",
         "no-undefined": "off",
         "no-underscore-dangle": "error",
         "no-unmodified-loop-condition": "error",

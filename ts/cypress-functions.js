@@ -287,6 +287,52 @@ exports.uploadCypressVideo = uploadCypressVideo;
 function getSpecsPath() {
     return app_root_path_1.default + "/cypress/integration";
 }
+function runCypressTestsInParallel(cb) {
+    test_helpers_1.deleteSuccessFile();
+    try {
+        copyCypressEnvConfigIfNecessary();
+    }
+    catch (e) {
+        console.error(e.message + "!  Going to try again...");
+        copyCypressEnvConfigIfNecessary();
+    }
+    deleteJUnitTestResults();
+    rimraf_1.default(paths.reports.mocha + "/*.json", function () {
+        var specsPath = getSpecsPath();
+        fs.readdir(specsPath, function (err, specFileNames) {
+            if (!specFileNames) {
+                throw new Error("No specFileNames in " + specsPath);
+            }
+            var promises = [];
+            var _loop_1 = function (specName) {
+                if (releaseStage === "ionic" && specName.indexOf("ionic_") === -1) {
+                    console.debug("skipping " + specName + " because it doesn't test ionic app and release stage is " +
+                        releaseStage);
+                    return "continue";
+                }
+                promises.push(new Promise(function (resolve) {
+                    runOneCypressSpec(specName, function () {
+                        resolve();
+                    });
+                }));
+            };
+            for (var _i = 0, specFileNames_1 = specFileNames; _i < specFileNames_1.length; _i++) {
+                var specName = specFileNames_1[_i];
+                _loop_1(specName);
+            }
+            Promise.all(promises).then(function (values) {
+                console.log(values);
+                test_helpers_1.createSuccessFile(function () {
+                    test_helpers_1.deleteEnvFile();
+                    if (cb) {
+                        cb(false);
+                    }
+                });
+            });
+        });
+    });
+}
+exports.runCypressTestsInParallel = runCypressTestsInParallel;
 function runCypressTests(cb) {
     test_helpers_1.deleteSuccessFile();
     try {
@@ -303,7 +349,7 @@ function runCypressTests(cb) {
             if (!specFileNames) {
                 throw new Error("No specFileNames in " + specsPath);
             }
-            var _loop_1 = function (i, p) {
+            var _loop_2 = function (i, p) {
                 var specName = specFileNames[i];
                 if (releaseStage === "ionic" && specName.indexOf("ionic_") === -1) {
                     console.debug("skipping " + specName + " because it doesn't test ionic app and release stage is " +
@@ -327,7 +373,7 @@ function runCypressTests(cb) {
             };
             var out_p_1;
             for (var i = 0, p = Promise.resolve(); i < specFileNames.length; i++) {
-                _loop_1(i, p);
+                _loop_2(i, p);
                 p = out_p_1;
             }
         });
