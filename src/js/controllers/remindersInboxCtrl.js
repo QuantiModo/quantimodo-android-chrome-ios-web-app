@@ -60,7 +60,7 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
             });
             $scope.stateParams = $stateParams;
             qmService.actionSheet.setDefaultActionSheet(function(){
-                    $scope.syncTrackingReminderNotifications();
+                    $scope.syncNotifications();
                 }, getVariableCategoryName());
             qmService.splash.hideSplashScreen();
         });
@@ -68,7 +68,7 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
             qmLog.info('RemindersInboxCtrl afterEnter: ' + window.location.href);
             setPageTitle(); // Setting title afterEnter doesn't fix cutoff on Android
             if(needToRefresh()){
-                $scope.syncTrackingReminderNotifications();
+                $scope.syncNotifications();
             }
             if($rootScope.platform.isWeb){
                 qm.webNotifications.registerServiceWorker();
@@ -105,7 +105,7 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
         function autoRefresh(){
             $timeout(function(){
                 if($state.current.name.toLowerCase().indexOf('inbox') !== -1){
-                    $scope.syncTrackingReminderNotifications();
+                    $scope.syncNotifications();
                     autoRefresh();
                 }
             }, 30 * 60 * 1000);
@@ -147,7 +147,7 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
                 if(qm.notifications.getNumberInGlobalsOrLocalStorage(cat)){
                     getTrackingReminderNotifications();
                 }else{
-                    $scope.syncTrackingReminderNotifications();
+                    $scope.syncNotifications();
                 }
             }
         }
@@ -157,9 +157,8 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
             n.modifiedValue = n.total;
             var lastAction = 'Recorded ' + n.modifiedValue + ' ' + n.unitAbbreviatedName;
             qm.notifications.lastAction = qm.stringHelper.formatValueUnitDisplayText(lastAction) + ' for '+n.variableName;
-            notificationAction(n, function (params) {
-                qm.notifications.track(params);
-            }, undoOne);
+            qm.notifications.track(n);
+            notificationAction(n, undoOne);
         };
         function getFavorites(){
             var cat = getVariableCategoryName();
@@ -222,7 +221,7 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
         }
         var closeWindowIfNecessary = function(){
             if($state.current.name === "app.remindersInboxCompact" && !getNumberOfDisplayedNotifications()){
-                $scope.syncTrackingReminderNotifications();
+                $scope.syncNotifications();
                 window.close();
             }
         };
@@ -238,7 +237,7 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
                 });
             }
         };
-        var notificationAction = function(n, cb, undoFunction){
+        var notificationAction = function(n, undoFunction){
             qmLog.info("Clicked " + qm.notifications.lastAction + " for " + n.variableName);
             hideNotification(n)
             qmService.showToastWithButton(qm.notifications.lastAction, 'UNDO', function(){
@@ -264,10 +263,9 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
             var valueUnit = qm.stringHelper.formatValueUnitDisplayText(n.modifiedValue + ' ' + n.unitAbbreviatedName);
             var variableName = n.variableName;
             qm.notifications.lastAction = 'Recorded ' + valueUnit + ' for '+ variableName;
-            notificationAction(n, function (params) {
-                if(value !== null){params.modifiedValue = value;}
-                qm.notifications.track(params);
-            }, undoOne);
+            if(value !== null){n.modifiedValue = value;}
+            qm.notifications.track(n);
+            notificationAction(n, undoOne);
             if($scope.state.showTrackAllButtons){
                 qm.toast.showQuestionToast('Want to record ' + valueUnit + " for ALL remaining " + variableName + " notifications?",
                 'Recorded ' + valueUnit + " for ALL remaining " + variableName + " notifications!", function () {
@@ -282,9 +280,8 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
             var valueUnit = qm.stringHelper.formatValueUnitDisplayText(n.modifiedValue + ' ' + n.unitAbbreviatedName);
             qm.notifications.lastAction = 'Recorded ' + valueUnit + ' for all '+n.variableName;
             hideByVariableId(n.variableId);
-            notificationAction(n, function (params) {
-                qm.notifications.trackAll(params, value, $ev);
-            }, undoByVariableId);
+            qm.notifications.trackAll(n, value, $ev);
+            notificationAction(n, undoByVariableId);
         }
         $scope.skipAll = function(n, $ev){
             if(isGhostClick($ev)){return false;}
@@ -292,9 +289,8 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
             qm.notifications.lastAction = 'Skipped all remaining '+n.variableName+" notifications";
             qm.ui.preventDragAfterAlert($ev);
             hideByVariableId(n.variableId);
-            notificationAction(n, function (params) {
-                qm.notifications.skipAll(params);
-            }, undoByVariableId);
+            qm.notifications.skipAll(n);
+            notificationAction(n, undoByVariableId);
             return true;
         };
         $scope.trackAllWithConfirmation = function(n, value, ev){
@@ -314,19 +310,15 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
             if(isGhostClick($event)){return;}
             n.action = 'skip';
             qm.notifications.lastAction = 'Skipped '+n.variableName;
-            notificationAction(n, function (params) {
-                qm.notifications.skip(params);
-                qmService.logEventToGA(qm.analytics.eventCategories.inbox, "skip");
-            }, undoOne);
+            qm.notifications.skip(n);
+            notificationAction(n, undoOne);
         };
         $scope.snooze = function(n, $event){
             if(isGhostClick($event)){return;}
             n.action = 'snooze';
             qm.notifications.lastAction = 'Snoozed '+n.variableName;
-            notificationAction(n, function (params) {
-                qm.notifications.snooze(params);
-            }, undoOne);
-            qmService.logEventToGA(qm.analytics.eventCategories.inbox, "snooze");
+            qm.notifications.snooze(n);
+            notificationAction(n, undoOne);
         };
         function wordClicked(word){
             alert(word.text + " appears " + word.count + " times and the average " + qm.getPrimaryOutcomeVariable().name +
@@ -422,16 +414,16 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
                 }
             }, 10000);
         };
-        $scope.syncTrackingReminderNotifications = function(params){
+        $scope.syncNotifications = function(params){
             showLoader();
-            qmService.syncTrackingReminderNotifications(params).then(function(){
+            qmService.syncNotifications(params).then(function(){
                 getTrackingReminderNotifications();
                 if(!getNumberOfDisplayedNotifications()){
                     getFallbackInboxContentIfNecessary();
                 }
             }, function(error){
                 getFallbackInboxContentIfNecessary();
-                qmLog.info('$scope.syncTrackingReminderNotifications: ', error);
+                qmLog.info('$scope.syncNotifications: ', error);
                 hideInboxLoader();
             });
         };

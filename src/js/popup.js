@@ -312,7 +312,7 @@ document.addEventListener('DOMContentLoaded', function(){
     }else{
         qmLog.pushDebug("popup addEventListener: Calling hidePopup...");
         hidePopup();
-        qm.notifications.syncTrackingReminderNotifications(updateQuestion, qm.notifications.closePopup);
+        qm.notifications.syncNotifications(updateQuestion, qm.notifications.closePopup);
     }
     qmLog.pushDebug("popup addEventListener: calling setFaceButtonListeners...");
     setFaceButtonListeners();
