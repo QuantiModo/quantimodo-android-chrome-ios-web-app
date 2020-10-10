@@ -134,7 +134,7 @@ angular.module('starter').controller('MeasurementAddCtrl', ["$scope", "$q", "$ti
             qmService.showInfoToast(toastMessage);
             // Measurement only - post measurement. This is for adding or editing
             var backStateParams = {};
-            qmService.postMeasurementDeferred(m, function(){
+            qm.measurements.postMeasurement(m, function(){
                 if(unitChanged){
                     qmLog.error("Syncing reminders because unit changed");
                     qm.storage.removeItem(qm.items.trackingReminders);
