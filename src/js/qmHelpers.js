@@ -554,10 +554,6 @@ var qm = {
                 apiUrl = "https://" + apiUrl;
             }
             apiUrl = apiUrl.replace("https://https", "https");
-            // Why are we adding a port to the API url?  It breaks localhost:8100
-            if(typeof window !== "undefined" && window.location.port && window.location.port !== "443" && window.location.hostname !== 'localhost'){
-                apiUrl += ":" + window.location.port;
-            }
             return apiUrl;
         },
         getApiUrl: function(){
@@ -9497,7 +9493,10 @@ var qm = {
             if(!qm.platform.getWindow()){
                 return false;
             }
-            if(qm.urlHelper.indexOfCurrentUrl("http://") === 0 && qm.urlHelper.indexOfCurrentUrl("http://localhost") === -1){
+            if(qm.urlHelper.indexOfCurrentUrl("http://") === 0 &&
+                qm.urlHelper.indexOfCurrentUrl(".com:") === -1 &&
+                qm.urlHelper.indexOfCurrentUrl("http://192.168") === -1 &&
+                qm.urlHelper.indexOfCurrentUrl("http://localhost") === -1){
                 location.href = 'https:' + qm.urlHelper.getCurrentUrl().substring(window.location.protocol.length);
             }
         },
@@ -9574,6 +9573,7 @@ var qm = {
                 windowRef = undefined;
             }
             function executeScriptCallBack(params){
+                // eslint-disable-next-line no-eq-null
                 if(params[0] == null){
                     $('#status-message').text("Sorry we couldn't open that page. Message from the server is : '" + params.message + "'");
                 }
