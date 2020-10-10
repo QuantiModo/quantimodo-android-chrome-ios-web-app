@@ -9,6 +9,12 @@ import marge from "mochawesome-report-generator"
 import rimraf from "rimraf"
 import {loadEnv} from "./env-helper"
 import * as fileHelper from "./qm.file-helper"
+// require hack
+declare function require(path: string): any
+// require untyped library file
+// tslint:disable-next-line:no-var-requires
+const qm = require("../src/js/qmHelpers.js")
+import { ManagedUpload } from "aws-sdk/lib/s3/managed_upload"
 import * as qmGit from "./qm.git"
 import {createSuccessFile, deleteEnvFile, deleteSuccessFile, getBuildLink, getCiProvider} from "./test-helpers"
 
@@ -239,17 +245,20 @@ export function runOneCypressSpec(specName: string, cb: ((err: any) => void)) {
             const failedTests = getFailedTestsFromResults(results)
             if (failedTests.length) {
                 process.env.LOGROCKET = "1"
-                runWithRecording(specName, function(recordResults) {
-                    const failedRecordedTests = getFailedTestsFromResults(recordResults)
-                    if (failedRecordedTests.length) {
-                        logFailedTests(failedRecordedTests, context, function(errorMessage) {
-                            cb(errorMessage)
-                            process.exit(1)
-                        })
-                    } else {
-                        delete process.env.LOGROCKET
-                        handleTestSuccess(results, context, cb)
-                    }
+                fileHelper.uploadToS3InSubFolderWithCurrentDateTime(getVideoPath(specName),
+                    "cypress", function(err, SendData) {
+                    runWithRecording(specName, function(recordResults) {
+                        const failedRecordedTests = getFailedTestsFromResults(recordResults)
+                        if (failedRecordedTests.length) {
+                            logFailedTests(failedRecordedTests, context, function(errorMessage) {
+                                cb(errorMessage)
+                                process.exit(1)
+                            })
+                        } else {
+                            delete process.env.LOGROCKET
+                            handleTestSuccess(results, context, cb)
+                        }
+                    })
                 })
             } else {
                 handleTestSuccess(results, context, cb)
@@ -261,6 +270,14 @@ export function runOneCypressSpec(specName: string, cb: ((err: any) => void)) {
             process.exit(1)
         })
     })
+}
+
+export function getVideoPath(specName: string) {
+    return "cypress/videos/"+specName+".mp4"
+}
+
+export function uploadCypressVideo(specName: string, cb: (err: Error, data: ManagedUpload.SendData) => void) {
+    fileHelper.uploadToS3InSubFolderWithCurrentDateTime(getVideoPath(specName), "cypress", cb)
 }
 
 function getSpecsPath() {
@@ -338,7 +355,7 @@ export function runLastFailedCypressTest(cb: (err: any) => void) {
     }
     runOneCypressSpec(name, cb)
 }
-export function uploadTestResults(cb: (arg0: any) => void) {
+export function uploadTestResults(cb: (err: Error, data: ManagedUpload.SendData) => void) {
     const path = "mochawesome/" + qmGit.getCurrentGitCommitSha()
     fileHelper.uploadToS3("./mochawesome-report/mochawesome.html", path, cb, "quantimodo",
         "public-read", "text/html")

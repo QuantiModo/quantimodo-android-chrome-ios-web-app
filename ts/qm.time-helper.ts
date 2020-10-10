@@ -33,3 +33,25 @@ export function getTimeSinceString(unixTimestamp: any) {
 export function getSecondsAgo(unixTimestamp: number) {
     return Math.round((getUnixTimestampInSeconds() - unixTimestamp))
 }
+
+export function getHumanDateTime(timeAt?: number|string) {
+    let at = new Date()
+    if(timeAt) {
+        at = new Date(timeAt)
+    }
+    const datetime = "Last Sync: " + at.getDate() + "/"
+        + (at.getMonth()+1)  + "/"
+        + at.getFullYear() + " "
+        + at.getHours() + ":"
+        + at.getMinutes() + ":"
+        + at.getSeconds()
+    return datetime
+}
+
+export function getISO(timeAt?: number|string) {
+    let at = new Date()
+    if(timeAt) {
+        at = new Date(timeAt)
+    }
+    return at.toISOString()
+}
