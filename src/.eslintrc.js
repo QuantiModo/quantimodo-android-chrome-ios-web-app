@@ -1,13 +1,17 @@
 module.exports = {
     "env": {
         "browser": true,
-        "es6": true
+        "es6": true,
+        "node": true,
     },
     "extends": "eslint:recommended",
     "globals": {
         "$": false,
         "_": false,
         "alert": false,
+        "Bravey": false,
+        "apiai": false,
+        "annyang": false,
         "analytics": false,
         "angular": false,
         "annyang": false,
@@ -63,9 +67,11 @@ module.exports = {
         "SpeechKITT": false,
         "speechUtteranceChunker": false,
         "StatusBar": false,
+        "Swal": false,
         "UserVoice": false,
         "window": false,
         "XMLHttpRequest": false,
+        "ionIcons": false,
     },
     "rules": {
         "accessor-pairs": "error",
@@ -110,7 +116,7 @@ module.exports = {
         "function-paren-newline": "off",
         "generator-star-spacing": "error",
         "getter-return": "error",
-        "global-require": "error",
+        "global-require": "off",
         "guard-for-in": "off",
         "handle-callback-err": "off",
         "id-blacklist": "error",
@@ -164,6 +170,7 @@ module.exports = {
         "no-floating-decimal": "off",
         "no-implicit-globals": "off",
         "no-implied-eval": "error",
+        "no-debugger": "off",
         "no-inline-comments": "off",
         "no-inner-declarations": "off",
         "no-invalid-this": "error",
