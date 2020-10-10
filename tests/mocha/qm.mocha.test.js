@@ -268,11 +268,11 @@ describe("Recordings", function () {
             let exists = fileHelper.exists(relative)
             chai.expect(exists).to.be.false
             fileHelper.createFile(relative, "test video", function (){
-                cypressFunctions.uploadCypressVideo(specName, function (err, SendData){
+                cypressFunctions.uploadCypressVideo(specName, function (err, s3Url){
                     const downloadPath = 'tmp/download.mp4'
                     fileHelper.deleteFile(downloadPath, function (){
                         fileHelper.assertDoesNotExist(downloadPath)
-                        fileHelper.download(SendData.Location, downloadPath, function (){
+                        fileHelper.download(s3Url, downloadPath, function (){
                             fileHelper.assertExists(downloadPath)
                             done()
                         })

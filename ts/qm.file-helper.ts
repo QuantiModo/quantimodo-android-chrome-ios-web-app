@@ -37,8 +37,8 @@ export function createFile(filePath: string, contents: any, cb?: () => void) {
 
 export function deleteFile(filename: string, cb?: () => void) {
     const filepath = getAbsolutePath(filename)
-    rimraf(filepath, function () {
-        qmLog.info("Deleted " + filepath + " in deleteFile")
+    rimraf(filepath, function() {
+        qmLog.info(filepath + "\n\tdeleted!")
         if (cb) {
             cb()
         }
@@ -120,7 +120,7 @@ export function uploadToS3(
         if (err) {
             throw err
         }
-        qmLog.info(s3Key + ` uploaded to ${SendData.Location}`)
+        qmLog.info(s3Key + "\n\tuploaded to\t\n"+ SendData.Location)
         if (cb) {
             cb(err, SendData.Location)
         }
@@ -145,7 +145,7 @@ export function writeToFile(filePath: string, contents: any, cb?: () => void) {
             throw err
         }
         // tslint:disable-next-line:no-console
-        console.log(filePath + " saved in writeToFile!")
+        console.log(filePath + "\n\tsaved!")
         if (cb) {
             cb()
         }
