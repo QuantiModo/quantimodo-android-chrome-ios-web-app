@@ -115,13 +115,13 @@ function uploadToS3(relative, s3BasePath, cb, s3Bucket, accessControlLevel, Cont
         // @ts-ignore
         params.ContentType = ContentType;
     }
-    s3.upload(params, function (err, data) {
+    s3.upload(params, function (err, SendData) {
         if (err) {
             throw err;
         }
-        console.log("File uploaded successfully. " + data.Location);
+        qmLog.info(s3Key + (" uploaded to " + SendData.Location));
         if (cb) {
-            cb(err, data);
+            cb(err, SendData.Location);
         }
     });
 }
