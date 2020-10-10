@@ -4962,10 +4962,10 @@ var qm = {
             return filtered;
         },
         postMeasurement: function(m, successHandler){
-            function isStartTimeInMilliseconds(measurementInfo){
+            function isStartTimeInMilliseconds(m){
                 var oneWeekInFuture = window.qm.timeHelper.getUnixTimestampInSeconds() + 7 * 86400;
-                if(measurementInfo.startTimeEpoch > oneWeekInFuture){
-                    measurementInfo.startTimeEpoch = measurementInfo.startTimeEpoch / 1000;
+                if(m.startTimeEpoch > oneWeekInFuture){
+                    m.startTimeEpoch = m.startTimeEpoch / 1000;
                     console.warn('Assuming startTime is in milliseconds since it is more than 1 week in the future');
                     return true;
                 }
@@ -4986,25 +4986,19 @@ var qm = {
         },
         postMeasurements: function (measurementSet, successHandler, errorHandler) {
             measurementSet = qm.measurements.addLocationAndSourceDataToMeasurement(measurementSet);
-            qm.api.post('api/v3/measurements',
-                //['measurements', 'variableName', 'source', 'variableCategoryName', 'unitAbbreviatedName'],
-                [], measurementSet, successHandler, errorHandler);
+            qm.api.post(measurementSet, 'api/v3/measurements', function(response){
+                if(response && response.data && response.data.userVariables){
+                    qm.variablesHelper.saveToLocalStorage(response.data.userVariables);
+                }
+                if(successHandler){successHandler(response);}
+            }, errorHandler);
         },
         postMeasurementQueue: function(successHandler, errorHandler){
-            if(!qm.auth.getAccessTokenFromUrlUserOrStorage()){
-                var errorMessage = 'Not doing syncPrimaryOutcomeVariableMeasurements because we do not have a $rootScope.user or access token in url';
-                qmLog.error(errorMessage);
-                if(errorHandler){errorHandler(errorMessage);}
-                return;
-            }
             var queue = qm.measurements.getMeasurementsFromQueue();
             if(!queue || queue.length < 1){
                 if(successHandler){successHandler();}
             } else {
                 qm.measurements.postMeasurements(queue, function(response){
-                    if(response && response.data && response.data.userVariables){
-                        qm.variablesHelper.saveToLocalStorage(response.data.userVariables);
-                    }
                     qm.measurements.measurementCache = qm.measurements.measurementCache.concat(queue);  // Save these for history page
                     qm.storage.setItem(qm.items.measurementsQueue, []);
                     if(successHandler){successHandler();}
