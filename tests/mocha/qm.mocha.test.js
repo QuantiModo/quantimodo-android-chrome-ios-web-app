@@ -135,27 +135,6 @@ var qmTests = {
             if(qmTests.getStatusesUrl()){ options.statuses_url = qmTests.getStatusesUrl() }
             return options
         },
-        parseCorrelationNotificationTest(cb){
-            var pushData = {
-                color: "#2196F3",
-                "content-available": "1",
-                "force-start": "0",
-                forceStart: "0",
-                foreground: "false",
-                image: "https://web.quantimo.do/img/variable_categories/symptoms.png",
-                isBackground: "true",
-                message: "Your EffectVariableName is generally 40% higher after $1.1 over the previous 30 days. ",
-                notId: "100624100625",
-                soundName: "false",
-                title: "↑Higher Purchases Of CauseVariableName Predicts Significantly ↑Higher EffectVariableName",
-                url: "https://web.quantimo.do/#/app/study?causeVariableId=100624&effectVariableId=100625&userId=1&clientId=quantimodo",
-                user: "1",
-            }
-            var notificationOptions = qm.notifications.convertPushDataToWebNotificationOptions(pushData, qm.getAppSettings())
-            qm.assert.equals(notificationOptions.title, pushData.title)
-            qm.assert.equals(notificationOptions.body, pushData.message)
-            cb()
-        },
     },
     logBugsnagLink(suite, start, end){
         var query = "filters[event.since][0]=" +
@@ -427,7 +406,28 @@ describe("Notifications", function () {
         var notificationOptions = qm.notifications.convertPushDataToWebNotificationOptions(pushData, qm.getAppSettings())
         qm.assert.equals(3, notificationOptions.actions.length)
         qm.assert.equals("Overall Mood", notificationOptions.title)
-        qmTests.tests.parseCorrelationNotificationTest(done)
+        done()
+    })
+    it('can parse correlation push notification', function(done) {
+        var pushData = {
+            color: "#2196F3",
+            "content-available": "1",
+            "force-start": "0",
+            forceStart: "0",
+            foreground: "false",
+            image: "https://web.quantimo.do/img/variable_categories/symptoms.png",
+            isBackground: "true",
+            message: "Your EffectVariableName is generally 40% higher after $1.1 over the previous 30 days. ",
+            notId: "100624100625",
+            soundName: "false",
+            title: "↑Higher Purchases Of CauseVariableName Predicts Significantly ↑Higher EffectVariableName",
+            url: "https://web.quantimo.do/#/app/study?causeVariableId=100624&effectVariableId=100625&userId=1&clientId=quantimodo",
+            user: "1",
+        }
+        var notificationOptions = qm.notifications.convertPushDataToWebNotificationOptions(pushData, qm.getAppSettings())
+        qm.assert.equals(notificationOptions.title, pushData.title)
+        qm.assert.equals(notificationOptions.body, pushData.message)
+        done()
     })
 })
 describe("Menu", function () {
