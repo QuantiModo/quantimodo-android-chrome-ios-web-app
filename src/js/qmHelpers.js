@@ -9574,6 +9574,7 @@ var qm = {
                 windowRef = undefined;
             }
             function executeScriptCallBack(params){
+                // eslint-disable-next-line no-eq-null
                 if(params[0] == null){
                     $('#status-message').text("Sorry we couldn't open that page. Message from the server is : '" + params.message + "'");
                 }
