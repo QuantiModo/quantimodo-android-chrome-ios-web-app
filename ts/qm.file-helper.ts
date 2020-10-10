@@ -83,7 +83,7 @@ export function downloadFromS3(filePath: string, bucketName: string, key: string
 
 export function uploadToS3InSubFolderWithCurrentDateTime(filePath: string,
                                                          s3BasePath: string,
-                                                         cb: (err: Error, data: ManagedUpload.SendData) => void,
+                                                         cb: (err: Error, url: string) => void,
                                                          s3Bucket = "quantimodo",
                                                          accessControlLevel = "public-read",
                                                          ContentType?: string | undefined) {
@@ -95,7 +95,7 @@ export function uploadToS3InSubFolderWithCurrentDateTime(filePath: string,
 export function uploadToS3(
     relative: string,
     s3BasePath: string,
-    cb: (err: Error, data: ManagedUpload.SendData) => void,
+    cb: (err: Error, url: string) => void,
     s3Bucket = "quantimodo",
     accessControlLevel = "public-read",
     ContentType?: string | undefined,
@@ -116,13 +116,13 @@ export function uploadToS3(
         // @ts-ignore
         params.ContentType = ContentType
     }
-    s3.upload(params, (err: any, data: any) => {
+    s3.upload(params, (err: any, SendData: any) => {
         if (err) {
             throw err
         }
-        console.log(`File uploaded successfully. ${data.Location}`)
+        qmLog.info(s3Key + ` uploaded to ${SendData.Location}`)
         if (cb) {
-            cb(err, data)
+            cb(err, SendData.Location)
         }
     })
 }

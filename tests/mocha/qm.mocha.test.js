@@ -304,8 +304,8 @@ describe("File Helper", function () {
         done()
     })
     it("uploads a file", function (done) {
-        fileHelper.uploadToS3(appDir + "/tests/ionIcons.js", "tests", function (err, SendData) {
-            downloadFileContains(SendData.Location, "iosArrowUp", done)
+        fileHelper.uploadToS3(appDir + "/tests/ionIcons.js", "tests", function (err, url) {
+            downloadFileContains(url, "iosArrowUp", done)
         })
     })
     it.skip("uploads test results", function (done) {

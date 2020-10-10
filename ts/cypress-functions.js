@@ -188,10 +188,12 @@ function runWithRecording(specName, cb) {
         if ("runUrl" in recordingResults) {
             runUrl = recordingResults.runUrl;
         }
-        qmGit.setGithubStatus("error", context, "View recording of " + specName, test_helpers_1.getBuildLink() || runUrl, function () {
-            qmGit.createCommitComment(context, "\nView recording of " + specName + "\n" +
-                "[Cypress Dashboard](" + runUrl + ") or [Build Log](" + test_helpers_1.getBuildLink() + ")", function () {
-                cb(recordingResults);
+        uploadCypressVideo(specName, function (err, s3Url) {
+            qmGit.setGithubStatus("error", context, "View recording of " + specName, s3Url || test_helpers_1.getBuildLink() || runUrl, function () {
+                qmGit.createCommitComment(context, "\nView recording of " + specName + "\n" +
+                    "[Cypress Dashboard](" + runUrl + ") or [Build Log](" + test_helpers_1.getBuildLink() + ") or [S3](" + s3Url + ")", function () {
+                    cb(recordingResults);
+                });
             });
         });
     });
@@ -248,7 +250,7 @@ function runOneCypressSpec(specName, cb) {
             var failedTests = getFailedTestsFromResults(results);
             if (failedTests.length) {
                 process.env.LOGROCKET = "1";
-                fileHelper.uploadToS3InSubFolderWithCurrentDateTime(getVideoPath(specName), "cypress", function (err, SendData) {
+                fileHelper.uploadToS3InSubFolderWithCurrentDateTime(getVideoPath(specName), "cypress", function (err, url) {
                     runWithRecording(specName, function (recordResults) {
                         var failedRecordedTests = getFailedTestsFromResults(recordResults);
                         if (failedRecordedTests.length) {
