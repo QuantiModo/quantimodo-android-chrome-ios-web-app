@@ -1,8 +1,8 @@
 angular.module('starter').controller('FavoritesCtrl', ["$scope", "$state", "$ionicActionSheet", "$timeout", "qmService",
-    "qmLogService", "$rootScope", "$stateParams",
-    function($scope, $state, $ionicActionSheet, $timeout, qmService, qmLogService, $rootScope,$stateParams){
+    "$rootScope", "$stateParams",
+    function($scope, $state, $ionicActionSheet, $timeout, qmService, $rootScope,$stateParams){
     $scope.controller_name = "FavoritesCtrl";
-    qmLogService.debug('Loading ' + $scope.controller_name, null);
+    qmLog.debug('Loading ' + $scope.controller_name, null);
     $scope.state = {
         favoritesArray: [],
         selected1to5Value: false,
@@ -18,7 +18,7 @@ angular.module('starter').controller('FavoritesCtrl', ["$scope", "$state", "$ion
     qmService.navBar.setFilterBarSearchIcon(false);
     $scope.$on('$ionicView.enter', function(e){
         if (document.title !== $scope.state.title) {document.title = $scope.state.title;}
-        qmLogService.debug('Entering state ' + $state.current.name, null);
+        qmLog.debug('Entering state ' + $state.current.name, null);
         qmService.navBar.showNavigationMenuIfHideUrlParamNotSet();
         qmService.rootScope.setProperty('bloodPressure', {
             systolicValue: null,
@@ -60,7 +60,7 @@ angular.module('starter').controller('FavoritesCtrl', ["$scope", "$state", "$ion
         qmService.goToState('app.favoriteSearch');
     };
     $scope.refreshFavorites = function(){
-        qmLogService.info('ReminderMange init: calling refreshFavorites syncTrackingReminders');
+        qmLog.info('ReminderMange init: calling refreshFavorites syncTrackingReminders');
         qmService.showInfoToast('Syncing favorites...');
         qmService.trackingReminders.syncTrackingReminders(true).then(function(){
             getFavoritesFromLocalStorage();
