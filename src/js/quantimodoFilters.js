@@ -197,22 +197,22 @@ angular.module('starter')
             return track_factors[value] ? track_factors[value] : 0;
         };
     })
-    .filter('positiveImageByValue', ["qmService", "qmLogService", function(qmService, qmLogService){
+    .filter('positiveImageByValue', ["qmService", function(qmService){
         return function(ratingValue){
             return qmService.getPositiveImageByRatingValue(ratingValue);
         };
     }])
-    .filter('negativeImageByValue', ["qmService", "qmLogService", function(qmService, qmLogService){
+    .filter('negativeImageByValue', ["qmService", function(qmService){
         return function(ratingValue){
             return qmService.getNegativeImageByRatingValue(ratingValue);
         };
     }])
-    .filter('numericImageByValue', ["qmService", "qmLogService", function(qmService, qmLogService){
+    .filter('numericImageByValue', ["qmService", function(qmService){
         return function(ratingValue){
             return qmService.getNumericImageByRatingValue(ratingValue);
         };
     }])
-    .filter('PrimaryOutcomeVariableByNumber', ["qmService", "qmLogService", function(qmService, qmLogService){
+    .filter('PrimaryOutcomeVariableByNumber', ["qmService", function(qmService){
         return function(value){
             return qm.getPrimaryOutcomeVariableByNumber(value);
         };
@@ -388,7 +388,7 @@ angular.module('starter')
     })
     .filter('capitalizeFirstLetter', function(){
         return function(input){
-            return (!!input) ? input.charAt(0).toUpperCase() + input.substr(1).toLowerCase() : '';
+            return (input) ? input.charAt(0).toUpperCase() + input.substr(1).toLowerCase() : '';
         };
     })
     .filter('camelCaseToTitleCase', function(){

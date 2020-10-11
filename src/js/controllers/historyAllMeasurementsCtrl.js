@@ -1,6 +1,6 @@
 angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$state", "$stateParams", "$rootScope",
-    "$timeout", "$ionicActionSheet", "qmService", "qmLogService", function($scope, $state, $stateParams, $rootScope, $timeout,
-                                                                           $ionicActionSheet, qmService, qmLogService){
+    "$timeout", "$ionicActionSheet", "qmService", function($scope, $state, $stateParams, $rootScope, $timeout,
+                                                                           $ionicActionSheet, qmService){
         $scope.controller_name = "historyAllMeasurementsCtrl";
         $scope.state = {
             helpCardTitle: "Past Measurements",
@@ -65,7 +65,7 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
                         ],
                         cancelText: '<i class="icon ion-ios-close"></i>Cancel',
                         cancel: function(){
-                            qmLogService.debug('CANCELLED', null);
+                            qmLog.debug('CANCELLED', null);
                         },
                         buttonClicked: function(index, button){
                             if(index === 0){
@@ -205,7 +205,7 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
                     qmService.searchUserVariablesDeferred('*', {variableName: getVariableName()}).then(function(variables){
                         $scope.state.variableObject = variables[0];
                     }, function(error){
-                        qmLogService.error(error);
+                        qmLog.error(error);
                     });
                 }
             }
@@ -222,7 +222,7 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
                 })
             }
             function errorHandler(error){
-                qmLogService.error("History update error: ", error);
+                qmLog.error("History update error: ", error);
                 $scope.state.noHistory = true;
                 hideLoader();
             }
@@ -244,7 +244,7 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
                     ],
                     cancelText: '<i class="icon ion-ios-close"></i>Cancel',
                     cancel: function(){
-                        qmLogService.debug('CANCELLED', null);
+                        qmLog.debug('CANCELLED', null);
                     },
                     buttonClicked: function(index, button){
                         if(index === 0){
@@ -305,10 +305,10 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
                 destructiveText: '<i class="icon ion-trash-a"></i>Delete Measurement',
                 cancelText: '<i class="icon ion-ios-close"></i>Cancel',
                 cancel: function(){
-                    qmLogService.debug(null, $state.current.name + ': ' + 'CANCELLED', null);
+                    qmLog.debug(null, $state.current.name + ': ' + 'CANCELLED', null);
                 },
                 buttonClicked: function(index, button){
-                    qmLogService.debug(null, $state.current.name + ': ' + 'BUTTON CLICKED', null, index);
+                    qmLog.debug(null, $state.current.name + ': ' + 'BUTTON CLICKED', null, index);
                     if(index === 0){
                         $scope.editMeasurement($scope.state.measurement);
                     }
