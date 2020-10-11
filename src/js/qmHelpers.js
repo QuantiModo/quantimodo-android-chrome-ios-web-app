@@ -1330,7 +1330,7 @@ var qm = {
             return array;
         },
         sortByProperty: function(arrayToSort, propertyName, direction){
-            qm.qmLog.info("Sorting by " + propertyName + "...");
+            qm.qmLog.debug("Sorting by " + propertyName + "...");
             if(!qm.arrayHelper.variableIsArray(arrayToSort)){
                 qm.qmLog.info("Cannot sort by " + propertyName + " because it's not an array!");
                 return arrayToSort;

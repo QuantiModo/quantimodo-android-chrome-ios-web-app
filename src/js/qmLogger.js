@@ -282,6 +282,10 @@ var qmLog = {
         }
     },
     error: function(name, message, errorSpecificMetaData, stackTrace){
+        if(typeof message === 'object' && message !== null){
+            errorSpecificMetaData = message;
+            message = null;
+        }
         if(!qmLog.shouldWeLog("error")){
             return;
         }
@@ -351,6 +355,10 @@ var qmLog = {
         }
     },
     warn: function(name, message, errorSpecificMetaData, stackTrace){
+        if(typeof message === 'object' && message !== null){
+            errorSpecificMetaData = message;
+            message = null;
+        }
         if(!qmLog.shouldWeLog("warn")){
             return;
         }
@@ -366,6 +374,10 @@ var qmLog = {
         }
     },
     info: function(name, message, errorSpecificMetaData, stackTrace){
+        if(typeof message === 'object' && message !== null){
+            errorSpecificMetaData = message;
+            message = null;
+        }
         if(!qmLog.shouldWeLog("info")){
             return;
         }
@@ -406,6 +418,10 @@ var qmLog = {
         console.log(qmLog.color[color](message)); // Nest styles of the same type even (color, underline, background)
     },
     debug: function(name, message, errorSpecificMetaData, stackTrace){
+        if(typeof message === 'object' && message !== null){
+            errorSpecificMetaData = message;
+            message = null;
+        }
         if(!qmLog.shouldWeLog("debug")){
             return;
         }
