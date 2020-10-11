@@ -1,4 +1,4 @@
-angular.module('starter').controller('TrackPrimaryOutcomeCtrl', ["$scope", "$state", "$timeout", "$rootScope", "$ionicLoading", "qmService", "qmLogService", function($scope, $state, $timeout, $rootScope, $ionicLoading, qmService, qmLogService){
+angular.module('starter').controller('TrackPrimaryOutcomeCtrl', ["$scope", "$state", "$timeout", "$rootScope", "$ionicLoading", "qmService", function($scope, $state, $timeout, $rootScope, $ionicLoading, qmService){
     $scope.controller_name = "TrackPrimaryOutcomeCtrl";
     $scope.state = {};
     $scope.primaryOutcomeVariableDetails = qm.getPrimaryOutcomeVariable();
@@ -9,14 +9,14 @@ angular.module('starter').controller('TrackPrimaryOutcomeCtrl', ["$scope", "$sta
     $scope.primaryOutcomeVariable = qm.getPrimaryOutcomeVariable();
     var syncDisplayText = 'Syncing ' + qm.getPrimaryOutcomeVariable().name + ' measurements...';
     $scope.$on('$ionicView.enter', function(e){
-        qmLogService.debug('Entering state ' + $state.current.name, null);
-        qmLogService.debug('TrackPrimaryOutcomeCtrl enter. Updating charts and syncing..', null);
+        qmLog.debug('Entering state ' + $state.current.name, null);
+        qmLog.debug('TrackPrimaryOutcomeCtrl enter. Updating charts and syncing..', null);
         qmService.navBar.showNavigationMenuIfHideUrlParamNotSet();
         updateCharts();
         $scope.showRatingFaces = true;
         $scope.timeRemaining = false;
         qmService.showInfoToast(syncDisplayText);
-        qmLogService.debug($state.current.name + ' going to syncPrimaryOutcomeVariableMeasurements', null);
+        qmLog.debug($state.current.name + ' going to syncPrimaryOutcomeVariableMeasurements', null);
         qmService.syncPrimaryOutcomeVariableMeasurements().then(function(){
             updateCharts();
             qmService.hideLoader();
@@ -87,7 +87,7 @@ angular.module('starter').controller('TrackPrimaryOutcomeCtrl', ["$scope", "$sta
         });
     };
     $scope.$on('updateCharts', function(){
-        qmLogService.debug('updateCharts broadcast received..');
+        qmLog.debug('updateCharts broadcast received..');
         updateCharts();
     });
 }]);

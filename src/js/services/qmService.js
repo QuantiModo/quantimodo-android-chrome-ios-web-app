@@ -4,9 +4,9 @@
 /** @namespace window.qm.storage */
 /* global chcp $ionicDeploy qm.stateNames chcp qm.stateNames */
 angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$ionicPopup", "$state", "$timeout",
-    "$ionicPlatform", "$mdDialog", "$mdToast", "qmLogService", "$cordovaGeolocation", "CacheFactory", "$ionicLoading",
+    "$ionicPlatform", "$mdDialog", "$mdToast", "$cordovaGeolocation", "CacheFactory", "$ionicLoading",
     "Analytics", "wikipediaFactory", "$ionicHistory", "$ionicActionSheet", "clipboard",
-    function($http, $q, $rootScope, $ionicPopup, $state, $timeout, $ionicPlatform, $mdDialog, $mdToast, qmLogService,
+    function($http, $q, $rootScope, $ionicPopup, $state, $timeout, $ionicPlatform, $mdDialog, $mdToast,
              $cordovaGeolocation, CacheFactory, $ionicLoading, Analytics, wikipediaFactory, $ionicHistory,
              $ionicActionSheet, clipboard){
         var allStates = $state.get();
@@ -2176,49 +2176,49 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                         qmLog.info("NOT broadcasting broadcastGetTrackingReminders because state is " + $state.current.name);
                     }
                 },
-                addToRemindersUsingVariableObject: function(variableObject, options, successHandler){
-                    if(qm.arrayHelper.variableIsArray(variableObject)){
-                        variableObject = variableObject[0];
+                addToRemindersUsingVariableObject: function(v, options, successHandler){
+                    if(qm.arrayHelper.variableIsArray(v)){
+                        v = v[0];
                     }
                     var doneState = getDefaultState();
                     if(options.doneState){
                         doneState = options.doneState;
                     }
-                    var trackingReminder = JSON.parse(JSON.stringify(variableObject));  // We need this so all fields are populated in list before we get the returned reminder from API
-                    trackingReminder.variableId = variableObject.variableId;
-                    delete trackingReminder.id;
-                    trackingReminder.variableName = variableObject.name;
-                    if(variableObject.unit){
-                        trackingReminder.unitAbbreviatedName = variableObject.unitAbbreviatedName;
+                    var tr = JSON.parse(JSON.stringify(v));  // We need this so all fields are populated in list before we get the returned reminder from API
+                    tr.variableId = v.variableId;
+                    delete tr.id;
+                    tr.variableName = v.name;
+                    if(v.unit){
+                        tr.unitAbbreviatedName = v.unitAbbreviatedName;
                     }
-                    trackingReminder.valence = variableObject.valence;
-                    trackingReminder.variableCategoryName = variableObject.variableCategoryName;
-                    trackingReminder.reminderFrequency = 86400;
-                    trackingReminder.reminderStartTime = qmService.getUtcTimeStringFromLocalString("19:00:00");
-                    if(variableObject.variableName === "Blood Pressure"){
+                    tr.valence = v.valence;
+                    tr.variableCategoryName = v.variableCategoryName;
+                    tr.reminderFrequency = 86400;
+                    tr.reminderStartTime = qmService.getUtcTimeStringFromLocalString("19:00:00");
+                    if(v.variableName === "Blood Pressure"){
                         options.skipReminderSettingsIfPossible = true;
                     }
                     if(!options.skipReminderSettingsIfPossible){
-                        qmService.goToState('app.reminderAdd', {variableObject: variableObject, doneState: doneState});
+                        qmService.goToState('app.reminderAdd', {variableObject: v, doneState: doneState});
                         return;
                     }
-                    var unitAbbreviatedName = (variableObject.unit) ? variableObject.unitAbbreviatedName : variableObject.abbreviatedName;
+                    var unitAbbreviatedName = (v.unit) ? v.unitAbbreviatedName : v.abbreviatedName;
                     if(unitAbbreviatedName === 'serving'){
-                        trackingReminder.defaultValue = 1;
+                        tr.defaultValue = 1;
                     }
-                    trackingReminder.valueAndFrequencyTextDescription = "Every day"; // Needed for getActive sorting sync queue
-                    qmService.addToTrackingReminderSyncQueue(trackingReminder);
+                    tr.valueAndFrequencyTextDescription = "Every day"; // Needed for getActive sorting sync queue
+                    qmService.addToTrackingReminderSyncQueue(tr);
                     //if($state.current.name !== qm.stateNames.onboarding){qmService.showBasicLoader();} // TODO: Why do we need loader here?  It's failing to timeout for some reason
                     $timeout(function(){ // Allow loader to show
                         // We should wait unit this is in local storage before going to Favorites page so they don't see a blank screen
-                        qmService.goToState(doneState, {trackingReminder: trackingReminder}); // Need this because it can be in between sync queue and storage
-                        trackingReminder.message = "Added " + trackingReminder.variableName;
+                        qmService.goToState(doneState, {trackingReminder: tr}); // Need this because it can be in between sync queue and storage
+                        tr.message = "Added " + tr.variableName;
                         if(successHandler){
-                            successHandler(trackingReminder);
+                            successHandler(tr);
                         }
                         $timeout(function(){
-                            qmService.showToastWithButton(trackingReminder.message, "SETTINGS", function(){
-                                qmService.goToState(qm.stateNames.reminderAdd, {trackingReminder: trackingReminder})
+                            qmService.showToastWithButton(tr.message, "SETTINGS", function(){
+                                qmService.goToState(qm.stateNames.reminderAdd, {trackingReminder: tr})
                             });
                         }, 1);
                         qmService.trackingReminders.syncTrackingReminders();
@@ -2274,7 +2274,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             },
             showVariableSearchDialog: function(dialogParams, successHandler, errorHandler, ev){
                 var SelectVariableDialogController = function($scope, $state, $rootScope, $stateParams, $filter, qmService,
-                                                              qmLogService, $q, $log, dialogParams, $timeout){
+                                                              $q, $log, dialogParams, $timeout){
                     var self = this;
                     if(!dialogParams.placeholder){
                         dialogParams.placeholder = "Enter a variable";
@@ -2537,7 +2537,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     querySearch();
                 };
                 SelectVariableDialogController.$inject = ["$scope", "$state", "$rootScope", "$stateParams", "$filter",
-                    "qmService", "qmLogService", "$q", "$log", "dialogParameters", "$timeout"];
+                    "qmService", "$q", "$log", "dialogParameters", "$timeout"];
                 $mdDialog.show({
                     controller: SelectVariableDialogController,
                     controllerAs: 'ctrl',
@@ -2884,7 +2884,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                             postTrackingRemindersToApiAndHandleResponse();
                         }, function (err){
                             postTrackingRemindersToApiAndHandleResponse();
-                            deferred.reject(error);
+                            deferred.reject(err);
                         })
                     }else{
                         qmLog.info('syncTrackingReminders: trackingReminderSyncQueue empty so just fetching trackingReminders from API', null);
@@ -5010,7 +5010,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             }
             return deferred.promise;
         };
-        qmService.syncNotificationsIfEmpty  =function (){
+        qmService.syncNotificationsIfEmpty = function (){
             var deferred = $q.defer();
             var notifications = qm.notifications.getLocalNotifications();
             if(!notifications || !notifications.length){
@@ -5149,7 +5149,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             return moment().hours(localHour).minutes(minutes);
         };
         qmService.addToTrackingReminderSyncQueue = function(trackingReminder){
-            qm.storage.addToOrReplaceByIdAndMoveToFront(qm.items.trackingReminderSyncQueue, trackingReminder);
+            qm.reminderHelper.addToQueue(trackingReminder)
             qmService.reminders.broadcastGetTrackingReminders();
         };
         qmService.storage.deleteTrackingReminderNotification = function(body){
@@ -6654,7 +6654,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     "backgroundColor": "#0f9d58",
                     circleColor: "#03c466",
                     bodyText: "Would you like to automatically log location? ",
-                    moreInfo: staticData.variableCategories.Locations.moreInfo,
+                    moreInfo: qm.staticData.variableCategories.Locations.moreInfo,
                     buttons: [
                         {
                             id: "hideLocationTrackingInfoCardButton",
@@ -7007,33 +7007,33 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             });
             return deferred.promise;
         };
-        qmService.addToFavoritesUsingVariableObject = function(variableObject){
-            var trackingReminder = {};
-            trackingReminder.variableId = variableObject.variableId;
-            trackingReminder.variableName = variableObject.name;
-            trackingReminder.unitAbbreviatedName = variableObject.unitAbbreviatedName;
-            trackingReminder.valence = variableObject.valence;
-            trackingReminder.variableCategoryName = variableObject.variableCategoryName;
-            trackingReminder.reminderFrequency = 0;
+        qmService.addToFavoritesUsingVariableObject = function(v){
+            var tr = {};
+            tr.variableId = v.variableId;
+            tr.variableName = v.name;
+            tr.unitAbbreviatedName = v.unitAbbreviatedName;
+            tr.valence = v.valence;
+            tr.variableCategoryName = v.variableCategoryName;
+            tr.reminderFrequency = 0;
             if($rootScope.lastRefreshTrackingRemindersAndScheduleAlarmsPromise){
                 var message = 'Got deletion request before last reminder refresh completed';
                 qmLog.debug(message, null);
                 $rootScope.lastRefreshTrackingRemindersAndScheduleAlarmsPromise.reject();
                 $rootScope.lastRefreshTrackingRemindersAndScheduleAlarmsPromise = null;
             }
-            if((trackingReminder.unitAbbreviatedName !== '/5' && trackingReminder.variableName !== "Blood Pressure")){
+            if((tr.unitAbbreviatedName !== '/5' && tr.variableName !== "Blood Pressure")){
                 qmLog.debug('Going to favoriteAdd state', null);
                 qmService.goToState(qm.stateNames.favoriteAdd, {
-                    variableObject: variableObject,
+                    variableObject: v,
                     fromState: $state.current.name,
                     fromUrl: window.location.href,
                     doneState: 'app.favorites'
                 });
                 return;
             }
-            qmService.addToTrackingReminderSyncQueue(trackingReminder);
+            qmService.addToTrackingReminderSyncQueue(tr);
             qmService.goToState(qm.stateNames.favorites, {
-                trackingReminder: trackingReminder,
+                trackingReminder: tr,
                 fromState: $state.current.name,
                 fromUrl: window.location.href
             });
