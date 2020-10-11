@@ -2274,7 +2274,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             },
             showVariableSearchDialog: function(dialogParams, successHandler, errorHandler, ev){
                 var SelectVariableDialogController = function($scope, $state, $rootScope, $stateParams, $filter, qmService,
-                                                              qmLogService, $q, $log, dialogParams, $timeout){
+                                                              $q, $log, dialogParams, $timeout){
                     var self = this;
                     if(!dialogParams.placeholder){
                         dialogParams.placeholder = "Enter a variable";
@@ -2884,7 +2884,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                             postTrackingRemindersToApiAndHandleResponse();
                         }, function (err){
                             postTrackingRemindersToApiAndHandleResponse();
-                            deferred.reject(error);
+                            deferred.reject(err);
                         })
                     }else{
                         qmLog.info('syncTrackingReminders: trackingReminderSyncQueue empty so just fetching trackingReminders from API', null);
@@ -5010,7 +5010,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             }
             return deferred.promise;
         };
-        qmService.syncNotificationsIfEmpty  =function (){
+        qmService.syncNotificationsIfEmpty = function (){
             var deferred = $q.defer();
             var notifications = qm.notifications.getLocalNotifications();
             if(!notifications || !notifications.length){
@@ -5149,7 +5149,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             return moment().hours(localHour).minutes(minutes);
         };
         qmService.addToTrackingReminderSyncQueue = function(trackingReminder){
-            qm.storage.addToOrReplaceByIdAndMoveToFront(qm.items.trackingReminderSyncQueue, trackingReminder);
+            qm.reminderHelper.addToQueue(trackingReminder)
             qmService.reminders.broadcastGetTrackingReminders();
         };
         qmService.storage.deleteTrackingReminderNotification = function(body){
@@ -6654,7 +6654,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     "backgroundColor": "#0f9d58",
                     circleColor: "#03c466",
                     bodyText: "Would you like to automatically log location? ",
-                    moreInfo: staticData.variableCategories.Locations.moreInfo,
+                    moreInfo: qm.staticData.variableCategories.Locations.moreInfo,
                     buttons: [
                         {
                             id: "hideLocationTrackingInfoCardButton",

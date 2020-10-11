@@ -1,5 +1,5 @@
-angular.module('starter').controller('StudiesCtrl', ["$scope", "$ionicLoading", "$state", "$stateParams", "qmService",
-    "qmLogService", "$rootScope", "$ionicActionSheet", "$mdDialog",
+angular.module('starter').controller('StudiesCtrl',
+    ["$scope", "$ionicLoading", "$state", "$stateParams", "qmService", "$rootScope", "$ionicActionSheet", "$mdDialog",
     function($scope, $ionicLoading, $state, $stateParams, qmService, $rootScope, $ionicActionSheet, $mdDialog){
         $scope.controller_name = "StudiesCtrl";
         $scope.state = {
