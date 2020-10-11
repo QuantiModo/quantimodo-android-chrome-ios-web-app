@@ -1,6 +1,6 @@
 angular.module('starter').controller('OnboardingCtrl',
-    ["$scope", "$state", "$ionicSlideBoxDelegate", "$ionicLoading", "$rootScope", "$stateParams", "qmService", "qmLogService", "$timeout",
-        function($scope, $state, $ionicSlideBoxDelegate, $ionicLoading, $rootScope, $stateParams, qmService, qmLogService, $timeout){
+    ["$scope", "$state", "$ionicSlideBoxDelegate", "$ionicLoading", "$rootScope", "$stateParams", "qmService", "$timeout",
+        function($scope, $state, $ionicSlideBoxDelegate, $ionicLoading, $rootScope, $stateParams, qmService, $timeout){
             var speechEnabled = false;
             var pageIndex = 0;
             $scope.state = {

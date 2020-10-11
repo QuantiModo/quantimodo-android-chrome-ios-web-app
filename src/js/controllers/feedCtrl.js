@@ -44,7 +44,7 @@ angular.module('starter').controller('FeedCtrl', ["$state", "$scope", "$rootScop
             }
         });
         $rootScope.$on('getCards', function(){
-            qmLogService.info('getCards broadcast received..');
+            qmLog.info('getCards broadcast received..');
             cardHandlers.getCards();
         });
         var cardHandlers = {

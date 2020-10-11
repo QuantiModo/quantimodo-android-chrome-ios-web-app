@@ -1,5 +1,5 @@
-angular.module('starter').controller('WelcomeCtrl', ["$scope", "$state", "$rootScope", "qmService", "qmLogService", "$stateParams",
-    function($scope, $state, $rootScope, qmService, qmLogService, $stateParams){
+angular.module('starter').controller('WelcomeCtrl', ["$scope", "$state", "$rootScope", "qmService", "$stateParams",
+    function($scope, $state, $rootScope, qmService, $stateParams){
     $scope.controller_name = "WelcomeCtrl";
     qmService.navBar.hideNavigationMenu();
     $scope.primaryOutcomeVariableDetails = qm.getPrimaryOutcomeVariable();
@@ -26,7 +26,7 @@ angular.module('starter').controller('WelcomeCtrl', ["$scope", "$state", "$rootS
     };
     $scope.skipInterval = function(){
         $scope.showIntervalCard = false;
-        qmLogService.debug('skipInterval: Going to login state...', null);
+        qmLog.debug('skipInterval: Going to login state...', null);
         qm.auth.sendToLogin("welcome completed");
     };
     $scope.saveInterval = function(primaryOutcomeRatingFrequencyDescription){
@@ -61,12 +61,12 @@ angular.module('starter').controller('WelcomeCtrl', ["$scope", "$state", "$rootS
     };
     $scope.init = function(){
         qmService.navBar.hideNavigationMenu();
-        qmLogService.debug($state.current.name + ' initializing...', null);
+        qmLog.debug($state.current.name + ' initializing...', null);
     };
     $scope.$on('$ionicView.beforeEnter', function(){
         if (document.title !== "Welcome") {document.title = "Welcome";}
         if($rootScope.user){
-            qmLogService.debug('Already have user so no need to welcome. Going to default state.', null);
+            qmLog.debug('Already have user so no need to welcome. Going to default state.', null);
             qmService.goToDefaultState();
         }
     });
