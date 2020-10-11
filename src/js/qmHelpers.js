@@ -6903,6 +6903,9 @@ var qm = {
     },
     qmService: null,
     reminderHelper: {
+        addToQueue: function(reminder){
+            qm.storage.addToOrReplaceByIdAndMoveToFront(qm.items.trackingReminderSyncQueue, reminder);
+        },
         getNumberOfReminders: function(callback){
             var number = qm.reminderHelper.getNumberOfTrackingRemindersInLocalStorage();
             if(!callback){
