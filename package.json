@@ -21,7 +21,7 @@
     "@types/bluebird": "3.5.32",
     "@types/chai": "4.2.12",
     "@types/dotenv": "6.1.1",
-    "@types/gulp": "4.0.6",
+    "@types/gulp": "^4.0.7",
     "@types/mocha": "5.2.7",
     "@types/node": "10.17.35",
     "@types/remote-origin-url": "2.0.0",
