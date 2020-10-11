@@ -2717,7 +2717,7 @@ var qm = {
         apiAi: null,
         apiAiPrepare: function(){
             qm.qmLog.info("apiAiPrepare...");
-            apiai = new Bravey.ApiAiAdapter("data/apiai", {language: "EN"});
+            var apiai = new Bravey.ApiAiAdapter("data/apiai", {language: "EN"});
             var entities = qm.staticData.dialogAgent.entities;
             qm.objectHelper.loopThroughProperties(entities, function(entityName, entity){
                 apiai.loadEntity(entityName);
@@ -3904,7 +3904,9 @@ var qm = {
             return qm.gitHelper.getBranchName().indexOf("feature") !== -1;
         },
         getCurrentGitCommitSha: function(){
+            // noinspection JSUnresolvedVariable
             if(qm.appMode.isBackEnd() && process.env.SOURCE_VERSION){
+                // noinspection JSUnresolvedVariable
                 return process.env.SOURCE_VERSION;
             }
             try{
@@ -4665,7 +4667,7 @@ var qm = {
                 qm.localForage.setItem(localStorageItemName, toStore, function(){
                     qm.qmLog.info("addToArray in LocalForage " + localStorageItemName + " completed!");
                     if(successHandler){
-                        successHandler(localStorageItemArray);
+                        successHandler(toStore);
                     }
                 }, function(error){
                     qm.qmLog.error(error);
@@ -5429,6 +5431,7 @@ var qm = {
                 qm.qmLog.info("annyang is Listening");
             }else{
                 qm.qmLog.info("resumeListening");
+                // noinspection JSUnresolvedVariable
                 annyang.resume(); // Resumes listening and restores command callback execution when a result matches. If SpeechRecognition was aborted (stopped), start it.
             }
         },
@@ -6852,7 +6855,8 @@ var qm = {
                 if(!qm.platform.getWindow()){
                     return false;
                 }
-                return (!!window.opr && !!opr.addons) || !!window.opera || navigator.userAgent.indexOf(' OPR/') >= 0;
+                // noinspection JSUnresolvedVariable
+                return (!!window.opr && !!window.opr.addons) || !!window.opera || navigator.userAgent.indexOf(' OPR/') >= 0;
             },
             isBlink: function(){
                 if(!qm.platform.getWindow()){
@@ -8332,6 +8336,9 @@ var qm = {
         },
     },
     stringHelper: {
+        removeFirstCharacter: function(str){
+            return str.substring(1);
+        },
         capitalizeFirstLetter: function(string){
             return string.charAt(0).toUpperCase() + string.slice(1);
         },
@@ -9366,7 +9373,7 @@ var qm = {
                 url.indexOf('2Findex.html') === -1 &&
                 url.indexOf('/index.html') === -1){
                 console.trace();
-                e = new Error();
+                var e = new Error();
                 qm.qmLog.errorAndExceptionTestingOrDevelopment("url should not be "+ url, e.stack);
             }
         },
@@ -9831,7 +9838,7 @@ var qm = {
             qm.userHelper.setDriftIdentity(user);
         },
         withinAllowedNotificationTimes: function(){
-            var u = qm.userHelper.getUserFromLocalStorag();
+            var u = qm.userHelper.getUserFromLocalStorage();
             if(u){
                 var now = new Date();
                 var hours = now.getHours();
@@ -10507,7 +10514,7 @@ var qm = {
                 frequencyData = new Uint8Array(bufferLength);
                 waveData = new Uint8Array(bufferLength);
                 window.source = audioCtx.createMediaStreamSource(mediaStream);
-                source.connect(analyser);
+                window.source.connect(analyser);
                 animate();
             }
             // Not used
@@ -10528,12 +10535,12 @@ var qm = {
                 if(!qm.platform.getWindow()){
                     return false;
                 }
-                w = canvas.width = window.innerWidth,
-                    h = canvas.height = window.innerHeight,
-                    w2 = w / 2,
-                    h2 = h / 2,
-                    h3 = h / 3,
-                    h4 = h / 4;
+                w = canvas.width = window.innerWidth;
+                h = canvas.height = window.innerHeight;
+                w2 = w / 2;
+                h2 = h / 2;
+                h3 = h / 3;
+                h4 = h / 4;
             }
             setCanvasSizes();
             function byteToNum(byte, min, max){
