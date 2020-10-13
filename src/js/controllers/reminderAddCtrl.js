@@ -93,7 +93,7 @@ angular.module('starter').controller('ReminderAddCtrl', ["$scope", "$state", "$s
             qmService.hideLoader();
             qm.storage.setItem(qm.items.lastReminder, $scope.state.trackingReminder);
             setHideDefaultValueField();
-            if($state.current.name !== qm.stateNames.favoriteAdd){
+            if($state.current.name !== qm.staticData.stateNames.favoriteAdd){
                 setupEditReminder($scope.state.trackingReminder);
             }  // Needed to set dates
             qmLog.info("tracking reminder after setup: ", $scope.state.trackingReminder);
@@ -484,7 +484,7 @@ angular.module('starter').controller('ReminderAddCtrl', ["$scope", "$state", "$s
                 });
         }
         var setTitle = function(){
-            if($stateParams.favorite || $state.current.name === qm.stateNames.favoriteAdd){
+            if($stateParams.favorite || $state.current.name === qm.staticData.stateNames.favoriteAdd){
                 $scope.state.selectedFrequencyName = 'As-Needed';
                 if($stateParams.reminder){
                     if(getVariableCategoryName() === 'Treatments'){
