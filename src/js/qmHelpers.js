@@ -1895,7 +1895,7 @@ var qm = {
             }
             return qm.api.getBaseUrl() + '/callback/';
         },
-        getAccessTokenFromUrlAndSetLocalStorageFlags: function(stateName){
+        getAccessTokenFromUrlAndSetLocalStorageFlags: function(){
             if(qm.auth.accessTokenFromUrl){
                 return qm.auth.accessTokenFromUrl;
             }
@@ -1904,7 +1904,7 @@ var qm = {
             if(!qm.auth.accessTokenFromUrl){
                 return null;
             }
-            if(stateName !== 'app.login'){
+            if(!qm.urlHelper.urlContains('app/login')){
                 qm.qmLog.authDebug("getAccessTokenFromUrl: Setting qm.auth.accessTokenFromUrl to " + qm.auth.accessTokenFromUrl);
                 qm.qmLog.authDebug("getAccessTokenFromUrl: Setting onboarded and introSeen in local storage because we got an access token from url");
                 qm.storage.setItem(qm.items.onboarded, true);
@@ -2007,6 +2007,75 @@ var qm = {
             var reason = 'we got this 401 response: ' + JSON.stringify(response);
             qm.auth.deleteAllAccessTokens(reason);
             qm.auth.setAfterLoginGoToUrlAndSendToLogin(reason);
+        },
+        refreshAccessToken: function(refreshToken, deferred){
+            qmLog.authDebug('Refresh token will be used to fetch access token from ' +
+                qm.api.getQuantiModoUrl("api/oauth2/token") + ' with client id ' + qm.api.getClientId());
+            var url = qm.api.getQuantiModoUrl("api/oauth2/token");
+            qm.api.post(url, {
+                client_id: qm.api.getClientId(),
+                //client_secret: qm.appsManager.getClientSecret(),
+                refresh_token: refreshToken,
+                grant_type: 'refresh_token'
+            }, function(data){
+                // update local storage
+                if(data.error){
+                    qmLog.debug('Token refresh failed: ' + data.error, null);
+                    deferred.reject('Token refresh failed: ' + data.error);
+                }else{
+                    var accessTokenRefreshed = qm.auth.saveAccessTokenResponse(data);
+                    qmLog.debug('refreshAccessToken: access token successfully updated from api server: ',
+                        data, null);
+                    deferred.resolve(accessTokenRefreshed);
+                }
+            }, function(response){
+                qmLog.debug('refreshAccessToken: failed to refresh token from api server', response,
+                    null);
+                deferred.reject(response);
+            });
+        },
+        getAccessTokenFromAnySource: function(){
+            var deferred = Q.defer();
+            var tokenFromUrl = qm.auth.getAccessTokenFromUrlAndSetLocalStorageFlags();
+            if(tokenFromUrl){
+                qmLog.authDebug("getAccessTokenFromAnySource: Got AccessTokenFromUrl");
+                deferred.resolve(tokenFromUrl);
+                return deferred.promise;
+            }
+            var accessTokenFromLocalStorage = qm.storage.getItem(qm.items.accessToken);
+            var expiresAtMilliseconds = qm.storage.getItem("expiresAtMilliseconds");
+            var refreshToken = qm.storage.getItem("refreshToken");
+            qmLog.authDebug('getAccessTokenFromAnySource: Values from local storage:',
+                JSON.stringify({
+                    expiresAtMilliseconds: expiresAtMilliseconds,
+                    refreshToken: refreshToken,
+                    accessTokenFromLocalStorage: accessTokenFromLocalStorage
+                }));
+            if(refreshToken && !expiresAtMilliseconds){
+                var errorMessage = 'We have a refresh token but expiresAtMilliseconds is ' + expiresAtMilliseconds + '.  How did this happen?';
+                if(!qm.userHelper.isTestUser()){
+                    qmLog.error(errorMessage, qm.storage.getAsString(qm.items.user), {groupingHash: errorMessage}, "error");
+                }
+            }
+            if(accessTokenFromLocalStorage && window.qm.timeHelper.getUnixTimestampInMilliseconds() < expiresAtMilliseconds){
+                qmLog.authDebug('getAccessTokenFromAnySource: Current access token should not be expired. Resolving token using one from local storage');
+                deferred.resolve(accessTokenFromLocalStorage);
+            }else if(refreshToken && expiresAtMilliseconds && qm.api.getClientId() !== 'oAuthDisabled' && qm.privateConfig){
+                qmLog.authDebug(window.qm.timeHelper.getUnixTimestampInMilliseconds() + ' (now) is greater than expiresAt ' + expiresAtMilliseconds);
+                qm.auth.refreshAccessToken(refreshToken, deferred);
+            }else if(accessTokenFromLocalStorage){
+                deferred.resolve(accessTokenFromLocalStorage);
+            }else if(qm.getUser() && qm.getUser().accessToken){
+                qmLog.authDebug("got access token from user");
+                deferred.resolve(qm.getUser().accessToken);
+            }else if(qm.api.getClientId() === 'oAuthDisabled' || !qm.privateConfig){
+                qmLog.authDebug('getAccessTokenFromAnySource: oAuthDisabled so we do not need an access token');
+                deferred.resolve();
+            }else{
+                qmLog.info('Could not get or refresh access token at ' + window.location.href);
+                deferred.resolve();
+            }
+            return deferred.promise;
         }
     },
     builder: {},
@@ -9719,6 +9788,9 @@ var qm = {
         },
         getSettingsUrl: function () {
             return qm.urlHelper.getIonicUrlForPath('settings');
+        },
+        urlContains: function(needle){
+            return qm.urlHelper.indexOfCurrentUrl(needle) !== -1;
         }
     },
     user: null,
