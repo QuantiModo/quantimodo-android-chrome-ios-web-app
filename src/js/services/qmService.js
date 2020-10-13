@@ -1242,7 +1242,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     });
                     myPopup.then(function(res){
                         qmService.showInfoToast("Inviting "+$scope.data.email+" via email");
-                        qm.api.post({email: $scope.data.email}, 'v1/shares/invitePatient',
+                        qm.api.post('v1/shares/invitePatient',{email: $scope.data.email},
                             function(response){
                                 if(callback){callback();}
                             }, function(error){
@@ -3701,16 +3701,16 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             apiInstance.getTrackingReminderNotifications(params, callback);
             //qmService.get('api/v3/trackingReminderNotifications', ['variableCategoryName', 'reminderTime', 'sort', 'reminderFrequency'], params, successHandler, errorHandler);
         };
-        qmService.postTrackingRemindersToApi = function(trackingRemindersArray, successHandler, errorHandler){
-            qmLog.debug('postTrackingRemindersToApi: ', trackingRemindersArray);
-            qmLog.info('posting' + trackingRemindersArray.length + " Tracking Reminders To Api");
-            if(!(trackingRemindersArray instanceof Array)){
-                trackingRemindersArray = [trackingRemindersArray];
+        qmService.postTrackingRemindersToApi = function(reminders, successHandler, errorHandler){
+            qmLog.debug('postTrackingRemindersToApi: ', reminders);
+            qmLog.info('posting' + reminders.length + " Tracking Reminders To Api");
+            if(!(reminders instanceof Array)){
+                reminders = [reminders];
             }
-            trackingRemindersArray[0] = qm.timeHelper.addTimeZoneOffsetProperty(trackingRemindersArray[0]);
+            reminders[0] = qm.timeHelper.addTimeZoneOffsetProperty(reminders[0]);
             // Get rid of card objects, available unit array and variable category object to decrease size of body
-            trackingRemindersArray = qm.objectHelper.removeObjectAndArrayPropertiesForArray(trackingRemindersArray);
-            qmService.post('api/v3/trackingReminders', [], trackingRemindersArray, successHandler, errorHandler);
+            reminders = qm.objectHelper.removeObjectAndArrayPropertiesForArray(reminders);
+            qm.api.post('api/v3/trackingReminders', reminders, successHandler, errorHandler);
         };
         qmService.postStudy = function(body, successHandler, errorHandler){
             qmService.post('api/v3/study', [], body, successHandler, errorHandler);
@@ -7749,7 +7749,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                         data.deviceToken = qm.storage.getItem(qm.items.deviceTokenOnServer);
                         if(data.additionalData.acknowledge){
                             qmService.logEventToGA(qm.analytics.eventCategories.pushNotifications, "sendAcknowledgement");
-                            qm.api.post(data, "v1/trackingReminderNotification/received", function(response){
+                            qm.api.post("v1/trackingReminderNotification/received", data, function(response){
                                 qmLog.pushDebug('notification received success response: ', response);
                             }, function(error){
                                 qmLog.error("notification received error response: ", error);
