@@ -4731,9 +4731,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             }
             return moment().hours(localHour).minutes(minutes);
         };
-        qm.reminderHelper.addToQueue = function(trackingReminder){
-            qm.reminderHelper.addToQueue(trackingReminder)
-        };
         qmService.storage.deleteTrackingReminderNotification = function(body){
             qm.storage.deleteTrackingReminderNotification(body);
         };
