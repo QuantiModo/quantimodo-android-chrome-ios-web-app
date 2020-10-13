@@ -555,7 +555,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 connectWithToken: function(response, connector, successHandler, errorHandler){
                     qmLog.authDebug('connectWithToken: Connecting with  ', null, response);
                     var body = {connectorCredentials: {token: response}, connector: connector};
-                    qmService.post('api/v3/connectors/connect', ['connector', 'connectorCredentials'], body, function(response){
+                    qm.api.post('api/v3/connectors/connect', body, function(response){
                         var connectors = qmService.connectors.storeConnectorResponse(response);
                         qmLog.authDebug("connectConnectorWithTokenDeferred response: ", response, response);
                         qmService.connectors.broadcastRefreshConnectors();
@@ -627,7 +627,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                         });
                 },
                 postConnectorCredentials: function(connectorName, credentials, successHandler, errorHandler){
-                    qmService.post('api/v3/connectors/' + connectorName + '/connect?noRedirect=true', ['connectorCredentials'],
+                    qm.api.post('api/v3/connectors/' + connectorName + '/connect?noRedirect=true',
+
                         {connectorCredentials: credentials},
                         function(response){
                             qmLog.authDebug("postConnectorCredentials got response:", response, response);
@@ -3002,7 +3003,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 if(button.webhookUrl){
                     var yesCallback = function(){
                         card.hide = true;
-                        qmService.post(button.webhookUrl, [], button.parameters,function(response){
+                        qm.api.post(button.webhookUrl, button.parameters,function(response){
                             if(button.successToastText){
                                 qmService.showInfoToast(button.successToastText);
                             }
@@ -3399,84 +3400,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     }, onRequestFailed);
             });
         };
-        qmService.post = function(route, requiredFields, body, successHandler, requestSpecificErrorHandler, options){
-            if(!body){
-                body = {};
-                qmLog.warn("No body parameter provided to qmService.post");
-            }
-            if(!options){
-                options = {};
-            }
-            options.stackTrace = (body.stackTrace) ? body.stackTrace : 'No stacktrace provided with params';
-            delete body.stackTrace;
-            qmService.navBar.setOfflineConnectionErrorShowing(false);
-            var bodyString = JSON.stringify(body);
-            if(!qmLog.isDebugMode()){
-                bodyString = bodyString.substring(0, 140);
-            }
-            qmLog.info('qmService.post: About to try to post request to ' + route + ' with body: ' + bodyString, null, options.stackTrace);
-            qmService.getAccessTokenFromAnySource().then(function(accessToken){
-                if(!accessToken && qm.auth.getAccessTokenFromUrlUserOrStorage()){
-                    qmLog.error("qmService.getAccessTokenFromAnySource returned: " + accessToken +
-                        ", but getAccessTokenFromUrlUserOrStorage returns: " + qm.auth.getAccessTokenFromUrlUserOrStorage());
-                    accessToken = qm.auth.getAccessTokenFromUrlUserOrStorage();
-                }
-                for(var i = 0; i < body.length; i++){
-                    var item = body[i];
-                    for(var j = 0; j < requiredFields.length; j++){
-                        if(!(requiredFields[j] in item)){
-                            qmLog.error('Missing required field', requiredFields[j] + ' in ' + route + ' request!', body);
-                            //throw 'missing required field in POST data; required fields: ' + requiredFields.toString();
-                        }
-                    }
-                }
-                //console.log("Log level is " + qmLog.getLogLevelName());
-                var url = qm.api.getQuantiModoUrl(route);
-                url = qm.urlHelper.addUrlQueryParamsToUrlString(qm.api.addGlobalParams({}), url);
-                var request = {
-                    method: 'POST',
-                    url: url,
-                    responseType: 'json',
-                    headers: {'Content-Type': "application/json", 'Accept': "application/json"},
-                    data: JSON.stringify(body)
-                };
-                if(accessToken){
-                    qmLog.info('Using access token for POST ' + route + ": " + accessToken, options.stackTrace);
-                    request.headers = {
-                        "Authorization": "Bearer " + accessToken,
-                        'Content-Type': "application/json",
-                        'Accept': "application/json"
-                    };
-                }else{
-                    if(route.indexOf('googleIdToken') === -1 && route.indexOf('connect') === -1){
-                        qmLog.error('No access token for POST ' + route + ". $rootScope.user is ", $rootScope.user, options.stackTrace);
-                        qmLog.error('No access token for POST ' + route + ". qm.getUser() returns ", qm.getUser(), options.stackTrace);
-                    }
-                }
-                function generalSuccessHandler(response){
-                    var responseString = JSON.stringify(response);
-                    if(!qmLog.isDebugMode()){
-                        responseString = responseString.substring(0, 140) + '...';
-                    }
-                    qmLog.info('Response from POST ' + route + ': ' + responseString);
-                    if(successHandler){
-                        successHandler(response);
-                    }
-                }
-                $http(request).success(generalSuccessHandler).error(function(data, status, headers){
-                    if(data && data.user){
-                        var meta = {status: status, headers: headers, data: data};
-                        qmLog.error("Calling error handler even though we got a user in response?", meta, meta);
-                        successHandler(data);
-                        return;
-                    }
-                    var userErrorMessage = generalApiErrorHandler(data, status, headers, request, options);
-                    if(requestSpecificErrorHandler){
-                        requestSpecificErrorHandler(userErrorMessage);
-                    }
-                });
-            }, requestSpecificErrorHandler);
-        };
         function showOfflineError(options, request){
             var pathWithoutQuery = getPathWithoutQuery(request);
             var doNotShowOfflineError = false;
@@ -3592,31 +3515,27 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             if(!startAt){
                 qm.qmLog.errorAndExceptionTestingOrDevelopment("No start time provided to delete measurement: ", measurement);
             }
-            qmService.post('api/v3/measurements/delete',
-                ['variableId', 'variableName', 'startTimeEpoch', 'id'],
-                measurement, successHandler, errorHandler);
+            qm.api.post('api/v3/measurements/delete', measurement, successHandler, errorHandler);
         };
         qmService.postMeasurementsExport = function(type, successHandler, errorHandler){
-            qmService.post('api/v2/measurements/request_' + type, [], [], successHandler, errorHandler);
+            qm.api.post('api/v2/measurements/request_' + type, [], successHandler, errorHandler);
         };
         qmService.getNotesFromApi = function(params, successHandler, errorHandler){
             var options = {};
             qmService.get('api/v3/notes', ['variableName'], params, successHandler, errorHandler, options);
         };
         qmService.postVoteToApi = function(study, successHandler, errorHandler){
-            var body = {
+            qm.api.post('api/v3/votes',  {
                 causeVariableName: qm.studyHelper.getCauseVariableName(study),
                 effectVariableName: qm.studyHelper.getEffectVariableName(study),
                 vote: (study.studyVotes) ? study.studyVotes.userVote : study.userVote
-            };
-            qmService.post('api/v3/votes', ['causeVariableName', 'effectVariableName', 'correlation', 'vote'], body, successHandler, errorHandler);
+            }, successHandler, errorHandler);
         };
         qmService.deleteVoteToApi = function(study, successHandler, errorHandler){
-            var body = {
+            qm.api.post('api/v3/votes/delete', {
                 causeVariableName: qm.studyHelper.getCauseVariableName(study),
                 effectVariableName: qm.studyHelper.getEffectVariableName(study)
-            };
-            qmService.post('api/v3/votes/delete', ['causeVariableName', 'effectVariableName', 'correlation'], body, successHandler, errorHandler);
+            }, successHandler, errorHandler);
         };
         qmService.getVariableByIdFromApi = function(variableId, successHandler, errorHandler){
             if(!qm.api.configureClient('getVariableByIdFromApi', errorHandler)){
@@ -3632,19 +3551,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             //qmService.get('api/v3/variables' , ['id'], {id: variableId}, successHandler, errorHandler);
         };
         qmService.postUserVariableToApi = function(userVariable, successHandler, errorHandler){
-            qmService.post('api/v3/userVariables',
-                [
-                    'user',
-                    'variableId',
-                    'durationOfAction',
-                    'fillingValue',
-                    'joinWith',
-                    'maximumAllowedValue',
-                    'minimumAllowedValue',
-                    'onsetDelay',
-                    'experimentStartTime',
-                    'experimentEndTime'
-                ], userVariable, successHandler, errorHandler);
+            qm.api.post('api/v3/userVariables', userVariable, successHandler, errorHandler);
         };
         qmService.deleteUserVariableMeasurements = function(variableName, successHandler, errorHandler){
             qm.storage.deleteByProperty(qm.items.userVariables, 'variableName', variableName);
@@ -3703,7 +3610,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             qm.api.post('api/v3/trackingReminders', reminders, successHandler, errorHandler);
         };
         qmService.postStudy = function(body, successHandler, errorHandler){
-            qmService.post('api/v3/study', [], body, successHandler, errorHandler);
+            qm.api.post('api/v3/study', body, successHandler, errorHandler);
         };
         qmService.postStudyDeferred = function(body){
             var deferred = $q.defer();
@@ -3731,7 +3638,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             if(!(userTagData instanceof Array)){
                 userTagData = [userTagData];
             }
-            qmService.post('api/v3/userTags', [], userTagData, successHandler, errorHandler);
+            qm.api.post('api/v3/userTags', userTagData, successHandler, errorHandler);
         };
         qmService.postVariableJoinDeferred = function(tagData){
             var deferred = $q.defer();
@@ -3749,7 +3656,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             if(!(variableJoinData instanceof Array)){
                 variableJoinData = [variableJoinData];
             }
-            qmService.post('api/v3/variables/join', [], variableJoinData, successHandler, errorHandler);
+            qm.api.post('api/v3/variables/join', variableJoinData, successHandler, errorHandler);
         };
         qmService.deleteVariableJoinDeferred = function(tagData){
             var deferred = $q.defer();
@@ -3768,7 +3675,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             return deferred.promise;
         };
         qmService.deleteVariableJoin = function(variableJoinData, successHandler, errorHandler){
-            qmService.post('api/v3/variables/join/delete', [], variableJoinData, successHandler, errorHandler);
+            qm.api.post('api/v3/variables/join/delete', variableJoinData, successHandler, errorHandler);
         };
         qmService.deleteUserTagDeferred = function(tagData){
             var deferred = $q.defer();
@@ -3787,7 +3694,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             return deferred.promise;
         };
         qmService.deleteUserTag = function(userTagData, successHandler, errorHandler){
-            qmService.post('api/v3/userTags/delete', [], userTagData, successHandler, errorHandler);
+            qm.api.post('api/v3/userTags/delete',userTagData, successHandler, errorHandler);
         };
         qmService.getUserTagsDeferred = function(){
             var deferred = $q.defer();
@@ -3819,13 +3726,12 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             if($rootScope.platform.isWindows){
                 platform = 'windows';
             }
-            var params = {
+            qm.api.post('api/v3/deviceTokens', {
                 platform: platform,
                 deviceToken: deviceToken,
                 clientId: qm.api.getClientId(),
                 stacktrace: qmLog.getStackTrace()
-            };
-            qmService.post('api/v3/deviceTokens', ['deviceToken', 'platform'], params, successHandler, errorHandler);
+            }, successHandler, errorHandler);
         };
         qmService.deleteDeviceTokenFromServer = function(successHandler, errorHandler){
             var deferred = $q.defer();
@@ -3833,7 +3739,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 deferred.reject('No deviceToken provided to qmService.deleteDeviceTokenFromServer');
             }else{
                 var params = {deviceToken: qm.storage.getItem(qm.items.deviceTokenOnServer)};
-                qmService.post('api/v3/deviceTokens/delete', ['deviceToken'], params, successHandler, errorHandler);
+                qm.api.post('api/v3/deviceTokens/delete', params, successHandler, errorHandler);
                 qm.storage.removeItem(qm.items.deviceTokenOnServer);
                 deferred.resolve();
             }
@@ -3846,12 +3752,11 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 return;
             }
             qm.storage.deleteByProperty(qm.items.trackingReminderNotifications, 'trackingReminderId', trackingReminderId);
-            qmService.post('api/v3/trackingReminders/delete', ['id'], {id: trackingReminderId}, successHandler, errorHandler);
+            qm.api.post('api/v3/trackingReminders/delete',{id: trackingReminderId}, successHandler, errorHandler);
         };
         // skip tracking reminder
         qmService.skipTrackingReminderNotification = function(params, successHandler, errorHandler){
-            qmService.post('api/v3/trackingReminderNotifications/skip',
-                ['id', 'trackingReminderNotificationId', 'trackingReminderId'],
+            qm.api.post('api/v3/trackingReminderNotifications/skip',
                 params,
                 successHandler,
                 errorHandler);
@@ -4229,7 +4134,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             if(qm.userHelper.getUserFromLocalStorage()){
                 params.userId = qm.userHelper.getUserFromLocalStorage().id;
             }
-            qmService.post('api/v3/userSettings', [], params, function(response){
+            qm.api.post('api/v3/userSettings', params, function(response){
                 if(!params.userEmail){
                     qmService.refreshUser(true).then(function(user){
                         qmLog.debug('updateUserSettingsDeferred got this user: ', user, null);
@@ -6121,7 +6026,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         };
         qmService.resetUserVariableDeferred = function(variableId){
             var deferred = $q.defer();
-            qmService.post('api/v3/userVariables/reset', ['variableId'],
+            qm.api.post('api/v3/userVariables/reset',
                 {variableId: variableId}, function(response){
                 qm.variablesHelper.setLastSelectedAtAndSave(response.data.userVariable);
                 deferred.resolve(response.data.userVariable);
@@ -6733,7 +6638,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             $rootScope.upgradePages = upgradePages;
         };
         qmService.postCreditCard = function(body, successHandler, errorHandler){
-            qmService.post('api/v2/account/subscribe', [], body, successHandler, errorHandler);
+            qm.api.post('api/v2/account/subscribe', body, successHandler, errorHandler);
         };
         qmService.postCreditCardDeferred = function(body){
             var deferred = $q.defer();
@@ -6787,7 +6692,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             return deferred.promise;
         };
         qmService.postDowngradeSubscription = function(body, successHandler, errorHandler){
-            qmService.post('api/v2/account/unsubscribe', [], body, successHandler, errorHandler);
+            qm.api.post('api/v2/account/unsubscribe', body, successHandler, errorHandler);
         };
         qmService.postDowngradeSubscriptionDeferred = function(){
             var deferred = $q.defer();
@@ -6870,7 +6775,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             }
         };
         qmService.sendEmailViaAPI = function(body, successHandler, errorHandler){
-            qmService.post('api/v2/email', [], body, successHandler, errorHandler);
+            qm.api.post('api/v2/email', body, successHandler, errorHandler);
         };
         qmService.sendEmailViaAPIDeferred = function(emailType){
             var deferred = $q.defer();
@@ -7457,7 +7362,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 finish: function(err, sessionTokenObject){
                     /* Called after user finishes connecting their health data */
                     //POST sessionTokenObject as-is to your server for step 2.
-                    qmService.post('api/v3/human/connect/finish', [], sessionTokenObject).then(function(response){
+                    qm.api.post('api/v3/human/connect/finish', sessionTokenObject).then(function(response){
                         console.log(response);
                         qmService.rootScope.setUser(response.data.user);
                     });
@@ -7483,7 +7388,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 finish: function(err, sessionTokenObject){
                     /* Called after user finishes connecting their health data */
                     //POST sessionTokenObject as-is to your server for step 2.
-                    qmService.post('api/v3/quantimodo/connect/finish', [], sessionTokenObject, function(response){
+                    qm.api.post('api/v3/quantimodo/connect/finish', sessionTokenObject, function(response){
                         console.log(response);
                         if(!response.data){
                             qmLog.error("No data from api/v3/quantimodo/connect/finish response: ", response);
