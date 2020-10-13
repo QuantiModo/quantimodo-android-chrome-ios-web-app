@@ -3359,7 +3359,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 return;
             }
             delete params.force;
-            qmService.getAccessTokenFromAnySource().then(function(accessToken){
+            qm.api.getAccessTokenFromAnySource().then(function(accessToken){
                 var url = qm.api.getQuantiModoUrl(route);
                 url = qm.urlHelper.addUrlQueryParamsToUrlString(qm.api.addGlobalParams({}), url);
                 url = qm.urlHelper.addUrlQueryParamsToUrlString(params, url);
@@ -3845,77 +3845,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             unsetUserIfTokenDoesNotMatchOneFromUrl();
             storeTokenFromUrlIfDoNotRememberNotSet();
             refreshUserDoesNotExistOrIfTokenFromUrlDoesNotMatch();
-        };
-        qmService.getAccessTokenFromAnySource = function(){
-            var deferred = $q.defer();
-            var tokenFromUrl = qm.auth.getAccessTokenFromUrlAndSetLocalStorageFlags($state.current.name);
-            if(tokenFromUrl){
-                qmLog.authDebug("getAccessTokenFromAnySource: Got AccessTokenFromUrl");
-                deferred.resolve(tokenFromUrl);
-                return deferred.promise;
-            }
-            var accessTokenFromLocalStorage = qm.storage.getItem(qm.items.accessToken);
-            var expiresAtMilliseconds = qm.storage.getItem("expiresAtMilliseconds");
-            var refreshToken = qm.storage.getItem("refreshToken");
-            qmLog.authDebug('getAccessTokenFromAnySource: Values from local storage:',
-                JSON.stringify({
-                    expiresAtMilliseconds: expiresAtMilliseconds,
-                    refreshToken: refreshToken,
-                    accessTokenFromLocalStorage: accessTokenFromLocalStorage
-                }));
-            if(refreshToken && !expiresAtMilliseconds){
-                var errorMessage = 'We have a refresh token but expiresAtMilliseconds is ' + expiresAtMilliseconds + '.  How did this happen?';
-                if(!qm.userHelper.isTestUser()){
-                    qmLog.error(errorMessage, qm.storage.getAsString(qm.items.user), {groupingHash: errorMessage}, "error");
-                }
-            }
-            if(accessTokenFromLocalStorage && window.qm.timeHelper.getUnixTimestampInMilliseconds() < expiresAtMilliseconds){
-                qmLog.authDebug('getAccessTokenFromAnySource: Current access token should not be expired. Resolving token using one from local storage');
-                deferred.resolve(accessTokenFromLocalStorage);
-            }else if(refreshToken && expiresAtMilliseconds && qm.api.getClientId() !== 'oAuthDisabled' && qm.privateConfig){
-                qmLog.authDebug(window.qm.timeHelper.getUnixTimestampInMilliseconds() + ' (now) is greater than expiresAt ' + expiresAtMilliseconds);
-                qmService.refreshAccessToken(refreshToken, deferred);
-            }else if(accessTokenFromLocalStorage){
-                deferred.resolve(accessTokenFromLocalStorage);
-            }else if(qm.platform.isDevelopmentMode()){
-                qmService.getDevCredentials().then(function(){
-                    deferred.resolve();
-                });
-            }else if(qm.getUser() && qm.getUser().accessToken){
-                qmLog.authDebug("got access token from user");
-                deferred.resolve(qm.getUser().accessToken);
-            }else if(qm.api.getClientId() === 'oAuthDisabled' || !qm.privateConfig){
-                qmLog.authDebug('getAccessTokenFromAnySource: oAuthDisabled so we do not need an access token');
-                deferred.resolve();
-            }else{
-                qmLog.info('Could not get or refresh access token at ' + window.location.href);
-                deferred.resolve();
-            }
-            return deferred.promise;
-        };
-        qmService.refreshAccessToken = function(refreshToken, deferred){
-            qmLog.authDebug('Refresh token will be used to fetch access token from ' +
-                qm.api.getQuantiModoUrl("api/oauth2/token") + ' with client id ' + qm.api.getClientId());
-            var url = qm.api.getQuantiModoUrl("api/oauth2/token");
-            $http.post(url, {
-                client_id: qm.api.getClientId(),
-                //client_secret: qm.appsManager.getClientSecret(),
-                refresh_token: refreshToken,
-                grant_type: 'refresh_token'
-            }).success(function(data){
-                // update local storage
-                if(data.error){
-                    qmLog.debug('Token refresh failed: ' + data.error, null);
-                    deferred.reject('Token refresh failed: ' + data.error);
-                }else{
-                    var accessTokenRefreshed = qm.auth.saveAccessTokenResponse(data);
-                    qmLog.debug('qmService.refreshAccessToken: access token successfully updated from api server: ', data, null);
-                    deferred.resolve(accessTokenRefreshed);
-                }
-            }).error(function(response){
-                qmLog.debug('qmService.refreshAccessToken: failed to refresh token from api server', response, null);
-                deferred.reject(response);
-            });
         };
         function qmApiGeneralErrorHandler(error, data, response, options){
             if(!response){
@@ -7338,21 +7267,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 //qmSetupInPopup();
                 //qmService.humanConnect();
             }
-        };
-        qmService.getDevCredentials = function(){
-            return $http.get('dev-credentials.json').success(function(response){
-                if(typeof response !== "string"){
-                    if(response.accessToken && !$rootScope.user){
-                        qmLog.info('Using access token from dev-credentials.json', null);
-                        qm.auth.saveAccessTokenResponse(response.accessToken);
-                        qmService.refreshUser().then(function(){
-                            qmService.goToDefaultState();
-                        });
-                    }
-                }else{
-                    qmLog.debug('dev-credentials.json response is a string', null);
-                }
-            });
         };
         qmService.humanConnect = function(){
             var options = {
