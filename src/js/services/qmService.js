@@ -2870,7 +2870,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                                 deferred.reject(error);
                             });
                         };
-                        qmService.syncNotificationsIfQueued().then(function(){
+                        qm.notifications.syncNotificationsIfQueued().then(function(){
                             postTrackingRemindersToApiAndHandleResponse();
                         }, function (err){
                             postTrackingRemindersToApiAndHandleResponse();
@@ -4627,57 +4627,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 }
             });
             return deferred.promise;
-        };
-        qmService.syncNotificationsIfQueued  =function (){
-            var deferred = $q.defer();
-            var notifications = qm.notifications.getQueue();
-            if(notifications && notifications.length){
-                return qmService.syncNotifications();
-            } else {
-                deferred.resolve([]);
-            }
-            return deferred.promise;
-        };
-        qmService.syncNotificationsIfEmpty = function (){
-            var deferred = $q.defer();
-            var notifications = qm.notifications.getLocalNotifications();
-            if(!notifications || !notifications.length){
-                return qmService.syncNotifications();
-            } else {
-                deferred.resolve(notifications);
-            }
-            return deferred.promise;
-        };
-        qmService.syncNotifications = function(params){
-            var deferred = $q.defer();
-            if(params && params.noCache){qm.notifications.notificationsPromise = false;}
-            if(!qm.getUser()){
-                deferred.reject("No user to get notifications");
-                qm.notifications.notificationsPromise = false;
-                return deferred.promise;
-            }
-            if(qm.notifications.notificationsPromise){return qm.notifications.notificationsPromise;}
-            qm.notifications.syncNotifications(function(response){
-                var notifications = qm.notifications.getLocalNotifications();
-                if(notifications.length && qm.platform.isMobile() && qm.notifications.getDeviceTokenToSync()){
-                    qm.notifications.registerDeviceToken();
-                }
-                if(qm.qmService){
-                    qm.qmService.notifications.broadcastGetTrackingReminderNotifications();
-                    if(qm.platform.isAndroid()){
-                        qm.qmService.notifications.showAndroidPopupForMostRecentNotification(true);
-                    }
-                }
-                qm.chrome.updateChromeBadge(notifications.length);
-                qm.notifications.notificationsPromise = false;
-                deferred.resolve(notifications);
-            }, function(error){
-                qmLog.error(error);
-                qm.notifications.notificationsPromise = false;
-                deferred.reject(error);
-            });
-            setTimeout(function(){qm.notifications.notificationsPromise = false;}, 15000)
-            return qm.notifications.notificationsPromise = deferred.promise;
         };
         qmService.getTrackingReminderByIdDeferred = function(reminderId){
             var deferred = $q.defer();
@@ -7330,7 +7279,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                             qmService.notifications.showAndroidPopupForMostRecentNotification();
                         }else{
                             qmLog.pushDebug('window.overApps for popups is undefined! ');
-                            qmService.syncNotificationsIfEmpty({}).then(function(){
+                            qm.notifications.syncNotificationsIfEmpty({}).then(function(){
                                 qmLog.pushDebug('push.on.notification: successfully refreshed notifications');
                             }, function(error){
                                 qmLog.error('push.on.notification: ', error);

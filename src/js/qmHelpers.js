@@ -6670,10 +6670,61 @@ var qm = {
                 qmLog.debug("postDeviceToken", response, null);
                 deferred.resolve();
             }, function(error){
-                qmService.storage.setItem(qm.items.deviceTokenToSync, deviceTokenToSync);
+                qm.storage.setItem(qm.items.deviceTokenToSync, deviceTokenToSync);
                 qmLog.error(error);
                 deferred.reject(error);
             });
+            return deferred.promise;
+        },
+        syncNotificationsIfQueued: function (){
+            var deferred = Q.defer();
+            var notifications = qm.notifications.getQueue();
+            if(notifications && notifications.length){
+                return qm.notifications.syncNotificationsDeferred();
+            } else {
+                deferred.resolve([]);
+            }
+            return deferred.promise;
+        },
+        syncNotificationsDeferred: function(params){
+            var deferred = Q.defer();
+            if(params && params.noCache){qm.notifications.notificationsPromise = false;}
+            if(!qm.getUser()){
+                deferred.reject("No user to get notifications");
+                qm.notifications.notificationsPromise = false;
+                return deferred.promise;
+            }
+            if(qm.notifications.notificationsPromise){return qm.notifications.notificationsPromise;}
+            qm.notifications.syncNotifications(function(response){
+                var notifications = qm.notifications.getLocalNotifications();
+                if(notifications.length && qm.platform.isMobile() && qm.notifications.getDeviceTokenToSync()){
+                    qm.notifications.registerDeviceToken();
+                }
+                if(qm.qmService){
+                    qm.qmService.notifications.broadcastGetTrackingReminderNotifications();
+                    if(qm.platform.isAndroid()){
+                        qm.qmService.notifications.showAndroidPopupForMostRecentNotification(true);
+                    }
+                }
+                qm.chrome.updateChromeBadge(notifications.length);
+                qm.notifications.notificationsPromise = false;
+                deferred.resolve(notifications);
+            }, function(error){
+                qmLog.error(error);
+                qm.notifications.notificationsPromise = false;
+                deferred.reject(error);
+            });
+            setTimeout(function(){qm.notifications.notificationsPromise = false;}, 15000)
+            return qm.notifications.notificationsPromise = deferred.promise;
+        },
+        syncNotificationsIfEmpty: function (){
+            var deferred = Q.defer();
+            var notifications = qm.notifications.getLocalNotifications();
+            if(!notifications || !notifications.length){
+                return qm.notifications.syncNotificationsDeferred();
+            } else {
+                deferred.resolve(notifications);
+            }
             return deferred.promise;
         }
     },
