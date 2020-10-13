@@ -119,7 +119,7 @@ angular.module('starter').controller('ChartsPageCtrl', ["$scope", "$q", "$state"
         };
         $scope.recordMeasurementButtonClick = function(){
             qmLog.info("Going to record measurement for " + JSON.stringify($scope.state.variableObject));
-            qmService.goToState(qm.stateNames.measurementAdd, {
+            qmService.goToState(qm.staticData.stateNames.measurementAdd, {
                 variableObject: $scope.state.variableObject,
                 fromState: $state.current.name
             });

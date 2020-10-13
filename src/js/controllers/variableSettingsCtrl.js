@@ -155,7 +155,7 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
                 variableId: $scope.state.variableObject.variableId  // with variable id
             };
             qmService.variableIdToGetOnReturnToSettings = $scope.state.variableObject.variableId;
-            qmService.goToState(qm.stateNames.tagAdd, stateParams);
+            qmService.goToState(qm.staticData.stateNames.tagAdd, stateParams);
         }
         $scope.state.openParentVariableSearchDialog = function(e){
             dialogParameters.conversionFactor = 1;
@@ -272,7 +272,7 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
                 if(self.helpText && !self.showHelp){
                     return self.showHelp = true;
                 }
-                qmService.goToState(window.qm.stateNames.help);
+                qmService.goToState(window.qm.staticData.stateNames.help);
                 $mdDialog.cancel();
             };
             self.cancel = function($event){

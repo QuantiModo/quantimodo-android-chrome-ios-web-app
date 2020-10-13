@@ -103,7 +103,7 @@ angular.module('starter').controller('RemindersManageCtrl', ["$scope", "$state",
                             $scope.refreshReminders();
                         }
                         if(index === 7){
-                            qmService.goToState(qm.stateNames.settings);
+                            qmService.goToState(qm.staticData.stateNames.settings);
                         }
                         return true;
                     }
