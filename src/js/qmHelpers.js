@@ -568,7 +568,7 @@ var qm = {
             url = url.replace('http://', '');
             return url;
         },
-        post: function(body, path, successHandler, errorHandler){
+        post: function(path, body, successHandler, errorHandler){
             qm.api.getRequestUrl(path, function(url){
                 qm.qmLog.info("Making POST request to " + url);
                 if(typeof XMLHttpRequest !== "undefined"){
@@ -701,7 +701,7 @@ var qm = {
             return xhr;
         },
         postMeasurements: function(measurements, onDoneListener){
-            qm.api.post(measurements, "v1/measurements", onDoneListener);
+            qm.api.post("v1/measurements", measurements, onDoneListener);
         },
         getRequestUrl: function(path, successHandler, params){
             qm.userHelper.getUserFromLocalStorage(function(user){
@@ -2834,7 +2834,7 @@ var qm = {
             return bravy;
         },
         post: function(body, successHandler, errorHandler){
-            qm.api.post(body, "v1/dialogflow", function(response){
+            qm.api.post("v1/dialogflow", body, function(response){
                 qm.dialogFlow.lastApiResponse = response;
                 successHandler(response);
             }, function(error){
@@ -5002,7 +5002,7 @@ var qm = {
         },
         postMeasurements: function (measurements, successHandler, errorHandler) {
             qm.measurements.addLocationAndSource(measurements);
-            qm.api.post(measurements, 'api/v3/measurements', function(response){
+            qm.api.post('api/v3/measurements', measurements, function(response){
                 var data = (response) ? response.data : null;
                 if(data && data.userVariables){
                     qm.variablesHelper.saveToLocalStorage(data.userVariables);
@@ -6250,7 +6250,7 @@ var qm = {
             }
             // Get rid of card objects, available unit array and variable category object to decrease size of body
             trackingReminderNotifications = qm.objectHelper.removeObjectAndArrayPropertiesForArray(trackingReminderNotifications);
-            qm.api.post(trackingReminderNotifications, "v1/trackingReminderNotifications", onDoneListener);
+            qm.api.post("v1/trackingReminderNotifications", trackingReminderNotifications, onDoneListener);
             if(timeout){
                 setTimeout(function(){
                     qm.qmLog.info("Timeout expired so closing");
@@ -6379,7 +6379,7 @@ var qm = {
                 var notifications = data.trackingReminderNotifications;
                 if(notifications && notifications.length){qm.storage.setTrackingReminderNotifications(notifications);}
             }
-            qm.api.post(body, 'v3/trackingReminderNotifications', function(response){
+            qm.api.post('v3/trackingReminderNotifications', body, function(response){
                 saveResponse(response);
                 if(successHandler){successHandler(response);}
             }, function(response){
@@ -9947,7 +9947,7 @@ var qm = {
             }
         },
         updateUserSettings: function(params, successHandler, errorHandler){
-            qm.api.post(params, 'v3/userSettings', function (response) {
+            qm.api.post('v3/userSettings', params, function (response) {
                 var user = response.user || response.data || response;
                 if(!user.email){
                     qmLog.errorAndExceptionTestingOrDevelopment("no user returned from userSettings.  Here's the response: ", response);
