@@ -93,7 +93,7 @@ angular.module('starter').controller('StudyCreationCtrl', ["$scope", "$state", "
                 qmService.hideLoader();
                 if(body.type === 'individual'){
                     body.study = study;
-                    //qmService.goToState(qm.stateNames.study, body);
+                    //qmService.goToState(qm.staticData.stateNames.study, body);
                     qm.studyHelper.goToStudyPageViaStudy(study); // Need to use goToStudyPageViaStudy so url params are populated
                 }else{
                     $scope.state.study = study;

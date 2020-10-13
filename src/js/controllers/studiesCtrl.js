@@ -69,7 +69,7 @@ angular.module('starter').controller('StudiesCtrl',
                             $scope.refreshList();
                         }
                         if(index === 8){
-                            qmService.goToState(qm.stateNames.settings);
+                            qmService.goToState(qm.staticData.stateNames.settings);
                         }
                         return true;
                     }
@@ -298,7 +298,7 @@ angular.module('starter').controller('StudiesCtrl',
                 if(self.helpText && !self.showHelp){
                     return self.showHelp = true;
                 }
-                qmService.goToState(window.qm.stateNames.help);
+                qmService.goToState(window.qm.staticData.stateNames.help);
                 $mdDialog.cancel();
             };
             self.cancel = function(){
