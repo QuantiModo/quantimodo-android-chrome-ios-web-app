@@ -837,7 +837,96 @@ var qm = {
                 }
             }
             return arr;
-        }
+        },
+        generalApiErrorHandler: function(data, status, headers, request, options){
+            if(status === 302){
+                return qmLog.debug('Got 302 response from ', request, options.stackTrace);
+            }
+            if(status === 401){
+                qmLog.info('Got 401 response with headers: ', headers, options.stackTrace);
+                if(qm.qmService){qm.qmService.auth.handleExpiredAccessTokenResponse(data);}
+                return qm.auth.handle401Response(request, options, headers);
+            }
+            if(!data){
+                if(qm.qmService){
+                    qm.qmService.showOfflineError(options, request);
+                }
+                return;
+            }
+            return qm.api.logApiError(status, request, data, options);
+        },
+        logApiError: function(status, request, data, options){
+            var pathWithQuery = request.url.match(/\/\/[^\/]+\/([^\.]+)/)[1];
+            var pathWithoutQuery = pathWithQuery.split("?")[0];
+            var errorName = status + ' from ' + request.method + ' ' + pathWithoutQuery;
+            var userErrorMessage;
+            if(data && data.error){
+                if(typeof data.error === "string"){
+                    userErrorMessage = data.error;
+                    errorName += ': ' + data.error;
+                }else if(data.error.message){
+                    userErrorMessage = data.error.message;
+                    errorName += ': ' + data.error.message;
+                }
+            }
+            if(!userErrorMessage && data && data.message){
+                userErrorMessage = data.message;
+                errorName += ': ' + data.message;
+            }
+            var metaData = {
+                debugApiUrl: qm.api.getDebugApiUrlFromRequest(request),
+                appUrl: window.location.href,
+                groupingHash: errorName,
+                requestData: data,
+                status: status,
+                request: request,
+                requestOptions: options,
+                requestParams: qm.urlHelper.getQueryParams(request.url)
+            };
+            if(data.error){
+                metaData.groupingHash = JSON.stringify(data.error);
+                if(data.error.message){
+                    metaData.groupingHash = JSON.stringify(data.error.message);
+                }
+            }
+            qmLog.error(errorName, metaData, options.stackTrace);
+            return userErrorMessage;
+        },
+        getDebugApiUrlFromRequest: function(request){
+            var debugUrl = request.method + " " + request.url;
+            if(request.headers && request.headers.Authorization){
+                var accessToken = request.headers.Authorization.replace("Bearer ", "");
+                debugUrl += "&access_token=" + accessToken;
+            }
+            debugUrl = debugUrl.replace('app.', 'local.');
+            debugUrl = debugUrl.replace('staging.', 'local.');
+            return debugUrl;
+        },
+        get: function(route, allowedParams, params, successHandler, requestSpecificErrorHandler, options){
+            if(!params){params = {};}
+            if(!successHandler){ throw "Please provide successHandler function as fourth parameter in qm.api.get";}
+            if(!options){options = {};}
+            var cache = false;
+            options.stackTrace = (params.stackTrace) ? params.stackTrace : 'No stacktrace provided with params';
+            delete params.stackTrace;
+            if(params && params.cache){
+                cache = params.cache;
+                params.cache = null;
+            }
+            if(qm.urlHelper.urlContains('app/intro') && !params.force && !qm.auth.getAccessTokenFromCurrentUrl()){
+                var message = 'Not making request to ' + route + ' user because we are in the intro state';
+                qmLog.debug(message, null, options.stackTrace);
+                if(requestSpecificErrorHandler){requestSpecificErrorHandler(message);}
+                return;
+            }
+            delete params.force;
+            qm.api.getAccessTokenFromAnySource().then(function(accessToken){
+                var url = qm.api.getQuantiModoUrl(route);
+                url = qm.urlHelper.addUrlQueryParamsToUrlString(qm.api.addGlobalParams({}), url);
+                url = qm.urlHelper.addUrlQueryParamsToUrlString(params, url);
+                qm.api.getViaXhrOrFetch(url, successHandler, requestSpecificErrorHandler);
+            });
+        },
     },
     appsManager: { // jshint ignore:line
         getAppVersion: function(){
