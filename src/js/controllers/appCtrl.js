@@ -450,10 +450,10 @@ angular.module('starter')// Parent Controller - This controller runs before ever
             $scope.robotClick = function(){
                 if(qm.robot.onRobotClick){
                     qm.robot.onRobotClick();
-                }else if($state.current.name === qm.stateNames.chat){
+                }else if($state.current.name === qm.staticData.stateNames.chat){
                     qmService.robot.toggleSpeechAndMicEnabled();
                 }else{
-                    qmService.goToState(qm.stateNames.chat);
+                    qmService.goToState(qm.staticData.stateNames.chat);
                 }
             };
         }]);

@@ -72,7 +72,7 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
                                 $scope.refreshHistory();
                             }
                             if(index === 1){
-                                qmService.goToState(qm.stateNames.settings);
+                                qmService.goToState(qm.staticData.stateNames.settings);
                             }
                             if(button.text === allButtons.sortDescendingValue.text){
                                 changeSortAndGetHistory('-value');
@@ -123,7 +123,7 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
             if(qm.urlHelper.getParam('variableName')){
                 return qm.urlHelper.getParam('variableName');
             }
-            qmLog.info("Could not get variableName")
+            qmLog.debug("Could not get variableName")
         }
         function getVariableCategoryName(){
             return qm.variableCategoryHelper.getVariableCategoryNameFromStateParamsOrUrl($stateParams);
