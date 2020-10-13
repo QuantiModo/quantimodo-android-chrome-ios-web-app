@@ -417,7 +417,7 @@ var qmLog = {
     colorfulLog: function(message, color){
         console.log(qmLog.color[color](message)); // Nest styles of the same type even (color, underline, background)
     },
-    debug: function(name, message, errorSpecificMetaData, stackTrace){
+    debug: function(name, message, errorSpecificMetaData, stackTrace) {
         if(typeof message === 'object' && message !== null){
             errorSpecificMetaData = message;
             message = null;
