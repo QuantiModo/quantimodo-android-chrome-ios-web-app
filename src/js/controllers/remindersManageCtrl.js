@@ -148,7 +148,7 @@ angular.module('starter').controller('RemindersManageCtrl', ["$scope", "$state",
         }
         $scope.refreshReminders = function(){
             qmService.showInfoToast('Syncing...');
-            qmService.trackingReminders.syncTrackingReminders(true).then(function(){
+            qm.reminderHelper.syncTrackingReminders(true).then(function(){
                 hideLoader();
                 getTrackingReminders();
             });
