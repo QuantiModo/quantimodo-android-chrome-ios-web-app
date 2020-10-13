@@ -58,7 +58,7 @@ angular.module('starter').controller('VoteCtrl', ["$state", "$scope", "$rootScop
                     return;
                 }
                 $scope.state.loading = true;
-                qmService.get('api/v1/votes', [], {}, function(data){
+                qm.api.get('api/v1/votes', [], {}, function(data){
                     hideLoader();
                     if(!data.cards || !data.cards.length){
                         qmService.goToState(qm.staticData.stateNames.studies);

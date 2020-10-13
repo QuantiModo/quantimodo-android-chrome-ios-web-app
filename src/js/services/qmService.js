@@ -588,7 +588,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                             successHandler(response);
                         }
                     }
-                    qmService.get('api/v3/connectors/' + connector.name + '/connect', ['code', 'noRedirect'], params, function(response){
+                    qm.api.get('api/v3/connectors/' + connector.name + '/connect',
+                        ['code', 'noRedirect'], params, function(response){
                         localSuccessHandler(response);
                     }, function(error){
                         if(error.error){
@@ -3339,77 +3340,17 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             array = removeDeprecatedProperties(array);
             return array;
         };
-        qmService.get = function(route, allowedParams, params, successHandler, requestSpecificErrorHandler, options){
-            if(!params){params = {};}
-            if(!successHandler){ throw "Please provide successHandler function as fourth parameter in qmService.get";}
-            if(!options){options = {};}
-            var cache = false;
-            options.stackTrace = (params.stackTrace) ? params.stackTrace : 'No stacktrace provided with params';
-            delete params.stackTrace;
-            if(params && params.cache){
-                cache = params.cache;
-                params.cache = null;
-            }
-            if($state.current.name === 'app.intro' && !params.force && !qm.auth.getAccessTokenFromCurrentUrl()){
-                var message = 'Not making request to ' + route + ' user because we are in the intro state';
-                qmLog.debug(message, null, options.stackTrace);
-                if(requestSpecificErrorHandler){
-                    requestSpecificErrorHandler(message);
-                }
-                return;
-            }
-            delete params.force;
-            qm.api.getAccessTokenFromAnySource().then(function(accessToken){
-                var url = qm.api.getQuantiModoUrl(route);
-                url = qm.urlHelper.addUrlQueryParamsToUrlString(qm.api.addGlobalParams({}), url);
-                url = qm.urlHelper.addUrlQueryParamsToUrlString(params, url);
-                var request = {
-                    method: 'GET',
-                    url: url,
-                    responseType: 'json',
-                    headers: {'Content-Type': "application/json"}
-                };
-                if(cache){request.cache = cache;}
-                if(accessToken){request.headers = {"Authorization": "Bearer " + accessToken, 'Content-Type': "application/json"};}
-                qmLog.debug('GET ' + request.url, null, options.stackTrace);
-                $http(request)
-                    .success(function(data, status, headers){
-                        qmLog.debug('Got ' + route + ' ' + status + ' response: ' + ': ', data, options.stackTrace);
-                        if(!data){
-                            var groupingHash = 'No data returned from this request';
-                            qmLog.error(groupingHash, status + " response from url " + request.url, {groupingHash: groupingHash}, "error");
-                        }else{
-                            if(data.error){
-                                var userErrorMessage = generalApiErrorHandler(data, status, headers, request, options);
-                                if(requestSpecificErrorHandler){
-                                    requestSpecificErrorHandler(userErrorMessage);
-                                }
-                            }
-                            qmService.navBar.setOfflineConnectionErrorShowing(false);
-                            if(data.message){
-                                qmLog.debug(data.message, null, options.stackTrace);
-                            }
-                            successHandler(data);
-                        }
-                    })
-                    .error(function(data, status, headers){
-                        var userErrorMessage = generalApiErrorHandler(data, status, headers, request, options);
-                        if(requestSpecificErrorHandler){
-                            requestSpecificErrorHandler(userErrorMessage);
-                        }
-                    }, onRequestFailed);
-            });
-        };
-        function showOfflineError(options, request){
-            var pathWithoutQuery = getPathWithoutQuery(request);
+        qmService.showOfflineError = function(options, request){
             var doNotShowOfflineError = false;
             if(options && options.doNotShowOfflineError){
                 doNotShowOfflineError = true;
             }
+            var pathWithQuery = request.url.match(/\/\/[^\/]+\/([^\.]+)/)[1];
+            var pathWithoutQuery = pathWithQuery.split("?")[0];
             /** @namespace $rootScope.offlineConnectionErrorShowing */
             if(!$rootScope.offlineConnectionErrorShowing && !doNotShowOfflineError){
                 qmLog.error("Showing offline indicator because no data was returned from this request: " + pathWithoutQuery,
-                    {debugApiUrl: getDebugApiUrlFromRequest(request), request: request}, options.stackTrace);
+                    {debugApiUrl: qm.api.getDebugApiUrlFromRequest(request), request: request}, options.stackTrace);
                 qmService.navBar.setOfflineConnectionErrorShowing(true);
                 if($rootScope.platform.isIOS){
                     $ionicPopup.show({
@@ -3425,73 +3366,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 }
             }
         }
-        function logApiError(status, request, data, options){
-            var errorName = status + ' from ' + request.method + ' ' + getPathWithoutQuery(request);
-            var userErrorMessage;
-            if(data && data.error){
-                if(typeof data.error === "string"){
-                    userErrorMessage = data.error;
-                    errorName += ': ' + data.error;
-                }else if(data.error.message){
-                    userErrorMessage = data.error.message;
-                    errorName += ': ' + data.error.message;
-                }
-            }
-            if(!userErrorMessage && data && data.message){
-                userErrorMessage = data.message;
-                errorName += ': ' + data.message;
-            }
-            var metaData = {
-                debugApiUrl: getDebugApiUrlFromRequest(request),
-                appUrl: window.location.href,
-                groupingHash: errorName,
-                requestData: data,
-                status: status,
-                request: request,
-                requestOptions: options,
-                requestParams: qm.urlHelper.getQueryParams(request.url)
-            };
-            if(data.error){
-                metaData.groupingHash = JSON.stringify(data.error);
-                if(data.error.message){
-                    metaData.groupingHash = JSON.stringify(data.error.message);
-                }
-            }
-            qmLog.error(errorName, metaData, options.stackTrace);
-            return userErrorMessage;
-        }
-        function getPathWithoutQuery(request){
-            var pathWithQuery = request.url.match(/\/\/[^\/]+\/([^\.]+)/)[1];
-            return pathWithQuery.split("?")[0];
-        }
-        function generalApiErrorHandler(data, status, headers, request, options){
-            if(status === 302){
-                return qmLog.debug('Got 302 response from ', request, options.stackTrace);
-            }
-            if(status === 401){
-                qmLog.info('Got 401 response with headers: ', headers, options.stackTrace);
-                qmService.auth.handleExpiredAccessTokenResponse(data);
-                return qm.auth.handle401Response(request, options, headers);
-            }
-            if(!data){
-                showOfflineError(options, request);
-                return;
-            }
-            return logApiError(status, request, data, options);
-        }
-        function getDebugApiUrlFromRequest(request){
-            var debugUrl = request.method + " " + request.url;
-            if(request.headers && request.headers.Authorization){
-                var accessToken = request.headers.Authorization.replace("Bearer ", "");
-                debugUrl += "&access_token=" + accessToken;
-            }
-            debugUrl = debugUrl.replace('app.', 'local.');
-            debugUrl = debugUrl.replace('staging.', 'local.');
-            return debugUrl;
-        }
-        var onRequestFailed = function(error){
-            qmLog.error("Request error : ", error);
-        };
         qmService.getMeasurementById = function(measurementId){
             var deferred = $q.defer();
             var params = {id: measurementId};
@@ -3522,7 +3396,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         };
         qmService.getNotesFromApi = function(params, successHandler, errorHandler){
             var options = {};
-            qmService.get('api/v3/notes', ['variableName'], params, successHandler, errorHandler, options);
+            qm.api.get('api/v3/notes', ['variableName'], params, successHandler, errorHandler, options);
         };
         qmService.postVoteToApi = function(study, successHandler, errorHandler){
             qm.api.post('api/v3/votes',  {
@@ -3548,7 +3422,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             var params = {id: variableId};
             params = qm.api.addGlobalParams(params);
             apiInstance.getVariables(params, callback);
-            //qmService.get('api/v3/variables' , ['id'], {id: variableId}, successHandler, errorHandler);
         };
         qmService.postUserVariableToApi = function(userVariable, successHandler, errorHandler){
             qm.api.post('api/v3/userVariables', userVariable, successHandler, errorHandler);
@@ -3558,7 +3431,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             qmService.post('api/v3/userVariables/delete', ['variableName'], {variableName: variableName}, successHandler, errorHandler);
         };
         qmService.disconnectConnectorToApi = function(name, successHandler, errorHandler){
-            qmService.get('api/v3/connectors/' + name + '/disconnect', [], {}, successHandler, errorHandler);
+            qm.api.get('api/v3/connectors/' + name + '/disconnect', [], {}, successHandler, errorHandler);
         };
         qmService.connectConnectorWithParamsToApi = function(params, lowercaseConnectorName, successHandler, errorHandler){
             if(qm.arrayHelper.variableIsArray(params)){
@@ -3570,7 +3443,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             }
             qmLog.authDebug("connectConnectorWithParamsToApi:", params, params);
             var allowedParams = ['location', 'username', 'password', 'email', 'zip'];
-            qmService.get('api/v3/connectors/' + lowercaseConnectorName + '/connect', allowedParams, params, successHandler, errorHandler);
+            qm.api.get('api/v3/connectors/' + lowercaseConnectorName + '/connect', allowedParams, params, successHandler, errorHandler);
         };
         qmService.getUserEmailPreferences = function(params, successHandler, errorHandler){
             if($rootScope.user){
@@ -3578,7 +3451,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             }
             var options = {};
             options.doNotSendToLogin = true;
-            qmService.get('api/v3/notificationPreferences', ['userEmail'], params, successHandler, errorHandler, options);
+            qm.api.get('api/v3/notificationPreferences', ['userEmail'], params, successHandler, errorHandler, options);
         };
         qmService.getTrackingReminderNotificationsFromApi = function(params, successHandler, errorHandler){
             var functionName = "getTrackingReminderNotificationsFromApi";
@@ -3596,7 +3469,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             params = qm.api.addGlobalParams(params);
             params.limit = qm.notifications.limit;
             apiInstance.getTrackingReminderNotifications(params, callback);
-            //qmService.get('api/v3/trackingReminderNotifications', ['variableCategoryName', 'reminderTime', 'sort', 'reminderFrequency'], params, successHandler, errorHandler);
         };
         qmService.postTrackingRemindersToApi = function(reminders, successHandler, errorHandler){
             qmLog.debug('postTrackingRemindersToApi: ', reminders);
@@ -3713,7 +3585,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             }
             params = qm.api.addGlobalParams(params);
             apiInstance.getUserTags(params, callback);
-            //qmService.get('api/v3/userTags', ['variableCategoryName', 'id'], params, successHandler, errorHandler);
         };
         qmService.postDeviceToken = function(deviceToken, successHandler, errorHandler){
             var platform;
@@ -4389,7 +4260,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             return deferred.promise;
         };
         qmService.updateConnector = function(name){
-            qmService.get('api/v3/connectors/' + name + '/update', [], {}, function(){
+            qm.api.get('api/v3/connectors/' + name + '/update', [], {}, function(){
             }, function(){
             });
         };
@@ -6981,8 +6852,9 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 var content = dialogParameters.textContent;
                 for (var i = 0; i < blackList.length; i++) {
                     var contentElement = blackList[i];
-                    if(dialogParameters.textContent.indexOf(contentElement) !== -1){
-                        qmLog.errorAndExceptionTestingOrDevelopment("Material alert should not contain "+value+ " but is"+content);
+                    if(content.indexOf(contentElement) !== -1){
+                        qmLog.errorAndExceptionTestingOrDevelopment("Material alert should not contain "+
+                            contentElement+ " but is"+content);
                         return;
                     }
                 }
