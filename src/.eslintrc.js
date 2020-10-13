@@ -60,6 +60,7 @@ module.exports = {
         "psychedelicLoader": false,
         "PushNotification": false,
         "Pusher": false,
+        "Q": false,
         "qm": false,
         "qmLog": false,
         "qmStates": false,
