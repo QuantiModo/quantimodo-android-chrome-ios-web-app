@@ -262,8 +262,8 @@ angular.module('starter').controller('ReminderAddCtrl', ["$scope", "$state", "$s
                 validationFailure(r.reminderStartTimeLocal + " is later than your latest allowed " +
                     "notification time.  You can change your latest notification time on the settings page.");
             }
-            r.valueAndFrequencyTextDescriptionWithTime = qmService.getValueAndFrequencyTextDescriptionWithTime(r);
-            r.reminderStartTime = qmService.getUtcTimeStringFromLocalString(r.reminderStartTimeLocal);
+            r.valueAndFrequencyTextDescriptionWithTime = qm.reminderHelper.getValueAndFrequencyTextDescriptionWithTime(r);
+            r.reminderStartTime = qm.timeHelper.getUtcTimeStringFromLocalString(r.reminderStartTimeLocal);
             r.reminderStartTimeEpochSeconds = reminderStartTimeEpochTime;
             r.nextReminderTimeEpochSeconds = reminderStartTimeEpochTime;
             return r;
