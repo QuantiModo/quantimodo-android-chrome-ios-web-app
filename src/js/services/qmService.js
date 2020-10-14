@@ -6947,7 +6947,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                             qmService.notifications.showAndroidPopupForMostRecentNotification();
                         }else{
                             qmLog.pushDebug('window.overApps for popups is undefined! ');
-                            qm.notifications.syncNotificationsIfEmpty({}).then(function(){
+                            qm.notifications.syncIfEmpty({}).then(function(){
                                 qmLog.pushDebug('push.on.notification: successfully refreshed notifications');
                             }, function(error){
                                 qmLog.error('push.on.notification: ', error);
