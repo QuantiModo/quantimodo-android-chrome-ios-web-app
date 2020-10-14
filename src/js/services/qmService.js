@@ -4396,21 +4396,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             }
             return parseInt((qm.timeHelper.getUnixTimestampInMilliseconds() - lastGotNotificationsAtMilliseconds) / 1000);
         };
-        qmService.getTrackingRemindersDeferred = function(variableCategoryName){
-            var deferred = $q.defer();
-            qmService.storage.getTrackingReminders(variableCategoryName).then(function(reminders){
-                reminders = qm.reminderHelper.validateReminderArray(reminders);
-                if(reminders && reminders.length){
-                    deferred.resolve(reminders);
-                }else{
-                    qm.reminderHelper.syncTrackingReminders().then(function(reminders){
-                        reminders = qm.reminderHelper.validateReminderArray(reminders);
-                        deferred.resolve(reminders);
-                    });
-                }
-            });
-            return deferred.promise;
-        };
         qmService.getTrackingReminderByIdDeferred = function(reminderId){
             var deferred = $q.defer();
             var params = {id: reminderId};
@@ -4458,66 +4443,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             });
             return deferred.promise;
         };
-        // We need to keep this in case we want offline reminders
-        qmService.addRatingTimesToDailyReminders = function(reminders){
-            var index;
-            for(index = 0; index < reminders.length; ++index){
-                if(reminders[index].valueAndFrequencyTextDescription &&
-                    reminders[index].valueAndFrequencyTextDescription.indexOf('daily') > 0 &&
-                    reminders[index].valueAndFrequencyTextDescription.indexOf(' at ') === -1 &&
-                    reminders[index].valueAndFrequencyTextDescription.toLowerCase().indexOf('disabled') === -1){
-                    reminders[index].valueAndFrequencyTextDescription = reminders[index].valueAndFrequencyTextDescription + ' at ' +
-                        qmService.convertReminderTimeStringToMoment(reminders[index].reminderStartTime).format("h:mm A");
-                }
-            }
-            return reminders;
-        };
-        qmService.convertReminderTimeStringToMoment = function(reminderTimeString){
-            var now = new Date();
-            var hourOffsetFromUtc = now.getTimezoneOffset() / 60;
-            var parsedReminderTimeUtc = reminderTimeString.split(':');
-            var minutes = parsedReminderTimeUtc[1];
-            var hourUtc = parseInt(parsedReminderTimeUtc[0]);
-            var localHour = hourUtc - parseInt(hourOffsetFromUtc);
-            if(localHour > 23){
-                localHour = localHour - 24;
-            }
-            if(localHour < 0){
-                localHour = localHour + 24;
-            }
-            return moment().hours(localHour).minutes(minutes);
-        };
         qmService.storage.deleteTrackingReminderNotification = function(body){
             qm.storage.deleteTrackingReminderNotification(body);
-        };
-        qmService.storage.getTrackingReminders = function(variableCategoryName){
-            var deferred = $q.defer();
-            var filtered = [];
-            var unfiltered = qm.storage.getItem(qm.items.trackingReminders);
-            if(!unfiltered){
-                deferred.resolve([]);
-                return deferred.promise;
-            }
-            var queue = qm.storage.getItem(qm.items.trackingReminderSyncQueue);
-            if(queue){
-                unfiltered = unfiltered.concat(queue);
-            }
-            qm.api.addVariableCategoryAndUnit(unfiltered);
-            if(unfiltered){
-                if(variableCategoryName && variableCategoryName !== 'Anything'){
-                    for(var j = 0; j < unfiltered.length; j++){
-                        if(variableCategoryName === unfiltered[j].variableCategoryName){
-                            filtered.push(unfiltered[j]);
-                        }
-                    }
-                }else{
-                    filtered = unfiltered;
-                }
-                filtered = qmService.addRatingTimesToDailyReminders(filtered); //We need to keep this in case we want offline reminders
-                filtered = qm.reminderHelper.validateReminderArray(filtered);
-                deferred.resolve(filtered);
-            }
-            return deferred.promise;
         };
         qmService.createDefaultReminders = function(){
             var deferred = $q.defer();
@@ -6377,7 +6304,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         };
         qmService.getAllReminderTypes = function(variableCategoryName, type){
             var deferred = $q.defer();
-            qmService.getTrackingRemindersDeferred(variableCategoryName).then(function(reminders){
+            qm.reminderHelper.getReminders(variableCategoryName).then(function(reminders){
                 reminders = qm.reminderHelper.validateReminderArray(reminders);
                 qmLog.debug('Got ' + reminders.length + ' unprocessed ' + variableCategoryName + ' category trackingReminders');
                 var separated = qm.reminderHelper.filterByCategoryAndSeparateFavoritesAndArchived(reminders, variableCategoryName);

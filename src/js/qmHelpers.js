@@ -7656,6 +7656,63 @@ var qm = {
                 return 'Every ' + tr.reminderFrequency / 3600 + " hours";
             }
         },
+        getReminders: function(variableCategoryName){
+            var deferred = Q.defer();
+            var filtered = [];
+            var unfiltered = qm.storage.getItem(qm.items.trackingReminders) || [];
+            var queue = qm.storage.getItem(qm.items.trackingReminderSyncQueue) || [];
+            unfiltered = unfiltered.concat(queue);
+            qm.api.addVariableCategoryAndUnit(unfiltered);
+            if(variableCategoryName && variableCategoryName !== 'Anything'){
+                for(var j = 0; j < unfiltered.length; j++){
+                    if(variableCategoryName === unfiltered[j].variableCategoryName){
+                        filtered.push(unfiltered[j]);
+                    }
+                }
+            }else{
+                filtered = unfiltered;
+            }
+            filtered = qm.reminderHelper.addRatingTimesToDailyReminders(filtered); //We need to keep this in case we want offline reminders
+            filtered = qm.reminderHelper.validateReminderArray(filtered);
+            if(filtered && filtered.length){
+                deferred.resolve(filtered);
+            }else{
+                qm.reminderHelper.syncTrackingReminders().then(function(reminders){
+                    reminders = qm.reminderHelper.validateReminderArray(reminders);
+                    deferred.resolve(reminders);
+                });
+            }
+            return deferred.promise;
+        },
+        addRatingTimesToDailyReminders: function(reminders){
+            var index;
+            for(index = 0; index < reminders.length; ++index){
+                var description = reminders[index].valueAndFrequencyTextDescription;
+                if(description &&
+                    description.indexOf('daily') > 0 &&
+                    description.indexOf(' at ') === -1 &&
+                    description.toLowerCase().indexOf('disabled') === -1){
+                    reminders[index].valueAndFrequencyTextDescription = description + ' at ' +
+                        qm.reminderHelper.convertReminderTimeStringToMoment(reminders[index].reminderStartTime).format("h:mm A");
+                }
+            }
+            return reminders;
+        },
+        convertReminderTimeStringToMoment: function(reminderTimeString){
+            var now = new Date();
+            var hourOffsetFromUtc = now.getTimezoneOffset() / 60;
+            var parsedReminderTimeUtc = reminderTimeString.split(':');
+            var minutes = parsedReminderTimeUtc[1];
+            var hourUtc = parseInt(parsedReminderTimeUtc[0]);
+            var localHour = hourUtc - parseInt(hourOffsetFromUtc);
+            if(localHour > 23){
+                localHour = localHour - 24;
+            }
+            if(localHour < 0){
+                localHour = localHour + 24;
+            }
+            return moment().hours(localHour).minutes(minutes);
+        }
     },
     ratingImages: {
         positive: [
