@@ -9692,12 +9692,11 @@ var qm = {
             })
         },
         infoLink: function(message, confirmButtonText, callback){
-            var Toast = Swal.mixin({
+            var params = {
                 toast: true,
                 icon: "success",
                 position: 'top-end',
-                confirmButtonText: confirmButtonText,
-                //cancelButtonText: "No",
+                cancelButtonText: "Dismiss",
                 showConfirmButton: true,
                 showCloseButton: true,
                 timer: 5000,
@@ -9706,7 +9705,9 @@ var qm = {
                     toast.addEventListener('mouseenter', Swal.stopTimer)
                     toast.addEventListener('mouseleave', Swal.resumeTimer)
                 }
-            });
+            };
+            if(confirmButtonText){params.confirmButtonText = confirmButtonText;}
+            var Toast = Swal.mixin(params);
             Toast.fire({
                 icon: 'success',
                 title: message
