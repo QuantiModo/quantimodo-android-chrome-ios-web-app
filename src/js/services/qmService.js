@@ -3070,7 +3070,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                                 });
                             }
                             v.hide = true
-                            qmService.deleteTrackingReminderDeferred(v);
+                            qm.reminderHelper.deleteReminder(v);
                             return true;
                         };
                     } else if(v.userId){
@@ -3483,15 +3483,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 deferred.resolve();
             }
             return deferred.promise;
-        };
-        // delete tracking reminder
-        qmService.deleteTrackingReminder = function(trackingReminderId, successHandler, errorHandler){
-            if(!trackingReminderId){
-                qmLog.error('No reminder id to delete with!  Maybe it has only been stored locally and has not updated from server yet.');
-                return;
-            }
-            qm.storage.deleteByProperty(qm.items.trackingReminderNotifications, 'trackingReminderId', trackingReminderId);
-            qm.api.post('api/v3/trackingReminders/delete',{id: trackingReminderId}, successHandler, errorHandler);
         };
         // skip tracking reminder
         qmService.skipTrackingReminderNotification = function(params, successHandler, errorHandler){
@@ -4412,37 +4403,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             });
             return deferred.promise;
         };
-        qmService.storage.deleteTrackingReminder = function(reminderToDelete){
-            var allTrackingReminders = qm.storage.getItem('trackingReminders');
-            var trackingRemindersToKeep = [];
-            angular.forEach(allTrackingReminders, function(reminderFromLocalStorage, key){
-                if(!(reminderFromLocalStorage.variableName === reminderToDelete.variableName &&
-                    reminderFromLocalStorage.reminderFrequency === reminderToDelete.reminderFrequency &&
-                    reminderFromLocalStorage.reminderStartTime === reminderToDelete.reminderStartTime)){
-                    trackingRemindersToKeep.push(reminderFromLocalStorage);
-                }
-            });
-            qmService.storage.setItem('trackingReminders', trackingRemindersToKeep);
-        };
-        qmService.deleteTrackingReminderDeferred = function(reminderToDelete){
-            var deferred = $q.defer();
-            qmService.storage.deleteTrackingReminder(reminderToDelete);
-            qmService.showInfoToast("Deleted " + reminderToDelete.variableName);
-            if(!reminderToDelete.id){
-                deferred.resolve();
-                return deferred.promise;
-            }
-            qmService.deleteTrackingReminder(reminderToDelete.id, function(response){
-                // Delete again in case we refreshed before deletion completed
-                qmService.storage.deleteTrackingReminder(reminderToDelete);
-                deferred.resolve(response);
-            }, function(error){
-                //qmLog.error(error);
-                qmService.storage.deleteTrackingReminder(reminderToDelete);
-                deferred.reject(error); // Not sure why this is returning error on successful deletion
-            });
-            return deferred.promise;
-        };
         qmService.storage.deleteTrackingReminderNotification = function(body){
             qm.storage.deleteTrackingReminderNotification(body);
         };
@@ -4452,7 +4412,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             if(!defaultRemindersCreated){
                 var defaults = qmService.getDefaultReminders();
                 if(defaults && defaults.length){
-                    qmService.addToTrackingReminderSyncQueue(defaults);
+                    qm.reminderHelper.addToQueue(defaults);
                     qmService.trackingReminders.syncTrackingReminders().then(function(fromAPI){
                         deferred.resolve(fromAPI);
                     });
