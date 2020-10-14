@@ -129,13 +129,13 @@ describe('Measurements', function () {
 
     cy.get('#defaultValue').type(newDosageValue.toString(), { force: true })
     cy.get('#saveButton').click({ force: true })
-    cy.wait(10000)
+    cy.wait(1000)
     cy.visitIonicAndSetApiUrl('/#/app/history-all-category/Treatments')
     let treatmentStringEditedNoQuotes = `${newDosageValue} mg Aaa Test Treatment`
 
     editHistoryPageMeasurement(newDosageValue.toString())
     cy.get('button.button.icon-left.ion-trash-a').click({ force: true })
-    cy.wait(10000)
+    cy.wait(1000)
     cy.url().should('include', '/#/app/history-all-category/Treatments')
     cy.log('Check that deleted measurement is gone (must use does not equal instead of does not contain because a ' +
             'measurement of 0mg will be true if the value is 50mg)')

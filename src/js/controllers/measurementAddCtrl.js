@@ -76,15 +76,16 @@ angular.module('starter').controller('MeasurementAddCtrl', ["$scope", "$q", "$ti
         }
         var trackBloodPressure = function(){
             if(!$rootScope.bloodPressure.diastolicValue || !$rootScope.bloodPressure.systolicValue){
-                qmService.validationFailure('Please enter both values for blood pressure.', $scope.state.measurement);
+                qm.measurements.validationFailure('Please enter both values for blood pressure.', $scope.state.measurement);
                 return;
             }
             $scope.state.selectedDate = moment($scope.state.selectedDate);
             $rootScope.bloodPressure.startTimeEpoch = parseInt($scope.state.selectedDate.format("X"));
             $rootScope.bloodPressure.note = $scope.state.measurement.note;
-            qmService.postBloodPressureMeasurements($rootScope.bloodPressure)
+            qm.measurements.postBloodPressureMeasurements($rootScope.bloodPressure)
                 .then(function(){
-                    qmLog.debug('Successfully qmService.postMeasurementByReminder: ' + JSON.stringify($rootScope.bloodPressure), null);
+                    qmLog.debug('Successfully qmService.postMeasurementByReminder: ' +
+                        JSON.stringify($rootScope.bloodPressure), null);
                 }, function(error){
                     qmLog.error('Failed to Track by favorite! ', error);
                 });
@@ -95,7 +96,7 @@ angular.module('starter').controller('MeasurementAddCtrl', ["$scope", "$q", "$ti
         };
         $scope.deleteMeasurementFromMeasurementAddCtrl = function(){
             qmService.showInfoToast('Deleting ' + $scope.state.measurement.variableName + ' measurement');
-            qmService.deleteMeasurementFromServer($scope.state.measurement);
+            qm.measurements.deleteMeasurement($scope.state.measurement);
             $scope.goBack({});
         };
         $scope.done = function(){

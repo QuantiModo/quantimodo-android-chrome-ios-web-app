@@ -66,7 +66,7 @@ describe('Studies', function () {
     cy.visitIonicAndSetApiUrl(`/#/app/study?causeVariableName=${cause}&`+
         `effectVariableName=${effect}&`+
       'logout=1')
-      cy.wait(10000);
+      cy.wait(1000);
     checkStudyPage(effect, cause)
   })
   it('Goes to study from positive predictors page', function () {
