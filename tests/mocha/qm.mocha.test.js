@@ -537,10 +537,6 @@ describe("Menu", function () {
     })
 })
 describe("Reminders", function () {
-    it("fails", function (done){
-        expect(1).to.eq(2)
-        done()
-    })
     it("can create a reminder and track the notification", function (){
         this.timeout(30000)
         const variableName = "Hostility"
