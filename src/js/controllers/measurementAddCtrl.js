@@ -138,7 +138,7 @@ angular.module('starter').controller('MeasurementAddCtrl', ["$scope", "$q", "$ti
                 if(unitChanged){
                     qmLog.error("Syncing reminders because unit changed");
                     qm.storage.removeItem(qm.items.trackingReminders);
-                    qmService.trackingReminders.syncTrackingReminders();
+                    qm.reminderHelper.syncTrackingReminders();
                     $scope.goBack(backStateParams);
                 }
             });
