@@ -52,7 +52,7 @@ describe('Variables', function(){
     it('Goes to charts page from the variable action sheet', function(){
         cy.loginWithAccessTokenIfNecessary('/#/app/reminders-inbox', true)
         let variableName = 'Overall Mood'
-        searchForMoodFromMagnifyingGlassIcon(variableName, 15000)
+        searchForMoodFromMagnifyingGlassIcon(variableName, 1500)
         cy.clickActionSheetButtonContaining('Charts')
         cy.url().should('contain', 'charts')
         cy.log('Chart is present and titled')
@@ -77,14 +77,14 @@ describe('Variables', function(){
     it('Records measurement from the variable action sheet', function(){
         cy.loginWithAccessTokenIfNecessary('/#/app/reminders-inbox', true)
         let variableName = 'Overall Mood'
-        searchForMoodFromMagnifyingGlassIcon(variableName, 15000)
+        searchForMoodFromMagnifyingGlassIcon(variableName, 1500)
         cy.clickActionSheetButtonContaining('Record Measurement')
         recordRatingMeasurement(3)
     })
     it('Goes to predictors page from the variable action sheet', function(){
         cy.loginWithAccessTokenIfNecessary('/#/app/reminders-inbox', true)
         let variableName = 'Overall Mood'
-        searchForMoodFromMagnifyingGlassIcon(variableName, 10000)
+        searchForMoodFromMagnifyingGlassIcon(variableName, 1000)
         cy.clickActionSheetButtonContaining('Predictors')
         cy.get('.item.item-avatar > p', {timeout: 90000}).should('contain', variableName)
     })
@@ -107,7 +107,7 @@ describe('Variables', function(){
         cy.get('#helpInfoCardHeader > span:nth-child(2) > p', {timeout: 30000})
         cy.url().should('not.contain', 'variable-settings')
         cy.visitIonicAndSetApiUrl(settingsPath)
-        cy.wait(15000)
+        cy.wait(1500)
         cy.log("TODO: TEST TO MAKE SURE THE CHANGES STUCK. IT'S CURRENTLY VERY FLAKEY")
         cy.log("minimumAllowedValue should be "+min)
         cy.assertInputValueContains('#minimumAllowedValue', min);
@@ -120,7 +120,7 @@ describe('Variables', function(){
         cy.log("fillingValue should be "+filling)
         // TODO: cy.assertInputValueEquals('#fillingValue', filling)
         cy.get('#resetButton').click({force: true, timeout: 30000})
-        cy.wait(15000)
+        cy.wait(1500)
         //cy.url().should('not.contain', 'variable-settings');
         //cy.visit(settingsPath);
         // TODO: cy.log("minimumAllowedValue should be 0")

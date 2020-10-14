@@ -14,7 +14,7 @@ describe('Onboarding', function () {
   })
   it('Enables weather tracking from onboarding', function () {
     cy.loginWithAccessTokenIfNecessary('/#/app/onboarding')
-    cy.wait(20000)
+    cy.wait(2000)
     cy.get('#goToReminderSearchFromOnboarding', { timeout: 30000 }).click({ force: true })
     cy.wait(5000)
     cy.get('#variable-search-box').click({ force: true })
