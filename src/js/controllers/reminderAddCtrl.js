@@ -351,7 +351,7 @@ angular.module('starter').controller('ReminderAddCtrl', ["$scope", "$state", "$s
             }
             if(r.id){qm.storage.deleteById('trackingReminders', r.id);}
             qm.reminderHelper.addToQueue(remindersArray);
-            qm.reminderHelper.syncTrackingReminders(true).then(function(){});
+            qm.reminderHelper.syncReminders(true).then(function(){});
             var toastMessage = getVariableName($scope) + ' saved';
             qmService.showInfoToast(toastMessage);
             qmService.hideLoader();
@@ -506,10 +506,7 @@ angular.module('starter').controller('ReminderAddCtrl', ["$scope", "$state", "$s
             qmService.storage.deleteById('trackingReminders', $scope.state.trackingReminder.id).then(function(){
                 $scope.goBack();
             });
-            qmService.deleteTrackingReminderDeferred($scope.state.trackingReminder).then(function(){
-            }, function(error){
-                qmLog.error(error);
-            });
+            qm.reminderHelper.deleteReminder($scope.state.trackingReminder);
         };
         function setHideDefaultValueField(){
             var hide = false;

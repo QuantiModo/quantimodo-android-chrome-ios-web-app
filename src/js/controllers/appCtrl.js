@@ -312,7 +312,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
                     },
                     destructiveButtonClicked: function(){
                         state.favoritesArray = state.favoritesArray.filter(function(one){return one.id !== favorite.id;});
-                        qmService.deleteTrackingReminderDeferred(favorite);
+                        qm.reminderHelper.deleteReminder(favorite);
                         return true;
                     }
                 });

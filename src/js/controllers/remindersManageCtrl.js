@@ -148,7 +148,7 @@ angular.module('starter').controller('RemindersManageCtrl', ["$scope", "$state",
         }
         $scope.refreshReminders = function(){
             qmService.showInfoToast('Syncing...');
-            qm.reminderHelper.syncTrackingReminders(true).then(function(){
+            qm.reminderHelper.syncReminders(true).then(function(){
                 hideLoader();
                 getTrackingReminders();
             });
@@ -201,7 +201,7 @@ angular.module('starter').controller('RemindersManageCtrl', ["$scope", "$state",
             reminder.hide = true;
             qmService.storage.deleteById('trackingReminders', reminder.trackingReminderId);
             //.then(function(){getTrackingReminders();});
-            qmService.deleteTrackingReminderDeferred(reminder).then(function(){
+            qm.reminderHelper.deleteReminder(reminder).then(function(){
                 qmLog.debug('Reminder deleted', null);
             }, function(error){
                 qmLog.error('Failed to Delete Reminder: ', error);
