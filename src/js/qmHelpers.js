@@ -579,12 +579,12 @@ var qm = {
                     xhr.onreadystatechange = function(){//Call a function when the state changes.
                         if(xhr.readyState === XMLHttpRequest.DONE){
                             var fallback = xhr.responseText;
-                            var responseObject = qm.stringHelper.parseIfJsonString(xhr.responseText, fallback);
-                            if ( xhr.status === 201 || responseObject.success === true) {
-                                if(successHandler){successHandler(responseObject);}
+                            var response = qm.stringHelper.parseIfJsonString(xhr.responseText, fallback);
+                            if ( xhr.status === 201 || xhr.status === 204 || response.success === true) {
+                                if(successHandler){successHandler(response);}
                             } else {
-                                qm.qmLog.error("qm.api.get error from " + url + " request: " + xhr.responseText, null, responseObject);
-                                if(errorHandler){errorHandler(responseObject);}
+                                qm.qmLog.error("qm.api.get error from " + url + " request: " + xhr.responseText, response);
+                                if(errorHandler){errorHandler(response);}
                             }
                         }
                     };
@@ -7434,12 +7434,12 @@ var qm = {
                                 qmLog.error("response.trackingReminders is an empty array in postTrackingRemindersDeferred")
                             }else{
                                 if(qm.qmService){
-                                    qmService.scheduleSingleMostFrequentLocalNotification(response.data.trackingReminders);
+                                    qm.qmService.scheduleSingleMostFrequentLocalNotification(response.data.trackingReminders);
                                 }
                                 qm.reminderHelper.saveToLocalStorage(response.data.trackingReminders);
                                 qm.storage.removeItem(qm.items.trackingReminderSyncQueue);
                                 if(qm.qmService){
-                                    qmService.reminders.broadcastGetTrackingReminders();
+                                    qm.qmService.reminders.broadcastGetTrackingReminders();
                                 }
                             }
                             if(!response.data.trackingReminderNotifications){
@@ -7694,7 +7694,7 @@ var qm = {
             var commands = {
                 'record a measurement': function(){
                     qm.qmLog.info("said " + arguments.callee.toString());
-                    qmService.goToState(qm.staticData.stateNames.measurementAddSearch)
+                    qm.qmService.goToState(qm.staticData.stateNames.measurementAddSearch)
                 },
             };
             qm.mic.addCommands(commands);
