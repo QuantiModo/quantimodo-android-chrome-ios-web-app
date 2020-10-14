@@ -848,9 +848,7 @@ var qm = {
                 return qm.auth.handle401Response(request, options, headers);
             }
             if(!data){
-                if(qm.qmService){
-                    qm.qmService.showOfflineError(options, request);
-                }
+                if(qm.qmService){qm.qmService.showOfflineError(options, request);}
                 return;
             }
             return qm.api.logApiError(status, request, data, options);
@@ -4970,6 +4968,21 @@ var qm = {
                 qm.measurements.measurementCache = recent;
             }
         },
+        deleteMeasurement: function(toDelete){
+            var deferred = Q.defer();
+            qm.measurements.deleteLocally(toDelete);
+            qm.toast.infoLink("Deleted " + toDelete.variableName + " measurement");
+            var startAt = toDelete.startAt || toDelete.startTime || toDelete.startTimeEpoch || null;
+            if(!startAt){
+                qm.qmLog.errorAndExceptionTestingOrDevelopment("No start time provided to delete measurement: ", toDelete);
+            }
+            qm.api.post('api/v3/measurements/delete', toDelete, function(response){
+                deferred.resolve(response);
+            }, function(err){
+                deferred.reject(err);
+            });
+            return deferred.promise;
+        },
         addMeasurementsToMemory: function(byVariableName){
             if(!byVariableName){
                 qmLog.info("Nothing provided to addMeasurementsToMemory")
@@ -5182,6 +5195,44 @@ var qm = {
                     if(errorHandler){errorHandler(error);}
                 });
             }
+        },
+        postBloodPressureMeasurements: function(parameters){
+            var deferred = Q.defer();
+            /** @namespace parameters.startTimeEpochSeconds */
+            if(!parameters.startTimeEpochSeconds){
+                parameters.startTimeEpochSeconds = window.qm.timeHelper.getUnixTimestampInSeconds();
+            }
+            qm.measurements.postMeasurements([
+                {
+                    variableId: 1874,
+                    sourceName: qm.getSourceName(),
+                    startTimeEpoch: qm.measurements.validateStartTime(parameters.startTimeEpochSeconds),
+                    value: parameters.systolicValue,
+                    note: parameters.note
+                },
+                {
+                    variableId: 5554981,
+                    sourceName: qm.getSourceName(),
+                    startTimeEpoch: qm.measurements.validateStartTime(parameters.startTimeEpochSeconds),
+                    value: parameters.diastolicValue,
+                    note: parameters.note
+                }
+            ], function(response){
+                deferred.resolve(response);
+            }, function (err){
+                deferred.reject(err);
+            });
+            return deferred.promise;
+        },
+        validateStartTime:function (startTimeEpoch){
+            var result = startTimeEpoch > window.qm.timeHelper.getUnixTimestampInSeconds() - 365 * 86400;
+            if(!result){
+                var errorName = 'startTimeEpoch is earlier than last year';
+                var errorMessage = startTimeEpoch + ' ' + errorName;
+                qmLog.error(errorName, errorMessage, {startTimeEpoch: startTimeEpoch}, "error");
+                qmLog.error(errorMessage);
+            }
+            return startTimeEpoch;
         }
     },
     manualTrackingVariableCategoryNames: [
@@ -7694,7 +7745,7 @@ var qm = {
             var commands = {
                 'record a measurement': function(){
                     qm.qmLog.info("said " + arguments.callee.toString());
-                    qm.qmService.goToState(qm.staticData.stateNames.measurementAddSearch)
+                    qmService.goToState(qm.staticData.stateNames.measurementAddSearch)
                 },
             };
             qm.mic.addCommands(commands);
@@ -9551,7 +9602,7 @@ var qm = {
                 //cancelButtonText: "No",
                 showConfirmButton: true,
                 showCloseButton: true,
-                timer: 15000,
+                timer: 5000,
                 timerProgressBar: true,
                 onOpen: function (toast) {
                     toast.addEventListener('mouseenter', Swal.stopTimer)

@@ -3384,13 +3384,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             });
             return deferred.promise;
         };
-        qmService.deleteV1Measurements = function(measurement, successHandler, errorHandler){
-            var startAt = measurement.startAt || measurement.startTime || measurement.startTimeEpoch || null;
-            if(!startAt){
-                qm.qmLog.errorAndExceptionTestingOrDevelopment("No start time provided to delete measurement: ", measurement);
-            }
-            qm.api.post('api/v3/measurements/delete', measurement, successHandler, errorHandler);
-        };
         qmService.postMeasurementsExport = function(type, successHandler, errorHandler){
             qm.api.post('api/v2/measurements/request_' + type, [], successHandler, errorHandler);
         };
@@ -3924,16 +3917,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             });
             return deferred.promise;
         };
-        function checkIfStartTimeEpochIsWithinTheLastYear(startTimeEpoch){
-            var result = startTimeEpoch > window.qm.timeHelper.getUnixTimestampInSeconds() - 365 * 86400;
-            if(!result){
-                var errorName = 'startTimeEpoch is earlier than last year';
-                var errorMessage = startTimeEpoch + ' ' + errorName;
-                qmLog.error(errorName, errorMessage, {startTimeEpoch: startTimeEpoch}, "error");
-                qmLog.error(errorMessage);
-            }
-            return startTimeEpoch;
-        }
         qmService.syncPrimaryOutcomeVariableMeasurements = function(minimumSecondsBetweenGets){
             function canWeSyncYet(localStorageItemName, minimumSecondsBetweenSyncs){
                 if(qm.storage.getItem(localStorageItemName) && window.qm.timeHelper.getUnixTimestampInSeconds() - qm.storage.getItem(localStorageItemName) < minimumSecondsBetweenSyncs){
@@ -4025,72 +4008,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             });
             return deferred.promise;
         };
-        qmService.deleteMeasurementFromServer = function(toDelete){
-            var deferred = $q.defer();
-            qm.measurements.deleteLocally(toDelete);
-            qmService.showInfoToast("Deleted " + toDelete.variableName + " measurement");
-            qmService.deleteV1Measurements(toDelete, function(response){
-                deferred.resolve(response);
-                qmLog.debug('deleteMeasurementFromServer success ', response, null);
-            }, function(response){
-                qmLog.debug('deleteMeasurementFromServer error ', response, null);
-                deferred.reject();
-            });
-            return deferred.promise;
-        };
-        qmService.postBloodPressureMeasurements = function(parameters){
-            var deferred = $q.defer();
-            /** @namespace parameters.startTimeEpochSeconds */
-            if(!parameters.startTimeEpochSeconds){
-                parameters.startTimeEpochSeconds = window.qm.timeHelper.getUnixTimestampInSeconds();
-            }
-            var measurementSets = [
-                {
-                    variableId: 1874,
-                    sourceName: qm.getSourceName(),
-                    startTimeEpoch: checkIfStartTimeEpochIsWithinTheLastYear(parameters.startTimeEpochSeconds),
-                    value: parameters.systolicValue,
-                    note: parameters.note
-                },
-                {
-                    variableId: 5554981,
-                    sourceName: qm.getSourceName(),
-                    startTimeEpoch: checkIfStartTimeEpochIsWithinTheLastYear(parameters.startTimeEpochSeconds),
-                    value: parameters.diastolicValue,
-                    note: parameters.note
-                }
-            ];
-            measurementSets[0] = qm.measurements.addLocationDataToMeasurement(measurementSets[0]);
-            qm.measurements.postMeasurements(measurementSets, function(response){
-                if(response.success){
-                    if(response && response.data && response.data.userVariables){
-                        qm.variablesHelper.saveToLocalStorage(response.data.userVariables);
-                    }
-                    qmLog.debug('qmService.postMeasurementsToApi success: ', response, null);
-                    deferred.resolve(response);
-                }else{
-                    deferred.reject(response);
-                }
-            });
-            return deferred.promise;
-        };
-        qmService.getVariableCategories = function(){
-            qmService.variableCategories = [];
-            $rootScope.variableCategoryNames = []; // Dirty hack for variableCategoryNames because $rootScope.variableCategories is not an array we can ng-repeat through in selectors
-            qmService.variableCategories.Anything = {
-                defaultUnitAbbreviatedName: '',
-                helpText: "What do you want to record?",
-                variableCategoryNameSingular: "Anything",
-                defaultValuePlaceholderText: "Enter most common value here...",
-                defaultValueLabel: 'Value',
-                addNewVariableCardText: 'Add a new variable',
-                variableCategoryName: '',
-                defaultValue: '',
-                measurementSynonymSingularLowercase: "measurement",
-                ionIcon: "ion-speedometer"
-            };
-        };
-        qmService.getVariableCategories();
         qmService.setPlatformVariables = function(){
             var platform = {};
             //qmLog.debug("ionic.Platform.platform() is " + ionic.Platform.platform());
@@ -4295,7 +4212,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 var newMeasurement = {
                     variableName: getLastLocationNameFromLocalStorage(),
                     unitAbbreviatedName: 'h',
-                    startTimeEpoch: checkIfStartTimeEpochIsWithinTheLastYear(qm.storage.getItem(qm.items.lastLocationUpdateTimeEpochSeconds)),
+                    startTimeEpoch: qm.measurements.validateStartTime(qm.storage.getItem(qm.items.lastLocationUpdateTimeEpochSeconds)),
                     sourceName: getGeoLocationSourceName(isBackground),
                     value: getHoursAtLocation(),
                     variableCategoryName: 'Location',
@@ -5925,7 +5842,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 fillingValue: 0,
                 measurements: [{
                     value: 1,
-                    startTimeEpoch: checkIfStartTimeEpochIsWithinTheLastYear(getYesterdayNoonTimestamp()),
+                    startTimeEpoch: qm.measurements.validateStartTime(getYesterdayNoonTimestamp()),
                     //note: data.daily.data[0].icon // We shouldn't add icon as note because it messes up the note analysis
                 }]
             };
@@ -5939,7 +5856,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 unitAbbreviatedName: "F",
                 measurements: [{
                     value: (data.daily.data[0].temperatureMax + data.daily.data[0].temperatureMin) / 2,
-                    startTimeEpoch: checkIfStartTimeEpochIsWithinTheLastYear(getYesterdayNoonTimestamp())
+                    startTimeEpoch: qm.measurements.validateStartTime(getYesterdayNoonTimestamp())
                     //note: data.daily.data[0].icon // We shouldn't add icon as note because it messes up the note analysis
                 }]
             };
@@ -5959,7 +5876,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 unitAbbreviatedName: "Pa",
                 measurements: [{
                     value: data.daily.data[0].pressure * 100,
-                    startTimeEpoch: checkIfStartTimeEpochIsWithinTheLastYear(getYesterdayNoonTimestamp())
+                    startTimeEpoch: qm.measurements.validateStartTime(getYesterdayNoonTimestamp())
                     //note: data.daily.data[0].icon // We shouldn't add icon as note because it messes up the note analysis
                 }]
             };
@@ -5973,7 +5890,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 unitAbbreviatedName: "%",
                 measurements: [{
                     value: data.daily.data[0].humidity * 100,
-                    startTimeEpoch: checkIfStartTimeEpochIsWithinTheLastYear(getYesterdayNoonTimestamp())
+                    startTimeEpoch: qm.measurements.validateStartTime(getYesterdayNoonTimestamp())
                     //note: data.daily.data[0].icon // We shouldn't add icon as note because it messes up the note analysis
                 }]
             };
@@ -5987,7 +5904,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 unitAbbreviatedName: "miles",
                 measurements: [{
                     value: data.daily.data[0].visibility,
-                    startTimeEpoch: checkIfStartTimeEpochIsWithinTheLastYear(getYesterdayNoonTimestamp())
+                    startTimeEpoch: qm.measurements.validateStartTime(getYesterdayNoonTimestamp())
                     //note: data.daily.data[0].icon // We shouldn't add icon as note because it messes up the note analysis
                 }]
             };
@@ -6002,7 +5919,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 unitAbbreviatedName: "%",
                 measurements: [{
                     value: data.daily.data[0].cloudCover * 100,
-                    startTimeEpoch: checkIfStartTimeEpochIsWithinTheLastYear(getYesterdayNoonTimestamp())
+                    startTimeEpoch: qm.measurements.validateStartTime(getYesterdayNoonTimestamp())
                     //note: data.daily.data[0].icon  // We shouldn't add icon as note because it messes up the note analysis
                 }]
             };
