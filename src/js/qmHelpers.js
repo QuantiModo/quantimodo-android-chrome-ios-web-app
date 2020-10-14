@@ -10,8 +10,11 @@ String.prototype.toCamelCase = function(){
 };
 var qm = {
     alert: {
-        validationFailureAlert: function(){
-
+        validationFailureAlert: function(errorMessage, callback){
+            qm.toast.errorAlert(errorMessage, callback)
+        },
+        errorAlert: function(errorMessage, callback){
+            qm.toast.errorAlert(errorMessage, callback)
         },
     },
     analytics: {
@@ -848,9 +851,7 @@ var qm = {
                 return qm.auth.handle401Response(request, options, headers);
             }
             if(!data){
-                if(qm.qmService){
-                    qm.qmService.showOfflineError(options, request);
-                }
+                if(qm.qmService){qm.qmService.showOfflineError(options, request);}
                 return;
             }
             return qm.api.logApiError(status, request, data, options);
@@ -920,7 +921,7 @@ var qm = {
                 return;
             }
             delete params.force;
-            qm.api.getAccessTokenFromAnySource().then(function(accessToken){
+            qm.auth.getAccessTokenFromAnySource().then(function(accessToken){
                 var url = qm.api.getQuantiModoUrl(route);
                 url = qm.urlHelper.addUrlQueryParamsToUrlString(qm.api.addGlobalParams({}), url);
                 url = qm.urlHelper.addUrlQueryParamsToUrlString(params, url);
@@ -4970,6 +4971,21 @@ var qm = {
                 qm.measurements.measurementCache = recent;
             }
         },
+        deleteMeasurement: function(toDelete){
+            var deferred = Q.defer();
+            qm.measurements.deleteLocally(toDelete);
+            qm.toast.infoLink("Deleted " + toDelete.variableName + " measurement");
+            var startAt = toDelete.startAt || toDelete.startTime || toDelete.startTimeEpoch || null;
+            if(!startAt){
+                qm.qmLog.errorAndExceptionTestingOrDevelopment("No start time provided to delete measurement: ", toDelete);
+            }
+            qm.api.post('api/v3/measurements/delete', toDelete, function(response){
+                deferred.resolve(response);
+            }, function(err){
+                deferred.reject(err);
+            });
+            return deferred.promise;
+        },
         addMeasurementsToMemory: function(byVariableName){
             if(!byVariableName){
                 qmLog.info("Nothing provided to addMeasurementsToMemory")
@@ -5182,6 +5198,48 @@ var qm = {
                     if(errorHandler){errorHandler(error);}
                 });
             }
+        },
+        postBloodPressureMeasurements: function(parameters){
+            var deferred = Q.defer();
+            /** @namespace parameters.startTimeEpochSeconds */
+            if(!parameters.startTimeEpochSeconds){
+                parameters.startTimeEpochSeconds = window.qm.timeHelper.getUnixTimestampInSeconds();
+            }
+            qm.measurements.postMeasurements([
+                {
+                    variableId: 1874,
+                    sourceName: qm.getSourceName(),
+                    startTimeEpoch: qm.measurements.validateStartTime(parameters.startTimeEpochSeconds),
+                    value: parameters.systolicValue,
+                    note: parameters.note
+                },
+                {
+                    variableId: 5554981,
+                    sourceName: qm.getSourceName(),
+                    startTimeEpoch: qm.measurements.validateStartTime(parameters.startTimeEpochSeconds),
+                    value: parameters.diastolicValue,
+                    note: parameters.note
+                }
+            ], function(response){
+                deferred.resolve(response);
+            }, function (err){
+                deferred.reject(err);
+            });
+            return deferred.promise;
+        },
+        validateStartTime:function (startTimeEpoch){
+            var result = startTimeEpoch > window.qm.timeHelper.getUnixTimestampInSeconds() - 365 * 86400;
+            if(!result){
+                var errorName = 'startTimeEpoch is earlier than last year';
+                var errorMessage = startTimeEpoch + ' ' + errorName;
+                qmLog.error(errorName, errorMessage, {startTimeEpoch: startTimeEpoch}, "error");
+                qmLog.error(errorMessage);
+            }
+            return startTimeEpoch;
+        },
+        validationFailure: function(message, object){
+            qm.alert.validationFailureAlert(message);
+            qmLog.error(message, null, {measurement: object});
         }
     },
     manualTrackingVariableCategoryNames: [
@@ -6227,16 +6285,6 @@ var qm = {
             setTimeout(qm.notifications.syncIfQueued, 15000);
             return res;
         },
-        syncIfQueued: function(successHandler, errorHandler){
-            var queue = qm.notifications.getQueue();
-            if(queue && queue.length){
-                qm.notifications.syncNotifications(successHandler, errorHandler);
-            } else {
-                if(successHandler){
-                    successHandler();
-                }
-            }
-        },
         refreshIfEmpty: function(successHandler, errorHandler){
             if(!qm.notifications.getNumberInGlobalsOrLocalStorage()){
                 qm.qmLog.info('No notifications in local storage');
@@ -6502,50 +6550,6 @@ var qm = {
             qm.notifications.deleteByVariableName(n.variableName);
             qm.notifications.addToSyncQueue(n);
         },
-        syncNotifications: function(successHandler, errorHandler){
-            qm.qmLog.debug("Called syncNotifications...");
-            var queue = qm.notifications.getQueue();
-            qm.storage.removeItem(qm.items.notificationsSyncQueue);
-            qm.storage.removeItem(qm.items.trackingReminderNotificationSyncScheduled);
-            var body = [];
-            if(queue){
-                if(!(queue instanceof Array)){queue = [queue];}
-                body = queue.map(function (n){
-                    return {
-                        'value': n.modifiedValue || n.value,
-                        'trackingReminderNotificationId': n.trackingReminderNotificationId,
-                        'variableId': n.variableId,
-                        'trackingReminderId': n.trackingReminderId,
-                        'action': n.action,
-                        'timeZone': moment.tz.guess(),
-                    }
-                })
-            }
-            function saveResponse(response){
-                if(!response){
-                    var err = "No response from postToQuantiModo(body, 'v3/trackingReminderNotifications";
-                    if(errorHandler){
-                        errorHandler(err);
-                        return;
-                    } else {
-                        throw err;
-                    }
-                }
-                var data = response.data || response;
-                var measurements = data.measurements;
-                if(measurements && measurements.length){qm.measurements.addMeasurementsToMemory(measurements);}
-                var notifications = data.trackingReminderNotifications;
-                if(notifications && notifications.length){qm.storage.setTrackingReminderNotifications(notifications);}
-            }
-            qm.api.post('v3/trackingReminderNotifications', body, function(response){
-                saveResponse(response);
-                if(successHandler){successHandler(response);}
-            }, function(response){
-                qm.qmLog.error(response.message)
-                saveResponse(response); // Sometimes we still return notifications even with an error
-                if(errorHandler){errorHandler(response.message || response.error);}
-            });
-        },
         skip: function(trackingReminderNotification){
             trackingReminderNotification.action = 'skip';
             qm.notifications.addToSyncQueue(trackingReminderNotification);
@@ -6676,17 +6680,61 @@ var qm = {
             });
             return deferred.promise;
         },
-        syncNotificationsIfQueued: function (){
+        syncNotifications: function(successHandler, errorHandler){
+            qm.qmLog.debug("Called syncNotifications...");
+            var queue = qm.notifications.getQueue();
+            qm.storage.removeItem(qm.items.notificationsSyncQueue);
+            qm.storage.removeItem(qm.items.trackingReminderNotificationSyncScheduled);
+            var body = [];
+            if(queue){
+                if(!(queue instanceof Array)){queue = [queue];}
+                body = queue.map(function (n){
+                    return {
+                        'value': n.modifiedValue || n.value,
+                        'trackingReminderNotificationId': n.trackingReminderNotificationId,
+                        'variableId': n.variableId,
+                        'trackingReminderId': n.trackingReminderId,
+                        'action': n.action,
+                        'timeZone': moment.tz.guess(),
+                    }
+                })
+            }
+            function saveResponse(response){
+                if(!response){
+                    var err = "No response from postToQuantiModo(body, 'v3/trackingReminderNotifications";
+                    if(errorHandler){
+                        errorHandler(err);
+                        return;
+                    } else {
+                        throw err;
+                    }
+                }
+                var data = response.data || response;
+                var measurements = data.measurements;
+                if(measurements && measurements.length){qm.measurements.addMeasurementsToMemory(measurements);}
+                var notifications = data.trackingReminderNotifications;
+                if(notifications && notifications.length){qm.storage.setTrackingReminderNotifications(notifications);}
+            }
+            qm.api.post('v3/trackingReminderNotifications', body, function(response){
+                saveResponse(response);
+                if(successHandler){successHandler(response);}
+            }, function(response){
+                qm.qmLog.error(response.message)
+                saveResponse(response); // Sometimes we still return notifications even with an error
+                if(errorHandler){errorHandler(response.message || response.error);}
+            });
+        },
+        syncIfQueued: function (){
             var deferred = Q.defer();
             var notifications = qm.notifications.getQueue();
             if(notifications && notifications.length){
-                return qm.notifications.syncNotificationsDeferred();
+                return qm.notifications.syncDeferred();
             } else {
                 deferred.resolve([]);
             }
             return deferred.promise;
         },
-        syncNotificationsDeferred: function(params){
+        syncDeferred: function(params){
             var deferred = Q.defer();
             if(params && params.noCache){qm.notifications.notificationsPromise = false;}
             if(!qm.getUser()){
@@ -6717,15 +6765,107 @@ var qm = {
             setTimeout(function(){qm.notifications.notificationsPromise = false;}, 15000)
             return qm.notifications.notificationsPromise = deferred.promise;
         },
-        syncNotificationsIfEmpty: function (){
+        syncIfEmpty: function (){
             var deferred = Q.defer();
             var notifications = qm.notifications.getLocalNotifications();
             if(!notifications || !notifications.length){
-                return qm.notifications.syncNotificationsDeferred();
+                return qm.notifications.syncDeferred();
             } else {
                 deferred.resolve(notifications);
             }
             return deferred.promise;
+        },
+        removeDuplicates: function(notifications){
+            var ids = [];
+            var toKeep = [];
+            if(!notifications){
+                throw "Notifications is not an array!"
+            }
+            if(typeof notifications.forEach !== "function"){
+                throw "Notifications is not an array!"
+            }
+            var allIds = notifications.map(function(n){
+                return n.id;
+            })
+            notifications.forEach(function(n){
+                if(n.id !== n.trackingReminderNotificationId){
+                    qmLog.errorAndExceptionTestingOrDevelopment("notification id: "+n.id +
+                        " does not match trackingReminderNotificationId: "+n.trackingReminderNotificationId, null, n);
+                }
+                var before = n.actionArray;
+                n.actionArray = qm.arrayHelper.removeDuplicatesByProperty(before, 'title');
+                if(before.length !== n.actionArray.length){
+                    qmLog.error("Duplicate button titles", before);
+                }
+                var id = n.trackingReminderNotificationId || n.id;
+                if(ids.indexOf(id) !== -1) {
+                    qmLog.errorAndExceptionTestingOrDevelopment("Duplicate notification id: "+id, null, n);
+                }
+                toKeep.push(n);
+                ids.push(id);
+            });
+            return toKeep;
+        },
+        groupByDate: function(notifications){
+            if(!qm.arrayHelper.variableIsArray(notifications)){
+                qmLog.error("trackingReminderNotifications is not an array! trackingReminderNotifications: ",
+                    notifications);
+                return;
+            }else{
+                qmLog.debug('trackingReminderNotifications is an array of size: ' + notifications.length);
+            }
+            var result = [];
+            var reference = moment().local();
+            var today = reference.clone().startOf('day');
+            var yesterday = reference.clone().subtract(1, 'days').startOf('day');
+            var weekOld = reference.clone().subtract(7, 'days').startOf('day');
+            var monthOld = reference.clone().subtract(30, 'days').startOf('day');
+            var todayResult;
+            try{
+                todayResult = notifications.filter(function(trn){
+                    /** @namespace trackingReminderNotification.trackingReminderNotificationTime */
+                    return moment.utc(trn.trackingReminderNotificationTime).local().isSame(today, 'd') === true;
+                });
+            }catch (error){
+                //qmLog.error(error, "notifications are: " + JSON.stringify(trackingReminderNotifications), {});
+                qmLog.error(error, "Trying again after JSON.parse(JSON.stringify(trackingReminderNotifications)). Why is this necessary?", {});
+                notifications = JSON.parse(JSON.stringify(notifications));
+                todayResult = notifications.filter(function(trn){
+                    /** @namespace trackingReminderNotification.trackingReminderNotificationTime */
+                    return moment.utc(trn.trackingReminderNotificationTime).local().isSame(today, 'd') === true;
+                });
+            }
+            if(todayResult.length){
+                result.push({name: "Today", trackingReminderNotifications: todayResult});
+            }
+            var yesterdayResult = notifications.filter(function(trn){
+                return moment.utc(trn.trackingReminderNotificationTime).local().isSame(yesterday, 'd') === true;
+            });
+            if(yesterdayResult.length){
+                result.push({name: "Yesterday", trackingReminderNotifications: yesterdayResult});
+            }
+            var last7DayResult = notifications.filter(function(trn){
+                var date = moment.utc(trn.trackingReminderNotificationTime).local();
+                return date.isAfter(weekOld) === true && date.isSame(yesterday, 'd') !== true && date.isSame(today, 'd') !== true;
+            });
+            if(last7DayResult.length){
+                result.push({name: "Last 7 Days", trackingReminderNotifications: last7DayResult});
+            }
+            var last30DayResult = notifications.filter(function(trn){
+                var date = moment.utc(trn.trackingReminderNotificationTime).local();
+                return date.isAfter(monthOld) === true && date.isBefore(weekOld) === true &&
+                    date.isSame(yesterday, 'd') !== true && date.isSame(today, 'd') !== true;
+            });
+            if(last30DayResult.length){
+                result.push({name: "Last 30 Days", trackingReminderNotifications: last30DayResult});
+            }
+            var olderResult = notifications.filter(function(trn){
+                return moment.utc(trn.trackingReminderNotificationTime).local().isBefore(monthOld) === true;
+            });
+            if(olderResult.length){
+                result.push({name: "Older", trackingReminderNotifications: olderResult});
+            }
+            return result;
         }
     },
     objectHelper: {
@@ -7324,37 +7464,6 @@ var qm = {
                     trackingReminder.valueAndFrequencyTextDescription.toLowerCase().indexOf('ended') !== -1;
             });
         },
-        removeDuplicateNotifications: function(notifications){
-            var ids = [];
-            var toKeep = [];
-            if(!notifications){
-                throw "Notifications is not an array!"
-            }
-            if(typeof notifications.forEach !== "function"){
-                throw "Notifications is not an array!"
-            }
-            var allIds = notifications.map(function(n){
-                return n.id;
-            })
-            notifications.forEach(function(n){
-                if(n.id !== n.trackingReminderNotificationId){
-                    qmLog.errorAndExceptionTestingOrDevelopment("notification id: "+n.id +
-                        " does not match trackingReminderNotificationId: "+n.trackingReminderNotificationId, null, n);
-                }
-                var before = n.actionArray;
-                n.actionArray = qm.arrayHelper.removeDuplicatesByProperty(before, 'title');
-                if(before.length !== n.actionArray.length){
-                    qmLog.error("Duplicate button titles", before);
-                }
-                var id = n.trackingReminderNotificationId || n.id;
-                if(ids.indexOf(id) !== -1) {
-                    qmLog.errorAndExceptionTestingOrDevelopment("Duplicate notification id: "+id, null, n);
-                }
-                toKeep.push(n);
-                ids.push(id);
-            });
-            return toKeep;
-        },
         separateFavoritesAndArchived: function(reminders){
             reminders = qm.reminderHelper.validateReminderArray(reminders);
             var separated = {allTrackingReminders: reminders};
@@ -7476,7 +7585,7 @@ var qm = {
                         deferred.reject(error);
                     });
                 };
-                qm.notifications.syncNotificationsIfQueued().then(function(){
+                qm.notifications.syncIfQueued().then(function(){
                     postTrackingRemindersToApiAndHandleResponse();
                 }, function (err){
                     postTrackingRemindersToApiAndHandleResponse();
@@ -7517,6 +7626,92 @@ var qm = {
             // Get rid of card objects, available unit array and variable category object to decrease size of body
             reminders = qm.objectHelper.removeObjectAndArrayPropertiesForArray(reminders);
             qm.api.post('api/v3/trackingReminders', reminders, successHandler, errorHandler);
+        },
+        getValueAndFrequencyTextDescriptionWithTime: function(tr){
+            if(tr.reminderFrequency === 86400){
+                if(tr.unitCategoryName === 'Rating'){
+                    return 'Daily at ' + qm.timeHelper.humanFormat(tr.reminderStartTimeLocal);
+                }
+                if(tr.defaultValue){
+                    return tr.defaultValue + ' ' + tr.unitAbbreviatedName + ' daily at ' +
+                        qm.timeHelper.humanFormat(tr.reminderStartTimeLocal);
+                }
+                return 'Daily at ' + qm.timeHelper.humanFormat(tr.reminderStartTimeLocal);
+            }else if(tr.reminderFrequency === 0){
+                if(tr.unitCategoryName === "Rating"){
+                    return "As-Needed";
+                }
+                if(tr.defaultValue){
+                    return tr.defaultValue + ' ' + tr.unitAbbreviatedName + ' as-needed';
+                }
+                return "As-Needed";
+            }else{
+                if(tr.unitCategoryName === 'Rating'){
+                    return 'Rate every ' + tr.reminderFrequency / 3600 + " hours";
+                }
+                if(tr.defaultValue){
+                    return tr.defaultValue + ' ' + tr.unitAbbreviatedName +
+                        ' every ' + tr.reminderFrequency / 3600 + " hours";
+                }
+                return 'Every ' + tr.reminderFrequency / 3600 + " hours";
+            }
+        },
+        getReminders: function(variableCategoryName){
+            var deferred = Q.defer();
+            var filtered = [];
+            var unfiltered = qm.storage.getItem(qm.items.trackingReminders) || [];
+            var queue = qm.storage.getItem(qm.items.trackingReminderSyncQueue) || [];
+            unfiltered = unfiltered.concat(queue);
+            qm.api.addVariableCategoryAndUnit(unfiltered);
+            if(variableCategoryName && variableCategoryName !== 'Anything'){
+                for(var j = 0; j < unfiltered.length; j++){
+                    if(variableCategoryName === unfiltered[j].variableCategoryName){
+                        filtered.push(unfiltered[j]);
+                    }
+                }
+            }else{
+                filtered = unfiltered;
+            }
+            filtered = qm.reminderHelper.addRatingTimesToDailyReminders(filtered); //We need to keep this in case we want offline reminders
+            filtered = qm.reminderHelper.validateReminderArray(filtered);
+            if(filtered && filtered.length){
+                deferred.resolve(filtered);
+            }else{
+                qm.reminderHelper.syncTrackingReminders().then(function(reminders){
+                    reminders = qm.reminderHelper.validateReminderArray(reminders);
+                    deferred.resolve(reminders);
+                });
+            }
+            return deferred.promise;
+        },
+        addRatingTimesToDailyReminders: function(reminders){
+            var index;
+            for(index = 0; index < reminders.length; ++index){
+                var description = reminders[index].valueAndFrequencyTextDescription;
+                if(description &&
+                    description.indexOf('daily') > 0 &&
+                    description.indexOf(' at ') === -1 &&
+                    description.toLowerCase().indexOf('disabled') === -1){
+                    reminders[index].valueAndFrequencyTextDescription = description + ' at ' +
+                        qm.reminderHelper.convertReminderTimeStringToMoment(reminders[index].reminderStartTime).format("h:mm A");
+                }
+            }
+            return reminders;
+        },
+        convertReminderTimeStringToMoment: function(reminderTimeString){
+            var now = new Date();
+            var hourOffsetFromUtc = now.getTimezoneOffset() / 60;
+            var parsedReminderTimeUtc = reminderTimeString.split(':');
+            var minutes = parsedReminderTimeUtc[1];
+            var hourUtc = parseInt(parsedReminderTimeUtc[0]);
+            var localHour = hourUtc - parseInt(hourOffsetFromUtc);
+            if(localHour > 23){
+                localHour = localHour - 24;
+            }
+            if(localHour < 0){
+                localHour = localHour + 24;
+            }
+            return moment().hours(localHour).minutes(minutes);
         }
     },
     ratingImages: {
@@ -7694,7 +7889,7 @@ var qm = {
             var commands = {
                 'record a measurement': function(){
                     qm.qmLog.info("said " + arguments.callee.toString());
-                    qm.qmService.goToState(qm.staticData.stateNames.measurementAddSearch)
+                    qmService.goToState(qm.staticData.stateNames.measurementAddSearch)
                 },
             };
             qm.mic.addCommands(commands);
@@ -8429,7 +8624,7 @@ var qm = {
             qm.qmLog.info("Saving " + notifications.length + " notifications to local storage");
             qm.notifications.setLastNotificationsRefreshTime();
             qm.chrome.updateChromeBadge(notifications.length);
-            notifications = qm.reminderHelper.removeDuplicateNotifications(notifications);
+            notifications = qm.notifications.removeDuplicates(notifications);
             qm.storage.setItem(qm.items.trackingReminderNotifications, notifications);
         },
         deleteByProperty: function(localStorageItemName, propertyName, propertyValue){
@@ -8512,7 +8707,7 @@ var qm = {
                     qm.chrome.updateChromeBadge(notifications.length);
                 }
             }
-            return qm.reminderHelper.removeDuplicateNotifications(notifications);
+            return qm.notifications.removeDuplicates(notifications);
         },
         getAsString: function(key){
             var item = qm.storage.getItem(key);
@@ -9481,7 +9676,18 @@ var qm = {
         },
         fromUnixTime: function(unixTime) {
             return qm.timeHelper.toISO(unixTime);
-        }
+        },
+        humanFormat: function(hhmmssFormatString){
+            var initialTimeFormat = "HH:mm:ss";
+            var humanTimeFormat = "h:mm A";
+            return moment(hhmmssFormatString, initialTimeFormat).format(humanTimeFormat);
+        },
+        getUtcTimeStringFromLocalString: function(localTimeString){
+            var returnTimeFormat = "HH:mm:ss";
+            var utcTimeString = moment(localTimeString, returnTimeFormat).utc().format(returnTimeFormat);
+            qmLog.debug('utcTimeString is ' + utcTimeString, null);
+            return utcTimeString;
+        },
     },
     toast: {
         errorAlert: function(errorMessage, callback){
@@ -9543,21 +9749,22 @@ var qm = {
             })
         },
         infoLink: function(message, confirmButtonText, callback){
-            var Toast = Swal.mixin({
+            var params = {
                 toast: true,
                 icon: "success",
                 position: 'top-end',
-                confirmButtonText: confirmButtonText,
-                //cancelButtonText: "No",
+                cancelButtonText: "Dismiss",
                 showConfirmButton: true,
                 showCloseButton: true,
-                timer: 15000,
+                timer: 5000,
                 timerProgressBar: true,
                 onOpen: function (toast) {
                     toast.addEventListener('mouseenter', Swal.stopTimer)
                     toast.addEventListener('mouseleave', Swal.resumeTimer)
                 }
-            });
+            };
+            if(confirmButtonText){params.confirmButtonText = confirmButtonText;}
+            var Toast = Swal.mixin(params);
             Toast.fire({
                 icon: 'success',
                 title: message

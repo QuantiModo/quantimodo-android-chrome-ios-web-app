@@ -77,7 +77,7 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
         });
         $scope.$on('$ionicView.beforeLeave', function(){
             qmLog.debug('RemindersInboxCtrl beforeLeave');
-            qm.notifications.syncNotificationsIfQueued();
+            qm.notifications.syncIfQueued();
         });
         $scope.$on('$ionicView.afterLeave', function(){
             qmLog.debug('RemindersInboxCtrl afterLeave');
@@ -385,8 +385,8 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
                     }
                 })
             }
-            notifications = qm.reminderHelper.removeDuplicateNotifications(notifications);
-            var dividers = qmService.groupTrackingReminderNotificationsByDateRange(notifications)
+            notifications = qm.notifications.removeDuplicates(notifications);
+            var dividers = qm.notifications.groupByDate(notifications)
             $scope.safeApply(function () { // For som reason these are not visible to Ghost Inspector sometimes
                 $scope.notificationDividers = dividers;
                 $scope.state.numberOfDisplayedNotifications = notifications.length;
@@ -416,7 +416,7 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
         };
         $scope.syncNotifications = function(params){
             showLoader();
-            qm.notifications.syncNotificationsDeferred(params).then(function(){
+            qm.notifications.syncDeferred(params).then(function(){
                 getTrackingReminderNotifications();
                 if(!getNumberOfDisplayedNotifications()){
                     getFallbackInboxContentIfNecessary();

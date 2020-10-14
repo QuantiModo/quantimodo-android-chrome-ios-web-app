@@ -90,7 +90,7 @@ describe('Authentication', function () {
     cy.get('#signUpButton').click({ force: true })
     cy.enterNewUserCredentials(false)
     checkOauthPageAndAccept(appDisplayName)
-    cy.wait(20000)
+    cy.wait(2000)
     cy.url().should('contain', 'onboarding')
     cy.logOutViaSettingsPage(false)
     cy.disableSpeechAndSkipIntro()
