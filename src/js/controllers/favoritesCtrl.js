@@ -25,7 +25,7 @@ angular.module('starter').controller('FavoritesCtrl', ["$scope", "$state", "$ion
             diastolicValue: null,
             displayTotal: "Blood Pressure"
         });
-        var categoryName = qm.variableCategoryHelper.getVariableCategoryNameFromStateParamsOrUrl($stateParams);
+        var categoryName = qm.variableCategoryHelper.getNameFromStateParamsOrUrl($stateParams);
         if(categoryName){
             $scope.variableCategoryName = categoryName;
             $scope.state.addButtonText = "Add favorite " + categoryName.toLowerCase();
@@ -50,7 +50,7 @@ angular.module('starter').controller('FavoritesCtrl', ["$scope", "$state", "$ion
         }
     });
     var getFavoritesFromLocalStorage = function(){
-        var categoryName = qm.variableCategoryHelper.getVariableCategoryNameFromStateParamsOrUrl($stateParams);
+        var categoryName = qm.variableCategoryHelper.getNameFromStateParamsOrUrl($stateParams);
         qmService.storage.getFavorites(categoryName).then(function(favorites){
             $scope.state.favoritesArray = favorites;
             qmService.showInfoToast('Got ' + favorites.length + ' favorites!');
