@@ -76,7 +76,7 @@ angular.module('starter').controller('MeasurementAddCtrl', ["$scope", "$q", "$ti
         }
         var trackBloodPressure = function(){
             if(!$rootScope.bloodPressure.diastolicValue || !$rootScope.bloodPressure.systolicValue){
-                qmService.validationFailure('Please enter both values for blood pressure.', $scope.state.measurement);
+                qm.measurements.validationFailure('Please enter both values for blood pressure.', $scope.state.measurement);
                 return;
             }
             $scope.state.selectedDate = moment($scope.state.selectedDate);

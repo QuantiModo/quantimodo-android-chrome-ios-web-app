@@ -10,8 +10,11 @@ String.prototype.toCamelCase = function(){
 };
 var qm = {
     alert: {
-        validationFailureAlert: function(){
-
+        validationFailureAlert: function(errorMessage, callback){
+            qm.toast.errorAlert(errorMessage, callback)
+        },
+        errorAlert: function(errorMessage, callback){
+            qm.toast.errorAlert(errorMessage, callback)
         },
     },
     analytics: {
@@ -5233,6 +5236,10 @@ var qm = {
                 qmLog.error(errorMessage);
             }
             return startTimeEpoch;
+        },
+        validationFailure: function(message, object){
+            qm.alert.validationFailureAlert(message);
+            qmLog.error(message, null, {measurement: object});
         }
     },
     manualTrackingVariableCategoryNames: [

@@ -428,6 +428,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     function getUserMedia(constraints, success, failure){
                         navigator.getUserMedia(constraints, function(stream){
                             var videoSrc = (window.URL && window.URL.createObjectURL(stream)) || stream;
+                            // eslint-disable-next-line no-useless-call
                             success.apply(null, [videoSrc]);
                         }, failure);
                     }
@@ -1769,41 +1770,41 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     qmService.showInfoToast(toastMessage.replace(' /', '/'));
                     qm.measurements.postMeasurement(measurement, successHandler, errorHandler);
                 },
-                measurementValid: function(measurement){
+                measurementValid: function(m){
                     var message;
-                    if(measurement.value === null || measurement.value === '' ||
-                        typeof measurement.value === 'undefined'){
-                        if(measurement.unitAbbreviatedName === '/5'){
+                    if(m.value === null || m.value === '' ||
+                        typeof m.value === 'undefined'){
+                        if(m.unitAbbreviatedName === '/5'){
                             message = 'Please select a rating';
                         }else{
                             message = 'Please enter a value';
                         }
-                        qmService.validationFailure(message, measurement);
+                        qm.measurements.validationFailure(message, m);
                         return false;
                     }
-                    if(!measurement.variableName || measurement.variableName === ""){
+                    if(!m.variableName || m.variableName === ""){
                         message = 'Please enter a variable name';
-                        qmService.validationFailure(message, measurement);
+                        qm.measurements.validationFailure(message, m);
                         return false;
                     }
-                    if(!measurement.variableCategoryName){
-                        measurement.variableCategoryName = qm.urlHelper.getParam('variableCategoryName');
+                    if(!m.variableCategoryName){
+                        m.variableCategoryName = qm.urlHelper.getParam('variableCategoryName');
                     }
-                    if(!measurement.variableCategoryName){
+                    if(!m.variableCategoryName){
                         message = 'Please select a variable category';
-                        qmService.validationFailure(message, measurement);
+                        qm.measurements.validationFailure(message, m);
                         return false;
                     }
-                    if(!measurement.unitAbbreviatedName){
-                        message = 'Please select a unit for ' + measurement.variableName;
-                        qmService.validationFailure(message, measurement);
+                    if(!m.unitAbbreviatedName){
+                        message = 'Please select a unit for ' + m.variableName;
+                        qm.measurements.validationFailure(message, m);
                         return false;
                     }else{
-                        var u = qm.unitHelper.getByNameAbbreviatedNameOrId(measurement.unitAbbreviatedName);
+                        var u = qm.unitHelper.getByNameAbbreviatedNameOrId(m.unitAbbreviatedName);
                         if(!u){
-                            qmLog.error('Cannot get unit id', 'abbreviated unit name is ' + measurement.unitAbbreviatedName);
+                            qmLog.error('Cannot get unit id', 'abbreviated unit name is ' + m.unitAbbreviatedName);
                         }else{
-                            measurement.unitId = u.id;
+                            m.unitId = u.id;
                         }
                     }
                     return true;
@@ -6509,10 +6510,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 //}, function() {if(noCallbackFunction){noCallbackFunction(ev);}}); TODO: What was the point of this? It causes popups to be disabled inadvertently
             });
         };
-        qmService.validationFailure = function(message, object){
-            qmService.showMaterialAlert(message);
-            qmLog.error(message, null, {measurement: object});
-        };
         qmService.valueIsValid = function(object, value){
             var message;
             var u = qm.unitHelper.getByNameAbbreviatedNameOrId(object.unitAbbreviatedName);
@@ -6523,14 +6520,14 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             if(u.minimumValue !== "undefined" && u.minimumValue !== null){
                 if(value < u.minimumValue){
                     message = u.minimumValue + ' is the smallest possible value for the unit ' + u.name + ".  Please select another unit or value.";
-                    qmService.validationFailure(message);
+                    qm.measurements.validationFailure(message);
                     return false;
                 }
             }
             if(typeof u.maximumValue !== "undefined" && u.maximumValue !== null){
                 if(value > u.maximumValue){
                     message = u.maximumValue + ' is the largest possible value for the unit ' + u.name + ".  Please select another unit or value.";
-                    qmService.validationFailure(message);
+                    qm.measurements.validationFailure(message);
                     return false;
                 }
             }
