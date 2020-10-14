@@ -6777,6 +6777,67 @@ var qm = {
                 deferred.resolve(notifications);
             }
             return deferred.promise;
+        },
+        groupTrackingReminderNotificationsByDateRange: function(notifications){
+            if(!qm.arrayHelper.variableIsArray(notifications)){
+                qmLog.error("trackingReminderNotifications is not an array! trackingReminderNotifications: ",
+                    notifications);
+                return;
+            }else{
+                qmLog.debug('trackingReminderNotifications is an array of size: ' + notifications.length);
+            }
+            var result = [];
+            var reference = moment().local();
+            var today = reference.clone().startOf('day');
+            var yesterday = reference.clone().subtract(1, 'days').startOf('day');
+            var weekOld = reference.clone().subtract(7, 'days').startOf('day');
+            var monthOld = reference.clone().subtract(30, 'days').startOf('day');
+            var todayResult;
+            try{
+                todayResult = notifications.filter(function(trn){
+                    /** @namespace trackingReminderNotification.trackingReminderNotificationTime */
+                    return moment.utc(trn.trackingReminderNotificationTime).local().isSame(today, 'd') === true;
+                });
+            }catch (error){
+                //qmLog.error(error, "notifications are: " + JSON.stringify(trackingReminderNotifications), {});
+                qmLog.error(error, "Trying again after JSON.parse(JSON.stringify(trackingReminderNotifications)). Why is this necessary?", {});
+                notifications = JSON.parse(JSON.stringify(notifications));
+                todayResult = notifications.filter(function(trn){
+                    /** @namespace trackingReminderNotification.trackingReminderNotificationTime */
+                    return moment.utc(trn.trackingReminderNotificationTime).local().isSame(today, 'd') === true;
+                });
+            }
+            if(todayResult.length){
+                result.push({name: "Today", trackingReminderNotifications: todayResult});
+            }
+            var yesterdayResult = notifications.filter(function(trn){
+                return moment.utc(trn.trackingReminderNotificationTime).local().isSame(yesterday, 'd') === true;
+            });
+            if(yesterdayResult.length){
+                result.push({name: "Yesterday", trackingReminderNotifications: yesterdayResult});
+            }
+            var last7DayResult = notifications.filter(function(trn){
+                var date = moment.utc(trn.trackingReminderNotificationTime).local();
+                return date.isAfter(weekOld) === true && date.isSame(yesterday, 'd') !== true && date.isSame(today, 'd') !== true;
+            });
+            if(last7DayResult.length){
+                result.push({name: "Last 7 Days", trackingReminderNotifications: last7DayResult});
+            }
+            var last30DayResult = notifications.filter(function(trn){
+                var date = moment.utc(trn.trackingReminderNotificationTime).local();
+                return date.isAfter(monthOld) === true && date.isBefore(weekOld) === true &&
+                    date.isSame(yesterday, 'd') !== true && date.isSame(today, 'd') !== true;
+            });
+            if(last30DayResult.length){
+                result.push({name: "Last 30 Days", trackingReminderNotifications: last30DayResult});
+            }
+            var olderResult = notifications.filter(function(trn){
+                return moment.utc(trn.trackingReminderNotificationTime).local().isBefore(monthOld) === true;
+            });
+            if(olderResult.length){
+                result.push({name: "Older", trackingReminderNotifications: olderResult});
+            }
+            return result;
         }
     },
     objectHelper: {
@@ -7568,7 +7629,36 @@ var qm = {
             // Get rid of card objects, available unit array and variable category object to decrease size of body
             reminders = qm.objectHelper.removeObjectAndArrayPropertiesForArray(reminders);
             qm.api.post('api/v3/trackingReminders', reminders, successHandler, errorHandler);
-        }
+        },
+        getValueAndFrequencyTextDescriptionWithTime: function(tr){
+            if(tr.reminderFrequency === 86400){
+                if(tr.unitCategoryName === 'Rating'){
+                    return 'Daily at ' + qm.timeHelper.humanFormat(tr.reminderStartTimeLocal);
+                }
+                if(tr.defaultValue){
+                    return tr.defaultValue + ' ' + tr.unitAbbreviatedName + ' daily at ' +
+                        qm.timeHelper.humanFormat(tr.reminderStartTimeLocal);
+                }
+                return 'Daily at ' + qm.timeHelper.humanFormat(tr.reminderStartTimeLocal);
+            }else if(tr.reminderFrequency === 0){
+                if(tr.unitCategoryName === "Rating"){
+                    return "As-Needed";
+                }
+                if(tr.defaultValue){
+                    return tr.defaultValue + ' ' + tr.unitAbbreviatedName + ' as-needed';
+                }
+                return "As-Needed";
+            }else{
+                if(tr.unitCategoryName === 'Rating'){
+                    return 'Rate every ' + tr.reminderFrequency / 3600 + " hours";
+                }
+                if(tr.defaultValue){
+                    return tr.defaultValue + ' ' + tr.unitAbbreviatedName +
+                        ' every ' + tr.reminderFrequency / 3600 + " hours";
+                }
+                return 'Every ' + tr.reminderFrequency / 3600 + " hours";
+            }
+        },
     },
     ratingImages: {
         positive: [
@@ -9532,7 +9622,18 @@ var qm = {
         },
         fromUnixTime: function(unixTime) {
             return qm.timeHelper.toISO(unixTime);
-        }
+        },
+        humanFormat: function(hhmmssFormatString){
+            var initialTimeFormat = "HH:mm:ss";
+            var humanTimeFormat = "h:mm A";
+            return moment(hhmmssFormatString, initialTimeFormat).format(humanTimeFormat);
+        },
+        getUtcTimeStringFromLocalString: function(localTimeString){
+            var returnTimeFormat = "HH:mm:ss";
+            var utcTimeString = moment(localTimeString, returnTimeFormat).utc().format(returnTimeFormat);
+            qmLog.debug('utcTimeString is ' + utcTimeString, null);
+            return utcTimeString;
+        },
     },
     toast: {
         errorAlert: function(errorMessage, callback){
