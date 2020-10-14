@@ -2212,7 +2212,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                                 qmService.goToState(qm.staticData.stateNames.reminderAdd, {trackingReminder: tr})
                             });
                         }, 1);
-                        qm.reminderHelper.syncTrackingReminders();
+                        qm.reminderHelper.syncReminders();
                     }, 1);
                 }
             },
@@ -3697,7 +3697,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             qmService.login.afterLoginGoToUrlOrState();
         };
         qmService.syncAllUserData = function(){
-            qm.reminderHelper.syncTrackingReminders();
+            qm.reminderHelper.syncReminders();
             qm.userVariables.getFromLocalStorageOrApi();
         };
         qmService.deferredRequests = {};
@@ -4390,7 +4390,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         qmService.getTrackingReminderByIdDeferred = function(reminderId){
             var deferred = $q.defer();
             var params = {id: reminderId};
-            qm.reminderHelper.getTrackingRemindersFromApi(params, function(remindersResponse){
+            qm.reminderHelper.getRemindersFromApi(params, function(remindersResponse){
                 var trackingReminders = remindersResponse.data;
                 if(remindersResponse.success){
                     deferred.resolve(trackingReminders);
@@ -6178,7 +6178,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 fromState: $state.current.name,
                 fromUrl: window.location.href
             });
-            qm.reminderHelper.syncTrackingReminders();
+            qm.reminderHelper.syncReminders();
         };
         qmService.getDefaultReminders = function(){
             if(qm.getAppSettings().defaultReminders){

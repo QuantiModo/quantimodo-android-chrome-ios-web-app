@@ -31,6 +31,8 @@ qmLog.qm = qm
 qm.qmLog.setLogLevelName(process.env.LOG_LEVEL || 'info')
 global.nlp = require('./../../src/lib/compromise')
 global.Q = require('./../../src/lib/q')
+//global.moment = require('./../../src/lib/moment/moment')
+global.moment = require('./../../src/lib/moment-timezone/moment-timezone')
 const chrome = require('sinon-chrome/extensions')
 var qmTests = {
     getTestAccessToken(){
@@ -547,11 +549,11 @@ describe("Reminders", function () {
             chai.expect(queue).length(1)
             const cached = qm.reminderHelper.getCached()
             chai.expect(cached).length(0)
-            qm.reminderHelper.getReminders().then(function (reminders){
+            qm.reminderHelper.syncReminders().then(function (reminders){
                 chai.expect(reminders).length(1)
                 const notifications = qm.notifications.getLocalNotifications()
                 chai.expect(notifications).length(0)
-                qm.reminderHelper.syncTrackingReminders().then(function(){
+                qm.reminderHelper.syncReminders().then(function(){
                     const queue = qm.reminderHelper.getQueue()
                     chai.expect(queue).length(0)
                     const cached = qm.reminderHelper.getCached()
