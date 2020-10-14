@@ -315,9 +315,7 @@ angular.module('starter').controller('ReminderAddCtrl', ["$scope", "$state", "$s
             }
             applySelectedDatesToReminder();
             var remindersArray = [];
-            if(typeof r.defaultValue === "undefined"){
-                r.defaultValue = null;
-            }
+            if(typeof r.defaultValue === "undefined"){r.defaultValue = null;}
             remindersArray[0] = JSON.parse(JSON.stringify(r));
             function applyReminderTimesToReminder(){
                 if($scope.state.firstReminderStartTimeMoment){
@@ -351,12 +349,9 @@ angular.module('starter').controller('ReminderAddCtrl', ["$scope", "$state", "$s
                 qm.editReminderCallback(r);
                 return;
             }
-            if(r.id){
-                qm.storage.deleteById('trackingReminders', r.id);
-            }
-            //qmService.showBasicLoader();
-            qmService.addToTrackingReminderSyncQueue(remindersArray);
-            qmService.trackingReminders.syncTrackingReminders(true).then(function(){});
+            if(r.id){qm.storage.deleteById('trackingReminders', r.id);}
+            qm.reminderHelper.addToQueue(remindersArray);
+            qm.reminderHelper.syncTrackingReminders(true).then(function(){});
             var toastMessage = getVariableName($scope) + ' saved';
             qmService.showInfoToast(toastMessage);
             qmService.hideLoader();

@@ -31,12 +31,11 @@ angular.module('starter').controller('WelcomeCtrl', ["$scope", "$state", "$rootS
             "daily": 24 * 60 * 60,
             "day": 24 * 60 * 60
         };
-        var reminderToSchedule = {
+        qm.reminderHelper.addToQueue({
             reminderFrequency: intervals[$scope.primaryOutcomeRatingFrequencyDescription],
             variableId: qm.getPrimaryOutcomeVariable().id,
             defaultValue: 3
-        };
-        qmService.addToTrackingReminderSyncQueue(reminderToSchedule);
+        });
         $scope.showIntervalCard = false;
     }
     $scope.storeRatingLocally = function(ratingValue){
