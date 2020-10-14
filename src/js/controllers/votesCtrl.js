@@ -46,7 +46,7 @@ angular.module('starter').controller('VoteCtrl', ["$state", "$scope", "$rootScop
             removeCard: function(card){
                 card.hide = true;
                 qmService.showInfoToast("Deleted vote");
-                qmService.deleteVoteToApi(card.parameters, function(response){
+                qm.studyHelper.deleteVote(card.parameters, function(response){
                     qmLog.debug('deleteVote response', null, response);
                 }, function(error){
                     qmLog.error("deleteVote error", error);
