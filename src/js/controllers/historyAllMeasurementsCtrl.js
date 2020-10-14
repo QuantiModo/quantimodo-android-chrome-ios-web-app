@@ -280,7 +280,7 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
         }
         $scope.deleteMeasurement = function(m){
             m.hide = true;
-            qmService.deleteMeasurementFromServer(m);
+            qm.measurements.deleteMeasurement(m);
         };
         qmService.navBar.setFilterBarSearchIcon(false);
         $scope.showActionSheetForMeasurement = function(m){
