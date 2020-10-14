@@ -4974,7 +4974,7 @@ var qm = {
         deleteMeasurement: function(toDelete){
             var deferred = Q.defer();
             qm.measurements.deleteLocally(toDelete);
-            qm.toast.infoLink("Deleted " + toDelete.variableName + " measurement");
+            qm.toast.infoToast("Deleted " + toDelete.variableName + " measurement");
             var startAt = toDelete.startAt || toDelete.startTime || toDelete.startTimeEpoch || null;
             if(!startAt){
                 qm.qmLog.errorAndExceptionTestingOrDevelopment("No start time provided to delete measurement: ", toDelete);
@@ -7526,7 +7526,7 @@ var qm = {
                 return qm.reminderHelper.syncPromise;
             }
             var deferred = Q.defer();
-            var queue = qm.storage.getItem(qm.items.trackingReminderSyncQueue);
+            var queue = qm.reminderHelper.getQueue();
             if(queue && queue.length){
                 qmLog.debug('syncTrackingReminders: trackingReminderSyncQueue NOT empty so posting trackingReminders: ', null, queue);
                 qmLog.info("Syncing " + queue.length + " reminders in queue");
@@ -7656,11 +7656,19 @@ var qm = {
                 return 'Every ' + tr.reminderFrequency / 3600 + " hours";
             }
         },
+        getQueue: function(){
+            var queue = qm.storage.getItem(qm.items.trackingReminderSyncQueue) || [];
+            return queue;
+        },
+        getCached: function(){
+            var unfiltered = qm.storage.getItem(qm.items.trackingReminders) || [];
+            return unfiltered;
+        },
         getReminders: function(variableCategoryName){
             var deferred = Q.defer();
             var filtered = [];
-            var unfiltered = qm.storage.getItem(qm.items.trackingReminders) || [];
-            var queue = qm.storage.getItem(qm.items.trackingReminderSyncQueue) || [];
+            var unfiltered = qm.reminderHelper.getCached();
+            var queue = qm.reminderHelper.getQueue();
             unfiltered = unfiltered.concat(queue);
             qm.api.addVariableCategoryAndUnit(unfiltered);
             if(variableCategoryName && variableCategoryName !== 'Anything'){
@@ -7712,6 +7720,39 @@ var qm = {
                 localHour = localHour + 24;
             }
             return moment().hours(localHour).minutes(minutes);
+        },
+        deleteLocalReminder: function(reminderToDelete){
+            var allTrackingReminders = qm.reminderHelper.getCached();
+            var keep = [];
+            allTrackingReminders.forEach(function(one, key){
+                if(!(one.variableName === reminderToDelete.variableName &&
+                    one.reminderFrequency === reminderToDelete.reminderFrequency &&
+                    one.reminderStartTime === reminderToDelete.reminderStartTime)){
+                    keep.push(one);
+                }
+            });
+            qm.storage.setItem('trackingReminders', keep);
+        },
+        deleteReminder: function(tr){
+            var deferred = Q.defer();
+            qm.reminderHelper.deleteLocalReminder(tr);
+            qm.toast.infoToast("Deleted " + tr.variableName);
+            var id = tr.trackingReminderId || tr.id;
+            if(!id){
+                deferred.resolve();
+                qmLog.error('No reminder id to delete with!  Maybe it has only been stored locally and has not updated from server yet.');
+                return deferred.promise;
+            }
+            qm.storage.deleteByProperty(qm.items.trackingReminderNotifications, 'trackingReminderId', id);
+            qm.api.post('api/v3/trackingReminders/delete',{id: id}, function(response){
+                // Delete again in case we refreshed before deletion completed
+                qm.reminderHelper.deleteLocalReminder(tr);
+                deferred.resolve(response);
+            }, function(error){
+                qm.reminderHelper.deleteLocalReminder(tr);
+                deferred.reject(error); // Not sure why this is returning error on successful deletion
+            });
+            return deferred.promise;
         }
     },
     ratingImages: {
@@ -9667,7 +9708,7 @@ var qm = {
                 return;
             }
             qm.userHelper.updateUserSettings(params, function (user) {
-                qm.toast.infoLink("Your timezone has been set to "+params.timeZone+
+                qm.toast.infoToast("Your timezone has been set to "+params.timeZone+
                     ". You can change it on the settings page.", "Settings", function(){
                     window.location.href = qm.urlHelper.getSettingsUrl();
                 });
@@ -9748,7 +9789,7 @@ var qm = {
                 }
             })
         },
-        infoLink: function(message, confirmButtonText, callback){
+        infoToast: function(message, confirmButtonText, callback){
             var params = {
                 toast: true,
                 icon: "success",

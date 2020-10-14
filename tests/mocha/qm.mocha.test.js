@@ -30,6 +30,7 @@ qm.qmLog = qmLog
 qmLog.qm = qm
 qm.qmLog.setLogLevelName(process.env.LOG_LEVEL || 'info')
 global.nlp = require('./../../src/lib/compromise')
+global.Q = require('./../../src/lib/q')
 const chrome = require('sinon-chrome/extensions')
 var qmTests = {
     getTestAccessToken(){
@@ -39,7 +40,7 @@ var qmTests = {
         }
         return t
     },
-    setTestToken(){
+    setTestAccessToken(){
         qm.storage.setItem(qm.items.accessToken, qmTests.getTestAccessToken())
     },
     testParams: {},
@@ -351,7 +352,7 @@ describe("Intent Handler", function () {
 })
 describe("Measurement", function () {
     it('can record a measurement', function(done){
-        qmTests.setTestToken()
+        qmTests.setTestAccessToken()
         qm.measurements.recordMeasurement({
             value: 1,
             variableName: "Overall Mood",
@@ -531,10 +532,49 @@ describe("Menu", function () {
         done()
     })
 })
+describe("Reminders", function () {
+    it.skip("can create a reminder", function (done){
+        qmTests.setTestAccessToken()
+        qm.reminderHelper.getReminders().then(function (reminders){
+            const forVar = reminders.filter(function (one) {
+                return one.name === "Hostility"
+            })
+            forVar.forEach(function (one){
+                qm.reminderHelper.deleteReminder(one)
+            })
+            qm.reminderHelper.addToQueue([{"variableName": "Hostility", frequency: 60}])
+            const queue = qm.reminderHelper.getQueue()
+            chai.expect(queue).length(1)
+            const cached = qm.reminderHelper.getCached()
+            chai.expect(cached).length(0)
+            qm.reminderHelper.getReminders().then(function (reminders){
+                chai.expect(reminders).length(1)
+                const notifications = qm.notifications.getLocalNotifications()
+                chai.expect(notifications).length(0)
+                qm.reminderHelper.syncTrackingReminders().then(function(){
+                    const queue = qm.reminderHelper.getQueue()
+                    chai.expect(queue).length(0)
+                    const cached = qm.reminderHelper.getCached()
+                    chai.expect(cached).length(1)
+                    const notifications = qm.notifications.getLocalNotifications()
+                    chai.expect(notifications).length(1)
+                    const n = notifications[0]
+                    n.value = 1
+                    qm.notifications.track(notifications[0])
+                    const notificationQueue = qm.notifications.getQueue()
+                    chai.expect(notificationQueue).length(1)
+                    qm.measurements.getLocalMeasurements()
+                    done()
+                })
+            })
+        })
+
+    })
+})
 describe("Studies", function () {
     it.skip('can get a study showing relationship between eggs and mood', function(done) {
         this.timeout(20000)
-        qmTests.setTestToken()
+        qmTests.setTestAccessToken()
         qm.studyHelper.getStudyFromApi({
             causeVariableName: "Eggs (serving)",
             effectVariableName: "Overall Mood", userId: 230,
@@ -578,7 +618,7 @@ describe("Users", function () {
     it('can get users', function(done) {
         this.timeout(10000)
         chai.expect(qm.api.getApiUrl()).to.eq("https://app.quantimo.do")
-        qmTests.setTestToken()
+        qmTests.setTestAccessToken()
         qm.userHelper.getUsersFromApi(function(users){
             qmLog.debug("users:", users)
             qm.assert.greaterThan(0, users.length)
@@ -593,7 +633,7 @@ describe("Variables", function () {
         this.timeout(30000) // Default 2000 is too fast for Github API
         //qm.qmLog.setLogLevelName("debug");
         var alreadyCalledBack = false
-        qmTests.setTestToken()
+        qmTests.setTestAccessToken()
         qm.userHelper.getUserFromLocalStorageOrApi(function (user) {
             qmLog.debug("User: ", user)
             if(!qm.getUser()){ throw "No user!" }
@@ -638,7 +678,7 @@ describe("Variables", function () {
         })
     })
     it('can search manual tracking variables', function(done) {
-        qmTests.setTestToken()
+        qmTests.setTestAccessToken()
         qm.userHelper.getUserFromLocalStorageOrApi(function (user) {
             qmLog.info("Got user " + user.loginName)
             if(!qm.getUser()){ throw "No user!" }
