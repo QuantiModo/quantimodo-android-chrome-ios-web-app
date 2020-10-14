@@ -177,7 +177,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
                     textContent = 'You previously voted that it is IMPOSSIBLE that ' + causeVariableName +
                         ' ' + $scope.increasesDecreases + ' your ' + effectVariableName + '. Do you want to delete this down vote?';
                     yesCallback = function(){
-                        deleteVote(study, $index);
+                        deleteVote(study);
                     };
                     noCallback = function(){
                     };
@@ -216,7 +216,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
                     textContent = 'You previously voted that it is POSSIBLE that ' + causeVariableName +
                         ' ' + $scope.increasesDecreases + ' your ' + effectVariableName + '. Do you want to delete this up vote?';
                     yesCallback = function(){
-                        deleteVote(study, $index);
+                        deleteVote(study);
                     };
                     noCallback = function(){
                     };
@@ -225,8 +225,8 @@ angular.module('starter')// Parent Controller - This controller runs before ever
             };
             function deleteVote(study){
                 study.studyVotes.userVote = null;
-                qmService.deleteVoteToApi(study, function(response){
-                    qmLog.debug('deleteVote response', null, response);
+                qm.studyHelper.deleteVote(study, function(response){
+                    qmLog.debug('deleteVote response', response);
                 }, function(error){
                     qmLog.error("deleteVote error", error);
                 });
