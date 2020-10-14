@@ -4039,43 +4039,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             });
             return defer.promise;
         };
-        // date setter from - to
-        qmService.setDates = function(to, from){
-            var oldFromDate = qm.storage.getItem('fromDate');
-            var oldToDate = qm.storage.getItem('toDate');
-            qmService.storage.setItem('fromDate', parseInt(from));
-            qmService.storage.setItem('toDate', parseInt(to));
-            // if date range changed, update charts
-            if(parseInt(oldFromDate) !== parseInt(from) || parseInt(oldToDate) !== parseInt(to)){
-                qmLog.debug('setDates broadcasting to update charts', null);
-                qmService.charts.broadcastUpdateCharts();
-                qmService.measurements.broadcastUpdatePrimaryOutcomeHistory();
-            }
-        };
-        // retrieve date to end on
-        qmService.getToDate = function(callback){
-            qmService.storage.getAsStringWithCallback('toDate', function(toDate){
-                if(toDate){
-                    callback(parseInt(toDate));
-                }else{
-                    callback(parseInt(Date.now()));
-                }
-            });
-        };
-        // retrieve date to start from
-        qmService.getFromDate = function(callback){
-            qmService.storage.getAsStringWithCallback('fromDate', function(fromDate){
-                if(fromDate){
-                    callback(parseInt(fromDate));
-                }else{
-                    var date = new Date();
-                    // Threshold 20 Days if not provided
-                    date.setDate(date.getDate() - 20);
-                    qmLog.debug('The date returned is ', null, date.toString());
-                    callback(parseInt(date.getTime()));
-                }
-            });
-        };
         qmService.createPrimaryOutcomeMeasurement = function(numericRatingValue){
             // if val is string (needs conversion)
             if(isNaN(parseFloat(numericRatingValue))){
@@ -4940,21 +4903,20 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         };
         qmService.createDefaultReminders = function(){
             var deferred = $q.defer();
-            qmService.storage.getAsStringWithCallback('defaultRemindersCreated', function(defaultRemindersCreated){
-                if(JSON.parse(defaultRemindersCreated) !== true){
-                    var defaultReminders = qmService.getDefaultReminders();
-                    if(defaultReminders && defaultReminders.length){
-                        qmService.addToTrackingReminderSyncQueue(defaultReminders);
-                        qmService.trackingReminders.syncTrackingReminders().then(function(trackingReminders){
-                            deferred.resolve(trackingReminders);
-                        });
-                        qmLog.debug('Creating default reminders ', defaultReminders, null);
-                    }
-                }else{
-                    deferred.reject('Default reminders already created');
-                    qmLog.debug('Default reminders already created', null);
+            var defaultRemindersCreated = qm.storage.getItem('defaultRemindersCreated');
+            if(!defaultRemindersCreated){
+                var defaults = qmService.getDefaultReminders();
+                if(defaults && defaults.length){
+                    qmService.addToTrackingReminderSyncQueue(defaults);
+                    qmService.trackingReminders.syncTrackingReminders().then(function(fromAPI){
+                        deferred.resolve(fromAPI);
+                    });
+                    qmLog.debug('Creating default reminders ', defaults);
                 }
-            });
+            }else{
+                deferred.reject('Default reminders already created');
+                qmLog.debug('Default reminders already created', null);
+            }
             return deferred.promise;
         };
         qmService.getNotesDeferred = function(variableName){
