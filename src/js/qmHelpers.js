@@ -9107,7 +9107,13 @@ var qm = {
             var url = qm.studyHelper.getStudyUrl(study);
             qm.qmLog.info("goToStudyPageViaStudy: Going to " + url + " because we clicked " + study.causeVariableName + " vs " + study.effectVariableName + " study...");
             qm.urlHelper.goToUrl(url);
-        }
+        },
+        deleteVote: function(study, successHandler, errorHandler){
+            qm.api.post('api/v3/votes/delete', {
+                causeVariableName: qm.studyHelper.getCauseVariableName(study),
+                effectVariableName: qm.studyHelper.getEffectVariableName(study)
+            }, successHandler, errorHandler);
+        },
     },
     tests: {
         chrome: {
