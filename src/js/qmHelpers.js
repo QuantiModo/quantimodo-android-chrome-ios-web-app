@@ -921,7 +921,7 @@ var qm = {
                 return;
             }
             delete params.force;
-            qm.api.getAccessTokenFromAnySource().then(function(accessToken){
+            qm.auth.getAccessTokenFromAnySource().then(function(accessToken){
                 var url = qm.api.getQuantiModoUrl(route);
                 url = qm.urlHelper.addUrlQueryParamsToUrlString(qm.api.addGlobalParams({}), url);
                 url = qm.urlHelper.addUrlQueryParamsToUrlString(params, url);
@@ -6285,16 +6285,6 @@ var qm = {
             setTimeout(qm.notifications.syncIfQueued, 15000);
             return res;
         },
-        syncIfQueued: function(successHandler, errorHandler){
-            var queue = qm.notifications.getQueue();
-            if(queue && queue.length){
-                qm.notifications.syncNotifications(successHandler, errorHandler);
-            } else {
-                if(successHandler){
-                    successHandler();
-                }
-            }
-        },
         refreshIfEmpty: function(successHandler, errorHandler){
             if(!qm.notifications.getNumberInGlobalsOrLocalStorage()){
                 qm.qmLog.info('No notifications in local storage');
@@ -6560,50 +6550,6 @@ var qm = {
             qm.notifications.deleteByVariableName(n.variableName);
             qm.notifications.addToSyncQueue(n);
         },
-        syncNotifications: function(successHandler, errorHandler){
-            qm.qmLog.debug("Called syncNotifications...");
-            var queue = qm.notifications.getQueue();
-            qm.storage.removeItem(qm.items.notificationsSyncQueue);
-            qm.storage.removeItem(qm.items.trackingReminderNotificationSyncScheduled);
-            var body = [];
-            if(queue){
-                if(!(queue instanceof Array)){queue = [queue];}
-                body = queue.map(function (n){
-                    return {
-                        'value': n.modifiedValue || n.value,
-                        'trackingReminderNotificationId': n.trackingReminderNotificationId,
-                        'variableId': n.variableId,
-                        'trackingReminderId': n.trackingReminderId,
-                        'action': n.action,
-                        'timeZone': moment.tz.guess(),
-                    }
-                })
-            }
-            function saveResponse(response){
-                if(!response){
-                    var err = "No response from postToQuantiModo(body, 'v3/trackingReminderNotifications";
-                    if(errorHandler){
-                        errorHandler(err);
-                        return;
-                    } else {
-                        throw err;
-                    }
-                }
-                var data = response.data || response;
-                var measurements = data.measurements;
-                if(measurements && measurements.length){qm.measurements.addMeasurementsToMemory(measurements);}
-                var notifications = data.trackingReminderNotifications;
-                if(notifications && notifications.length){qm.storage.setTrackingReminderNotifications(notifications);}
-            }
-            qm.api.post('v3/trackingReminderNotifications', body, function(response){
-                saveResponse(response);
-                if(successHandler){successHandler(response);}
-            }, function(response){
-                qm.qmLog.error(response.message)
-                saveResponse(response); // Sometimes we still return notifications even with an error
-                if(errorHandler){errorHandler(response.message || response.error);}
-            });
-        },
         skip: function(trackingReminderNotification){
             trackingReminderNotification.action = 'skip';
             qm.notifications.addToSyncQueue(trackingReminderNotification);
@@ -6734,17 +6680,61 @@ var qm = {
             });
             return deferred.promise;
         },
-        syncNotificationsIfQueued: function (){
+        syncNotifications: function(successHandler, errorHandler){
+            qm.qmLog.debug("Called syncNotifications...");
+            var queue = qm.notifications.getQueue();
+            qm.storage.removeItem(qm.items.notificationsSyncQueue);
+            qm.storage.removeItem(qm.items.trackingReminderNotificationSyncScheduled);
+            var body = [];
+            if(queue){
+                if(!(queue instanceof Array)){queue = [queue];}
+                body = queue.map(function (n){
+                    return {
+                        'value': n.modifiedValue || n.value,
+                        'trackingReminderNotificationId': n.trackingReminderNotificationId,
+                        'variableId': n.variableId,
+                        'trackingReminderId': n.trackingReminderId,
+                        'action': n.action,
+                        'timeZone': moment.tz.guess(),
+                    }
+                })
+            }
+            function saveResponse(response){
+                if(!response){
+                    var err = "No response from postToQuantiModo(body, 'v3/trackingReminderNotifications";
+                    if(errorHandler){
+                        errorHandler(err);
+                        return;
+                    } else {
+                        throw err;
+                    }
+                }
+                var data = response.data || response;
+                var measurements = data.measurements;
+                if(measurements && measurements.length){qm.measurements.addMeasurementsToMemory(measurements);}
+                var notifications = data.trackingReminderNotifications;
+                if(notifications && notifications.length){qm.storage.setTrackingReminderNotifications(notifications);}
+            }
+            qm.api.post('v3/trackingReminderNotifications', body, function(response){
+                saveResponse(response);
+                if(successHandler){successHandler(response);}
+            }, function(response){
+                qm.qmLog.error(response.message)
+                saveResponse(response); // Sometimes we still return notifications even with an error
+                if(errorHandler){errorHandler(response.message || response.error);}
+            });
+        },
+        syncIfQueued: function (){
             var deferred = Q.defer();
             var notifications = qm.notifications.getQueue();
             if(notifications && notifications.length){
-                return qm.notifications.syncNotificationsDeferred();
+                return qm.notifications.syncDeferred();
             } else {
                 deferred.resolve([]);
             }
             return deferred.promise;
         },
-        syncNotificationsDeferred: function(params){
+        syncDeferred: function(params){
             var deferred = Q.defer();
             if(params && params.noCache){qm.notifications.notificationsPromise = false;}
             if(!qm.getUser()){
@@ -6775,17 +6765,48 @@ var qm = {
             setTimeout(function(){qm.notifications.notificationsPromise = false;}, 15000)
             return qm.notifications.notificationsPromise = deferred.promise;
         },
-        syncNotificationsIfEmpty: function (){
+        syncIfEmpty: function (){
             var deferred = Q.defer();
             var notifications = qm.notifications.getLocalNotifications();
             if(!notifications || !notifications.length){
-                return qm.notifications.syncNotificationsDeferred();
+                return qm.notifications.syncDeferred();
             } else {
                 deferred.resolve(notifications);
             }
             return deferred.promise;
         },
-        groupTrackingReminderNotificationsByDateRange: function(notifications){
+        removeDuplicates: function(notifications){
+            var ids = [];
+            var toKeep = [];
+            if(!notifications){
+                throw "Notifications is not an array!"
+            }
+            if(typeof notifications.forEach !== "function"){
+                throw "Notifications is not an array!"
+            }
+            var allIds = notifications.map(function(n){
+                return n.id;
+            })
+            notifications.forEach(function(n){
+                if(n.id !== n.trackingReminderNotificationId){
+                    qmLog.errorAndExceptionTestingOrDevelopment("notification id: "+n.id +
+                        " does not match trackingReminderNotificationId: "+n.trackingReminderNotificationId, null, n);
+                }
+                var before = n.actionArray;
+                n.actionArray = qm.arrayHelper.removeDuplicatesByProperty(before, 'title');
+                if(before.length !== n.actionArray.length){
+                    qmLog.error("Duplicate button titles", before);
+                }
+                var id = n.trackingReminderNotificationId || n.id;
+                if(ids.indexOf(id) !== -1) {
+                    qmLog.errorAndExceptionTestingOrDevelopment("Duplicate notification id: "+id, null, n);
+                }
+                toKeep.push(n);
+                ids.push(id);
+            });
+            return toKeep;
+        },
+        groupByDate: function(notifications){
             if(!qm.arrayHelper.variableIsArray(notifications)){
                 qmLog.error("trackingReminderNotifications is not an array! trackingReminderNotifications: ",
                     notifications);
@@ -7443,37 +7464,6 @@ var qm = {
                     trackingReminder.valueAndFrequencyTextDescription.toLowerCase().indexOf('ended') !== -1;
             });
         },
-        removeDuplicateNotifications: function(notifications){
-            var ids = [];
-            var toKeep = [];
-            if(!notifications){
-                throw "Notifications is not an array!"
-            }
-            if(typeof notifications.forEach !== "function"){
-                throw "Notifications is not an array!"
-            }
-            var allIds = notifications.map(function(n){
-                return n.id;
-            })
-            notifications.forEach(function(n){
-                if(n.id !== n.trackingReminderNotificationId){
-                    qmLog.errorAndExceptionTestingOrDevelopment("notification id: "+n.id +
-                        " does not match trackingReminderNotificationId: "+n.trackingReminderNotificationId, null, n);
-                }
-                var before = n.actionArray;
-                n.actionArray = qm.arrayHelper.removeDuplicatesByProperty(before, 'title');
-                if(before.length !== n.actionArray.length){
-                    qmLog.error("Duplicate button titles", before);
-                }
-                var id = n.trackingReminderNotificationId || n.id;
-                if(ids.indexOf(id) !== -1) {
-                    qmLog.errorAndExceptionTestingOrDevelopment("Duplicate notification id: "+id, null, n);
-                }
-                toKeep.push(n);
-                ids.push(id);
-            });
-            return toKeep;
-        },
         separateFavoritesAndArchived: function(reminders){
             reminders = qm.reminderHelper.validateReminderArray(reminders);
             var separated = {allTrackingReminders: reminders};
@@ -7595,7 +7585,7 @@ var qm = {
                         deferred.reject(error);
                     });
                 };
-                qm.notifications.syncNotificationsIfQueued().then(function(){
+                qm.notifications.syncIfQueued().then(function(){
                     postTrackingRemindersToApiAndHandleResponse();
                 }, function (err){
                     postTrackingRemindersToApiAndHandleResponse();
@@ -8577,7 +8567,7 @@ var qm = {
             qm.qmLog.info("Saving " + notifications.length + " notifications to local storage");
             qm.notifications.setLastNotificationsRefreshTime();
             qm.chrome.updateChromeBadge(notifications.length);
-            notifications = qm.reminderHelper.removeDuplicateNotifications(notifications);
+            notifications = qm.notifications.removeDuplicates(notifications);
             qm.storage.setItem(qm.items.trackingReminderNotifications, notifications);
         },
         deleteByProperty: function(localStorageItemName, propertyName, propertyValue){
@@ -8660,7 +8650,7 @@ var qm = {
                     qm.chrome.updateChromeBadge(notifications.length);
                 }
             }
-            return qm.reminderHelper.removeDuplicateNotifications(notifications);
+            return qm.notifications.removeDuplicates(notifications);
         },
         getAsString: function(key){
             var item = qm.storage.getItem(key);

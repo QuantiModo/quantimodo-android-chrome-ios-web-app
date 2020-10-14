@@ -14,7 +14,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
             });
             $scope.$on('$ionicView.afterEnter', function(e){
                 qmLog.debug($scope.controller_name + ".afterEnter so posting queued notifications if any");
-                qm.notifications.syncNotificationsIfQueued();
+                qm.notifications.syncIfQueued();
                 qmService.refreshUserUsingAccessTokenInUrlIfNecessary();
                 $rootScope.setMicAndSpeechEnabled(qm.mic.getMicEnabled());
                 qm.chatButton.setZohoChatButtonZIndex();
