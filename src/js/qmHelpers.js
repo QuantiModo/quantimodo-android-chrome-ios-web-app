@@ -157,7 +157,7 @@ var qm = {
                 'X-App-Version': qm.appsManager.getAppVersion(),
                 'X-Framework': 'ionic'
             };
-            if(typeof moment !== "undefined"){
+            if(!qm.appMode.isBackEnd() && typeof moment !== "undefined"){
                 if(typeof moment.tz === "undefined"){
                     qmLog.error("moment.tz is not defined!");
                 } else {
@@ -275,6 +275,9 @@ var qm = {
             }
             if(response && response.body && response.body.errorMessage){
                 errorMessage += "\n" + response.body.errorMessage + ' ';
+            }
+            if(response && response.message && errorMessage.indexOf(response.message) === -1){
+                errorMessage += "\n" + response.message + ' ';
             }
             if(response && response.body && response.body.error && response.body.error.message){
                 errorMessage += "\n" + response.body.error.message + ' ';
@@ -576,7 +579,11 @@ var qm = {
         },
         post: function(path, body, successHandler, errorHandler){
             qm.api.getRequestUrl(path, function(url){
-                qm.qmLog.info("Making POST request to " + url);
+                qm.qmLog.info("POST " + url);
+                function responseSuccessful(response, data){
+                    data = data.data || data;
+                    return response.status === 201 || response.status === 204 || data.success === true
+                }
                 if(typeof XMLHttpRequest !== "undefined"){
                     var xhr = new XMLHttpRequest();   // new HttpRequest instance
                     xhr.open("POST", url);
@@ -586,7 +593,7 @@ var qm = {
                         if(xhr.readyState === XMLHttpRequest.DONE){
                             var fallback = xhr.responseText;
                             var response = qm.stringHelper.parseIfJsonString(xhr.responseText, fallback);
-                            if ( xhr.status === 201 || xhr.status === 204 || response.success === true) {
+                            if ( responseSuccessful(xhr, response)) {
                                 if(successHandler){successHandler(response);}
                             } else {
                                 qm.qmLog.error("qm.api.get error from " + url + " request: " + xhr.responseText, response);
@@ -602,18 +609,22 @@ var qm = {
                         body: JSON.stringify(body),
                         headers: headers
                     }).then(function(response){
-                        qm.qmLog.info("Got " + response.status + " response from POST to " + url);
+                        qm.qmLog.info(response.status + " response from\n\tPOST " + url);
+                        if(response.status === 204){
+                            if(successHandler){successHandler();}
+                            return;
+                        }
                         response.json().then(function(data){
-                            if (response.status === 201 || data.success === true) {
+                            if (responseSuccessful(response, data)) {
                                 if(successHandler){successHandler(data);}
                             } else {
-                                var err = "qm.api error "+response.status+" from POST to " + url
+                                var err = "qm.api error "+response.status+" from\n\tPOST " + url
                                 err = qm.api.generalErrorHandler(err, data, response)
                                 if(errorHandler){errorHandler(err);}
                             }
                         })
                     }).catch(function(err){
-                        qm.qmLog.error("Error from POST to " + url + ": " + err);
+                        qm.qmLog.error("ERROR from POST " + url + ":\n\t" + err);
                         if(errorHandler){errorHandler(err)}
                     });
                 }
@@ -4230,7 +4241,7 @@ var qm = {
                 },
                 locationAndWeatherTracking: {
                     title: "Location and Weather Tracking",
-                    textContent: qm.variableCategoryHelper.findVariableCategory('Location').moreInfo
+                    textContent: qm.variableCategoryHelper.findByNameIdObjOrUrl('Location').moreInfo
                 },
                 minimumAllowedValue: {
                     title: "Minimum Allowed Value",
@@ -4862,7 +4873,7 @@ var qm = {
                 src.startTimeString ||
                 src.startTimeEpoch;
             var unit = qm.unitHelper.find(src);
-            var cat = qm.variableCategoryHelper.findVariableCategory(src);
+            var cat = qm.variableCategoryHelper.findByNameIdObjOrUrl(src);
             if(!unit && cat){
                 unit = qm.unitHelper.find(cat);
             }
@@ -4911,10 +4922,12 @@ var qm = {
             qm.measurements.checkMeasurements(queue)
             var recent = qm.measurements.getRecentlyPostedMeasurements(params) || [];
             qm.measurements.checkMeasurements(recent)
+            var notifications = qm.notifications.getQueue();
             qm.measurements.getPrimaryOutcomeMeasurements(function (measurements) {
                 var indexed = qm.measurements.indexByVariableStartAt(measurements || []);
                 indexed = qm.measurements.indexByVariableStartAt(recent, indexed);
                 indexed = qm.measurements.indexByVariableStartAt(queue, indexed);
+                indexed = qm.measurements.indexByVariableStartAt(notifications, indexed);
                 var filtered = qm.measurements.filterAndSort(indexed, params)
                 cb(filtered);
             });
@@ -5115,7 +5128,7 @@ var qm = {
             m.displayValueAndUnitString = qm.stringHelper.formatValueUnitDisplayText(m.displayValueAndUnitString)
             m.valueUnitVariableName = m.displayValueAndUnitString + " " + m.variableName;
             if(!m.variableCategoryName){
-                var cat = qm.variableCategoryHelper.findVariableCategory(m);
+                var cat = qm.variableCategoryHelper.findByNameIdObjOrUrl(m);
                 if(cat){m.variableCategoryName = cat.name;}
             }
             //debugger
@@ -5130,7 +5143,7 @@ var qm = {
             }
             m.icon = m.icon || m.ionIcon;
             if(m.variableCategoryName && !m.icon){
-                var category = qm.variableCategoryHelper.findVariableCategory(m);
+                var category = qm.variableCategoryHelper.findByNameIdObjOrUrl(m);
                 m.icon = category.ionIcon;
                 if(!m.pngPath){
                     m.pngPath = category.pngPath;
@@ -5323,7 +5336,7 @@ var qm = {
         },
         setIonIcon: function(menuItem){
             if(menuItem.params.variableCategoryName){
-                var category = qm.variableCategoryHelper.findVariableCategory(menuItem.params);
+                var category = qm.variableCategoryHelper.findByNameIdObjOrUrl(menuItem.params);
                 if(category && category.ionIcon){
                     menuItem.params.ionIcon = category.ionIcon;
                 }
@@ -6165,13 +6178,10 @@ var qm = {
                 buttons: notification.card.buttons
             }
         },
-        getLocalNotifications: function(variableCategoryName){
-            var notifications = qm.storage.getItem(qm.items.trackingReminderNotifications);
-            if(!notifications || !notifications.length){
-                return [];
-            }
+        getCached: function(variableCategoryName){
+            var notifications = qm.storage.getItem(qm.items.trackingReminderNotifications) || [];
             if(variableCategoryName){
-                return qm.arrayHelper.getByProperty('variableCategoryName', variableCategoryName, notifications);
+                return qm.variableCategoryHelper.filterByVariableCategory(variableCategoryName, notifications);
             }
             return notifications;
         },
@@ -6281,7 +6291,7 @@ var qm = {
             qm.qmLog.info("Last notifications refresh " + qm.timeHelper.getTimeSinceString(qm.notifications.getLastNotificationsRefreshTime()));
             return qm.timeHelper.getUnixTimestampInSeconds() - qm.notifications.getLastNotificationsRefreshTime();
         },
-        addToSyncQueue: function(n){
+        addToQueue: function(n){
             qm.notifications.deleteById(n.id);
             qm.userVariables.updateLatestMeasurementTime(n.variableName, n.modifiedValue);
             var res = qm.storage.addToOrReplaceByIdAndMoveToFront(qm.items.notificationsSyncQueue, n);
@@ -6306,7 +6316,7 @@ var qm = {
             }else{
                 qm.qmLog.info('Not refreshing notifications because last refresh was last than an hour ago and we have notifications in local storage');
                 if(callback){
-                    callback(qm.notifications.getLocalNotifications());
+                    callback(qm.notifications.getCached());
                 }
             }
         },
@@ -6368,7 +6378,7 @@ var qm = {
             qm.notifications.lastAction = qm.stringHelper.formatValueUnitDisplayText(lastAction);
         },
         getQueue: function() {
-            return qm.storage.getItem(qm.items.notificationsSyncQueue);
+            return qm.storage.getItem(qm.items.notificationsSyncQueue) || [];
         },
         removeNotificationFromSyncQueueAndUnhide: function(n){
             var id = n.trackingReminderNotificationId || n.id;
@@ -6418,7 +6428,7 @@ var qm = {
                     }
                     return result;
                 }
-                var trackingReminderNotifications = qm.notifications.getLocalNotifications();
+                var trackingReminderNotifications = qm.notifications.getCached();
                 var numberOfWaitingNotifications = objectLength(trackingReminderNotifications);
                 if(uniqueNotification){
                     function getChromeRatingNotificationParams(trackingReminderNotification){
@@ -6441,7 +6451,7 @@ var qm = {
             return notificationParams;
         },
         getNumberInGlobalsOrLocalStorage: function(variableCategoryName){
-            var notifications = qm.notifications.getLocalNotifications(variableCategoryName);
+            var notifications = qm.notifications.getCached(variableCategoryName);
             if(notifications){
                 return notifications.length;
             }
@@ -6536,26 +6546,26 @@ var qm = {
         track: function(n){
             n.action = 'track';
             qm.qmLog.debug('trackTrackingReminderNotificationDeferred: Going to track ', n);
-            qm.notifications.addToSyncQueue(n);
+            qm.notifications.addToQueue(n);
         },
         trackAll: function(n, value){
             n.action = 'trackAll';
             qm.notifications.deleteByVariableName(n.variableName);
             if(value !== null){n.modifiedValue = value;}
-            qm.notifications.addToSyncQueue(n);
+            qm.notifications.addToQueue(n);
         },
         snooze: function(n){
             n.action = 'snooze';
-            qm.notifications.addToSyncQueue(n);
+            qm.notifications.addToQueue(n);
         },
         skipAll: function(n){
             n.action = 'skipAll';
             qm.notifications.deleteByVariableName(n.variableName);
-            qm.notifications.addToSyncQueue(n);
+            qm.notifications.addToQueue(n);
         },
         skip: function(trackingReminderNotification){
             trackingReminderNotification.action = 'skip';
-            qm.notifications.addToSyncQueue(trackingReminderNotification);
+            qm.notifications.addToQueue(trackingReminderNotification);
         },
         trackingReminderNotificationCommands: {
             "I don't know": function(){
@@ -6698,7 +6708,7 @@ var qm = {
                         'variableId': n.variableId,
                         'trackingReminderId': n.trackingReminderId,
                         'action': n.action,
-                        'timeZone': moment.tz.guess(),
+                        'timeZone': qm.timeHelper.guessTimeZone(),
                     }
                 })
             }
@@ -6740,14 +6750,9 @@ var qm = {
         syncDeferred: function(params){
             var deferred = Q.defer();
             if(params && params.noCache){qm.notifications.notificationsPromise = false;}
-            if(!qm.getUser()){
-                deferred.reject("No user to get notifications");
-                qm.notifications.notificationsPromise = false;
-                return deferred.promise;
-            }
             if(qm.notifications.notificationsPromise){return qm.notifications.notificationsPromise;}
             qm.notifications.syncNotifications(function(response){
-                var notifications = qm.notifications.getLocalNotifications();
+                var notifications = qm.notifications.getCached();
                 if(notifications.length && qm.platform.isMobile() && qm.notifications.getDeviceTokenToSync()){
                     qm.notifications.registerDeviceToken();
                 }
@@ -6759,7 +6764,7 @@ var qm = {
                 }
                 qm.chrome.updateChromeBadge(notifications.length);
                 qm.notifications.notificationsPromise = false;
-                deferred.resolve(notifications);
+                deferred.resolve(response);
             }, function(error){
                 qmLog.error(error);
                 qm.notifications.notificationsPromise = false;
@@ -6770,7 +6775,7 @@ var qm = {
         },
         syncIfEmpty: function (){
             var deferred = Q.defer();
-            var notifications = qm.notifications.getLocalNotifications();
+            var notifications = qm.notifications.getCached();
             if(!notifications || !notifications.length){
                 return qm.notifications.syncDeferred();
             } else {
@@ -7376,6 +7381,15 @@ var qm = {
                         qm.userVariables.refreshIfNumberOfRemindersGreaterThanUserVariables();
                     });
                 }
+                var active = qm.reminderHelper.getActive(reminders);
+                if(active && active.length){
+                    qm.push.checkHoursSinceLastPushNotificationReceived();
+                    if(qm.qmService){
+                        qm.qmService.notifications.getDrawOverAppsPopupPermissionIfNecessary();
+                        qm.qmService.scheduleSingleMostFrequentLocalNotification(reminders);
+                    }
+                }
+                reminders = qm.reminderHelper.validateReminderArray(reminders);
                 qm.api.generalResponseHandler(error, reminders, response, successHandler, errorHandler, params,
                     'getTrackingRemindersFromApi');
             });
@@ -7483,7 +7497,7 @@ var qm = {
                 //reminderTypesArray.favorites = [];
             }
             try{
-                separated.trackingReminders = qm.reminderHelper.getActive(reminders);
+                separated.active = qm.reminderHelper.getActive(reminders);
             }catch (error){
                 qmLog.error(error, {trackingReminders: reminders});
             }
@@ -7529,22 +7543,12 @@ var qm = {
             var queue = qm.reminderHelper.getQueue();
             if(queue && queue.length){
                 qm.notifications.syncIfQueued().then(function(){
-                    qm.reminderHelper.postReminders(queue);
+                    qm.reminderHelper.postReminders(queue, deferred);
                 }, function (err){
-                    qm.reminderHelper.postReminders(queue);
-                    deferred.reject(err);
+                    qm.reminderHelper.postReminders(queue, deferred);
                 })
             }else{
-                qm.reminderHelper.getRemindersFromApi({force: force}, function(reminders){
-                    var active = qm.reminderHelper.getActive(reminders);
-                    if(active && active.length){
-                        qm.push.checkHoursSinceLastPushNotificationReceived();
-                        if(qm.qmService){
-                            qm.qmService.notifications.getDrawOverAppsPopupPermissionIfNecessary();
-                            qm.qmService.scheduleSingleMostFrequentLocalNotification(reminders);
-                        }
-                    }
-                    reminders = qm.reminderHelper.validateReminderArray(reminders);
+                qm.reminderHelper.getRemindersFromApi({force: force || false}, function(reminders){
                     deferred.resolve(reminders);
                     qm.reminderHelper.syncPromise = null;
                 }, function(error){
@@ -7557,59 +7561,76 @@ var qm = {
             setTimeout(function(){qm.reminderHelper.syncPromise = null;}, 20000);
             return deferred.promise;
         },
-        postReminders: function(queue, successHandler, errorHandler){
-            qmLog.debug('postTrackingRemindersToApi: ', reminders);
-            qmLog.info('Posting ' + reminders.length + " Tracking Reminders To Api");
+        postReminders: function(queue, deferred){
+            qmLog.debug('postTrackingRemindersToApi: ', queue);
+            qmLog.info('Posting ' + queue.length + " Tracking Reminders To Api");
             if(!(queue instanceof Array)){queue = [queue];}
             queue[0] = qm.timeHelper.addTimeZoneOffsetProperty(queue[0]);
             // Get rid of card objects, available unit array and variable category object to decrease size of body
             queue = qm.objectHelper.removeObjectAndArrayPropertiesForArray(queue);
             qm.api.post('api/v3/trackingReminders', queue, function(response){
                 qmLog.debug('postTrackingRemindersToApi response: ', response);
-                var data = (response && response.data) ? response.data : null;
-                if(data){
-                    var userVariables = data.userVariables;
-                    if(userVariables){qm.variablesHelper.saveToLocalStorage(userVariables);}
-                    var fromResponse = data.trackingReminders;
-                    if(!fromResponse){
-                        qmLog.error("No response.trackingReminders returned from postTrackingRemindersDeferred")
-                    }else if(!fromResponse.length){
-                        qmLog.error("response.trackingReminders is an empty array in postTrackingRemindersDeferred")
-                    }else{
-                        qm.reminderHelper.saveToLocalStorage(fromResponse);
-                        qm.storage.removeItem(qm.items.trackingReminderSyncQueue);
-                        if(qm.qmService){
-                            qm.qmService.scheduleSingleMostFrequentLocalNotification(fromResponse);
-                            qm.qmService.reminders.broadcastGetTrackingReminders();
-                        }
-                    }
-                    var notifications = data.trackingReminderNotifications;
-                    if(!notifications){
-                        qmLog.error("No response.trackingReminderNotifications returned from postTrackingRemindersDeferred")
-                    }else if(!notifications.length){
-                        qmLog.error("response.trackingReminderNotifications is an empty array in postTrackingRemindersDeferred")
-                    }else{
-                        var notificationExists = false;
-                        for(var i = 0; i < notifications.length; i++){
-                            if(notifications[i].variableName === queue[0].variableName){
-                                notificationExists = true;
-                                break;
-                            }
-                        }
-                        if(!notificationExists && queue[0].reminderFrequency && !queue[0].stopTrackingDate){
-                            qmLog.error("Notification not found for reminder we just created!",{'reminder': queue[0]});
-                        }
-                        qmLog.info("Got " + notifications.length +
-                            " notifications to from postTrackingRemindersDeferred response",
-                            {notifications: notifications});
-                        qm.storage.setTrackingReminderNotifications(notifications);
-                        if(qm.qmService){qm.qmService.notifications.broadcastGetTrackingReminderNotifications();}
-                    }
-                }else{
-                    qmLog.error("No postTrackingRemindersToApi response.data!");
-                }
+                qm.reminderHelper.handlePostRemindersResponse(response, queue)
+                qm.reminderHelper.syncPromise = null;
                 deferred.resolve(response);
-            }, errorHandler);
+            }, function(err){
+                qm.reminderHelper.syncPromise = null;
+                deferred.reject(err);
+            });
+        },
+        handlePostRemindersResponse: function(response, postedReminders){
+            var data = (response && response.data) ? response.data : null;
+            if(data){
+                var userVariables = data.userVariables;
+                if(userVariables){qm.variablesHelper.saveToLocalStorage(userVariables, postedReminders);}
+                qm.reminderHelper.handleRemindersInResponse(data, postedReminders)
+                qm.reminderHelper.handleNotificationsInResponse(data, postedReminders)
+            }else{
+                qmLog.error("No postTrackingRemindersToApi response.data!");
+            }
+        },
+        handleRemindersInResponse: function(data){
+            var fromResponse = data.trackingReminders;
+            if(!fromResponse){
+                qmLog.error("No response.trackingReminders returned from postTrackingRemindersDeferred")
+            }else if(!fromResponse.length){
+                qmLog.error("response.trackingReminders is an empty array in postTrackingRemindersDeferred")
+            }else{
+                qm.reminderHelper.saveToLocalStorage(fromResponse);
+                qm.storage.removeItem(qm.items.trackingReminderSyncQueue);
+                if(qm.qmService){
+                    qm.qmService.scheduleSingleMostFrequentLocalNotification(fromResponse);
+                    qm.qmService.reminders.broadcastGetTrackingReminders();
+                }
+            }
+        },
+        handleNotificationsInResponse: function(data, postedReminders){
+            var notifications = data.trackingReminderNotifications;
+            var reminder = postedReminders[0];
+            if(!notifications){
+                qmLog.error("No response.trackingReminderNotifications returned from postTrackingRemindersDeferred")
+            }else if(!notifications.length){
+                qmLog.error("response.trackingReminderNotifications is an empty array in postTrackingRemindersDeferred")
+            }else{
+                var notificationExists = false;
+                for(var i = 0; i < notifications.length; i++){
+                    if(notifications[i].variableName === reminder.variableName){
+                        notificationExists = true;
+                        break;
+                    }
+                }
+                if(!notificationExists && reminder.reminderFrequency && !reminder.stopTrackingDate){
+                    qmLog.error("Notification not found for reminder we just created!",
+                        {'reminder': reminder});
+                }
+                var names = notifications.map(function(one){
+                    return one.variableName;
+                })
+                qmLog.info("Got " + notifications.length + " notifications from POST TrackingReminders response",
+                    names);
+                qm.storage.setTrackingReminderNotifications(notifications);
+                if(qm.qmService){qm.qmService.notifications.broadcastGetTrackingReminderNotifications();}
+            }
         },
         getValueAndFrequencyTextDescriptionWithTime: function(tr){
             if(tr.reminderFrequency === 86400){
@@ -7648,24 +7669,39 @@ var qm = {
             var unfiltered = qm.storage.getItem(qm.items.trackingReminders) || [];
             return unfiltered;
         },
-        getReminders: function(variableCategoryName){
+        populateDefaultFields: function(reminders){
+            qm.api.addVariableCategoryAndUnit(reminders);
+            qm.reminderHelper.addRatingTimesToDailyReminders(reminders); //We need to keep this in case we want offline reminders
+        },
+        getRemindersFavoritesArchived: function(variableCategoryName){
+            var deferred = Q.defer();
+            qm.reminderHelper.getReminders({}, variableCategoryName).then(function(reminders){
+                reminders = qm.reminderHelper.validateReminderArray(reminders);
+                qmLog.debug('Got ' + reminders.length + ' unprocessed ' + variableCategoryName + ' category trackingReminders');
+                var separated = qm.reminderHelper.filterByCategoryAndSeparateFavoritesAndArchived(reminders, variableCategoryName);
+                qmLog.debug('Returning reminderTypesArray from getTrackingRemindersDeferred');
+                deferred.resolve(separated);
+            });
+            return deferred.promise;
+        },
+        getActiveReminders: function(categoryName){
+            var deferred = Q.defer();
+            qm.reminderHelper.getRemindersFavoritesArchived(categoryName).then(function(allTypes){
+                deferred.resolve(allTypes.active);
+            }, function(error){
+                deferred.reject(error);
+            });
+            return deferred.promise;
+        },
+        getReminders: function(params, variableCategoryName){
             var deferred = Q.defer();
             var filtered = [];
             var unfiltered = qm.reminderHelper.getCached();
             var queue = qm.reminderHelper.getQueue();
             unfiltered = unfiltered.concat(queue);
-            qm.api.addVariableCategoryAndUnit(unfiltered);
-            if(variableCategoryName && variableCategoryName !== 'Anything'){
-                for(var j = 0; j < unfiltered.length; j++){
-                    if(variableCategoryName === unfiltered[j].variableCategoryName){
-                        filtered.push(unfiltered[j]);
-                    }
-                }
-            }else{
-                filtered = unfiltered;
-            }
-            filtered = qm.reminderHelper.addRatingTimesToDailyReminders(filtered); //We need to keep this in case we want offline reminders
-            filtered = qm.reminderHelper.validateReminderArray(filtered);
+            if(variableCategoryName){filtered = qm.variableCategoryHelper.filterByVariableCategory(variableCategoryName, unfiltered)}
+            if(params){filtered = qm.arrayHelper.filterByRequestParams(unfiltered, params);}
+            qm.reminderHelper.populateDefaultFields(filtered);
             if(filtered && filtered.length){
                 deferred.resolve(filtered);
             }else{
@@ -7688,7 +7724,6 @@ var qm = {
                         qm.reminderHelper.convertReminderTimeStringToMoment(reminders[index].reminderStartTime).format("h:mm A");
                 }
             }
-            return reminders;
         },
         convertReminderTimeStringToMoment: function(reminderTimeString){
             var now = new Date();
@@ -7707,15 +7742,39 @@ var qm = {
         },
         deleteLocalReminder: function(reminderToDelete){
             var allTrackingReminders = qm.reminderHelper.getCached();
-            var keep = [];
-            allTrackingReminders.forEach(function(one, key){
-                if(!(one.variableName === reminderToDelete.variableName &&
+            var keep = allTrackingReminders.filter(function(one, key){
+                var matches = one.variableName === reminderToDelete.variableName &&
                     one.reminderFrequency === reminderToDelete.reminderFrequency &&
-                    one.reminderStartTime === reminderToDelete.reminderStartTime)){
-                    keep.push(one);
-                }
+                    one.reminderStartTime === reminderToDelete.reminderStartTime;
+                return !matches;
             });
-            qm.storage.setItem('trackingReminders', keep);
+            qm.storage.setItem(qm.items.trackingReminders, keep);
+        },
+        getByVariableName: function(variableName){
+            var deferred = Q.defer();
+            qm.reminderHelper.getReminders({variableName: variableName}).then(function(reminders){
+                deferred.resolve(reminders);
+            }, function (err){
+                deferred.reject(err);
+            })
+            return deferred.promise;
+        },
+        deleteByVariableName: function(variableName){
+            var deferred = Q.defer();
+            qm.reminderHelper.getByVariableName(variableName).then(function(reminders){
+                var promises = [];
+                reminders.forEach(function(one){
+                    promises.push(qm.reminderHelper.deleteReminder(one))
+                })
+                Q.all(promises).then(function(responses){
+                    deferred.resolve(responses);
+                }, function (err){
+                    deferred.reject(err);
+                })
+            }, function (err){
+                deferred.reject(err);
+            })
+            return deferred.promise;
         },
         deleteReminder: function(tr){
             var deferred = Q.defer();
@@ -7723,8 +7782,9 @@ var qm = {
             qm.toast.infoToast("Deleted " + tr.variableName);
             var id = tr.trackingReminderId || tr.id;
             if(!id){
-                deferred.resolve();
-                qmLog.error('No reminder id to delete with!  Maybe it has only been stored locally and has not updated from server yet.');
+                var err = 'No reminder id to delete with!  Maybe it has only been stored locally and has not updated from server yet.'
+                deferred.resolve(err);
+                qmLog.error(err);
                 return deferred.promise;
             }
             qm.storage.deleteByProperty(qm.items.trackingReminderNotifications, 'trackingReminderId', id);
@@ -9671,12 +9731,21 @@ var qm = {
                 qm.qmLog.error("Nothing provided to addTimeZoneOffsetProperty");
                 return obj;
             }
+            if(qm.appMode.isBackEnd()){
+                qm.qmLog.debug("Not going to addTimeZoneOffsetProperty because browser not available");
+                return obj;
+            }
             var a = new Date();
             obj.timeZone = moment.tz.guess();
             obj.timeZoneOffset = a.getTimezoneOffset();
             return obj;
         },
         guessTimeZoneIfNecessary: function(cb){
+            if(qm.appMode.isBackEnd()){
+                qm.qmLog.debug("Not going to guessTimeZoneIfNecessary because browser not available");
+                if(cb){cb();}
+                return;
+            }
             var u = qm.getUser();
             if(!u || u.timezone){
                 if(cb){cb();}
@@ -9684,7 +9753,7 @@ var qm = {
             }
             var a = new Date();
             var params = {};
-            params.timeZone = moment.tz.guess();
+            params.timeZone = qm.timeHelper.guessTimeZone();
             params.timeZoneOffset = a.getTimezoneOffset();
             if(!params.timeZoneOffset){
                 qmLog.info("Not setting timeZone because offset is 0");
@@ -9698,6 +9767,13 @@ var qm = {
                 });
                 if(cb){cb();}
             });
+        },
+        guessTimeZone: function(){
+            if(qm.appMode.isBackEnd()){
+                qm.qmLog.debug("Not going to guessTimeZoneIfNecessary because browser not available");
+                return null;
+            }
+            params.timeZone = moment.tz.guess();
         },
         fromUnixTime: function(unixTime) {
             return qm.timeHelper.toISO(unixTime);
@@ -9735,18 +9811,22 @@ var qm = {
                     toast.addEventListener('mouseleave', Swal.resumeTimer)
                 }
             })
-            Toast.fire({
-                icon: 'error',
-                title: errorMessage
-            }).then(function(result){
-                if (result.value) {
-                    if(callback){
-                        callback(result);
-                    } else {
-                        qm.help.openDrift();
+            try{
+                Toast.fire({
+                    icon: 'error',
+                    title: errorMessage
+                }).then(function(result){
+                    if (result.value) {
+                        if(callback){
+                            callback(result);
+                        } else {
+                            qm.help.openDrift();
+                        }
                     }
-                }
-            })
+                })
+            }catch (e) {
+                qmLog.info("Could not call Toast.fire because "+e.message)
+            }
         },
         showQuestionToast: function(question, successMessage, callback){
             var Toast = Swal.mixin({
@@ -9789,15 +9869,27 @@ var qm = {
                 }
             };
             if(confirmButtonText){params.confirmButtonText = confirmButtonText;}
-            var Toast = Swal.mixin(params);
-            Toast.fire({
-                icon: 'success',
-                title: message
-            }).then(function(result){
-                if (result.value) {
-                    callback(result);
-                }
-            })
+            if(typeof Swal === "undefined"){
+                qmLog.error("Swal not defined to show: "+message);
+                return;
+            }
+            if(qm.appMode.isBackEnd()){
+                qmLog.info("Can't call Toast.fire because browser is not available.  TODO: Mock Swal")
+                return;
+            }
+            try{
+                var Toast = Swal.mixin(params);
+                Toast.fire({
+                    icon: 'success',
+                    title: message
+                }).then(function(result){
+                    if (result.value) {
+                        callback(result);
+                    }
+                })
+            } catch (e) {
+                qmLog.error("Swal Toast.fire failed because: "+e.message);
+            }
         },
     },
     trackingReminderNotifications: [],
@@ -10952,7 +11044,7 @@ var qm = {
     variableCategoryHelper: {
         replaceCategoryAliasWithActualNameIfNecessary: function(provided){
             if(provided === "Anything"){return null;}
-            var category = qm.variableCategoryHelper.findVariableCategory(provided);
+            var category = qm.variableCategoryHelper.findByNameIdObjOrUrl(provided);
             if(!category){
                 qmLog.errorAndExceptionTestingOrDevelopment("Category "+provided+" not found!");
                 return null;
@@ -10962,33 +11054,61 @@ var qm = {
         getVariableCategories: function(){
             return qm.staticData.variableCategories;
         },
-        findVariableCategory: function(nameOrId){
-            if(typeof nameOrId === 'object' && nameOrId !== null){
-                var obj = nameOrId;
-                nameOrId = nameOrId.variableCategoryName || nameOrId.variableCategoryId;
-                if(!nameOrId && obj.measurement){
-                    nameOrId = obj.measurement.variableCategoryName || obj.measurement.variableCategoryId;
-                }
-                if(!nameOrId && obj.variableObject){
-                    nameOrId = obj.variableObject.variableCategoryName || obj.variableObject.variableCategoryId;
-                }
-                if(!nameOrId){
-                    qmLog.debug("No name or id from object in findVariableCategory", obj)
-                    return null;
-                }
+        findByObj: function(obj){
+            var nameOrId = obj.variableCategoryName || obj.variableCategoryId || null;
+            if(!nameOrId && obj.measurement){
+                nameOrId = obj.measurement.variableCategoryName || obj.measurement.variableCategoryId;
             }
-            if(!nameOrId){nameOrId = qm.urlHelper.getParam('variableCategoryName');}
-            if(!nameOrId){nameOrId = qm.urlHelper.getParam('variableCategoryId');}
-            var categories = qm.variableCategoryHelper.getVariableCategories();
-            var id, name = null;
+            if(!nameOrId && obj.variableObject){
+                nameOrId = obj.variableObject.variableCategoryName || obj.variableObject.variableCategoryId;
+            }
             if(!nameOrId){
+                qmLog.debug("No name or id from object in findVariableCategory", obj)
+                return null;
+            }
+            return qm.variableCategoryHelper.findByNameOrId(nameOrId);
+        },
+        findByNameIdObjOrUrl: function(nameIdObj){
+            if(typeof nameIdObj === 'object' && nameIdObj !== null){
+                return qm.variableCategoryHelper.findByObj(nameIdObj);
+            }
+            if(!nameIdObj){
+                nameIdObj = qm.urlHelper.getParam('variableCategoryName') ||
+                    qm.urlHelper.getParam('variableCategoryId') ||
+                    null;
+            }
+            if(!nameIdObj){
                 qmLog.error("No name or id provided to findVariableCategory")
                 return null;
             }
+            return qm.variableCategoryHelper.findByNameOrId(nameIdObj);
+        },
+        findByNameIdObj: function(nameIdObj){
+            if(typeof nameIdObj === 'object' && nameIdObj !== null){
+                return qm.variableCategoryHelper.findByObj(nameIdObj);
+            }
+            if(!nameIdObj){
+                qmLog.error("No name or id provided to findVariableCategory")
+                return null;
+            }
+            return qm.variableCategoryHelper.findByNameOrId(nameIdObj);
+        },
+        getNameFromStateParamsOrUrl: function(obj1, obj2, obj3){
+            var name = qm.urlHelper.getParam('variableCategoryName');
+            if(obj1 && obj1.variableCategoryName){name = obj1.variableCategoryName;}
+            if(obj2 && obj2.variableCategoryName){name = obj2.variableCategoryName;}
+            if(obj3 && obj3.variableCategoryName){name = obj3.variableCategoryName;}
+            if(name){name = qm.variableCategoryHelper.replaceCategoryAliasWithActualNameIfNecessary(name);}
+            return name;
+        },
+        findByNameOrId: function(nameOrId){
+            var categories = qm.variableCategoryHelper.getVariableCategories();
+            var id, name = null;
             if(Number.isInteger(nameOrId)){
                 id = nameOrId;
             } else {
                 name = nameOrId.toLowerCase();
+                name = name.replace("+", " ")
             }
             var c = categories.find(function(c){
                 if(c.id === id){return true;}
@@ -11001,30 +11121,6 @@ var qm = {
             });
             return c;
         },
-        getVariableCategoryNameFromStateParamsOrUrl: function(obj1, obj2, obj3){
-            var name = qm.urlHelper.getParam('variableCategoryName');
-            if(obj1 && obj1.variableCategoryName){name = obj1.variableCategoryName;}
-            if(obj2 && obj2.variableCategoryName){name = obj2.variableCategoryName;}
-            if(obj3 && obj3.variableCategoryName){name = obj3.variableCategoryName;}
-            if(name){name = qm.variableCategoryHelper.replaceCategoryAliasWithActualNameIfNecessary(name);}
-            return name;
-        },
-        getByNameOrId: function(nameOrId){
-            var cats = qm.variableCategoryHelper.getVariableCategories();
-            if(isNaN(nameOrId)){
-                nameOrId = nameOrId.toLowerCase();
-                nameOrId = nameOrId.replace("+", " ")
-                return cats.find(function(c){
-                    // noinspection EqualityComparisonWithCoercionJS
-                    if(c.id == nameOrId){return true;}
-                    if(c.name.toLowerCase() === nameOrId){return true;}
-
-                    return false;
-                });
-            } else {
-                return cats.find(function(c){return c.id === nameOrId;});
-            }
-        },
         addVariableCategoryProperties: function(arr){
             if(!arr){return arr;}
             if(!Array.isArray(arr)){
@@ -11036,7 +11132,7 @@ var qm = {
                 var cat = obj.variableCategory;
                 if(!cat){
                     var nameOrId = obj.variableCategoryId || obj.variableCategoryName || null;
-                    if(nameOrId){cat = qm.variableCategoryHelper.findVariableCategory(nameOrId);}
+                    if(nameOrId){cat = qm.variableCategoryHelper.findByNameIdObjOrUrl(nameOrId);}
                 }
                 if(cat){
                     obj.fontAwesome = obj.fontAwesome || cat.fontAwesome
@@ -11050,6 +11146,15 @@ var qm = {
                 }
             }
             return arr;
+        },
+        filterByVariableCategory: function(nameOrId, unfiltered){
+            var cat = qm.variableCategoryHelper.findByNameIdObjOrUrl(nameOrId);
+            if(!cat){throw "Category not found with name or id: "+nameOrId}
+            if(cat.name === 'Anything'){return unfiltered;}
+            return unfiltered.filter(function(one){
+                var oneCat = qm.variableCategoryHelper.findByNameIdObj(one);
+                return oneCat.id === cat.id;
+            });
         }
     },
     visualizer: {

@@ -2271,7 +2271,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                         dialogParams.placeholder = "Enter a variable";
                     }
                     if(dialogParams.requestParams && dialogParams.requestParams.variableCategoryName){
-                        var cat = qm.variableCategoryHelper.findVariableCategory(dialogParams.requestParams);
+                        var cat = qm.variableCategoryHelper.findByNameIdObjOrUrl(dialogParams.requestParams);
                         if(cat){
                             var name = cat.variableCategoryNameSingular.toLowerCase();
                             dialogParams.title = 'Select ' + name;
@@ -2571,7 +2571,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 getTitle: function(variableCategoryName){
                     var title = 'Enter a variable';
                     if(variableCategoryName){
-                        var variableCategory = qm.variableCategoryHelper.findVariableCategory(variableCategoryName);
+                        var variableCategory = qm.variableCategoryHelper.findByNameIdObjOrUrl(variableCategoryName);
                         if(variableCategory){
                             title = "Enter a " + variableCategory.variableCategoryNameSingular;
                         }
@@ -3165,7 +3165,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 }
                 var nameOrId = value.variableCategoryId || value.variableCategoryName || null;
                 if(!nameOrId){return;}
-                var cat = qm.variableCategoryHelper.findVariableCategory(nameOrId);
+                var cat = qm.variableCategoryHelper.findByNameIdObjOrUrl(nameOrId);
                 if(cat){
                     if(typeof value.iconClass === "undefined"){
                         value.iconClass = 'icon positive ' + cat.ionIcon;
@@ -3771,17 +3771,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         };
         qmService.storage.getFavorites = function(categoryName){
             var deferred = $q.defer();
-            qmService.getAllReminderTypes(categoryName).then(function(allTypes){
+            qm.reminderHelper.getRemindersFavoritesArchived(categoryName).then(function(allTypes){
                 deferred.resolve(allTypes.favorites);
-            }, function(error){
-                deferred.reject(error);
-            });
-            return deferred.promise;
-        };
-        qmService.storage.getReminders = function(categoryName){
-            var deferred = $q.defer();
-            qmService.getAllReminderTypes(categoryName).then(function(allTypes){
-                deferred.resolve(allTypes.trackingReminders);
             }, function(error){
                 deferred.reject(error);
             });
@@ -6261,22 +6252,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 ];
             }
             return null;
-        };
-        qmService.getAllReminderTypes = function(variableCategoryName, type){
-            var deferred = $q.defer();
-            qm.reminderHelper.getReminders(variableCategoryName).then(function(reminders){
-                reminders = qm.reminderHelper.validateReminderArray(reminders);
-                qmLog.debug('Got ' + reminders.length + ' unprocessed ' + variableCategoryName + ' category trackingReminders');
-                var separated = qm.reminderHelper.filterByCategoryAndSeparateFavoritesAndArchived(reminders, variableCategoryName);
-                if(type){
-                    qmLog.info('Got ' + separated[type].length + ' ' + variableCategoryName + ' category ' + type + 's');
-                    deferred.resolve(separated[type]);
-                }else{
-                    qmLog.debug('Returning reminderTypesArray from getTrackingRemindersDeferred');
-                    deferred.resolve(separated);
-                }
-            });
-            return deferred.promise;
         };
         qmService.convertTrackingReminderToVariableObject = function(trackingReminder){
             var variableObject = JSON.parse(JSON.stringify(trackingReminder));
