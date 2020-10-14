@@ -3405,12 +3405,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 vote: (study.studyVotes) ? study.studyVotes.userVote : study.userVote
             }, successHandler, errorHandler);
         };
-        qmService.deleteVoteToApi = function(study, successHandler, errorHandler){
-            qm.api.post('api/v3/votes/delete', {
-                causeVariableName: qm.studyHelper.getCauseVariableName(study),
-                effectVariableName: qm.studyHelper.getEffectVariableName(study)
-            }, successHandler, errorHandler);
-        };
         qmService.getVariableByIdFromApi = function(variableId, successHandler, errorHandler){
             if(!qm.api.configureClient('getVariableByIdFromApi', errorHandler)){
                 return false;
@@ -4925,16 +4919,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 deferred.resolve(response.data);
             }, function(error){
                 qmLog.error(error);
-                deferred.reject(error);
-            });
-            return deferred.promise;
-        };
-        qmService.deleteVoteDeferred = function(study){
-            var deferred = $q.defer();
-            qmService.deleteVoteToApi(study, function(response){
-                deferred.resolve(true);
-            }, function(error){
-                qmLog.error("deleteVote response", error);
                 deferred.reject(error);
             });
             return deferred.promise;
