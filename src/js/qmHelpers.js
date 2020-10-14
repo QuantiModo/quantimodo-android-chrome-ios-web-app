@@ -4866,12 +4866,10 @@ var qm = {
             } else {
                 value = null;
             }
+            var startAt = qm.measurements.getStartAt(src);
             var timeAt = src.trackingReminderNotificationTimeEpoch ||
-                src.startAt ||
-                src.startTime ||
-                src.notifyAt ||
-                src.startTimeString ||
-                src.startTimeEpoch;
+                startAt ||
+                src.notifyAt;
             var unit = qm.unitHelper.find(src);
             var cat = qm.variableCategoryHelper.findByNameIdObjOrUrl(src);
             if(!unit && cat){
@@ -4904,14 +4902,14 @@ var qm = {
         },
         getUniqueKey: function(m){
             if(m.id){return m.id.toString();}
-            var startTime = m.startTime || m.startTimeEpoch;
-            return startTime.toString()+":"+m.variableId;
+            var startAt = qm.measurements.getStartAt(m);
+            return startAt+":"+m.variableId;
         },
         indexByVariableStartAt: function(arr, indexed){
             if(!indexed){indexed = {}}
             arr = qm.measurements.flattenMeasurements(arr);
             arr.forEach(function(m){
-                var startAt = m.startAt ||  qm.timeHelper.fromUnixTime(m.startTime || m.startTimeEpoch);
+                var startAt = qm.measurements.getStartAt(m);
                 if(!indexed[m.variableName]){indexed[m.variableName] = {};}
                 indexed[m.variableName][startAt] = m;
             });
@@ -4975,14 +4973,15 @@ var qm = {
             if(id){
                 qm.measurements.deleteLocalById(id);
             }else{
-                var startAt = toDelete.startAt || qm.timeHelper.fromUnixTime(toDelete.startTimeEpoch || toDelete.startTime);
+                var startAt = qm.measurements.getStartAt(toDelete)
                 var startTime = qm.timeHelper.toUnixTime(startAt);
                 var variableName = toDelete.variableName;
                 qm.storage.deleteByProperty(qm.items.measurementsQueue, 'startTimeEpoch', startTime);
                 qm.storage.deleteByProperty(qm.items.measurementsQueue, 'startTime', startTime);
                 var recent = qm.measurements.flattenMeasurements(qm.measurements.measurementCache);
                 recent = recent.filter(function(m){
-                    return m.startTimeEpoch !== startTime && m.startTime !== startTime;
+                    var currentStartAt = qm.measurements.getStartAt(m)
+                    return currentStartAt !== startAt;
                 });
                 qm.measurements.measurementCache = recent;
             }
@@ -4991,7 +4990,7 @@ var qm = {
             var deferred = Q.defer();
             qm.measurements.deleteLocally(toDelete);
             qm.toast.infoToast("Deleted " + toDelete.variableName + " measurement");
-            var startAt = toDelete.startAt || toDelete.startTime || toDelete.startTimeEpoch || null;
+            var startAt = qm.measurements.getStartAt(toDelete)
             if(!startAt){
                 qm.qmLog.errorAndExceptionTestingOrDevelopment("No start time provided to delete measurement: ", toDelete);
             }
@@ -5112,7 +5111,7 @@ var qm = {
                 m.note = '<a href="' + parsedNote.url + '" target="_blank">' + parsedNote.message + '</a>';
             }
             m.startTime = m.startTime || m.startTimeEpoch;
-            m.startAt = m.startAt || m.startTimeString;
+            m.startAt = qm.measurements.getStartAt(m);
             var unit = qm.unitHelper.getByNameAbbreviatedNameOrId(m.unitId || m.unitAbbreviatedName);
             if(!unit){
                 debugger
@@ -5176,7 +5175,8 @@ var qm = {
             }
             isStartTimeInMilliseconds(m);
             qm.measurements.addLocationAndSource(m);
-            if(!m.startAt && !m.startTime && !m.startTimeEpoch){
+            var startAt = qm.measurements.getStartAt(m);
+            if(!startAt){
                 m.startAt = qm.timeHelper.iso();
             }
             if(m.prevStartTimeEpoch){ // Primary outcome variable - update through measurementsQueue
@@ -5256,6 +5256,19 @@ var qm = {
         validationFailure: function(message, object){
             qm.alert.validationFailureAlert(message);
             qmLog.error(message, null, {measurement: object});
+        },
+        getStartAt: function(m){
+            return m.startAt = m.startAt || qm.timeHelper.iso(m.startTimeEpoch || m.startTime || m.startTimeString);
+        },
+        getLogString: function(m) {
+            return m.value+m.unitAbbreviatedName+" "+ m.variableName+" at "+qm.measurements.getStartAt(m);
+        },
+        logMeasurements: function(measurements, title){
+            var message = title || "Local Measurements:\n"
+            measurements.forEach(function(m){
+                message += "\t"+qm.measurements.getLogString(m)+"\n"
+            })
+            qmLog.info(message)
         }
     },
     manualTrackingVariableCategoryNames: [
@@ -9643,16 +9656,16 @@ var qm = {
         iso: function(timeAt){
             if(!timeAt){
                 var d = new Date();
-                return d.toISOString();
+                timeAt = d.toISOString();
             }
-            return qm.timeHelper.toISO(timeAt);
+            return qm.timeHelper.yearMonthDayMilitaryTime(timeAt);
         },
         getDateTime: function(timeAt){
             return qm.timeHelper.toDate(timeAt);
         },
         toDate: function(timeAt){
             var unixTime = qm.timeHelper.universalConversionToUnixTimeSeconds(timeAt);
-            return qm.timeHelper.toISO(unixTime);
+            return qm.timeHelper.dayMonthYearMilitaryTime(unixTime);
         },
         toUnixTime: function(timeAt){
             return qm.timeHelper.universalConversionToUnixTimeSeconds(timeAt);
@@ -9714,7 +9727,13 @@ var qm = {
         getCurrentLocalDateAndTime: function(){
             return new Date().toLocaleString();
         },
-        toISO: function(timeAt){
+        yearMonthDayMilitaryTime: function(timeAt){
+            var unixTime = qm.timeHelper.universalConversionToUnixTimeSeconds(timeAt);
+            var a = new Date(unixTime * 1000);
+            var at = qm.stringHelper.getStringBeforeSubstring('.', a.toISOString())
+            return at.replace("T", " ");
+        },
+        dayMonthYearMilitaryTime: function(timeAt){
             var unixTime = qm.timeHelper.universalConversionToUnixTimeSeconds(timeAt);
             var a = new Date(unixTime * 1000);
             var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
@@ -9776,7 +9795,7 @@ var qm = {
             params.timeZone = moment.tz.guess();
         },
         fromUnixTime: function(unixTime) {
-            return qm.timeHelper.toISO(unixTime);
+            return qm.timeHelper.dayMonthYearMilitaryTime(unixTime);
         },
         humanFormat: function(hhmmssFormatString){
             var initialTimeFormat = "HH:mm:ss";

@@ -21,7 +21,7 @@ global.bugsnagClient = require('./../../node_modules/bugsnag')
 var argv = require('./../../node_modules/yargs').argv
 global.qm = require('./../../src/js/qmHelpers')
 qm.appMode.mode = 'testing'
-var qmLog = require('./../../src/js/qmLogger')
+global.qmLog = require('./../../src/js/qmLogger')
 qmLog.color = require('./../../node_modules/ansi-colors')
 qm.github = require('./../../node_modules/gulp-github')
 qm.Quantimodo = require('./../../node_modules/quantimodo')
@@ -565,6 +565,7 @@ describe("Reminders", function () {
                         qm.notifications.track(notifications[0])
                         expect(qm.notifications.getQueue()).length(1)
                         qm.measurements.getLocalMeasurements({}, function (measurements){
+                            qm.measurements.logMeasurements(measurements, "Local Measurements")
                             expect(measurements).length(1)
                         })
                         // TODO
@@ -582,7 +583,7 @@ describe("Reminders", function () {
     })
 })
 describe("Studies", function () {
-    it.skip('can get a study showing relationship between eggs and mood', function(done) {
+    it('can get a study showing relationship between eggs and mood', function(done) {
         this.timeout(20000)
         qmTests.setTestAccessToken()
         qm.studyHelper.getStudyFromApi({
