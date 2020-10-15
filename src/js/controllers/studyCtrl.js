@@ -326,7 +326,7 @@ angular.module("starter").controller("StudyCtrl", [
             qmService.showInfoToast("Re-analyzing data using updated " + qm.stringHelper.camelToTitleCase(propertyToUpdate));
             var postData = {variableName: variable.name};
             postData[propertyToUpdate] = variable[propertyToUpdate];
-            qmService.postUserVariableDeferred(postData).then(function(response){
+            qm.userVariables.postUserVariable(postData).then(function(response){
                 $scope.refreshStudy();
             });
         }, function(){

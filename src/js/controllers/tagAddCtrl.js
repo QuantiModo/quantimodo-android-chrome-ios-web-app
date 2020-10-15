@@ -40,7 +40,7 @@ angular.module('starter').controller('TagAddCtrl', ["$scope", "$q", "$timeout", 
                 });
         }
         qm.variablesHelper.setLastSelectedAtAndSave(variableObject);
-        qmService.deleteUserTagDeferred(userTagData).then(function(response){
+        qm.tags.deleteUserTag(userTagData).then(function(response){
             goBack();
         }, function(error){
             qmLog.error(error);

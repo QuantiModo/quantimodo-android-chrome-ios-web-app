@@ -5294,6 +5294,68 @@ var qm = {
                 message += "\t"+qm.measurements.getLogString(m)+"\n"
             })
             qmLog.info(message)
+        },
+        postMeasurementByReminder: function(trackingReminder, modifiedValue){
+            var deferred = Q.defer();
+            var value = trackingReminder.defaultValue;
+            if(typeof modifiedValue !== "undefined" && modifiedValue !== null){
+                value = modifiedValue;
+            }
+            var measurementSet = [
+                {
+                    variableName: trackingReminder.variableName,
+                    sourceName: qm.getSourceName(),
+                    variableCategoryName: trackingReminder.variableCategoryName,
+                    unitAbbreviatedName: trackingReminder.unitAbbreviatedName,
+                    measurements: [
+                        {
+                            startTimeEpoch: window.qm.timeHelper.getUnixTimestampInSeconds(),
+                            value: value,
+                            note: null
+                        }
+                    ]
+                }
+            ];
+            measurementSet[0].measurements[0] = qm.measurements.addLocationDataToMeasurement(measurementSet[0].measurements[0]);
+            if(!qm.measurements.valueIsValid(trackingReminder, value)){
+                deferred.reject('Value is not valid');
+                return deferred.promise;
+            }
+            qm.measurements.postMeasurements(measurementSet, function(response){
+                if(response.success){
+                    qmLog.debug('qmService.postMeasurementsToApi success: ', response);
+                    if(response && response.data && response.data.userVariables){
+                        qm.variablesHelper.saveToLocalStorage(response.data.userVariables);
+                    }
+                    deferred.resolve();
+                }else{
+                    deferred.reject(response.message ? response.message.split('.')[0] : "Can't post measurement right now!");
+                }
+            });
+            return deferred.promise;
+        },
+        valueIsValid: function(object, value){
+            var message;
+            var u = qm.unitHelper.getByNameAbbreviatedNameOrId(object.unitAbbreviatedName);
+            if(!u){
+                qmLog.error("Unit named "+u.unitAbbreviatedName+" not found!");
+                return true;
+            }
+            if(u.minimumValue !== "undefined" && u.minimumValue !== null){
+                if(value < u.minimumValue){
+                    message = u.minimumValue + ' is the smallest possible value for the unit ' + u.name + ".  Please select another unit or value.";
+                    qm.measurements.validationFailure(message);
+                    return false;
+                }
+            }
+            if(typeof u.maximumValue !== "undefined" && u.maximumValue !== null){
+                if(value > u.maximumValue){
+                    message = u.maximumValue + ' is the largest possible value for the unit ' + u.name + ".  Please select another unit or value.";
+                    qm.measurements.validationFailure(message);
+                    return false;
+                }
+            }
+            return true;
         }
     },
     manualTrackingVariableCategoryNames: [
@@ -9664,6 +9726,41 @@ var qm = {
                 effectVariableName: qm.studyHelper.getEffectVariableName(study)
             }, successHandler, errorHandler);
         },
+        postStudy: function(body){
+            var deferred = Q.defer();
+            qm.api.post('api/v3/study', body,function(){
+                deferred.resolve();
+            }, function(error){
+                deferred.reject(error);
+            });
+            return deferred.promise;
+        },
+    },
+    subscriptions: {
+        postCreditCard: function(body, successHandler, errorHandler){
+            qm.api.post('api/v2/account/subscribe', body, successHandler, errorHandler);
+        },
+        postDowngradeSubscription: function(body, successHandler, errorHandler){
+            qm.api.post('api/v2/account/unsubscribe', body, successHandler, errorHandler);
+        },
+    },
+    tags: {
+        deleteUserTag: function(tagData){
+            var deferred = Q.defer();
+            qm.api.post('api/v3/userTags/delete', tagData, function(response){
+                if(!response){
+                    qmLog.info("No response from deleteUserTag");
+                    deferred.resolve();
+                    return;
+                }
+                qm.variablesHelper.setLastSelectedAtAndSave(response.data.userTaggedVariable);
+                qm.variablesHelper.setLastSelectedAtAndSave(response.data.userTagVariable);
+                deferred.resolve(response.data);
+            }, function(error){
+                deferred.reject(error);
+            });
+            return deferred.promise;
+        }
     },
     tests: {
         chrome: {
@@ -10913,6 +11010,37 @@ var qm = {
                     }
                 });
             })
+        },
+        resetUserVariable: function(variableId){
+            var deferred = Q.defer();
+            qm.api.post('api/v3/userVariables/reset',
+                {variableId: variableId}, function(response){
+                    qm.variablesHelper.setLastSelectedAtAndSave(response.data.userVariable);
+                    deferred.resolve(response.data.userVariable);
+                }, function(error){
+                    deferred.reject(error);
+                });
+            return deferred.promise;
+        },
+        postUserVariable: function(body){
+            var deferred = Q.defer();
+            qm.api.post('api/v3/userVariables', body, function(response){
+                var userVariable;
+                if(response.userVariables){
+                    userVariable = response.userVariables[0];
+                }
+                if(response.userVariable){
+                    userVariable = response.userVariable;
+                }
+                qm.variablesHelper.setLastSelectedAtAndSave(userVariable);
+                qm.studyHelper.deleteLastStudyFromGlobalsAndLocalForage();
+                //qmService.addWikipediaExtractAndThumbnail($rootScope.variableObject);
+                qmLog.debug('qmService.postUserVariableDeferred: success: ', userVariable, null);
+                deferred.resolve(userVariable);
+            }, function(error){
+                deferred.reject(error);
+            });
+            return deferred.promise;
         }
     },
     variablesHelper: {
