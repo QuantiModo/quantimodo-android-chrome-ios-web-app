@@ -104,7 +104,7 @@ angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "
             var connectorButtons = JSON.parse(JSON.stringify(connector.buttons));
             connectorButtons.push({
                 text: '<i class="icon ' + ionIcons.history + '"></i>' + connector.displayName + ' History',
-                id: 'history', state: qm.stateNames.historyAll, stateParams: {connectorName: connector.name}
+                id: 'history', state: qm.staticData.stateNames.historyAll, stateParams: {connectorName: connector.name}
             });
             connectorButtons = qmService.actionSheets.addHtmlToActionSheetButtonArray(connectorButtons);
             connectorButtons.map(function(button){
@@ -237,7 +237,7 @@ angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "
                     if(self.helpText && !self.showHelp){
                         return self.showHelp = true;
                     }
-                    qmService.goToState(window.qm.stateNames.help);
+                    qmService.goToState(window.qm.staticData.stateNames.help);
                     $mdDialog.cancel();
                 };
                 $scope.answer = function(answer){
@@ -333,7 +333,7 @@ angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "
                                 $scope.refreshConnectors();
                             }
                             if(index === 1){
-                                qmService.goToState(qm.stateNames.settings);
+                                qmService.goToState(qm.staticData.stateNames.settings);
                             }
                             return true;
                         }

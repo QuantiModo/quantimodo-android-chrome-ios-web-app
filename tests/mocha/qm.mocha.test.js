@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true })
 var path = require('path')
 var appDir = path.resolve(".")
 var chai = require("chai")
+var expect = chai.expect
 var qmGit = require("../../ts/qm.git")
 var qmShell = require("../../ts/qm.shell")
 var fileHelper = require("../../ts/qm.file-helper")
@@ -20,7 +21,7 @@ global.bugsnagClient = require('./../../node_modules/bugsnag')
 var argv = require('./../../node_modules/yargs').argv
 global.qm = require('./../../src/js/qmHelpers')
 qm.appMode.mode = 'testing'
-var qmLog = require('./../../src/js/qmLogger')
+global.qmLog = require('./../../src/js/qmLogger')
 qmLog.color = require('./../../node_modules/ansi-colors')
 qm.github = require('./../../node_modules/gulp-github')
 qm.Quantimodo = require('./../../node_modules/quantimodo')
@@ -30,6 +31,10 @@ qm.qmLog = qmLog
 qmLog.qm = qm
 qm.qmLog.setLogLevelName(process.env.LOG_LEVEL || 'info')
 global.nlp = require('./../../src/lib/compromise')
+global.Q = require('./../../src/lib/q')
+global.Swal = require('./../../node_modules/sweetalert2/dist/sweetalert2.all')
+//global.moment = require('./../../src/lib/moment/moment')
+global.moment = require('./../../src/lib/moment-timezone/moment-timezone')
 const chrome = require('sinon-chrome/extensions')
 var qmTests = {
     getTestAccessToken(){
@@ -39,7 +44,7 @@ var qmTests = {
         }
         return t
     },
-    setTestToken(){
+    setTestAccessToken(){
         qm.storage.setItem(qm.items.accessToken, qmTests.getTestAccessToken())
     },
     testParams: {},
@@ -198,7 +203,7 @@ afterEach(function (done) {
 })
 function downloadFileContains(url, expectedToContain, cb) {
     downloadFile(url, function (str) {
-        chai.expect(str).to.contain(expectedToContain)
+        expect(str).to.contain(expectedToContain)
         cb()
     })
 }
@@ -212,7 +217,7 @@ function downloadFile(url, cb) {
     }
     var req = https.request(options, function (res) {
         console.log("statusCode: " + res.statusCode)
-        chai.expect(res.statusCode).to.eq(200)
+        expect(res.statusCode).to.eq(200)
         var str = ""
         res.on("data", function (chunk) {
             str += chunk
@@ -229,7 +234,7 @@ function downloadFile(url, cb) {
 }
 describe("API", function (){
     it("Makes sure api url is app.quantimo.do", function (done) {
-        chai.expect(qm.api.getApiUrl()).to.eq("https://app.quantimo.do")
+        expect(qm.api.getApiUrl()).to.eq("https://app.quantimo.do")
         done()
     })
 })
@@ -250,7 +255,7 @@ describe("Cypress", function () {
         const relative = cypressFunctions.getVideoPath(specName)
         fileHelper.deleteFile(relative, function (){
             let exists = fileHelper.exists(relative)
-            chai.expect(exists).to.be.false
+            expect(exists).to.be.false
             fileHelper.createFile(relative, "test video", function (){
                 cypressFunctions.uploadCypressVideo(specName, function (err, s3Url){
                     const downloadPath = 'tmp/download.mp4'
@@ -271,17 +276,17 @@ describe("File Helper", function () {
         const filename = "success-file"
         fileHelper.deleteFile(filename, function (){
             let exists = fileHelper.exists(filename)
-            chai.expect(exists).to.be.false
+            expect(exists).to.be.false
             th.createSuccessFile(function (){
                 exists = fileHelper.exists(filename)
-                chai.expect(exists).to.be.true
+                expect(exists).to.be.true
                 done()
             })
         })
     })
     it("determines the absolute path", function (done) {
         var abs = fileHelper.getAbsolutePath("tests/ionIcons.js")
-        chai.expect(abs).contains(appDir)
+        expect(abs).contains(appDir)
         done()
     })
     it("uploads a file", function (done) {
@@ -303,7 +308,7 @@ describe("Ghost Inspector", function () {
         chai.assert.isUndefined(process.env.API_URL)
         process.env.RELEASE_STAGE = "staging"
         var url = th.getApiUrl()
-        chai.expect(url).to.contain("https://staging.quantimo.do")
+        expect(url).to.contain("https://staging.quantimo.do")
         if (previouslySetApiUrl) {
             process.env.API_URL = previouslySetApiUrl
         }
@@ -313,7 +318,7 @@ describe("Ghost Inspector", function () {
 describe("Git Helper", function () {
     it.skip("sets commit status", function (done) {
         qmGit.setGithubStatus("pending", "test context", "test description", "https://get-bent.com", function (res) {
-            chai.expect(res.status).to.eq(201)
+            expect(res.status).to.eq(201)
             done()
         })
     })
@@ -322,11 +327,11 @@ describe("Git Helper", function () {
         var branchName = "feature/" + featureName
         qmGit.createFeatureBranch("test-feature")
         git.branchLocal().then(function (branchSummary) {
-            chai.expect(branchSummary.all).to.contain(branchName)
+            expect(branchSummary.all).to.contain(branchName)
             qmShell.executeSynchronously("git checkout -B develop", true)
             git.deleteLocalBranch(branchName).then(function () {
                 git.branchLocal().then(function (branchSummary) {
-                    chai.expect(branchSummary.all).not.to.contain(branchName)
+                    expect(branchSummary.all).not.to.contain(branchName)
                     done()
                 })
             })
@@ -351,24 +356,24 @@ describe("Intent Handler", function () {
 })
 describe("Measurement", function () {
     it('can record a measurement', function(done){
-        qmTests.setTestToken()
+        qmTests.setTestAccessToken()
         qm.measurements.recordMeasurement({
             value: 1,
             variableName: "Overall Mood",
             unitAbbreviatedName: "/5",
         }, function (data){
-            //TODO: chai.expect(data.measurements).length(1)
-            chai.expect(data.userVariables).length(1)
+            //TODO: expect(data.measurements).length(1)
+            expect(data.userVariables).length(1)
             var queue = qm.measurements.getMeasurementsFromQueue()
-            chai.expect(queue).length(0)
+            expect(queue).length(0)
             qm.userVariables.getFromLocalStorage({"variableId": 1398}, function(userVariables) {
-                chai.expect(userVariables).length(1)
+                expect(userVariables).length(1)
                 qm.userVariables.getFromLocalStorage({}, function(userVariables) {
-                    chai.expect(userVariables[0].variableId).to.eq(1398) // Should be first since it has most recent measurement
+                    expect(userVariables[0].variableId).to.eq(1398) // Should be first since it has most recent measurement
                 })
             })
             qm.measurements.getLocalMeasurements({}, function(measurements){
-                chai.expect(measurements).length(1)
+                expect(measurements).length(1)
                 done()
             })
         }, function (err){
@@ -531,10 +536,56 @@ describe("Menu", function () {
         done()
     })
 })
+describe("Reminders", function () {
+    it("can create a reminder and track the notification", function (){
+        this.timeout(30000)
+        const variableName = "Hostility"
+        qmTests.setTestAccessToken()
+        return qm.reminderHelper.deleteByVariableName(variableName).then(function (){
+            return qm.reminderHelper.getReminders({variableName}).then(function (reminders){
+                expect(reminders).length(0)
+                expect(qm.reminderHelper.getQueue()).length(0)
+                qm.reminderHelper.addToQueue([{variableName, frequency: 60}])
+                expect(qm.reminderHelper.getQueue()).length(1)
+                expect(qm.reminderHelper.getCached()).length(0)
+                return qm.reminderHelper.syncReminders().then(function (response){
+                    const data = (response && response.data) ? response.data : null
+                    expect(data.trackingReminders).length(1)
+                    expect(data.userVariables).length(1)
+                    expect(data.trackingReminderNotifications).length(1)
+                    expect(qm.notifications.getCached()).length(1)
+                    expect(qm.reminderHelper.getCached()).length(1)
+                    return qm.reminderHelper.syncReminders().then(function(){
+                        expect(qm.reminderHelper.getQueue()).length(0)
+                        expect(qm.reminderHelper.getCached()).length(1)
+                        const notifications = qm.notifications.getCached()
+                        expect(notifications).length(1)
+                        const n = notifications[0]
+                        n.value = 1
+                        qm.notifications.track(notifications[0])
+                        expect(qm.notifications.getQueue()).length(1)
+                        // TODO
+                        // qm.measurements.getLocalMeasurements({}, function (measurements){
+                        //     qm.measurements.logMeasurements(measurements, "Local Measurements")
+                        //     expect(measurements).length(1)
+                        // })
+                        // return qm.notifications.syncIfQueued().then(function (){
+                        //     expect(qm.notifications.getQueue()).length(0)
+                        //     expect(qm.notifications.getCached()).length(0)
+                        //     qm.measurements.getLocalMeasurements({}, function (measurements){
+                        //         expect(measurements).length(1)
+                        //     })
+                        // })
+                    })
+                })
+            })
+        })
+    })
+})
 describe("Studies", function () {
     it.skip('can get a study showing relationship between eggs and mood', function(done) {
         this.timeout(20000)
-        qmTests.setTestToken()
+        qmTests.setTestAccessToken()
         qm.studyHelper.getStudyFromApi({
             causeVariableName: "Eggs (serving)",
             effectVariableName: "Overall Mood", userId: 230,
@@ -577,8 +628,8 @@ describe("URL Helper", function () {
 describe("Users", function () {
     it('can get users', function(done) {
         this.timeout(10000)
-        chai.expect(qm.api.getApiUrl()).to.eq("https://app.quantimo.do")
-        qmTests.setTestToken()
+        expect(qm.api.getApiUrl()).to.eq("https://app.quantimo.do")
+        qmTests.setTestAccessToken()
         qm.userHelper.getUsersFromApi(function(users){
             qmLog.debug("users:", users)
             qm.assert.greaterThan(0, users.length)
@@ -593,7 +644,7 @@ describe("Variables", function () {
         this.timeout(30000) // Default 2000 is too fast for Github API
         //qm.qmLog.setLogLevelName("debug");
         var alreadyCalledBack = false
-        qmTests.setTestToken()
+        qmTests.setTestAccessToken()
         qm.userHelper.getUserFromLocalStorageOrApi(function (user) {
             qmLog.debug("User: ", user)
             if(!qm.getUser()){ throw "No user!" }
@@ -638,7 +689,7 @@ describe("Variables", function () {
         })
     })
     it('can search manual tracking variables', function(done) {
-        qmTests.setTestToken()
+        qmTests.setTestAccessToken()
         qm.userHelper.getUserFromLocalStorageOrApi(function (user) {
             qmLog.info("Got user " + user.loginName)
             if(!qm.getUser()){ throw "No user!" }

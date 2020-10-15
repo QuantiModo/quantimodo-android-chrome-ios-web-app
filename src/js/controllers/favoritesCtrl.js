@@ -25,7 +25,7 @@ angular.module('starter').controller('FavoritesCtrl', ["$scope", "$state", "$ion
             diastolicValue: null,
             displayTotal: "Blood Pressure"
         });
-        var categoryName = qm.variableCategoryHelper.getVariableCategoryNameFromStateParamsOrUrl($stateParams);
+        var categoryName = qm.variableCategoryHelper.getNameFromStateParamsOrUrl($stateParams);
         if(categoryName){
             $scope.variableCategoryName = categoryName;
             $scope.state.addButtonText = "Add favorite " + categoryName.toLowerCase();
@@ -50,7 +50,7 @@ angular.module('starter').controller('FavoritesCtrl', ["$scope", "$state", "$ion
         }
     });
     var getFavoritesFromLocalStorage = function(){
-        var categoryName = qm.variableCategoryHelper.getVariableCategoryNameFromStateParamsOrUrl($stateParams);
+        var categoryName = qm.variableCategoryHelper.getNameFromStateParamsOrUrl($stateParams);
         qmService.storage.getFavorites(categoryName).then(function(favorites){
             $scope.state.favoritesArray = favorites;
             qmService.showInfoToast('Got ' + favorites.length + ' favorites!');
@@ -62,7 +62,7 @@ angular.module('starter').controller('FavoritesCtrl', ["$scope", "$state", "$ion
     $scope.refreshFavorites = function(){
         qmLog.info('ReminderMange init: calling refreshFavorites syncTrackingReminders');
         qmService.showInfoToast('Syncing favorites...');
-        qmService.trackingReminders.syncTrackingReminders(true).then(function(){
+        qm.reminderHelper.syncReminders(true).then(function(){
             getFavoritesFromLocalStorage();
             //Stop the ion-refresher from spinning
             $scope.$broadcast('scroll.refreshComplete');

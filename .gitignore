@@ -139,3 +139,4 @@ secrets/*
 /cypress/videos/
 /success-file
 /tests/mochawesome-report/assets/
+debug.log

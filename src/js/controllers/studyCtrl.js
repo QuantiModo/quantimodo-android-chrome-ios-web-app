@@ -227,7 +227,7 @@ angular.module("starter").controller("StudyCtrl", [
                 $scope.state.requestParams.recalculate = true;
             }
             if(!$scope.state.study){
-                qmService.goToState(qm.stateNames.studyCreation);
+                qmService.goToState(qm.staticData.stateNames.studyCreation);
             }
         }
         if(recalculate){
@@ -348,7 +348,7 @@ angular.module("starter").controller("StudyCtrl", [
             if(self.helpText && !self.showHelp){
                 return self.showHelp = true;
             }
-            qmService.goToState(window.qm.stateNames.help);
+            qmService.goToState(window.qm.staticData.stateNames.help);
             $mdDialog.cancel();
         };
         self.cancel = function(){
