@@ -9273,6 +9273,7 @@ var qm = {
         },
     },
     studyHelper: {
+        cached: {},
         getStudiesApiInstance: function(params, functionName){
             qm.api.configureClient(functionName, null, params);
             var apiInstance = new qm.Quantimodo.StudiesApi();
@@ -9798,7 +9799,11 @@ var qm = {
                 qm.qmLog.debug("Not going to guessTimeZoneIfNecessary because browser not available");
                 return null;
             }
-            params.timeZone = moment.tz.guess();
+            if(typeof moment === "undefined"){
+                qmLog.error("moment not defined to call moment.tz.guess()");
+                return null;
+            }
+            return moment.tz.guess();
         },
         fromUnixTime: function(unixTime) {
             return qm.timeHelper.dayMonthYearMilitaryTime(unixTime);
@@ -10715,6 +10720,7 @@ var qm = {
         }
     },
     commonVariablesHelper: {
+        cached: {},
         getFromLocalStorage: function(params, successHandler){
             if(!successHandler){
                 qm.qmLog.error("No successHandler provided to commonVariables getFromLocalStorage");
@@ -10731,6 +10737,7 @@ var qm = {
         }
     },
     userVariables: {
+        cached: {},
         defaultLimit: 20,
         updateLatestMeasurementTime: function(variableName, lastValue){
             qm.storage.getUserVariableByName(variableName, true, lastValue);
