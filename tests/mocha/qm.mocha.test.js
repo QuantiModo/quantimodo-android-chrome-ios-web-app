@@ -583,29 +583,35 @@ describe("Reminders", function () {
     })
 })
 describe("Studies", function () {
-    it.skip('can get a study showing relationship between eggs and mood', function(done) {
+    it('can get a study showing relationship between eggs and mood', function() {
         this.timeout(20000)
         qmTests.setTestAccessToken()
-        qm.studyHelper.getStudyFromApi({
-            causeVariableName: "Eggs (serving)",
-            effectVariableName: "Overall Mood", userId: 230,
+        var causeName = "Eggs (serving)"
+        var effectName = "Overall Mood"
+        return qm.studyHelper.getStudyFromApi({
+            causeVariableName: causeName,
+            effectVariableName: effectName,
+            userId: 230,
         }, function(study){
             qm.qmLog.info("Got study " + study.causeVariableName)
+            expect(qm.userVariables.cached).to.not.have.property(causeName)
+            expect(qm.userVariables.cached).to.not.have.property(effectName)
+            expect(qm.commonVariablesHelper.cached).to.not.have.property(causeName)
+            expect(qm.commonVariablesHelper.cached).to.not.have.property(effectName)
             qm.variablesHelper.getFromLocalStorageOrApi({
                 variableName: "Eggs (serving)",
             }, function(variables){
-                if(variables.length > 1){
-                    throw "Why did we get " + variables.length + " variables for Eggs (serving)?!?!?"
-                }
-                var user = qm.getUser()
-                qm.qmLog.info("Got variable for user " + variables[0].userId)
-                qm.assert.equals(user.id, variables[0].userId, "We should have saved the user variable from the study!")
-                done()
+                expect(variables).length(1, "Why did we get " + variables.length +
+                    " variables for Eggs (serving)?!?!?")
+                qm.getUser(function (user){
+                    qm.assert.equals(user.id, variables[0].userId,
+                        "The logged in user doesn't have eggs because the study belonged to someone else")
+                })
             }, function(error){
-                throw error
+                throw Error(error)
             })
         }, function(error){
-            throw error
+            throw Error(error)
         })
     })
 })

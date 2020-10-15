@@ -451,7 +451,7 @@ angular.module('starter').controller('ReminderAddCtrl', ["$scope", "$state", "$s
         };
         function setupReminderEditingFromVariableId(variableId){
             if(variableId){
-                qmService.getVariableByIdDeferred(variableId)
+                qm.variablesHelper.getVariableByIdFromApi(variableId)
                     .then(function(variables){
                         $scope.state.variableObject = variables[0];
                         qmLog.debug('setupReminderEditingFromVariableId got this variable object ' + JSON.stringify($scope.state.variableObject), null);

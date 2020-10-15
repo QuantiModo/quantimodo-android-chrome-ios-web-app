@@ -239,6 +239,26 @@ var qm = {
             return qm.stringHelper.removeSpecialCharacters(JSON.stringify(params));
         },
         cache: {},
+        promiseHandler: function(error, data, response, deferred, params, functionName){
+            if(!response){
+                var message = "No response provided to " + functionName + " qmSdkApiResponseHandler with params " + JSON.stringify(params);
+                qmLog.info(message);
+                deferred.reject(message);
+                return;
+            }
+            qmLog.debug(response.status + ' response from ' + response.req.url);
+            if(error){
+                deferred.reject(qm.api.generalErrorHandler(error, data, response));
+            }else{
+                if(data && params){
+                    qm.api.cacheSet(params, data, functionName);
+                    if(data.measurements){
+                        qm.measurements.addMeasurementsToMemory(data.measurements)
+                    }
+                }
+                deferred.resolve(data, response);
+            }
+        },
         generalResponseHandler: function(error, data, response, successHandler, errorHandler, params, functionName){
             if(!response){
                 var message = "No response provided to " + functionName + " qmSdkApiResponseHandler with params " + JSON.stringify(params);
@@ -3609,9 +3629,7 @@ var qm = {
         getFeedFromApi: function(params, successHandler, errorHandler){
             params = qm.api.addGlobalParams(params);
             var cacheKey = 'getFeed';
-            if(!qm.api.configureClient(cacheKey, errorHandler, params)){
-                return false;
-            }
+            qm.api.configureClient(cacheKey, errorHandler, params)
             function callback(error, data, response){
                 var cards = qm.feed.handleFeedResponse(data);
                 qm.api.generalResponseHandler(error, cards, response, successHandler, errorHandler, params, cacheKey);
@@ -3691,9 +3709,7 @@ var qm = {
         postToFeedEndpointImmediately: function(feedQueue, successHandler, errorHandler){
             var params = qm.api.addGlobalParams({});
             var cacheKey = 'postFeed';
-            if(!qm.api.configureClient(cacheKey, errorHandler, params)){
-                return false;
-            }
+            qm.api.configureClient(cacheKey, errorHandler, params)
             function callback(error, data, response){
                 var cards = qm.feed.handleFeedResponse(data);
                 if(error){
@@ -9538,24 +9554,18 @@ var qm = {
             return url;
         },
         getStudyFromApi: function(params, successHandler, errorHandler){
+            var deferred = Q.defer();
             params = qm.api.addGlobalParams(params);
             var cacheKey = 'getStudy';
-            var cachedData = qm.api.cacheGet(params, cacheKey);
-            if(cachedData && successHandler){
-                //successHandler(cachedData);
-                //return;
-            }
             if(!params.studyId){
                 var hasNames = params.causeVariableName && params.effectVariableName;
                 var hasIds = params.causeVariableId && params.effectVariableId;
                 if(!hasNames && !hasIds){
-                    errorHandler("No study params provided!");
-                    return;
+                    deferred.reject("No study params provided!");
+                    return deferred.promise;
                 }
             }
-            if(!qm.api.configureClient(cacheKey, errorHandler, params)){
-                return false;
-            }
+            qm.api.configureClient(cacheKey, errorHandler, params)
             var client = qm.studyHelper.getStudiesApiInstance(params, arguments.callee.name);
             //var url = qm.urlHelper.generateUrlFromApiClient(client, params);
             client.getStudy(params, function(error, data, response){
@@ -9570,8 +9580,9 @@ var qm = {
                         return;
                     }
                 }
-                qm.api.generalResponseHandler(error, study, response, successHandler, errorHandler, params, cacheKey);
+                qm.api.promiseHandler(error, study, response, deferred, params, cacheKey);
             });
+            return deferred.promise;
         },
         getStudyFromLocalStorageOrApi: function(params, successHandler, errorHandler){
             if(qm.urlHelper.getParam('aggregated')){
@@ -9581,12 +9592,12 @@ var qm = {
                 params.refresh = true;
             }
             function getStudyFromApi(){
-                qm.studyHelper.getStudyFromApi(params, function(study){
+                qm.studyHelper.getStudyFromApi(params).then(function(study){
                     successHandler(study);
                 }, function(error){
                     qmLog.error("getStudy error: ", error);
                     errorHandler(error);
-                });
+                })
             }
             if(params.recalculate || params.refresh){
                 getStudyFromApi();
@@ -9633,9 +9644,7 @@ var qm = {
                 successHandler(cachedData);
                 return;
             }
-            if(!qm.api.configureClient(cacheKey, errorHandler, params)){
-                return false;
-            }
+            qm.api.configureClient(cacheKey, errorHandler, params)
             function callback(error, data, response){
                 qm.api.generalResponseHandler(error, data, response, successHandler, errorHandler, params, cacheKey);
             }
@@ -10774,14 +10783,13 @@ var qm = {
             // }
             qm.api.configureClient(cacheKey, null, params);
             var apiInstance = new qm.Quantimodo.VariablesApi();
-            function callback(error, data, response){
+            qmLog.info("apiInstance.getVariables with params: ", params)
+            apiInstance.getVariables(params, function(error, data, response){
                 if(data){
                     qm.variablesHelper.saveToLocalStorage(data);
                 }
                 qm.api.generalResponseHandler(error, data, response, successHandler, errorHandler, params, cacheKey);
-            }
-            qmLog.info("apiInstance.getVariables with params: ", params)
-            apiInstance.getVariables(params, callback);
+            });
         },
         getByNameFromApi: function(variableName, params, successHandler, errorHandler){
             if(!params){
@@ -11065,15 +11073,18 @@ var qm = {
             variables = qm.arrayHelper.convertToArrayIfNecessary(variables);
             var userVariables = [];
             var commonVariables = [];
+            var user = qm.getUser();
             for(var i = 0; i < variables.length; i++){
-                var variable = variables[i];
-                if(!variable){
-                    throw "empty array provided to saveToLocalStorage";
+                var uv = variables[i];
+                if(!uv){
+                    throw Error("empty array provided to saveToLocalStorage");
                 }
-                if(variable.userId && variable.userId === qm.getUser().id){
-                    userVariables.push(variable);
-                }else if(!variable.userId){ // Don't save other peoples user variables when looking at studies
-                    commonVariables.push(variable);
+                if(user && uv.userId === user.id){
+                    qm.userVariables.cached[uv.name] = uv;
+                    userVariables.push(uv);
+                }else if(!uv.userId){ // Don't save other peoples user variables when looking at studies
+                    commonVariables.push(uv);
+                    qm.commonVariablesHelper.cached[uv.name] = uv;
                 }
             }
             if(userVariables.length){
@@ -11083,6 +11094,18 @@ var qm = {
                 qm.staticData.commonVariables = qm.arrayHelper.mergeWithUniqueId(commonVariables, qm.staticData.commonVariables);
             }
         },
+        getVariableByIdFromApi: function(variableId){
+            var deferred = Q.defer();
+            var key = 'getVariableByIdFromApi';
+            qm.api.configureClient(key, errorHandler);
+            var apiInstance = new Quantimodo.VariablesApi();
+            var params = {id: variableId};
+            params = qm.api.addGlobalParams(params);
+            apiInstance.getVariables(params, function(error, data, response){
+                qm.api.promiseHandler(error, data, response, deferred, key);
+            });
+            return deferred.promise;
+        }
     },
     variableCategoryHelper: {
         replaceCategoryAliasWithActualNameIfNecessary: function(provided){
