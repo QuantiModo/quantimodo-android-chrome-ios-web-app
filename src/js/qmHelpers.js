@@ -91,6 +91,9 @@ var qm = {
             }
             return origin.indexOf('local.quantimo.do') !== -1;
         },
+        isLocal: function(){
+            return qm.appMode.isDevelopment();
+        },
         isStaging: function(){
             if(!qm.platform.getWindow()){
                 return false;
