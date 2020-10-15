@@ -263,6 +263,11 @@ var qm = {
                 }
             }
         },
+        getUrlFromResponse: function(response){
+            var req = response.req;
+            var url = req.agent.protocol+"//"+req.connection.servername+req.path;
+            return url;
+        },
         getErrorMessageFromResponse: function(error, response){
             var errorMessage = '';
             if(typeof error === "string"){
@@ -285,7 +290,8 @@ var qm = {
             return errorMessage;
         },
         generalErrorHandler: function(error, data, response, options){
-            var errorMessage = qm.api.getErrorMessageFromResponse(error, response);
+            var url = qm.api.getUrlFromResponse(response);
+            var errorMessage = url+"\n\t"+qm.api.getErrorMessageFromResponse(error, response);
             errorMessage = qm.api.getErrorMessageFromResponse(errorMessage, data);
             if(!response){
                 return qm.qmLog.error("No API response provided to qmApiGeneralErrorHandler",
@@ -9546,7 +9552,8 @@ var qm = {
             if(!qm.api.configureClient(cacheKey, errorHandler, params)){
                 return false;
             }
-            function callback(error, data, response){
+            var instance = qm.studyHelper.getStudiesApiInstance(params, arguments.callee.name);
+            instance.getStudy(params, function(error, data, response){
                 if(data){
                     var study = qm.studyHelper.processAndSaveStudy(data);
                     if(!study.causeVariable || !study.effectVariable){
@@ -9559,8 +9566,7 @@ var qm = {
                     }
                 }
                 qm.api.generalResponseHandler(error, study, response, successHandler, errorHandler, params, cacheKey);
-            }
-            qm.studyHelper.getStudiesApiInstance(params, arguments.callee.name).getStudy(params, callback);
+            });
         },
         getStudyFromLocalStorageOrApi: function(params, successHandler, errorHandler){
             if(qm.urlHelper.getParam('aggregated')){
