@@ -1,6 +1,6 @@
 angular.module('starter').controller('ChartsPageCtrl', ["$scope", "$q", "$state", "$timeout", "$rootScope",
-    "$ionicLoading", "$ionicActionSheet", "$stateParams", "qmService", "qmLogService", "clipboard",
-    function($scope, $q, $state, $timeout, $rootScope, $ionicLoading, $ionicActionSheet, $stateParams, qmService, qmLogService, clipboard){
+    "$ionicLoading", "$ionicActionSheet", "$stateParams", "qmService", "clipboard",
+    function($scope, $q, $state, $timeout, $rootScope, $ionicLoading, $ionicActionSheet, $stateParams, qmService, clipboard){
         $scope.controller_name = "ChartsPageCtrl";
         qmService.navBar.setFilterBarSearchIcon(false);
         $scope.state = {
@@ -8,7 +8,7 @@ angular.module('starter').controller('ChartsPageCtrl', ["$scope", "$q", "$state"
         };
         $scope.$on('$ionicView.enter', function(e){
             if (document.title !== $scope.state.title) {document.title = $scope.state.title;}
-            qmLogService.debug('Entering state ' + $state.current.name);
+            qmLog.debug('Entering state ' + $state.current.name);
             qm.urlHelper.addUrlParamsToObject($scope.state);
             qmService.navBar.showNavigationMenuIfHideUrlParamNotSet();
             $scope.variableName = getVariableName();
@@ -107,19 +107,19 @@ angular.module('starter').controller('ChartsPageCtrl', ["$scope", "$q", "$state"
             getCharts(true);
         };
         $scope.addNewReminderButtonClick = function(){
-            qmLogService.debug('addNewReminderButtonClick', null);
+            qmLog.debug('addNewReminderButtonClick', null);
             qmService.goToState('app.reminderAdd', {
                 variableObject: $scope.state.variableObject,
                 fromState: $state.current.name
             });
         };
         $scope.compareButtonClick = function(){
-            qmLogService.debug('compareButtonClick');
+            qmLog.debug('compareButtonClick');
             qmService.goToStudyCreationForVariable($scope.state.variableObject);
         };
         $scope.recordMeasurementButtonClick = function(){
             qmLog.info("Going to record measurement for " + JSON.stringify($scope.state.variableObject));
-            qmService.goToState(qm.stateNames.measurementAdd, {
+            qmService.goToState(qm.staticData.stateNames.measurementAdd, {
                 variableObject: $scope.state.variableObject,
                 fromState: $state.current.name
             });

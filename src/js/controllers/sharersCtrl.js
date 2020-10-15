@@ -1,5 +1,5 @@
 angular.module('starter').controller('PhysicianCtrl', function($state, $scope, $ionicPopover, $ionicPopup, $rootScope,
-                                                                   qmService, configurationService, qmLogService,
+                                                                   qmService, configurationService,
                                                                    $ionicModal, $timeout,
                                                                    Upload, $ionicActionSheet, $mdDialog, $stateParams, $sce){
     $scope.controller_name = "SharersCtrl";

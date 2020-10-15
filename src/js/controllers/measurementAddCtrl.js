@@ -1,6 +1,6 @@
 angular.module('starter').controller('MeasurementAddCtrl', ["$scope", "$q", "$timeout", "$state", "$rootScope",
-    "$stateParams", "$filter", "$ionicActionSheet", "$ionicHistory", "qmService", "qmLogService",
-    function($scope, $q, $timeout, $state, $rootScope, $stateParams, $filter, $ionicActionSheet, $ionicHistory, qmService, qmLogService){
+    "$stateParams", "$filter", "$ionicActionSheet", "$ionicHistory", "qmService",
+    function($scope, $q, $timeout, $state, $rootScope, $stateParams, $filter, $ionicActionSheet, $ionicHistory, qmService){
         $scope.controller_name = "MeasurementAddCtrl";
         qmService.navBar.setFilterBarSearchIcon(false);
         $scope.state = {
@@ -23,7 +23,7 @@ angular.module('starter').controller('MeasurementAddCtrl', ["$scope", "$q", "$ti
         $scope.$on('$ionicView.beforeEnter', function(){
             if (document.title !== $scope.state.title) {document.title = $scope.state.title;}
             unitChanged = false;
-            qmLogService.debug($state.current.name + ': beforeEnter', null);
+            qmLog.debug($state.current.name + ': beforeEnter', null);
             qmService.navBar.showNavigationMenuIfHideUrlParamNotSet();
             qmService.rootScope.setProperty('bloodPressure', {systolicValue: null, diastolicValue: null, show: false});
             $scope.state.title = 'Record a Measurement';
@@ -32,7 +32,7 @@ angular.module('starter').controller('MeasurementAddCtrl', ["$scope", "$q", "$ti
             if(cat){setupVariableCategory(cat);}
         });
         $scope.$on('$ionicView.enter', function(e){
-            qmLogService.debug('$ionicView.enter ' + $state.current.name);
+            qmLog.debug('$ionicView.enter ' + $state.current.name);
             qmService.hideLoader();
             qmLog.info("$ionicView.enter $scope.state.measurement is ", $scope.state.measurement);
         });
@@ -76,17 +76,18 @@ angular.module('starter').controller('MeasurementAddCtrl', ["$scope", "$q", "$ti
         }
         var trackBloodPressure = function(){
             if(!$rootScope.bloodPressure.diastolicValue || !$rootScope.bloodPressure.systolicValue){
-                qmService.validationFailure('Please enter both values for blood pressure.', $scope.state.measurement);
+                qm.measurements.validationFailure('Please enter both values for blood pressure.', $scope.state.measurement);
                 return;
             }
             $scope.state.selectedDate = moment($scope.state.selectedDate);
             $rootScope.bloodPressure.startTimeEpoch = parseInt($scope.state.selectedDate.format("X"));
             $rootScope.bloodPressure.note = $scope.state.measurement.note;
-            qmService.postBloodPressureMeasurements($rootScope.bloodPressure)
+            qm.measurements.postBloodPressureMeasurements($rootScope.bloodPressure)
                 .then(function(){
-                    qmLogService.debug('Successfully qmService.postMeasurementByReminder: ' + JSON.stringify($rootScope.bloodPressure), null);
+                    qmLog.debug('Successfully qmService.postMeasurementByReminder: ' +
+                        JSON.stringify($rootScope.bloodPressure), null);
                 }, function(error){
-                    qmLogService.error('Failed to Track by favorite! ', error);
+                    qmLog.error('Failed to Track by favorite! ', error);
                 });
             $scope.goBack();
         };
@@ -95,7 +96,7 @@ angular.module('starter').controller('MeasurementAddCtrl', ["$scope", "$q", "$ti
         };
         $scope.deleteMeasurementFromMeasurementAddCtrl = function(){
             qmService.showInfoToast('Deleting ' + $scope.state.measurement.variableName + ' measurement');
-            qmService.deleteMeasurementFromServer($scope.state.measurement);
+            qm.measurements.deleteMeasurement($scope.state.measurement);
             $scope.goBack({});
         };
         $scope.done = function(){
@@ -109,9 +110,9 @@ angular.module('starter').controller('MeasurementAddCtrl', ["$scope", "$q", "$ti
                 // If "record a different value/time was pressed", skip reminder upon save
                 var params = {trackingReminderNotificationId: $stateParams.reminderNotification.id};
                 qmService.skipTrackingReminderNotification(params, function(){
-                    qmLogService.debug($state.current.name + ': skipTrackingReminderNotification');
+                    qmLog.debug($state.current.name + ': skipTrackingReminderNotification');
                 }, function(error){
-                    qmLogService.error($state.current.name + ": skipTrackingReminderNotification error", error);
+                    qmLog.error($state.current.name + ": skipTrackingReminderNotification error", error);
                 });
             }
             $scope.state.selectedDate = moment($scope.state.selectedDate);
@@ -134,11 +135,11 @@ angular.module('starter').controller('MeasurementAddCtrl', ["$scope", "$q", "$ti
             qmService.showInfoToast(toastMessage);
             // Measurement only - post measurement. This is for adding or editing
             var backStateParams = {};
-            qmService.postMeasurementDeferred(m, function(){
+            qm.measurements.postMeasurement(m, function(){
                 if(unitChanged){
                     qmLog.error("Syncing reminders because unit changed");
                     qm.storage.removeItem(qm.items.trackingReminders);
-                    qmService.trackingReminders.syncTrackingReminders();
+                    qm.reminderHelper.syncReminders();
                     $scope.goBack(backStateParams);
                 }
             });
@@ -150,7 +151,7 @@ angular.module('starter').controller('MeasurementAddCtrl', ["$scope", "$q", "$ti
             }
         };
         $scope.variableCategorySelectorChange = function(variableCategoryName){
-            var cat = qm.variableCategoryHelper.findVariableCategory(variableCategoryName);
+            var cat = qm.variableCategoryHelper.findByNameIdObjOrUrl(variableCategoryName);
             setupUnit(cat.defaultUnitAbbreviatedName);
             $scope.state.defaultValuePlaceholderText = 'Enter a value';
             $scope.state.defaultValueLabel = 'Value';
@@ -158,7 +159,7 @@ angular.module('starter').controller('MeasurementAddCtrl', ["$scope", "$q", "$ti
         };
         var setupVariableCategory = function(variableCategoryName){
             var cat = getVariableCategory(variableCategoryName);
-            qmLogService.debug($state.current.name + ': ' + 'variableCategoryName  is ' + variableCategoryName);
+            qmLog.debug($state.current.name + ': ' + 'variableCategoryName  is ' + variableCategoryName);
             if($scope.state.measurement){
                 $scope.state.measurement.variableCategoryName = cat.name;
             }
@@ -258,7 +259,7 @@ angular.module('starter').controller('MeasurementAddCtrl', ["$scope", "$q", "$ti
             if(v.unitAbbreviatedName){
                 setupUnit(v.unitAbbreviatedName, v.valence);
             }else if(v.variableCategoryName){
-                var category = qm.variableCategoryHelper.findVariableCategory(v);
+                var category = qm.variableCategoryHelper.findByNameIdObjOrUrl(v);
                 setupUnit(category.defaultUnitAbbreviatedName, v.valence);
             }
             var m = qm.measurements.newMeasurement(v);
@@ -283,7 +284,7 @@ angular.module('starter').controller('MeasurementAddCtrl', ["$scope", "$q", "$ti
                 //Stop the ion-refresher from spinning
                 $scope.$broadcast('scroll.refreshComplete');
                 qmService.hideLoader();
-                qmLogService.error(error);
+                qmLog.error(error);
             });
         };
         var setupByID = function(id){
@@ -297,7 +298,7 @@ angular.module('starter').controller('MeasurementAddCtrl', ["$scope", "$q", "$ti
                         deferred.resolve();
                     }, function(error){
                     qmService.hideLoader();
-                    qmLogService.error($state.current.name + ": " + "Error response: ", error);
+                    qmLog.error($state.current.name + ": " + "Error response: ", error);
                     deferred.reject(error);
                 });
             return deferred.promise;
@@ -379,7 +380,7 @@ angular.module('starter').controller('MeasurementAddCtrl', ["$scope", "$q", "$ti
                 destructiveText: '<i class="icon ion-trash-a"></i>Delete Measurement',
                 cancelText: '<i class="icon ion-ios-close"></i>Cancel',
                 cancel: function(){
-                    qmLogService.debug(null, $state.current.name + ': ' + 'CANCELLED', null);
+                    qmLog.debug(null, $state.current.name + ': ' + 'CANCELLED', null);
                 },
                 buttonClicked: function(index, button){
                     var params = {
@@ -409,9 +410,9 @@ angular.module('starter').controller('MeasurementAddCtrl', ["$scope", "$q", "$ti
         }
         function getVariableCategory(obj){
             var cat;
-            if(obj){cat = qm.variableCategoryHelper.findVariableCategory(obj);}
-            if(!cat && $scope.state){cat = qm.variableCategoryHelper.findVariableCategory($scope.state);}
-            if(!cat){cat = qm.variableCategoryHelper.findVariableCategory($stateParams);}
+            if(obj){cat = qm.variableCategoryHelper.findByNameIdObjOrUrl(obj);}
+            if(!cat && $scope.state){cat = qm.variableCategoryHelper.findByNameIdObjOrUrl($scope.state);}
+            if(!cat){cat = qm.variableCategoryHelper.findByNameIdObjOrUrl($stateParams);}
             if(!cat){
                 qmLog.debug("No variable category name from getVariableCategory")
                 return null;

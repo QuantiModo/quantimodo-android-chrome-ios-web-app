@@ -1,6 +1,6 @@
 angular.module('starter').controller('VariableSearchCtrl',
-    ["$scope", "$state", "$rootScope", "$stateParams", "$timeout", "$filter", "qmService", "qmLogService",
-        function($scope, $state, $rootScope, $stateParams, $timeout, $filter, qmService, qmLogService){
+    ["$scope", "$state", "$rootScope", "$stateParams", "$timeout", "$filter", "qmService",
+        function($scope, $state, $rootScope, $stateParams, $timeout, $filter, qmService){
         $scope.controller_name = "VariableSearchCtrl";
         qmService.navBar.setFilterBarSearchIcon(false);
         $scope.$on('$ionicView.beforeEnter', function(e){
@@ -316,17 +316,17 @@ angular.module('starter').controller('VariableSearchCtrl',
         }
         function getVariableCategory(){
             var name = getVariableCategoryName();
-            if(name){return qm.variableCategoryHelper.findVariableCategory(name);}
+            if(name){return qm.variableCategoryHelper.findByNameIdObjOrUrl(name);}
             return null;
         }
         function getVariableCategoryName(){
-            var fromUrl = qm.variableCategoryHelper.getVariableCategoryNameFromStateParamsOrUrl();
+            var fromUrl = qm.variableCategoryHelper.getNameFromStateParamsOrUrl();
             if(fromUrl){return fromUrl;}
             var params = getVariableSearchParameters();
             if(params.variableCategoryName){
                 return params.variableCategoryName;
             }
-            return qm.variableCategoryHelper.getVariableCategoryNameFromStateParamsOrUrl($stateParams);
+            return qm.variableCategoryHelper.getNameFromStateParamsOrUrl($stateParams);
         }
         function getPluralVariableCategoryName(){
             return $filter('wordAliases')(pluralize(getVariableCategoryName(), 1));
@@ -334,8 +334,8 @@ angular.module('starter').controller('VariableSearchCtrl',
         var checkNameExists = function(item){
             if(!item.name){
                 var message = "variable doesn't have a name! variable: " + JSON.stringify(item);
-                qmLogService.error(message);
-                qmLogService.error(message);
+                qmLog.error(message);
+                qmLog.error(message);
                 return false;
             }
             return true;

@@ -138,3 +138,5 @@ secrets/*
 /last-failed-cypress-test
 /cypress/videos/
 /success-file
+/tests/mochawesome-report/assets/
+debug.log

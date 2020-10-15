@@ -1,5 +1,5 @@
-angular.module('starter').controller('StudyCreationCtrl', ["$scope", "$state", "qmService", "qmLogService", "clipboard", "$mdDialog", "$stateParams", "$rootScope",
-    function($scope, $state, qmService, qmLogService, clipboard, $mdDialog, $stateParams, $rootScope){
+angular.module('starter').controller('StudyCreationCtrl', ["$scope", "$state", "qmService", "clipboard", "$mdDialog", "$stateParams", "$rootScope",
+    function($scope, $state, qmService, clipboard, $mdDialog, $stateParams, $rootScope){
         $scope.state = {
             title: 'Create a Study',
             color: qmService.colors.blue,
@@ -42,13 +42,13 @@ angular.module('starter').controller('StudyCreationCtrl', ["$scope", "$state", "
         function setOutcomeVariable(variable){
             $scope.state.effectVariable = variable;
             //qm.urlHelper.addUrlParamsToCurrentUrl('effectVariableName', variable.name);  // Doesn't work
-            qmLogService.debug('Selected outcome ' + variable.name);
+            qmLog.debug('Selected outcome ' + variable.name);
             showTypesExplanation();
         }
         function setPredictorVariable(variable){
             $scope.state.causeVariable = variable;
             //qm.urlHelper.addUrlParamsToCurrentUrl('causeVariableName', variable.name);  // Doesn't work
-            qmLogService.debug('Selected predictor ' + variable.name);
+            qmLog.debug('Selected predictor ' + variable.name);
             showTypesExplanation();
         }
         function showTypesExplanation(){
@@ -93,7 +93,7 @@ angular.module('starter').controller('StudyCreationCtrl', ["$scope", "$state", "
                 qmService.hideLoader();
                 if(body.type === 'individual'){
                     body.study = study;
-                    //qmService.goToState(qm.stateNames.study, body);
+                    //qmService.goToState(qm.staticData.stateNames.study, body);
                     qm.studyHelper.goToStudyPageViaStudy(study); // Need to use goToStudyPageViaStudy so url params are populated
                 }else{
                     $scope.state.study = study;
