@@ -368,7 +368,7 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
                 ' analysis settings back to global defaults (this could take a minute)', 30);
             qmService.showBlackRingLoader();
             $scope.state.variableObject = null;
-            qmService.resetUserVariableDeferred(variableObject.variableId).then(function(userVariable){
+            qm.userVariables.resetUserVariable(variableObject.variableId).then(function(userVariable){
                 setVariableObject(userVariable);
                 //qmService.addWikipediaExtractAndThumbnail($scope.state.variableObject);
             });
@@ -413,7 +413,7 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
                 experimentStartTimeString: experimentStartTimeString,
                 experimentEndTimeString: experimentEndTimeString
             };
-            qmService.postUserVariableDeferred(body).then(function(userVariable){
+            qm.userVariables.postUserVariable(body).then(function(userVariable){
                 qmService.hideLoader();
                 var fromUrl = $stateParams.fromUrl || qm.urlHelper.getParam('fromUrl');
                 if(fromUrl){
@@ -437,7 +437,7 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
                 userTaggedVariableId: taggedVariable.variableId
             };
             qmService.showInfoToast("Deleted "+v.name+" tag from "+taggedVariable.name+"!")
-            qmService.deleteUserTagDeferred(userTagData);  // Delete doesn't return response for some reason
+            qm.tags.deleteUserTag(userTagData);  // Delete doesn't return response for some reason
         };
         $scope.deleteTagVariable = function(tagVariable){
             tagVariable.hide = true;
@@ -446,7 +446,7 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
                 userTagVariableId: tagVariable.variableId
             };
             qmService.showInfoToast("Deleted "+tagVariable.name+" tag!")
-            qmService.deleteUserTagDeferred(userTagData); // Delete doesn't return response for some reason
+            qm.tags.deleteUserTag(userTagData); // Delete doesn't return response for some reason
         };
         $scope.deleteJoinedVariable = function(tagVariable){
             tagVariable.hide = true;

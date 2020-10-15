@@ -255,7 +255,7 @@ angular.module('starter').controller('RemindersManageCtrl', ["$scope", "$state",
                     for(var i = 0; i < trackingReminder.actionArray.length; i++){
                         if(trackingReminder.actionArray[i].action !== "snooze"){
                             if(index === buttonIndex){
-                                qmService.postMeasurementByReminder(trackingReminder, trackingReminder.actionArray[i].modifiedValue)
+                                qm.measurements.postMeasurementByReminder(trackingReminder, trackingReminder.actionArray[i].modifiedValue)
                                     .then(function(){
                                         qmLog.debug('Successfully qmService.postMeasurementByReminder');
                                     }, function(error){

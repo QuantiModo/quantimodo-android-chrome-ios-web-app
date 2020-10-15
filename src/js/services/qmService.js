@@ -2737,7 +2737,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                             effectVariableId: qm.studyHelper.getEffectVariableId(), shareUserMeasurements: true
                         };
                         qmService.showBlackRingLoader();
-                        qmService.postStudyDeferred(body).then(function(){
+                        qm.studyHelper.postStudy(body).then(function(){
                             qmService.hideLoader();
                             if(sharingUrl){
                                 qmService.studyHelper.shareStudyNativelyOrViaWeb(study, sharingUrl);
@@ -2785,7 +2785,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                             causeVariableId: qm.studyHelper.getCauseVariableId(),
                             effectVariableId: qm.studyHelper.getEffectVariableId(), shareUserMeasurements: false
                         };
-                        qmService.postStudyDeferred(body);
+                        qm.studyHelper.postStudy(body);
                     }
                     function noCallback(){
                         correlationObject.shareUserMeasurements = true;
@@ -3308,9 +3308,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 vote: (study.studyVotes) ? study.studyVotes.userVote : study.userVote
             }, successHandler, errorHandler);
         };
-        qmService.postUserVariableToApi = function(userVariable, successHandler, errorHandler){
-            qm.api.post('api/v3/userVariables', userVariable, successHandler, errorHandler);
-        };
         qmService.deleteUserVariableMeasurements = function(variableName, successHandler, errorHandler){
             qm.storage.deleteByProperty(qm.items.userVariables, 'variableName', variableName);
             qmService.post('api/v3/userVariables/delete', ['variableName'], {variableName: variableName}, successHandler, errorHandler);
@@ -3338,35 +3335,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             options.doNotSendToLogin = true;
             qm.api.get('api/v3/notificationPreferences', ['userEmail'], params, successHandler, errorHandler, options);
         };
-        qmService.getTrackingReminderNotificationsFromApi = function(params, successHandler, errorHandler){
-            var functionName = "getTrackingReminderNotificationsFromApi";
-            qmLog.debug(functionName, null, params, qmLog.getStackTrace());
-            qm.api.configureClient(functionName, errorHandler, params);
-            var apiInstance = new Quantimodo.RemindersApi();
-            function callback(error, notifications, response){
-                if(notifications && notifications.data){notifications = notifications.data;}
-                if(notifications && notifications.length){
-                    qmService.notifications.getDrawOverAppsPopupPermissionIfNecessary();
-                    qm.push.checkHoursSinceLastPushNotificationReceived();
-                }
-                qmSdkApiResponseHandler(error, notifications, response, successHandler, errorHandler, {}, functionName);
-            }
-            params = qm.api.addGlobalParams(params);
-            params.limit = qm.notifications.limit;
-            apiInstance.getTrackingReminderNotifications(params, callback);
-        };
-        qmService.postStudy = function(body, successHandler, errorHandler){
-            qm.api.post('api/v3/study', body, successHandler, errorHandler);
-        };
-        qmService.postStudyDeferred = function(body){
-            var deferred = $q.defer();
-            qmService.postStudy(body, function(){
-                deferred.resolve();
-            }, function(error){
-                deferred.reject(error);
-            });
-            return deferred.promise;
-        };
         qmService.postUserTagDeferred = function(tagData){
             var deferred = $q.defer();
             qmService.postUserTag(tagData, function(response){
@@ -3388,7 +3356,10 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         };
         qmService.postVariableJoinDeferred = function(tagData){
             var deferred = $q.defer();
-            qmService.postVariableJoin(tagData, function(response){
+            if(!Array.isArray(tagData)){
+                tagData = [tagData];
+            }
+            qm.api.post('api/v3/variables/join', tagData, function(response){
                 /** @namespace response.data.currentVariable */
                 qm.variablesHelper.setLastSelectedAtAndSave(response.data.currentVariable);
                 qm.variablesHelper.setLastSelectedAtAndSave(response.data.joinedVariable);
@@ -3397,12 +3368,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 deferred.reject(error);
             });
             return deferred.promise;
-        };
-        qmService.postVariableJoin = function(variableJoinData, successHandler, errorHandler){
-            if(!(variableJoinData instanceof Array)){
-                variableJoinData = [variableJoinData];
-            }
-            qm.api.post('api/v3/variables/join', variableJoinData, successHandler, errorHandler);
         };
         qmService.deleteVariableJoinDeferred = function(tagData){
             var deferred = $q.defer();
@@ -3422,41 +3387,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         };
         qmService.deleteVariableJoin = function(variableJoinData, successHandler, errorHandler){
             qm.api.post('api/v3/variables/join/delete', variableJoinData, successHandler, errorHandler);
-        };
-        qmService.deleteUserTagDeferred = function(tagData){
-            var deferred = $q.defer();
-            qmService.deleteUserTag(tagData, function(response){
-                if(!response){
-                    qmLog.info("No response from deleteUserTag");
-                    deferred.resolve();
-                    return;
-                }
-                qm.variablesHelper.setLastSelectedAtAndSave(response.data.userTaggedVariable);
-                qm.variablesHelper.setLastSelectedAtAndSave(response.data.userTagVariable);
-                deferred.resolve(response.data);
-            }, function(error){
-                deferred.reject(error);
-            });
-            return deferred.promise;
-        };
-        qmService.deleteUserTag = function(userTagData, successHandler, errorHandler){
-            qm.api.post('api/v3/userTags/delete',userTagData, successHandler, errorHandler);
-        };
-        qmService.getUserTagsDeferred = function(){
-            var deferred = $q.defer();
-            qmService.getUserTags.then(function(userTags){
-                deferred.resolve(userTags);
-            });
-            return deferred.promise;
-        };
-        qmService.getUserTags = function(params, successHandler, errorHandler){
-            qm.api.configureClient('getUserTags', errorHandler, params);
-            var apiInstance = new Quantimodo.VariablesApi();
-            function callback(error, data, response){
-                qmSdkApiResponseHandler(error, data, response, successHandler, errorHandler, params, 'getUserTags');
-            }
-            params = qm.api.addGlobalParams(params);
-            apiInstance.getUserTags(params, callback);
         };
         qmService.deleteDeviceTokenFromServer = function(successHandler, errorHandler){
             var deferred = $q.defer();
@@ -3845,45 +3775,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             };
             qm.measurements.addLocationAndSource(m);
             return m;
-        };
-        qmService.postMeasurementByReminder = function(trackingReminder, modifiedValue){
-            var deferred = $q.defer();
-            var value = trackingReminder.defaultValue;
-            if(typeof modifiedValue !== "undefined" && modifiedValue !== null){
-                value = modifiedValue;
-            }
-            var measurementSet = [
-                {
-                    variableName: trackingReminder.variableName,
-                    sourceName: qm.getSourceName(),
-                    variableCategoryName: trackingReminder.variableCategoryName,
-                    unitAbbreviatedName: trackingReminder.unitAbbreviatedName,
-                    measurements: [
-                        {
-                            startTimeEpoch: window.qm.timeHelper.getUnixTimestampInSeconds(),
-                            value: value,
-                            note: null
-                        }
-                    ]
-                }
-            ];
-            measurementSet[0].measurements[0] = qm.measurements.addLocationDataToMeasurement(measurementSet[0].measurements[0]);
-            if(!qmService.valueIsValid(trackingReminder, value)){
-                deferred.reject('Value is not valid');
-                return deferred.promise;
-            }
-            qm.measurements.postMeasurements(measurementSet, function(response){
-                if(response.success){
-                    qmLog.debug('qmService.postMeasurementsToApi success: ', response);
-                    if(response && response.data && response.data.userVariables){
-                        qm.variablesHelper.saveToLocalStorage(response.data.userVariables);
-                    }
-                    deferred.resolve();
-                }else{
-                    deferred.reject(response.message ? response.message.split('.')[0] : "Can't post measurement right now!");
-                }
-            });
-            return deferred.promise;
         };
         qmService.setPlatformVariables = function(){
             var platform = {};
@@ -5238,37 +5129,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             });
         };
         // post changes to user variable settings
-        qmService.postUserVariableDeferred = function(body){
-            var deferred = $q.defer();
-            qmService.postUserVariableToApi(body, function(response){
-                var userVariable;
-                if(response.userVariables){
-                    userVariable = response.userVariables[0];
-                }
-                if(response.userVariable){
-                    userVariable = response.userVariable;
-                }
-                qm.variablesHelper.setLastSelectedAtAndSave(userVariable);
-                qm.studyHelper.deleteLastStudyFromGlobalsAndLocalForage();
-                //qmService.addWikipediaExtractAndThumbnail($rootScope.variableObject);
-                qmLog.debug('qmService.postUserVariableDeferred: success: ', userVariable, null);
-                deferred.resolve(userVariable);
-            }, function(error){
-                deferred.reject(error);
-            });
-            return deferred.promise;
-        };
-        qmService.resetUserVariableDeferred = function(variableId){
-            var deferred = $q.defer();
-            qm.api.post('api/v3/userVariables/reset',
-                {variableId: variableId}, function(response){
-                qm.variablesHelper.setLastSelectedAtAndSave(response.data.userVariable);
-                deferred.resolve(response.data.userVariable);
-            }, function(error){
-                deferred.reject(error);
-            });
-            return deferred.promise;
-        };
         qmService.deleteAllMeasurementsForVariableDeferred = function(variableName){
             var deferred = $q.defer();
             qmService.deleteUserVariableMeasurements(variableName, function(){
@@ -5850,9 +5710,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             }
             $rootScope.upgradePages = upgradePages;
         };
-        qmService.postCreditCard = function(body, successHandler, errorHandler){
-            qm.api.post('api/v2/account/subscribe', body, successHandler, errorHandler);
-        };
         qmService.postCreditCardDeferred = function(body){
             var deferred = $q.defer();
             qmService.recordUpgradeProductPurchase(body.productId, null, 1);
@@ -5875,7 +5732,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                         .ok('OK')
                 );
             }
-            qmService.postCreditCard(body, function(response){
+            qm.subscriptions.postCreditCard(body, function(response){
                 qmService.hideLoader();
                 qmLog.debug("postCreditCard", response);
                 if(!response || !response.user){
@@ -5904,14 +5761,11 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             });
             return deferred.promise;
         };
-        qmService.postDowngradeSubscription = function(body, successHandler, errorHandler){
-            qm.api.post('api/v2/account/unsubscribe', body, successHandler, errorHandler);
-        };
         qmService.postDowngradeSubscriptionDeferred = function(){
             var deferred = $q.defer();
             $rootScope.user.stripeActive = false;
             qmLog.error('User downgraded subscription: ', $rootScope.user);
-            qmService.postDowngradeSubscription({}, function(user){
+            qm.subscriptions.postDowngradeSubscription({}, function(user){
                 qmService.setUserInLocalStorageBugsnagIntercomPush(user);
                 deferred.resolve(user);
             }, function(response){
@@ -6347,29 +6201,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 }
                 //}, function() {if(noCallbackFunction){noCallbackFunction(ev);}}); TODO: What was the point of this? It causes popups to be disabled inadvertently
             });
-        };
-        qmService.valueIsValid = function(object, value){
-            var message;
-            var u = qm.unitHelper.getByNameAbbreviatedNameOrId(object.unitAbbreviatedName);
-            if(!u){
-                qmLog.error("Unit named "+u.unitAbbreviatedName+" not found!");
-                return true;
-            }
-            if(u.minimumValue !== "undefined" && u.minimumValue !== null){
-                if(value < u.minimumValue){
-                    message = u.minimumValue + ' is the smallest possible value for the unit ' + u.name + ".  Please select another unit or value.";
-                    qm.measurements.validationFailure(message);
-                    return false;
-                }
-            }
-            if(typeof u.maximumValue !== "undefined" && u.maximumValue !== null){
-                if(value > u.maximumValue){
-                    message = u.maximumValue + ' is the largest possible value for the unit ' + u.name + ".  Please select another unit or value.";
-                    qm.measurements.validationFailure(message);
-                    return false;
-                }
-            }
-            return true;
         };
         var deleteAllMeasurementsForVariable = function(variableName){
             qmService.showBlackRingLoader();
@@ -7106,7 +6937,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 variableObject.shareUserMeasurements = true;
                 var body = {variableId: variableObject.variableId, shareUserMeasurements: true};
                 qmService.showBlackRingLoader();
-                qmService.postUserVariableDeferred(body).then(function(){
+                qm.userVariables.postUserVariable(body).then(function(){
                     qmService.hideLoader();
                     qmService.openSharingUrl(sharingUrl);
                 }, function(error){
@@ -7127,7 +6958,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             function yesCallback(){
                 variableObject.shareUserMeasurements = false;
                 var body = {variableId: variableObject.variableId, shareUserMeasurements: false};
-                qmService.postUserVariableDeferred(body).then(function(){
+                qm.userVariables.postUserVariable(body).then(function(){
                 }, function(error){
                     qmLog.error(error);
                 });
@@ -7155,39 +6986,40 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             }
             return $stateParams.variableName;
         };
-        qmService.trackByFavorite = function(trackingReminder, modifiedReminderValue){
+        qmService.trackByFavorite = function(tr, modifiedReminderValue){
             if(typeof modifiedReminderValue === "undefined" || modifiedReminderValue === null){
-                modifiedReminderValue = trackingReminder.defaultValue;
+                modifiedReminderValue = tr.defaultValue;
             }
-            if(trackingReminder.combinationOperation === "SUM"){
-                trackingReminder.total = trackingReminder.total + modifiedReminderValue;
+            if(tr.combinationOperation === "SUM"){
+                tr.total = tr.total + modifiedReminderValue;
             }else{
-                trackingReminder.total = modifiedReminderValue;
+                tr.total = modifiedReminderValue;
             }
-            trackingReminder.displayTotal = qm.stringHelper.formatValueUnitDisplayText("Recorded " + trackingReminder.total + " " + trackingReminder.unitAbbreviatedName);
-            if(!trackingReminder.tally){
-                trackingReminder.tally = 0;
+            tr.displayTotal = qm.stringHelper.formatValueUnitDisplayText(
+                "Recorded " + tr.total + " " + tr.unitAbbreviatedName);
+            if(!tr.tally){
+                tr.tally = 0;
             }
-            if(trackingReminder.combinationOperation === "SUM"){
-                trackingReminder.tally += modifiedReminderValue;
+            if(tr.combinationOperation === "SUM"){
+                tr.tally += modifiedReminderValue;
             }else{
-                trackingReminder.tally = modifiedReminderValue;
+                tr.tally = modifiedReminderValue;
             }
-            qmService.showInfoToast(trackingReminder.displayTotal + " " + trackingReminder.variableName);
+            qmService.showInfoToast(tr.displayTotal + " " + tr.variableName);
             $timeout(function(){
-                if(typeof trackingReminder === "undefined"){
+                if(typeof tr === "undefined"){
                     qmLog.error("$rootScope.favoritesTally[trackingReminder.id] is undefined so we can't send tally in favorite controller. Not sure how this is happening.");
                     return;
                 }
-                if(trackingReminder.tally !== null){
-                    qmService.postMeasurementByReminder(trackingReminder, trackingReminder.tally)
+                if(tr.tally !== null){
+                    qm.measurements.postMeasurementByReminder(tr, tr.tally)
                         .then(function(){
-                            qmLog.debug('Successfully qmService.postMeasurementByReminder: ', trackingReminder);
+                            qmLog.debug('Successfully qmService.postMeasurementByReminder: ', tr);
                         }, function(error){
                             qmLog.error(error);
-                            qmLog.error('Failed to Track by favorite! ', trackingReminder);
+                            qmLog.error('Failed to Track by favorite! ', tr);
                         });
-                    trackingReminder.tally = null;
+                    tr.tally = null;
                 }
             }, 2000);
         };
