@@ -6376,7 +6376,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             var message;
             var u = qm.unitHelper.getByNameAbbreviatedNameOrId(object.unitAbbreviatedName);
             if(!u){
-                qm.qmLog.error("Unit named "+u.unitAbbreviatedName+" not found!");
+                qmLog.error("Unit named "+u.unitAbbreviatedName+" not found!");
                 return true;
             }
             if(u.minimumValue !== "undefined" && u.minimumValue !== null){
@@ -6479,7 +6479,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         };
         qmService.showBasicLoader = function(duration){
             if(typeof psychedelicLoader === "undefined"){
-                qm.qmLog.error("psychedelicLoader undefined!");
+                qmLog.error("psychedelicLoader undefined!");
             } else {
                 if(psychedelicLoader.showing){return;}
             }
@@ -6489,7 +6489,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         };
         qmService.showBlackRingLoader = function(duration){
             if(typeof psychedelicLoader === "undefined"){
-                qm.qmLog.error("psychedelicLoader undefined!");
+                qmLog.error("psychedelicLoader undefined!");
             } else {
                 if(psychedelicLoader.showing){return;}
             }
@@ -6511,7 +6511,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 $timeout(function(){
                     $ionicLoading.hide();
                     if(typeof psychedelicLoader === "undefined"){
-                        qm.qmLog.error("psychedelicLoader undefined!");
+                        qmLog.error("psychedelicLoader undefined!");
                     } else {
                         psychedelicLoader.stop();
                     }
@@ -6520,7 +6520,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 $timeout(function(){
                     $ionicLoading.hide();
                     if(typeof psychedelicLoader === "undefined"){
-                        qm.qmLog.error("psychedelicLoader undefined!");
+                        qmLog.error("psychedelicLoader undefined!");
                     } else {
                         psychedelicLoader.stop();
                     }
