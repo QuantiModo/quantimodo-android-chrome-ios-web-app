@@ -231,7 +231,7 @@ angular.module("starter").controller("StudyCtrl", [
             }
         }
         if(recalculate){
-            qm.studyHelper.getStudyFromApi(getRequestParams(recalculate), function(study){
+            qm.studyHelper.getStudyFromApi(getRequestParams(recalculate)).then( function(study){
                 successHandler(study);
             }, function(error){
                 errorHandler(error);

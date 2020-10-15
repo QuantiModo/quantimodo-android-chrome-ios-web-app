@@ -71,7 +71,6 @@ var qmLog = {
         }
     },
     getLogLevelName: function(){
-        //qmService.setUseif(window.location.href.indexOf('utopia.quantimo.do') > -1){return "debug";}
         if(qm.urlHelper.getParam('debug') || qm.urlHelper.getParam('debugMode')){
             qmLog.setLogLevelName("debug");
         }
