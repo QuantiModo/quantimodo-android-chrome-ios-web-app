@@ -130,7 +130,7 @@ var qmLog = {
         if(message){
             string += message;
         }
-        qmLog.qm.qmLog.info(string);
+        qmLog.info(string);
     },
     arrayValues: function(array, propertiesToLog, message){
         if(array.constructor !== Array){
