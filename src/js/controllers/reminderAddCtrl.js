@@ -93,7 +93,7 @@ angular.module('starter').controller('ReminderAddCtrl', ["$scope", "$state", "$s
             qmService.hideLoader();
             qm.storage.setItem(qm.items.lastReminder, $scope.state.trackingReminder);
             setHideDefaultValueField();
-            if($state.current.name !== qm.stateNames.favoriteAdd){
+            if($state.current.name !== qm.staticData.stateNames.favoriteAdd){
                 setupEditReminder($scope.state.trackingReminder);
             }  // Needed to set dates
             qmLog.info("tracking reminder after setup: ", $scope.state.trackingReminder);
@@ -109,7 +109,7 @@ angular.module('starter').controller('ReminderAddCtrl', ["$scope", "$state", "$s
             $scope.state.firstReminderStartTimeMoment = moment($scope.state.firstReminderStartTimeEpochTime * 1000);
         }
         function getVariableCategoryName(){
-            return qm.variableCategoryHelper.getVariableCategoryNameFromStateParamsOrUrl(
+            return qm.variableCategoryHelper.getNameFromStateParamsOrUrl(
                 $scope.state.trackingReminder, $stateParams, $stateParams.variableObject);
         }
         $scope.openReminderStartTimePicker = function(order){
@@ -262,8 +262,8 @@ angular.module('starter').controller('ReminderAddCtrl', ["$scope", "$state", "$s
                 validationFailure(r.reminderStartTimeLocal + " is later than your latest allowed " +
                     "notification time.  You can change your latest notification time on the settings page.");
             }
-            r.valueAndFrequencyTextDescriptionWithTime = qmService.getValueAndFrequencyTextDescriptionWithTime(r);
-            r.reminderStartTime = qmService.getUtcTimeStringFromLocalString(r.reminderStartTimeLocal);
+            r.valueAndFrequencyTextDescriptionWithTime = qm.reminderHelper.getValueAndFrequencyTextDescriptionWithTime(r);
+            r.reminderStartTime = qm.timeHelper.getUtcTimeStringFromLocalString(r.reminderStartTimeLocal);
             r.reminderStartTimeEpochSeconds = reminderStartTimeEpochTime;
             r.nextReminderTimeEpochSeconds = reminderStartTimeEpochTime;
             return r;
@@ -315,9 +315,7 @@ angular.module('starter').controller('ReminderAddCtrl', ["$scope", "$state", "$s
             }
             applySelectedDatesToReminder();
             var remindersArray = [];
-            if(typeof r.defaultValue === "undefined"){
-                r.defaultValue = null;
-            }
+            if(typeof r.defaultValue === "undefined"){r.defaultValue = null;}
             remindersArray[0] = JSON.parse(JSON.stringify(r));
             function applyReminderTimesToReminder(){
                 if($scope.state.firstReminderStartTimeMoment){
@@ -351,12 +349,9 @@ angular.module('starter').controller('ReminderAddCtrl', ["$scope", "$state", "$s
                 qm.editReminderCallback(r);
                 return;
             }
-            if(r.id){
-                qm.storage.deleteById('trackingReminders', r.id);
-            }
-            //qmService.showBasicLoader();
-            qmService.addToTrackingReminderSyncQueue(remindersArray);
-            qmService.trackingReminders.syncTrackingReminders(true).then(function(){});
+            if(r.id){qm.storage.deleteById('trackingReminders', r.id);}
+            qm.reminderHelper.addToQueue(remindersArray);
+            qm.reminderHelper.syncReminders(true).then(function(){});
             var toastMessage = getVariableName($scope) + ' saved';
             qmService.showInfoToast(toastMessage);
             qmService.hideLoader();
@@ -417,7 +412,7 @@ angular.module('starter').controller('ReminderAddCtrl', ["$scope", "$state", "$s
             setHideDefaultValueField();
         };
         $scope.variableCategorySelectorChange = function(variableCategoryName){
-            $scope.state.variableCategoryObject = qm.variableCategoryHelper.findVariableCategory(variableCategoryName);
+            $scope.state.variableCategoryObject = qm.variableCategoryHelper.findByNameIdObjOrUrl(variableCategoryName);
             $scope.state.trackingReminder.unitAbbreviatedName = $scope.state.variableCategoryObject.defaultUnitAbbreviatedName;
             $scope.state.defaultValuePlaceholderText = 'Enter most common value';
             $scope.state.defaultValueLabel = 'Default Value';
@@ -438,7 +433,7 @@ angular.module('starter').controller('ReminderAddCtrl', ["$scope", "$state", "$s
             }
             var r = $scope.state.trackingReminder;
             r.variableCategoryName = variableCategoryName;
-            $scope.state.variableCategoryObject = qm.variableCategoryHelper.findVariableCategory(variableCategoryName);
+            $scope.state.variableCategoryObject = qm.variableCategoryHelper.findByNameIdObjOrUrl(variableCategoryName);
             if(!r.unitAbbreviatedName){
                 r.unitAbbreviatedName = $scope.state.variableCategoryObject.defaultUnitAbbreviatedName;
             }
@@ -484,7 +479,7 @@ angular.module('starter').controller('ReminderAddCtrl', ["$scope", "$state", "$s
                 });
         }
         var setTitle = function(){
-            if($stateParams.favorite || $state.current.name === qm.stateNames.favoriteAdd){
+            if($stateParams.favorite || $state.current.name === qm.staticData.stateNames.favoriteAdd){
                 $scope.state.selectedFrequencyName = 'As-Needed';
                 if($stateParams.reminder){
                     if(getVariableCategoryName() === 'Treatments'){
@@ -511,10 +506,7 @@ angular.module('starter').controller('ReminderAddCtrl', ["$scope", "$state", "$s
             qmService.storage.deleteById('trackingReminders', $scope.state.trackingReminder.id).then(function(){
                 $scope.goBack();
             });
-            qmService.deleteTrackingReminderDeferred($scope.state.trackingReminder).then(function(){
-            }, function(error){
-                qmLog.error(error);
-            });
+            qm.reminderHelper.deleteReminder($scope.state.trackingReminder);
         };
         function setHideDefaultValueField(){
             var hide = false;

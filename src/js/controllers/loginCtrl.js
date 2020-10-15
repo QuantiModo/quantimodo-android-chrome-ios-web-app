@@ -30,7 +30,7 @@ angular.module('starter').controller('LoginCtrl', ["$scope", "$state", "$rootSco
                     return;
                 }
                 qmService.showBasicLoader();
-                qmService.post('api/v3/userSettings', [], params, function(response){
+                qm.api.post('api/v3/userSettings', params, function(response){
                     qmService.setUserInLocalStorageBugsnagIntercomPush(response.user);
                     qmService.hideLoader();
                     leaveIfLoggedIn();

@@ -5,23 +5,10 @@ angular.module('starter').controller('WelcomeCtrl', ["$scope", "$state", "$rootS
     $scope.primaryOutcomeVariableDetails = qm.getPrimaryOutcomeVariable();
     $scope.reportedVariableValue = false;
     qmService.navBar.setFilterBarSearchIcon(false);
-    qmService.storage.getAsStringWithCallback('primaryOutcomeRatingFrequencyDescription',
-        function(primaryOutcomeRatingFrequencyDescription){
-            if(primaryOutcomeRatingFrequencyDescription){
-                $scope.primaryOutcomeRatingFrequencyDescription = primaryOutcomeRatingFrequencyDescription;
-            }
-            if(!primaryOutcomeRatingFrequencyDescription && $rootScope.platform.isIOS){
-                $scope.primaryOutcomeRatingFrequencyDescription = 'day';
-            }
-            if(!primaryOutcomeRatingFrequencyDescription && !$rootScope.platform.isIOS){
-                $scope.primaryOutcomeRatingFrequencyDescription = 'daily';
-            }
-        }
-    );
     $scope.sendReminderNotificationEmails = true;
     $rootScope.sendDailyEmailReminder = true;
-    $scope.saveIntervalAndGoToLogin = function(primaryOutcomeRatingFrequencyDescription){
-        $scope.saveInterval(primaryOutcomeRatingFrequencyDescription);
+    $scope.saveIntervalAndGoToLogin = function(frequency){
+        $scope.saveInterval(frequency);
         qm.auth.sendToLogin("welcome completed");
     };
     $scope.skipInterval = function(){
@@ -29,9 +16,9 @@ angular.module('starter').controller('WelcomeCtrl', ["$scope", "$state", "$rootS
         qmLog.debug('skipInterval: Going to login state...', null);
         qm.auth.sendToLogin("welcome completed");
     };
-    $scope.saveInterval = function(primaryOutcomeRatingFrequencyDescription){
-        if(primaryOutcomeRatingFrequencyDescription){
-            $scope.primaryOutcomeRatingFrequencyDescription = primaryOutcomeRatingFrequencyDescription;
+    $scope.saveInterval = function(frequency){
+        if(frequency){
+            $scope.primaryOutcomeRatingFrequencyDescription = frequency;
         }
         var intervals = {
             "minutely": 60,
@@ -44,12 +31,11 @@ angular.module('starter').controller('WelcomeCtrl', ["$scope", "$state", "$rootS
             "daily": 24 * 60 * 60,
             "day": 24 * 60 * 60
         };
-        var reminderToSchedule = {
+        qm.reminderHelper.addToQueue({
             reminderFrequency: intervals[$scope.primaryOutcomeRatingFrequencyDescription],
             variableId: qm.getPrimaryOutcomeVariable().id,
             defaultValue: 3
-        };
-        qmService.addToTrackingReminderSyncQueue(reminderToSchedule);
+        });
         $scope.showIntervalCard = false;
     }
     $scope.storeRatingLocally = function(ratingValue){
@@ -59,16 +45,13 @@ angular.module('starter').controller('WelcomeCtrl', ["$scope", "$state", "$rootS
         $scope.hidePrimaryOutcomeVariableCard = true;
         $scope.showIntervalCard = true;
     };
-    $scope.init = function(){
-        qmService.navBar.hideNavigationMenu();
-        qmLog.debug($state.current.name + ' initializing...', null);
-    };
     $scope.$on('$ionicView.beforeEnter', function(){
         if (document.title !== "Welcome") {document.title = "Welcome";}
         if($rootScope.user){
-            qmLog.debug('Already have user so no need to welcome. Going to default state.', null);
+            qmLog.debug('Already have user so no need to welcome. Going to default state.');
             qmService.goToDefaultState();
         }
+        qmService.navBar.hideNavigationMenu();
+        qmLog.debug($state.current.name + ' initializing...', null);
     });
-    $scope.init();
 }]);

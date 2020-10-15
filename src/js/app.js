@@ -83,11 +83,11 @@ angular.module('starter',
                     /** @namespace $rootScope.appSettings.appDesign.floatingActionButton */
                     stateName = $rootScope.appSettings.appDesign.floatingActionButton.active[buttonName].stateName;
                     stateParameters = $rootScope.appSettings.appDesign.floatingActionButton.active[buttonName].stateParameters;
-                    if(stateName === qm.stateNames.reminderSearch && showVariableSearchDialog){
+                    if(stateName === qm.staticData.stateNames.reminderSearch && showVariableSearchDialog){
                         qmService.search.reminderSearch(null, ev, stateParameters.variableCategoryName);
                         return;
                     }
-                    if(stateName === qm.stateNames.measurementAddSearch && showVariableSearchDialog){
+                    if(stateName === qm.staticData.stateNames.measurementAddSearch && showVariableSearchDialog){
                         qmService.search.measurementAddSearch(null, ev, stateParameters.variableCategoryName);
                         return;
                     }

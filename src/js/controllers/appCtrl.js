@@ -14,7 +14,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
             });
             $scope.$on('$ionicView.afterEnter', function(e){
                 qmLog.debug($scope.controller_name + ".afterEnter so posting queued notifications if any");
-                qmService.syncNotificationsIfQueued();
+                qm.notifications.syncIfQueued();
                 qmService.refreshUserUsingAccessTokenInUrlIfNecessary();
                 $rootScope.setMicAndSpeechEnabled(qm.mic.getMicEnabled());
                 qm.chatButton.setZohoChatButtonZIndex();
@@ -177,7 +177,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
                     textContent = 'You previously voted that it is IMPOSSIBLE that ' + causeVariableName +
                         ' ' + $scope.increasesDecreases + ' your ' + effectVariableName + '. Do you want to delete this down vote?';
                     yesCallback = function(){
-                        deleteVote(study, $index);
+                        deleteVote(study);
                     };
                     noCallback = function(){
                     };
@@ -216,7 +216,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
                     textContent = 'You previously voted that it is POSSIBLE that ' + causeVariableName +
                         ' ' + $scope.increasesDecreases + ' your ' + effectVariableName + '. Do you want to delete this up vote?';
                     yesCallback = function(){
-                        deleteVote(study, $index);
+                        deleteVote(study);
                     };
                     noCallback = function(){
                     };
@@ -225,8 +225,8 @@ angular.module('starter')// Parent Controller - This controller runs before ever
             };
             function deleteVote(study){
                 study.studyVotes.userVote = null;
-                qmService.deleteVoteToApi(study, function(response){
-                    qmLog.debug('deleteVote response', null, response);
+                qm.studyHelper.deleteVote(study, function(response){
+                    qmLog.debug('deleteVote response', response);
                 }, function(error){
                     qmLog.error("deleteVote error", error);
                 });
@@ -312,7 +312,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
                     },
                     destructiveButtonClicked: function(){
                         state.favoritesArray = state.favoritesArray.filter(function(one){return one.id !== favorite.id;});
-                        qmService.deleteTrackingReminderDeferred(favorite);
+                        qm.reminderHelper.deleteReminder(favorite);
                         return true;
                     }
                 });
@@ -326,7 +326,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
                     return;
                 }
                 $rootScope.bloodPressure.displayTotal = "Recorded " + $rootScope.bloodPressure.systolicValue + "/" + $rootScope.bloodPressure.diastolicValue + ' Blood Pressure';
-                qmService.postBloodPressureMeasurements($rootScope.bloodPressure)
+                qm.measurements.postBloodPressureMeasurements($rootScope.bloodPressure)
                     .then(function(){
                         qmLog.debug('Successfully qmService.postMeasurementByReminder: ' + JSON.stringify($rootScope.bloodPressure), null);
                     }, function(error){
@@ -450,10 +450,10 @@ angular.module('starter')// Parent Controller - This controller runs before ever
             $scope.robotClick = function(){
                 if(qm.robot.onRobotClick){
                     qm.robot.onRobotClick();
-                }else if($state.current.name === qm.stateNames.chat){
+                }else if($state.current.name === qm.staticData.stateNames.chat){
                     qmService.robot.toggleSpeechAndMicEnabled();
                 }else{
-                    qmService.goToState(qm.stateNames.chat);
+                    qmService.goToState(qm.staticData.stateNames.chat);
                 }
             };
         }]);

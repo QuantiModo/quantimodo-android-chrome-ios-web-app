@@ -16,7 +16,7 @@ angular.module('starter').controller('OnboardingCtrl',
                 setRequireUpgradesInOnboarding();
                 qmService.navBar.hideNavigationMenu();
                 if(qmService.login.sendToLoginIfNecessaryAndComeBack(
-                    "No user in " + $state.current.name, qm.stateNames.onboarding)){
+                    "No user in " + $state.current.name, qm.staticData.stateNames.onboarding)){
                     return;
                 }
                 qmService.setupOnboardingPages();
@@ -108,7 +108,7 @@ angular.module('starter').controller('OnboardingCtrl',
                 qmService.goToState(qm.staticData.stateNames.import);
             };
             $scope.goToUpgradePage = function(){
-                qmService.backButtonState = qm.stateNames.onboarding;
+                qmService.backButtonState = qm.staticData.stateNames.onboarding;
                 qmService.goToState('app.upgrade');
             };
             $scope.skipOnboarding = function(){

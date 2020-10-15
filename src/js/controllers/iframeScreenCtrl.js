@@ -37,8 +37,8 @@ angular.module('starter')
             iFrameUrl = qm.api.getBaseUrl() + '/api/v1/connect/mobile';
             $scope.title = 'Your Variable Relationships';
         }
-        qmLog.debug('iframeScreen.init: Going to qmService.getAccessTokenFromAnySource', null);
-        qmService.getAccessTokenFromAnySource().then(function(accessToken){
+        qmLog.debug('iframeScreen.init: Going to getAccessTokenFromAnySource');
+        qm.auth.getAccessTokenFromAnySource().then(function(accessToken){
             if(accessToken){
                 if(iFrameUrl.indexOf('?') > -1){
                     iFrameUrl = iFrameUrl + '&access_token=' + accessToken;

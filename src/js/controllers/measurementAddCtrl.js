@@ -76,15 +76,16 @@ angular.module('starter').controller('MeasurementAddCtrl', ["$scope", "$q", "$ti
         }
         var trackBloodPressure = function(){
             if(!$rootScope.bloodPressure.diastolicValue || !$rootScope.bloodPressure.systolicValue){
-                qmService.validationFailure('Please enter both values for blood pressure.', $scope.state.measurement);
+                qm.measurements.validationFailure('Please enter both values for blood pressure.', $scope.state.measurement);
                 return;
             }
             $scope.state.selectedDate = moment($scope.state.selectedDate);
             $rootScope.bloodPressure.startTimeEpoch = parseInt($scope.state.selectedDate.format("X"));
             $rootScope.bloodPressure.note = $scope.state.measurement.note;
-            qmService.postBloodPressureMeasurements($rootScope.bloodPressure)
+            qm.measurements.postBloodPressureMeasurements($rootScope.bloodPressure)
                 .then(function(){
-                    qmLog.debug('Successfully qmService.postMeasurementByReminder: ' + JSON.stringify($rootScope.bloodPressure), null);
+                    qmLog.debug('Successfully qmService.postMeasurementByReminder: ' +
+                        JSON.stringify($rootScope.bloodPressure), null);
                 }, function(error){
                     qmLog.error('Failed to Track by favorite! ', error);
                 });
@@ -95,7 +96,7 @@ angular.module('starter').controller('MeasurementAddCtrl', ["$scope", "$q", "$ti
         };
         $scope.deleteMeasurementFromMeasurementAddCtrl = function(){
             qmService.showInfoToast('Deleting ' + $scope.state.measurement.variableName + ' measurement');
-            qmService.deleteMeasurementFromServer($scope.state.measurement);
+            qm.measurements.deleteMeasurement($scope.state.measurement);
             $scope.goBack({});
         };
         $scope.done = function(){
@@ -138,7 +139,7 @@ angular.module('starter').controller('MeasurementAddCtrl', ["$scope", "$q", "$ti
                 if(unitChanged){
                     qmLog.error("Syncing reminders because unit changed");
                     qm.storage.removeItem(qm.items.trackingReminders);
-                    qmService.trackingReminders.syncTrackingReminders();
+                    qm.reminderHelper.syncReminders();
                     $scope.goBack(backStateParams);
                 }
             });
@@ -150,7 +151,7 @@ angular.module('starter').controller('MeasurementAddCtrl', ["$scope", "$q", "$ti
             }
         };
         $scope.variableCategorySelectorChange = function(variableCategoryName){
-            var cat = qm.variableCategoryHelper.findVariableCategory(variableCategoryName);
+            var cat = qm.variableCategoryHelper.findByNameIdObjOrUrl(variableCategoryName);
             setupUnit(cat.defaultUnitAbbreviatedName);
             $scope.state.defaultValuePlaceholderText = 'Enter a value';
             $scope.state.defaultValueLabel = 'Value';
@@ -258,7 +259,7 @@ angular.module('starter').controller('MeasurementAddCtrl', ["$scope", "$q", "$ti
             if(v.unitAbbreviatedName){
                 setupUnit(v.unitAbbreviatedName, v.valence);
             }else if(v.variableCategoryName){
-                var category = qm.variableCategoryHelper.findVariableCategory(v);
+                var category = qm.variableCategoryHelper.findByNameIdObjOrUrl(v);
                 setupUnit(category.defaultUnitAbbreviatedName, v.valence);
             }
             var m = qm.measurements.newMeasurement(v);
@@ -409,9 +410,9 @@ angular.module('starter').controller('MeasurementAddCtrl', ["$scope", "$q", "$ti
         }
         function getVariableCategory(obj){
             var cat;
-            if(obj){cat = qm.variableCategoryHelper.findVariableCategory(obj);}
-            if(!cat && $scope.state){cat = qm.variableCategoryHelper.findVariableCategory($scope.state);}
-            if(!cat){cat = qm.variableCategoryHelper.findVariableCategory($stateParams);}
+            if(obj){cat = qm.variableCategoryHelper.findByNameIdObjOrUrl(obj);}
+            if(!cat && $scope.state){cat = qm.variableCategoryHelper.findByNameIdObjOrUrl($scope.state);}
+            if(!cat){cat = qm.variableCategoryHelper.findByNameIdObjOrUrl($stateParams);}
             if(!cat){
                 qmLog.debug("No variable category name from getVariableCategory")
                 return null;

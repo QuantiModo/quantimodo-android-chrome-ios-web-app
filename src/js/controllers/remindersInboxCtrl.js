@@ -77,7 +77,7 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
         });
         $scope.$on('$ionicView.beforeLeave', function(){
             qmLog.debug('RemindersInboxCtrl beforeLeave');
-            qmService.syncNotificationsIfQueued();
+            qm.notifications.syncIfQueued();
         });
         $scope.$on('$ionicView.afterLeave', function(){
             qmLog.debug('RemindersInboxCtrl afterLeave');
@@ -160,14 +160,14 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
             qm.notifications.track(n);
             notificationAction(n, undoOne);
         };
-        function getFavorites(){
+        function getFavoritesOrReminders(){
             var cat = getVariableCategoryName();
             if(!$scope.state.favoritesArray || !$scope.state.favoritesArray.length){
                 qmService.storage.getFavorites(cat).then(function(favorites){
                     if(favorites && favorites.length){
                         $scope.state.favoritesArray = favorites;
                     } else {
-                        qmService.storage.getReminders(cat).then(function(reminders){
+                        qm.reminderHelper.getActiveReminders(cat).then(function(reminders){
                             if(reminders && reminders.length) {
                                 $scope.state.favoritesArray = reminders;
                             }
@@ -215,7 +215,7 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
         function getFallbackInboxContentIfNecessary(){
             var num = getNumberOfDisplayedNotifications();
             if(!num && !$scope.state.loading){
-                getFavorites();
+                getFavoritesOrReminders();
                 getDiscoveries();
             }
         }
@@ -385,8 +385,8 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
                     }
                 })
             }
-            notifications = qm.reminderHelper.removeDuplicateNotifications(notifications);
-            var dividers = qmService.groupTrackingReminderNotificationsByDateRange(notifications)
+            notifications = qm.notifications.removeDuplicates(notifications);
+            var dividers = qm.notifications.groupByDate(notifications)
             $scope.safeApply(function () { // For som reason these are not visible to Ghost Inspector sometimes
                 $scope.notificationDividers = dividers;
                 $scope.state.numberOfDisplayedNotifications = notifications.length;
@@ -416,7 +416,7 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
         };
         $scope.syncNotifications = function(params){
             showLoader();
-            qmService.syncNotifications(params).then(function(){
+            qm.notifications.syncDeferred(params).then(function(){
                 getTrackingReminderNotifications();
                 if(!getNumberOfDisplayedNotifications()){
                     getFallbackInboxContentIfNecessary();
@@ -555,6 +555,6 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
             }
         }
         function getVariableCategoryName(){
-            return qm.variableCategoryHelper.getVariableCategoryNameFromStateParamsOrUrl($stateParams);
+            return qm.variableCategoryHelper.getNameFromStateParamsOrUrl($stateParams);
         }
     }]);
