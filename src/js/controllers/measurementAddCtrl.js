@@ -212,7 +212,7 @@ angular.module('starter').controller('MeasurementAddCtrl', ["$scope", "$q", "$ti
             }
             $scope.state.measurement.value = newValue;
             $scope.state.measurement.pngPath = $event.currentTarget.currentSrc;
-            qm.qmLog.debug($state.current.name + ': ' + 'measurementAddCtrl.selectPrimaryOutcomeVariableValue selected rating value: ' + newValue);
+            qmLog.debug($state.current.name + ': ' + 'measurementAddCtrl.selectPrimaryOutcomeVariableValue selected rating value: ' + newValue);
         };
         $scope.showUnitsDropDown = function(){
             $scope.showUnitsDropDown = true;
