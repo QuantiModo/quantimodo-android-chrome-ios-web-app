@@ -316,17 +316,17 @@ angular.module('starter').controller('VariableSearchCtrl',
         }
         function getVariableCategory(){
             var name = getVariableCategoryName();
-            if(name){return qm.variableCategoryHelper.findVariableCategory(name);}
+            if(name){return qm.variableCategoryHelper.findByNameIdObjOrUrl(name);}
             return null;
         }
         function getVariableCategoryName(){
-            var fromUrl = qm.variableCategoryHelper.getVariableCategoryNameFromStateParamsOrUrl();
+            var fromUrl = qm.variableCategoryHelper.getNameFromStateParamsOrUrl();
             if(fromUrl){return fromUrl;}
             var params = getVariableSearchParameters();
             if(params.variableCategoryName){
                 return params.variableCategoryName;
             }
-            return qm.variableCategoryHelper.getVariableCategoryNameFromStateParamsOrUrl($stateParams);
+            return qm.variableCategoryHelper.getNameFromStateParamsOrUrl($stateParams);
         }
         function getPluralVariableCategoryName(){
             return $filter('wordAliases')(pluralize(getVariableCategoryName(), 1));

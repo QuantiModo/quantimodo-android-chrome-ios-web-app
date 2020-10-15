@@ -126,7 +126,7 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
             qmLog.debug("Could not get variableName")
         }
         function getVariableCategoryName(){
-            return qm.variableCategoryHelper.getVariableCategoryNameFromStateParamsOrUrl($stateParams);
+            return qm.variableCategoryHelper.getNameFromStateParamsOrUrl($stateParams);
         }
         function getConnectorName(){
             if($stateParams.connectorName){

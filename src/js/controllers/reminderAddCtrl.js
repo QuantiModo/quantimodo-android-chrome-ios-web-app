@@ -109,7 +109,7 @@ angular.module('starter').controller('ReminderAddCtrl', ["$scope", "$state", "$s
             $scope.state.firstReminderStartTimeMoment = moment($scope.state.firstReminderStartTimeEpochTime * 1000);
         }
         function getVariableCategoryName(){
-            return qm.variableCategoryHelper.getVariableCategoryNameFromStateParamsOrUrl(
+            return qm.variableCategoryHelper.getNameFromStateParamsOrUrl(
                 $scope.state.trackingReminder, $stateParams, $stateParams.variableObject);
         }
         $scope.openReminderStartTimePicker = function(order){
@@ -351,7 +351,7 @@ angular.module('starter').controller('ReminderAddCtrl', ["$scope", "$state", "$s
             }
             if(r.id){qm.storage.deleteById('trackingReminders', r.id);}
             qm.reminderHelper.addToQueue(remindersArray);
-            qm.reminderHelper.syncTrackingReminders(true).then(function(){});
+            qm.reminderHelper.syncReminders(true).then(function(){});
             var toastMessage = getVariableName($scope) + ' saved';
             qmService.showInfoToast(toastMessage);
             qmService.hideLoader();
@@ -412,7 +412,7 @@ angular.module('starter').controller('ReminderAddCtrl', ["$scope", "$state", "$s
             setHideDefaultValueField();
         };
         $scope.variableCategorySelectorChange = function(variableCategoryName){
-            $scope.state.variableCategoryObject = qm.variableCategoryHelper.findVariableCategory(variableCategoryName);
+            $scope.state.variableCategoryObject = qm.variableCategoryHelper.findByNameIdObjOrUrl(variableCategoryName);
             $scope.state.trackingReminder.unitAbbreviatedName = $scope.state.variableCategoryObject.defaultUnitAbbreviatedName;
             $scope.state.defaultValuePlaceholderText = 'Enter most common value';
             $scope.state.defaultValueLabel = 'Default Value';
@@ -433,7 +433,7 @@ angular.module('starter').controller('ReminderAddCtrl', ["$scope", "$state", "$s
             }
             var r = $scope.state.trackingReminder;
             r.variableCategoryName = variableCategoryName;
-            $scope.state.variableCategoryObject = qm.variableCategoryHelper.findVariableCategory(variableCategoryName);
+            $scope.state.variableCategoryObject = qm.variableCategoryHelper.findByNameIdObjOrUrl(variableCategoryName);
             if(!r.unitAbbreviatedName){
                 r.unitAbbreviatedName = $scope.state.variableCategoryObject.defaultUnitAbbreviatedName;
             }
@@ -506,10 +506,7 @@ angular.module('starter').controller('ReminderAddCtrl', ["$scope", "$state", "$s
             qmService.storage.deleteById('trackingReminders', $scope.state.trackingReminder.id).then(function(){
                 $scope.goBack();
             });
-            qmService.deleteTrackingReminderDeferred($scope.state.trackingReminder).then(function(){
-            }, function(error){
-                qmLog.error(error);
-            });
+            qm.reminderHelper.deleteReminder($scope.state.trackingReminder);
         };
         function setHideDefaultValueField(){
             var hide = false;
