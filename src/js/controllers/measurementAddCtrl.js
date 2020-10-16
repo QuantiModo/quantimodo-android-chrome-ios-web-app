@@ -105,7 +105,7 @@ angular.module('starter').controller('MeasurementAddCtrl', ["$scope", "$q", "$ti
                 return;
             }
             if(!qmService.measurements.measurementValid($scope.state.measurement)){return false;}
-            if(!qmService.valueIsValid($scope.state.measurement, $scope.state.measurement.value)){return false;}
+            if(!qm.measurements.valueIsValid($scope.state.measurement, $scope.state.measurement.value)){return false;}
             if($stateParams.reminderNotification && $ionicHistory.backView().stateName.toLowerCase().indexOf('inbox') > -1){
                 // If "record a different value/time was pressed", skip reminder upon save
                 var params = {trackingReminderNotificationId: $stateParams.reminderNotification.id};
@@ -212,7 +212,7 @@ angular.module('starter').controller('MeasurementAddCtrl', ["$scope", "$q", "$ti
             }
             $scope.state.measurement.value = newValue;
             $scope.state.measurement.pngPath = $event.currentTarget.currentSrc;
-            qm.qmLog.debug($state.current.name + ': ' + 'measurementAddCtrl.selectPrimaryOutcomeVariableValue selected rating value: ' + newValue);
+            qmLog.debug($state.current.name + ': ' + 'measurementAddCtrl.selectPrimaryOutcomeVariableValue selected rating value: ' + newValue);
         };
         $scope.showUnitsDropDown = function(){
             $scope.showUnitsDropDown = true;
