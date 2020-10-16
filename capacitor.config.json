@@ -1,0 +1,32 @@
+{
+  "appId": "com.quantimodo.quantimodo",
+  "appName": "QuantiModo",
+  "bundledWebRuntime": false,
+  "npmClient": "npm",
+  "webDir": "www",
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 0
+    }
+  },
+  "cordova": {
+    "preferences": {
+      "AndroidXEnabled": "true",
+      "android-targetSdkVersion": "26",
+      "android-minSdkVersion": "22",
+      "AutoHideSplashScreen": "true",
+      "BackupWebStorage": "none",
+      "deployment-target": "7.0",
+      "DisallowOverscroll": "true",
+      "FadeSplashScreen": "false",
+      "loadUrlTimeoutValue": "700000",
+      "SplashScreen": "screen",
+      "SplashScreenDelay": "10000",
+      "UIWebViewBounce": "false",
+      "webviewbounce": "false",
+      "windows-target-version": "8.1",
+      "WindowsStoreDisplayName": "YourAppDisplayNameHere",
+      "xwalkMultipleApk": "false"
+    }
+  }
+}
