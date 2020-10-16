@@ -1347,6 +1347,9 @@ var qm = {
             }
             return matchingElements;
         },
+        flatten: function(obj){
+            return Object.keys(obj).map(function(key) { return [key, obj[key]]; });
+        },
         getByProperty: function(propertyName, value, array){
             array = array.filter(function(obj){
                 return obj[propertyName] === value;
@@ -4883,8 +4886,8 @@ var qm = {
         }
     },
     measurements: {
-        recordMeasurement: function(m, successHandler, errorHandler){
-            qm.measurements.postMeasurement(m, successHandler, errorHandler)
+        recordMeasurement: function(m){
+            return qm.measurements.postMeasurement(m)
         },
         newMeasurement: function(src){
             var value;
@@ -4946,7 +4949,27 @@ var qm = {
             });
             return indexed;
         },
-        getLocalMeasurements: function(params, cb){
+        deleteLastMeasurementForVariable: function(variableName){
+            var deferred = Q.defer();
+            qm.measurements.getByVariableName(variableName).then(function (measurements) {
+                if(measurements && measurements.length){
+                    var desc = qm.arrayHelper.sortByProperty(measurements, 'startAt', 'desc')
+                    qm.measurements.deleteMeasurement(desc[0]).then(function(){
+                        deferred.resolve();
+                    }, function (err){
+                        deferred.reject(err);
+                    })
+                } else {
+                    deferred.resolve();
+                }
+            }, function (err){
+                qmLog.error(err);
+                deferred.reject(err);
+            })
+            return deferred.promise;
+        },
+        getLocalMeasurements: function(params){
+            var deferred = Q.defer();
             var queue = qm.measurements.getMeasurementsFromQueue(params) || [];
             qm.measurements.checkMeasurements(queue)
             var recent = qm.measurements.getRecentlyPostedMeasurements(params) || [];
@@ -4958,8 +4981,27 @@ var qm = {
                 indexed = qm.measurements.indexByVariableStartAt(queue, indexed);
                 indexed = qm.measurements.indexByVariableStartAt(notifications, indexed);
                 var filtered = qm.measurements.filterAndSort(indexed, params)
-                cb(filtered);
+                deferred.resolve(filtered);
             });
+            return deferred.promise;
+        },
+        getByVariableName: function(variableName){
+            return qm.measurements.getMeasurements({variableName: variableName});
+        },
+        getMeasurements: function(params){
+            var deferred = Q.defer();
+            qm.measurements.getLocalMeasurements(params).then(function (measurements){
+                if(measurements && measurements.length){
+                    deferred.resolve(measurements);
+                } else {
+                    qm.measurements.getMeasurementsFromApi(params).then(function(measurements){
+                        deferred.resolve(measurements)
+                    }, function(err){
+                        deferred.reject(err)
+                    });
+                }
+            })
+            return deferred.promise;
         },
         getPrimaryOutcomeMeasurements: function(cb){
             qm.localForage.getItem(qm.items.primaryOutcomeVariableMeasurements, cb);
@@ -4971,7 +5013,7 @@ var qm = {
             return measurements;
         },
         addLocalMeasurements: function(arr, params, cb){
-            qm.measurements.getLocalMeasurements(params, function(local){
+            qm.measurements.getLocalMeasurements(params).then(function(local){
                 var indexed = qm.measurements.indexByVariableStartAt(arr);
                 indexed = qm.measurements.indexByVariableStartAt(local, indexed);
                 var filtered = qm.measurements.filterAndSort(indexed, params);
@@ -4995,9 +5037,9 @@ var qm = {
         },
         deleteLocalById: function(id){
             qm.localForage.deleteById(qm.items.primaryOutcomeVariableMeasurements, id);
-            var recent = qm.measurements.measurementCache || [];
+            var recent = qm.measurements.cache || [];
             recent = recent.filter(function(m){return m.id !== id;});
-            qm.measurements.measurementCache = recent;
+            qm.measurements.cache = recent;
         },
         deleteLocally: function(toDelete){
             var id = toDelete.id;
@@ -5009,12 +5051,12 @@ var qm = {
                 var variableName = toDelete.variableName;
                 qm.storage.deleteByProperty(qm.items.measurementsQueue, 'startTimeEpoch', startTime);
                 qm.storage.deleteByProperty(qm.items.measurementsQueue, 'startTime', startTime);
-                var recent = qm.measurements.flattenMeasurements(qm.measurements.measurementCache);
+                var recent = qm.measurements.flattenMeasurements(qm.measurements.cache);
                 recent = recent.filter(function(m){
                     var currentStartAt = qm.measurements.getStartAt(m)
                     return currentStartAt !== startAt;
                 });
-                qm.measurements.measurementCache = recent;
+                qm.measurements.cache = recent;
             }
         },
         deleteMeasurement: function(toDelete){
@@ -5039,11 +5081,11 @@ var qm = {
             }
             var arr = qm.measurements.flattenMeasurements(byVariableName);
             qm.measurements.checkMeasurements(arr)
-            var existing  = qm.measurements.measurementCache || [];
+            var existing  = qm.measurements.cache || [];
             qm.measurements.checkMeasurements(existing)
             var combined = qm.arrayHelper.concatenateUniqueId(arr, existing);
             qm.measurements.checkMeasurements(combined)
-            qm.measurements.measurementCache = combined;
+            qm.measurements.cache = combined;
         },
         checkMeasurements: function(arr){
             if(!arr){
@@ -5067,21 +5109,17 @@ var qm = {
                 }
             });
         },
-        getMeasurementsFromApi: function(params, successHandler, errorHandler){
+        getMeasurementsFromApi: function(params){
+            var deferred = Q.defer();
             params = qm.api.addGlobalParams(params);
             var cachedData = qm.api.cacheGet(params, 'getMeasurementsFromApi');
-            if(cachedData && successHandler){
-                //successHandler(cachedData);
-                //return;
-            }
             qm.api.configureClient(arguments.callee.name, null, params);
-            var apiInstance = new qm.Quantimodo.MeasurementsApi();
-            function callback(error, data, response){
+            var client = new qm.Quantimodo.MeasurementsApi();
+            client.getMeasurements(params, function(error, data, response){
                 qm.measurements.addMeasurementsToMemory(data);
-                qm.api.generalResponseHandler(error, data, response, successHandler, errorHandler, params,
-                    'getMeasurementsFromApi');
-            }
-            apiInstance.getMeasurements(params, callback);
+                qm.api.promiseHandler(error, data, response, deferred, params, 'getMeasurementsFromApi');
+            });
+            return deferred.promise;
         },
         addLocationDataToMeasurement: function(m){
             if(!m.latitude){m.latitude = qm.storage.getItem(qm.items.lastLatitude);}
@@ -5153,7 +5191,10 @@ var qm = {
                 if(unit.abbreviatedName === '/5'){m.roundedValue = Math.round(m.value);}
             }
             if(!m.variableName){m.variableName = m.variable;}
-            if(m.variableName === qm.getPrimaryOutcomeVariable().name){m.valence = qm.getPrimaryOutcomeVariable().valence;}
+            var v = qm.variablesHelper.findSync(m.variableName);
+            if(v){
+                m.valence = v.valence;
+            }
             m.displayValueAndUnitString = m.displayValueAndUnitString || m.value + " " + unit.abbreviatedName;
             m.displayValueAndUnitString = qm.stringHelper.formatValueUnitDisplayText(m.displayValueAndUnitString)
             m.valueUnitVariableName = m.displayValueAndUnitString + " " + m.variableName;
@@ -5187,14 +5228,15 @@ var qm = {
             });
             return measurements;
         },
-        measurementCache: [],
+        cache: [],
         getRecentlyPostedMeasurements: function(params){
-            var all = qm.measurements.addInfoAndImagesToMeasurements(qm.measurements.measurementCache || []);
+            var all = qm.measurements.addInfoAndImagesToMeasurements(qm.measurements.cache || []);
             var filtered = qm.arrayHelper.filterByRequestParams(all, params);
-            qmLog.info("Got " + filtered.length + " measurements from recentlyPostedMeasurements with params: " + JSON.stringify(params));
+            qmLog.info("Got " + filtered.length + " measurements from recentlyPostedMeasurements with params: ",
+                params);
             return filtered;
         },
-        postMeasurement: function(m, successHandler, errorHandler){
+        postMeasurement: function(m){
             function isStartTimeInMilliseconds(m){
                 var oneWeekInFuture = qm.timeHelper.getUnixTimestampInSeconds() + 7 * 86400;
                 if(m.startTimeEpoch > oneWeekInFuture){
@@ -5219,32 +5261,43 @@ var qm = {
                 qm.measurements.addToMeasurementsQueue(m);
             }
             qm.userVariables.updateLatestMeasurementTime(m.variableName, m.value);
-            qm.measurements.postMeasurementQueue(successHandler, errorHandler);
+            return qm.measurements.postMeasurementQueue();
         },
-        postMeasurements: function (measurements, successHandler, errorHandler) {
+        postMeasurements: function (measurements) {
+            var deferred = Q.defer();
             qm.measurements.addLocationAndSource(measurements);
             qm.api.post('api/v3/measurements', measurements, function(response){
                 var data = (response) ? response.data : null;
                 if(data && data.userVariables){
-                    qm.variablesHelper.saveToLocalStorage(data.userVariables);
+                    var vars = data.userVariables;
+                    vars = qm.arrayHelper.convertObjectToArray(vars);
+                    vars.forEach(function(uv){
+                        uv.lastSelectedAt = qm.timeHelper.at()
+                    })
+                    qm.variablesHelper.saveToLocalStorage(vars);
                 }
-                if(successHandler){successHandler(data);}
-            }, errorHandler);
+                deferred.resolve(data)
+            }, function(err){
+                deferred.reject(err)
+            });
+            return deferred.promise;
         },
-        postMeasurementQueue: function(successHandler, errorHandler){
+        postMeasurementQueue: function(){
+            var deferred = Q.defer();
             var queue = qm.measurements.getMeasurementsFromQueue();
             if(!queue || queue.length < 1){
-                if(successHandler){successHandler();}
+                deferred.resolve([]);
             } else {
-                qm.measurements.postMeasurements(queue, function(data){
-                    qm.measurements.measurementCache = qm.measurements.measurementCache.concat(queue);  // Save these for history page
+                qm.measurements.postMeasurements(queue).then(function(data){
+                    qm.measurements.cache = qm.measurements.cache.concat(queue);  // Save these for history page
                     qm.storage.setItem(qm.items.measurementsQueue, []);
-                    if(successHandler){successHandler(data);}
+                    deferred.resolve(data);
                 }, function(error){
                     qm.storage.setItem(qm.items.measurementsQueue, queue);
-                    if(errorHandler){errorHandler(error);}
+                    deferred.reject(error);
                 });
             }
+            return deferred.promise;
         },
         postBloodPressureMeasurements: function(parameters){
             var deferred = Q.defer();
@@ -5267,7 +5320,7 @@ var qm = {
                     value: parameters.diastolicValue,
                     note: parameters.note
                 }
-            ], function(response){
+            ]).then(function(response){
                 deferred.resolve(response);
             }, function (err){
                 deferred.reject(err);
@@ -5327,7 +5380,7 @@ var qm = {
                 deferred.reject('Value is not valid');
                 return deferred.promise;
             }
-            qm.measurements.postMeasurements(measurementSet, function(response){
+            qm.measurements.postMeasurements(measurementSet).then(function(response){
                 if(response.success){
                     qmLog.debug('qmService.postMeasurementsToApi success: ', response);
                     if(response && response.data && response.data.userVariables){
@@ -5371,6 +5424,22 @@ var qm = {
                 m.startAt = qm.timeHelper.roundTime(m.originalStartAt, minSecs);
                 return m.startAt
             })
+            return deferred.promise;
+        },
+        find: function(id){
+            var deferred = Q.defer();
+            qm.measurements.getMeasurements({id: id}).then(function(response){
+                if(!response[0]){
+                    var err = 'Could not get measurement with id: ' + id
+                    qmLog.error(err, {response: response});
+                    deferred.reject(err);
+                } else {
+                    deferred.resolve(response[0]);
+                }
+            }, function(error){
+                qmLog.error(error);
+                deferred.reject(error);
+            });
             return deferred.promise;
         }
     },
@@ -7211,13 +7280,17 @@ var qm = {
                 return false;
             }
             if(typeof chrome.runtime === "undefined"){
-                qmLog.debug('chrome.runtime is undefined');
+                if(typeof qmLog !== "undefined"){
+                    qmLog.debug('chrome.runtime is undefined');
+                }
                 return false;
             }
             if(typeof chrome.alarms === "undefined"){
                 return false;
             }
-            qmLog.debug('isChromeExtension returns true');
+            if(typeof qmLog !== "undefined"){
+                qmLog.debug('isChromeExtension returns true');
+            }
             return true;
         },
         isWeb: function(){
@@ -7651,8 +7724,8 @@ var qm = {
         validateReminderArray: function(reminders){
             if(reminders && !Array.isArray(reminders) && reminders.data){reminders = reminders.data;}
             if(!Array.isArray(reminders)){
-                console.error("Reminders should be array but is: ", reminders);
-                throw "Reminders should be array"
+                qmLog.errorAndExceptionTestingOrDevelopment("Reminders should be array but is: ", {actual: reminders});
+                return [];
             }
             reminders = qm.arrayHelper.removeArrayElementsWithDuplicateIds(reminders, 'reminder')
             return reminders;
@@ -8804,23 +8877,6 @@ var qm = {
             }
             return true;
         },
-        getUserVariableByName: function(variableName, updateLatestMeasurementTime, lastValue){
-            var userVariables = qm.storage.getWithFilters(qm.items.userVariables, 'name', variableName);
-            if(!userVariables || !userVariables.length){
-                return null;
-            }
-            var userVariable = userVariables[0];
-            userVariable.lastAccessedUnixTime = qm.timeHelper.getUnixTimestampInSeconds();
-            if(updateLatestMeasurementTime){
-                userVariable.latestMeasurementTime = qm.timeHelper.getUnixTimestampInSeconds();
-            }
-            if(lastValue){
-                userVariable.lastValue = lastValue;
-                userVariable.lastValueInUserUnit = lastValue;
-            }
-            qm.variablesHelper.setLastSelectedAtAndSave(userVariable);
-            return userVariable;
-        },
         setTrackingReminderNotifications: function(notifications){
             if(!notifications || !notifications.length){
                 qmLog.error("No notifications provided to qm.storage.setTrackingReminderNotifications");
@@ -9791,6 +9847,9 @@ var qm = {
         }
     },
     timeHelper: {
+        at: function(timeAt){
+          return qm.timeHelper.iso(timeAt);
+        },
         iso: function(timeAt){
             if(!timeAt){
                 var d = new Date();
@@ -10773,28 +10832,35 @@ var qm = {
                 }, errorHandler, params, 'getUserFromApi');
             });
         },
-        getUserFromApi: function(successHandler, errorHandler, params){
+        getUserFromApi: function(params){
+            var deferred = Q.defer();
             qmLog.authDebug("Getting user from API...");
-            function userSuccessHandler(userFromApi){
-                if(userFromApi && typeof userFromApi.displayName !== "undefined"){
+            function userSuccessHandler(user){
+                if(user && typeof user.displayName !== "undefined"){
                     qmLog.info("Got user from API...");
-                    qm.userHelper.setUser(userFromApi);
-                    if(successHandler){
-                        successHandler(userFromApi);
-                    } // Already done below
+                    qm.userHelper.setUser(user);
+                    deferred.resolve(user)
                 }else{
-                    qmLog.info("Could not get user from API...");
+                    var err = "Could not get user from API...";
+                    qmLog.info(err);
                     if(qm.platform.isChromeExtension()){
                         qm.chrome.openLoginWindow();
                     }
+                    deferred.reject(err)
                 }
+                return deferred.promise;
             }
             var alwaysUseXhr = true; // Sdk doesn't return timezone
             if(alwaysUseXhr || typeof qm.Quantimodo === "undefined"){  // Can't use QM SDK in service worker because it uses XHR instead of fetch
-                qm.userHelper.getUserViaXhrOrFetch(userSuccessHandler, errorHandler, params);
+                qm.userHelper.getUserViaXhrOrFetch(userSuccessHandler, function (err){
+                    deferred.reject(err)
+                }, params);
             }else{   // Can't use QM SDK in service worker because it uses XHR instead of fetch
-                qm.userHelper.getUserViaSdk(userSuccessHandler, errorHandler, params);
+                qm.userHelper.getUserViaSdk(userSuccessHandler, function (err){
+                    deferred.reject(err)
+                }, params);
             }
+            return deferred.promise;
         },
         getUserFromLocalStorageOrApi: function(successHandler, errorHandler){
             qm.userHelper.getUserFromLocalStorage(function(user){
@@ -10804,7 +10870,7 @@ var qm = {
                     }
                     return;
                 }
-                qm.userHelper.getUserFromApi(successHandler, errorHandler);
+                qm.userHelper.getUserFromApi().then(successHandler, errorHandler);
             });
         },
         userIsOlderThan1Day: function(callback){
@@ -10864,6 +10930,14 @@ var qm = {
     },
     commonVariablesHelper: {
         cached: {},
+        getCached: function(){
+            var fromStatic = qm.staticData.commonVariables;
+            // TODO: Make staticData.commonVariables an object indexed by name to easily reference properties in IDE autocomplete
+            // var merged = qm.objectHelper.copyPropertiesFromOneObjectToAnother(
+            //     qm.commonVariablesHelper.cached, fromStatic)
+            var cached = qm.arrayHelper.flatten(qm.commonVariablesHelper.cached);
+            return cached.concat(fromStatic);
+        },
         getFromLocalStorage: function(params, successHandler){
             if(!successHandler){
                 qmLog.error("No successHandler provided to commonVariables getFromLocalStorage");
@@ -10881,9 +10955,27 @@ var qm = {
     },
     userVariables: {
         cached: {},
+        getCached: function(){
+            var obj = qm.userVariables.cached;
+            return qm.arrayHelper.flatten(obj);
+        },
         defaultLimit: 20,
+        findByNameSync: function(variableName){
+            var uv = qm.userVariables.cached[variableName] || null;
+            if(!uv){return null;}
+            uv.lastAccessedUnixTime = qm.timeHelper.getUnixTimestampInSeconds();
+            qm.variablesHelper.setLastSelectedAtAndSave(uv);
+            return uv;
+        },
         updateLatestMeasurementTime: function(variableName, lastValue){
-            qm.storage.getUserVariableByName(variableName, true, lastValue);
+            var uv = qm.userVariables.cached[variableName] || null;
+            if(!uv){return null;}
+            uv.lastAccessedUnixTime = qm.timeHelper.getUnixTimestampInSeconds();
+            uv.latestMeasurementTime = qm.timeHelper.getUnixTimestampInSeconds();
+            if(lastValue){
+                uv.lastValue = lastValue;
+                uv.lastValueInUserUnit = lastValue;
+            }
         },
         getFromApi: function(params, successHandler, errorHandler){
             if(!params){
@@ -10949,13 +11041,13 @@ var qm = {
             });
         },
         getFromLocalStorage: function(params, successHandler, errorHandler){
-            if(!qm.getUser()){
-                qmLog.debug("No user to get user variables!");
-                qm.commonVariablesHelper.getFromLocalStorage(params, successHandler, errorHandler);
+            if(!params){params = {};}
+            var cached = qm.userVariables.getCached();
+            var variables = qm.arrayHelper.filterByRequestParams(cached, params);
+            if(variables && variables.length){
+                if(!params.sort){variables = qm.variablesHelper.defaultVariableSort(variables);}
+                successHandler(variables);
                 return;
-            }
-            if(!params){
-                params = {};
             }
             qm.localForage.getElementsWithRequestParams(qm.items.userVariables, params, function(variables){
                 if(!params.sort){
@@ -11211,12 +11303,12 @@ var qm = {
                 qmLog.errorAndExceptionTestingOrDevelopment("No variable provided to setLastSelectedAtAndSave");
                 return;
             }
-            var timestamp = qm.timeHelper.getUnixTimestampInSeconds();
-            variable.lastSelectedAt = timestamp;  // Do this so it's at the top of the list
+            var at = qm.timeHelper.at();
+            variable.lastSelectedAt = at;  // Do this so it's at the top of the list
             qm.variablesHelper.saveToLocalStorage(variable);
             if(!variable.userId){
                 var gottenVariable = qm.staticData.commonVariables[0];
-                qm.assert.equals(timestamp, gottenVariable.lastSelectedAt);
+                qm.assert.equals(at, gottenVariable.lastSelectedAt);
             }
         },
         saveToLocalStorage: function(variables){
@@ -11259,6 +11351,16 @@ var qm = {
                 qm.api.promiseHandler(error, data, response, deferred, key);
             });
             return deferred.promise;
+        },
+        findSync: function(nameOrVariableId){
+            function matches(v){
+                if(v.variableId === nameOrVariableId || v.name === nameOrVariableId){
+                    return v;
+                }
+            }
+            var v = qm.userVariables.getCached().find(matches)
+            if(!v){v = qm.commonVariablesHelper.getCached().find(matches)}
+            return v;
         }
     },
     variableCategoryHelper: {

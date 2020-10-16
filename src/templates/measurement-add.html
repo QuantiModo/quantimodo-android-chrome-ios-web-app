@@ -5,7 +5,8 @@
              style="overflow: visible"
              ng-show="state.measurement.variableName"
              id="measurementAddCard">
-            <div ng-if="!bloodPressure.show"
+            <div id="variable-name"
+                ng-if="!bloodPressure.show"
                  class="item item-divider">{{state.measurement.variableName}}
             </div>
             <div ng-if="bloodPressure.show"
