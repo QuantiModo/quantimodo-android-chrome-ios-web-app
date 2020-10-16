@@ -1,4 +1,4 @@
-/// <reference types="Cypress" />
+/// <reference types="cypress" />
 
 context('Cypress.Commands', () => {
   beforeEach(() => {
@@ -34,7 +34,6 @@ context('Cypress.Commands', () => {
   })
 })
 
-
 context('Cypress.Cookies', () => {
   beforeEach(() => {
     cy.visit('https://example.cypress.io/cypress-api')
@@ -64,14 +63,16 @@ context('Cypress.Cookies', () => {
   })
 
   it('.defaults() - set defaults for all cookies', () => {
+    if (Number(Cypress.version.charAt(0)) < 5) return
+
     // now any cookie with the name 'session_id' will
     // not be cleared before each new test runs
     Cypress.Cookies.defaults({
-      whitelist: 'session_id',
+      // @ts-ignore
+      preserve: 'session_id',
     })
   })
 })
-
 
 context('Cypress.Server', () => {
   beforeEach(() => {
@@ -186,7 +187,6 @@ context('Cypress.log', () => {
   })
 })
 
-
 context('Cypress.platform', () => {
   beforeEach(() => {
     cy.visit('https://example.cypress.io/cypress-api')
@@ -217,6 +217,6 @@ context('Cypress.spec', () => {
   it('Get current spec information', () => {
     // https://on.cypress.io/spec
     // wrap the object so we can inspect it easily by clicking in the command log
-    cy.wrap(Cypress.spec).should('have.keys', ['name', 'relative', 'absolute'])
+    cy.wrap(Cypress.spec).should('include.keys', ['name', 'relative', 'absolute'])
   })
 })
