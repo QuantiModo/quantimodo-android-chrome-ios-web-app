@@ -49,7 +49,7 @@
     "coveralls": "3.0.14",
     "cross-env": "6.0.3",
     "cypress": "5.4.0",
-    "cypress-cucumber-preprocessor": "1.16.2",
+    "cypress-cucumber-preprocessor": "4.0.0",
     "cypress-failed-log": "2.7.0",
     "cypress-intellij-reporter": "0.0.4",
     "cypress-junit-reporter": "1.3.1",
