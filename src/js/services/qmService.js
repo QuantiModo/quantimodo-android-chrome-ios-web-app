@@ -2996,7 +2996,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     if(!v){v = name;}
                     name = v.variableName || v.name;
                 }
-                if(!v){v = qm.storage.getUserVariableByName(name);}
+                if(!v){v = qm.userVariables.findByNameSync(name);}
                 if(!name){name = v.variableName || v.name;}
                 qmLog.info("Getting action sheet for variable " + name);
                 return function(){
@@ -3276,24 +3276,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 }
             }
         }
-        qmService.getMeasurementById = function(measurementId){
-            var deferred = $q.defer();
-            var params = {id: measurementId};
-            qm.measurements.getMeasurementsFromApi(params, function(response){
-                var measurementArray = response;
-                if(!measurementArray[0]){
-                    qmLog.debug('Could not get measurement with id: ' + measurementId, null);
-                    deferred.reject();
-                }
-                var measurementObject = measurementArray[0];
-                deferred.resolve(measurementObject);
-            }, function(error){
-                qmLog.error(error);
-                qmLog.debug(error, null);
-                deferred.reject();
-            });
-            return deferred.promise;
-        };
         qmService.postMeasurementsExport = function(type, successHandler, errorHandler){
             qm.api.post('api/v2/measurements/request_' + type, [], successHandler, errorHandler);
         };
@@ -3630,7 +3612,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 return deferred.promise;
             }
             qmLog.debug('qmService.refreshUser: Calling qmService.getUserFromApi...');
-            qm.userHelper.getUserFromApi(function(user){
+            qm.userHelper.getUserFromApi().then(function(user){
                 qmLog.authDebug('qmService.refreshUser: qmService.getUserFromApi returned ', user);
                 qmService.setUserInLocalStorageBugsnagIntercomPush(user);
                 qmService.deferredRequests.user = null;
@@ -3714,7 +3696,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 return deferred.promise;
             }
             var params = {variableName: qm.getPrimaryOutcomeVariable().name, sort: '-startTimeEpoch', limit: 900};
-            qm.measurements.getMeasurementsFromApi(params, function(primaryOutcomeMeasurementsFromApi){
+            qm.measurements.getMeasurementsFromApi(params).then(function(primaryOutcomeMeasurementsFromApi){
                 if(primaryOutcomeMeasurementsFromApi.length > 0){
                     qm.localForage.setItem(qm.items.primaryOutcomeVariableMeasurements, primaryOutcomeMeasurementsFromApi);
                     qmService.charts.broadcastUpdateCharts();
@@ -3748,7 +3730,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 defer.reject('Cannot sync because already did within the last ' + minimumSecondsBetweenGets + ' seconds');
                 return defer.promise;
             }
-            qm.measurements.postMeasurementQueue(function(){
+            qm.measurements.postMeasurementQueue().then(function(){
                 qmService.getAndStorePrimaryOutcomeMeasurements().then(function(primaryOutcomeMeasurementsFromApi){
                     defer.resolve(primaryOutcomeMeasurementsFromApi);
                 }, function(error){
@@ -5491,7 +5473,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             qmLog.debug('Checking weather forecast at ' + url);
             $http.jsonp(url).success(function(data){
                 var measurementSets = getWeatherMeasurementSets(data);
-                qm.measurements.postMeasurements(measurementSets, function(response){
+                qm.measurements.postMeasurements(measurementSets).then(function(response){
                     qmLog.debug('posted weather measurements');
                     if(response && response.data && response.data.userVariables){
                         qm.variablesHelper.saveToLocalStorage(response.data.userVariables);

@@ -46,6 +46,14 @@ angular.module('starter').controller('MeasurementAddCtrl', ["$scope", "$q", "$ti
             var v = $stateParams.variableObject;
             var n = $stateParams.reminderNotification;
             var id = qm.urlHelper.getParam(['measurementId', 'id'], location.href, true);
+            function fallback(){
+                if (!$scope.state.measurementIsSetup) {
+                    setupFromUrlParameters();
+                }
+                if (!$scope.state.measurementIsSetup) {
+                    setupFromVariable(qm.getPrimaryOutcomeVariable());
+                }
+            }
             if (id) {
                 setupByID(id).then(function () {
                     if (!$scope.state.measurementIsSetup) {
@@ -54,24 +62,25 @@ angular.module('starter').controller('MeasurementAddCtrl', ["$scope", "$q", "$ti
                 });
             } else if (tr) {
                 setupByReminder(tr);
+                fallback();
             } else if (m) {
                 setupByMeasurement(m);
+                fallback();
             } else if (measurementFromUrl) {
                 setupByMeasurement(JSON.parse(measurementFromUrl));
+                fallback();
             } else if (v) {
                 setupFromVariable(v);
+                fallback();
             } else if (reminderFromUrl) {
                 setupByReminder(JSON.parse(reminderFromUrl));
+                fallback();
             } else if (n) {
                 setupByReminder(n);
+                fallback();
             } else if ($stateParams.variableName) {
                 setupFromVariableName($stateParams.variableName);
-            }
-            if (!$scope.state.measurementIsSetup) {
-                setupFromUrlParameters();
-            }
-            if (!$scope.state.measurementIsSetup) {
-                setupFromVariable(qm.getPrimaryOutcomeVariable());
+                fallback();
             }
         }
         var trackBloodPressure = function(){
@@ -290,17 +299,17 @@ angular.module('starter').controller('MeasurementAddCtrl', ["$scope", "$q", "$ti
         var setupByID = function(id){
             var deferred = $q.defer();
             qmService.showBlackRingLoader();
-            qmService.getMeasurementById(id)
+            qm.measurements.find(id)
                 .then(function(m){
                         qmService.hideLoader();
                         $scope.state.measurementIsSetup = true;
                         setupByMeasurement(m);
-                        deferred.resolve();
+                        deferred.resolve(m);
                     }, function(error){
-                    qmService.hideLoader();
-                    qmLog.error($state.current.name + ": " + "Error response: ", error);
-                    deferred.reject(error);
-                });
+                        qmService.hideLoader();
+                        qmLog.error($state.current.name + ": " + "Error response: ", error);
+                        deferred.reject(error);
+                    });
             return deferred.promise;
         };
         $scope.goToAddReminder = function(){
