@@ -1,4 +1,4 @@
-/// <reference types="Cypress" />
+/// <reference types="cypress" />
 
 context('Network Requests', () => {
   beforeEach(() => {
@@ -29,8 +29,12 @@ context('Network Requests', () => {
       expect(server.enable).to.be.true
       // forces requests that don't match your routes to 404
       expect(server.force404).to.be.false
-      // whitelists requests from ever being logged or stubbed
-      expect(server.whitelist).to.be.a('function')
+
+      if (Number(Cypress.version.charAt(0)) >= 5) {
+        // ignores requests from ever being logged or stubbed
+        // @ts-ignore
+        expect(server.ignore).to.be.a('function')
+      }
     })
 
     cy.server({
@@ -50,19 +54,20 @@ context('Network Requests', () => {
     cy.request('https://jsonplaceholder.cypress.io/comments')
       .should((response) => {
         expect(response.status).to.eq(200)
-        expect(response.body).to.have.length(500)
+        // the server sometimes gets an extra comment posted from another machine
+        // which gets returned as 1 extra object
+        expect(response.body).to.have.property('length').and.be.oneOf([500, 501])
         expect(response).to.have.property('headers')
         expect(response).to.have.property('duration')
       })
   })
-
 
   it('cy.request() - verify response using BDD syntax', () => {
     cy.request('https://jsonplaceholder.cypress.io/comments')
     .then((response) => {
       // https://on.cypress.io/assertions
       expect(response).property('status').to.equal(200)
-      expect(response).property('body').to.have.length(500)
+      expect(response).property('body').to.have.property('length').and.be.oneOf([500, 501])
       expect(response).to.include.keys('headers', 'duration')
     })
   })
@@ -90,7 +95,11 @@ context('Network Requests', () => {
   it('cy.request() - pass result to the second request', () => {
     // first, let's find out the userId of the first user we have
     cy.request('https://jsonplaceholder.cypress.io/users?_limit=1')
-      .its('body.0') // yields the first element of the returned list
+      .its('body') // yields the response object
+      .its('0') // yields the first element of the returned list
+      // the above two commands its('body').its('0')
+      // can be written as its('body.0')
+      // if you do not care about TypeScript checks
       .then((user) => {
         expect(user).property('id').to.be.a('number')
         // make a new post on behalf of the user
@@ -105,9 +114,14 @@ context('Network Requests', () => {
       .then((response) => {
         expect(response).property('status').to.equal(201) // new entity created
         expect(response).property('body').to.contain({
-          id: 101, // there are already 100 posts, so new entity gets id 101
           title: 'Cypress Test Runner',
         })
+
+        // we don't know the exact post id - only that it will be > 100
+        // since JSONPlaceholder has built-in 100 posts
+        expect(response.body).property('id').to.be.a('number')
+          .and.to.be.gt(100)
+
         // we don't know the user id here - since it was in above closure
         // so in this test just confirm that the property is there
         expect(response.body).property('userId').to.be.a('number')
@@ -117,7 +131,7 @@ context('Network Requests', () => {
   it('cy.request() - save response in the shared test context', () => {
     // https://on.cypress.io/variables-and-aliases
     cy.request('https://jsonplaceholder.cypress.io/users?_limit=1')
-      .its('body.0') // yields the first element of the returned list
+      .its('body').its('0') // yields the first element of the returned list
       .as('user') // saves the object in the test context
       .then(function () {
         // NOTE 👀
@@ -164,10 +178,7 @@ context('Network Requests', () => {
     // we have code that posts a comment when
     // the button is clicked in scripts.js
     cy.get('.network-post').click()
-    cy.wait('@postComment')
-
-    // get the route
-    cy.get('@postComment').should((xhr) => {
+    cy.wait('@postComment').should((xhr) => {
       expect(xhr.requestBody).to.include('email')
       expect(xhr.requestHeaders).to.have.property('Content-Type')
       expect(xhr.responseBody).to.have.property('name', 'Using POST in cy.route()')

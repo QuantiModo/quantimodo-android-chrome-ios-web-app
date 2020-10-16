@@ -287,6 +287,9 @@ var qm = {
             }
         },
         getUrlFromResponse: function(response){
+            if(response.url){
+                return response.url
+            }
             var req = response.req;
             var url = req.agent.protocol+"//"+req.connection.servername+req.path;
             return url;
@@ -2209,6 +2212,9 @@ var qm = {
                 deferred.resolve();
             }
             return deferred.promise;
+        },
+        setAccessToken: function(accessToken) {
+            qm.auth.saveAccessToken(accessToken)
         }
     },
     builder: {},
@@ -5356,6 +5362,16 @@ var qm = {
                 }
             }
             return true;
+        },
+        roundMeasurementTime: function(m){
+            var deferred = Q.defer();
+            qm.variablesHelper.findVariable(m).then(function(v){
+                var minSecs = v.minimumAllowedSecondsBetweenMeasurements;
+                m.originalStartAt = qm.measurements.getStartAt(m);
+                m.startAt = qm.timeHelper.roundTime(m.originalStartAt, minSecs);
+                return m.startAt
+            })
+            return deferred.promise;
         }
     },
     manualTrackingVariableCategoryNames: [
@@ -6974,6 +6990,11 @@ var qm = {
                 result.push({name: "Older", trackingReminderNotifications: olderResult});
             }
             return result;
+        }
+    },
+    numberHelper: {
+        roundToNearestMultiple: function(val, multiple){
+            return Math.round(val / multiple) * multiple;
         }
     },
     objectHelper: {
@@ -9929,6 +9950,11 @@ var qm = {
             qmLog.debug('utcTimeString is ' + utcTimeString, null);
             return utcTimeString;
         },
+        roundTime: function(timeAt, seconds) {
+            var unixTime = qm.timeHelper.toUnixTime(timeAt);
+            var rounded = qm.numberHelper.roundToNearestMultiple(unixTime, seconds);
+            return qm.timeHelper.iso(rounded);
+        }
     },
     toast: {
         errorAlert: function(errorMessage, callback){
@@ -11225,7 +11251,7 @@ var qm = {
         getVariableByIdFromApi: function(variableId){
             var deferred = Q.defer();
             var key = 'getVariableByIdFromApi';
-            qm.api.configureClient(key, errorHandler);
+            qm.api.configureClient(key);
             var apiInstance = new Quantimodo.VariablesApi();
             var params = {id: variableId};
             params = qm.api.addGlobalParams(params);
