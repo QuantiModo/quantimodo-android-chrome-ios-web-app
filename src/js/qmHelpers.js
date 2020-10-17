@@ -1348,7 +1348,11 @@ var qm = {
             return matchingElements;
         },
         flatten: function(obj){
-            return Object.keys(obj).map(function(key) { return [key, obj[key]]; });
+            var keys = Object.keys(obj);
+            var arr = keys.map(function(key) {
+                return obj[key];
+            });
+            return arr;
         },
         getByProperty: function(propertyName, value, array){
             array = array.filter(function(obj){
@@ -4953,6 +4957,7 @@ var qm = {
             var deferred = Q.defer();
             qm.measurements.getByVariableName(variableName).then(function (measurements) {
                 if(measurements && measurements.length){
+                    qm.lei(!measurements[0].startAt, "no startAt", measurements[0])
                     var desc = qm.arrayHelper.sortByProperty(measurements, 'startAt', 'desc')
                     qm.measurements.deleteMeasurement(desc[0]).then(function(){
                         deferred.resolve();
@@ -5067,6 +5072,7 @@ var qm = {
             if(!startAt){
                 qmLog.errorAndExceptionTestingOrDevelopment("No start time provided to delete measurement: ", toDelete);
             }
+            qmLog.info("Deleting "+toDelete.variableName+" measurement from "+startAt+"...")
             qm.api.post('api/v3/measurements/delete', toDelete, function(response){
                 deferred.resolve(response);
             }, function(err){
@@ -10977,25 +10983,16 @@ var qm = {
                 uv.lastValueInUserUnit = lastValue;
             }
         },
-        getFromApi: function(params, successHandler, errorHandler){
-            if(!params){
-                params = {};
-            }
+        getFromApi: function(params){
+            var deferred = Q.defer();
+            if(!params){params = {};}
             params = JSON.parse(JSON.stringify(params)); // Decouple API search params so we don't mess up original local search params
             if(!params.sort || params.sort.indexOf('numberOfUserVariables') !== -1){
                 params.sort = '-latestMeasurementTime';
             }
-            if(!params.limit){
-                params.limit = qm.userVariables.defaultLimit;
-            }
+            if(!params.limit){params.limit = qm.userVariables.defaultLimit;}
             params = qm.api.addGlobalParams(params);
             var cacheKey = 'getUserVariablesFromApi';
-            // We should just use build in HTTP cache because this is redundant and causes unexpected results
-            // var cachedData = qm.api.cacheGet(params, cacheKey);
-            // if(cachedData && successHandler){
-            //     successHandler(cachedData);
-            //     return;
-            // }
             qm.api.configureClient(cacheKey, null, params);
             var apiInstance = new qm.Quantimodo.VariablesApi();
             qmLog.info("apiInstance.getVariables with params: ", params)
@@ -11003,15 +11000,16 @@ var qm = {
                 if(data){
                     qm.variablesHelper.saveToLocalStorage(data);
                 }
-                qm.api.generalResponseHandler(error, data, response, successHandler, errorHandler, params, cacheKey);
+                qm.api.promiseHandler(error, data, response, deferred, params, cacheKey);
             });
+            return deferred.promise;
         },
         getByNameFromApi: function(variableName, params, successHandler, errorHandler){
             if(!params){
                 params = {};
             }
             params.name = variableName;
-            qm.userVariables.getFromApi(params, function(userVariables){
+            qm.userVariables.getFromApi(params).then(function(userVariables){
                 qm.variablesHelper.saveToLocalStorage(userVariables);
                 successHandler(userVariables[0]);
             }, errorHandler)
@@ -11040,30 +11038,28 @@ var qm = {
                 qm.userVariables.getByNameFromApi(variableName, params, successHandler, errorHandler);
             });
         },
-        getFromLocalStorage: function(params, successHandler, errorHandler){
+        getFromLocalStorage: function(params){
+            var deferred = Q.defer();
             if(!params){params = {};}
             var cached = qm.userVariables.getCached();
             var variables = qm.arrayHelper.filterByRequestParams(cached, params);
             if(variables && variables.length){
                 if(!params.sort){variables = qm.variablesHelper.defaultVariableSort(variables);}
-                successHandler(variables);
-                return;
+                deferred.resolve(variables);
+                return deferred.promise;
             }
             qm.localForage.getElementsWithRequestParams(qm.items.userVariables, params, function(variables){
-                if(!params.sort){
-                    variables = qm.variablesHelper.defaultVariableSort(variables);
-                }
-                successHandler(variables);
+                if(!params.sort){variables = qm.variablesHelper.defaultVariableSort(variables);}
+                deferred.resolve(variables);
             }, function(error){
                 qmLog.error(error);
-                if(errorHandler){
-                    errorHandler(error);
-                }
+                deferred.reject(error);
             });
+            return deferred.promise;
         },
         getFromLocalStorageOrApi: function(params, successHandler, errorHandler){
             params = params || {};
-            qm.userVariables.getFromLocalStorage(params, function(userVariables){
+            qm.userVariables.getFromLocalStorage(params).then(function(userVariables){
                 function doWeHaveEnoughVariables(variables){
                     var numberOfMatchingLocalVariablesRequiredToSkipAPIRequest = 2;
                     return variables && variables.length > numberOfMatchingLocalVariablesRequiredToSkipAPIRequest;  //Do API search if only 1 local result because I can't get "Remeron" because I have "Remeron Powder" locally
@@ -11085,7 +11081,7 @@ var qm = {
                     return;
                 }
                 qmLog.info("No user variables matching " + JSON.stringify(params) + " in local storage");
-                qm.userVariables.getFromApi(params, function(userVariables){
+                qm.userVariables.getFromApi(params).then(function(userVariables){
                     qmLog.info(userVariables.length + " user variables matching " + JSON.stringify(params) + " from API");
                     successHandler(userVariables);
                 }, function(error){
@@ -11110,7 +11106,7 @@ var qm = {
                     }
                     return;
                 }
-                qm.userVariables.getFromLocalStorage({}, function(userVariables){
+                qm.userVariables.getFromLocalStorage({}).then(function(userVariables){
                     var numberOfLocalVariables = 0;
                     if(userVariables){
                         numberOfLocalVariables = userVariables.length;
@@ -11186,7 +11182,7 @@ var qm = {
             function getFromApi(localVariables, reason){
                 if(reason && typeof reason !== "string"){throw "Reason should be a string!"}
                 params.reason = reason;
-                qm.userVariables.getFromApi(params, function(variablesFromApi){
+                qm.userVariables.getFromApi(params).then(function(variablesFromApi){
                     if(localVariables && variablesFromApi.length < localVariables.length && variablesFromApi.length < 50){
                         qmLog.errorAndExceptionTestingOrDevelopment("More local variables than variables from API!",
                             {
@@ -11253,14 +11249,14 @@ var qm = {
                 return null;
             }
             variables = qm.variablesHelper.putManualTrackingFirst(variables);
-            function getValue(object){
-                if(object.lastSelectedAt){
-                    return object.lastSelectedAt;
+            function getValue(obj){
+                if(obj.lastSelectedAt){
+                    return qm.timeHelper.toUnixTime(obj.lastSelectedAt);
                 }
-                if(object.userId){
-                    return object.latestMeasurementTime || object.numberOfTrackingReminders || object.numberOfUserVariables;
+                if(obj.userId){
+                    return obj.latestMeasurementTime || obj.numberOfTrackingReminders || obj.numberOfUserVariables;
                 }
-                return object.numberOfUserVariables;
+                return obj.numberOfUserVariables;
             }
             variables.sort(function(a, b){
                 var aValue = getValue(a);
@@ -11273,7 +11269,7 @@ var qm = {
         },
         getUserAndCommonVariablesFromLocalStorage: function(params, successHandler, errorHandler){
             params = params || {};
-            qm.userVariables.getFromLocalStorage(params, function(userVariables){
+            qm.userVariables.getFromLocalStorage(params).then(function(userVariables){
                 userVariables = userVariables || [];
                 qm.commonVariablesHelper.getFromLocalStorage(params, function(commonVariables){
                     commonVariables = commonVariables || [];
@@ -12054,6 +12050,16 @@ var qm = {
     qmLog: function(){
         return qmLog;
     },
+    lei: function (failed, msg, meta) {
+        if(failed){
+            qmLog.error(msg, meta)
+            if(meta){msg += "\n" + qm.stringHelper.prettyJsonStringify(meta);}
+            debugger
+            if(!qm.appMode.isProduction()){
+                throw Error(msg)
+            }
+        }
+    }
 };
 //if(typeof window !== "undefined" && typeof window.qmLog === "undefined"){window.qmLog = qmLog;}  // Need to use qmLog so it's available in node.js modules
 if(typeof Quantimodo !== "undefined"){

@@ -355,40 +355,52 @@ describe("Intent Handler", function () {
     })
 })
 describe("Measurement", function () {
-    it('can record a measurement', function(){
+    it('can record a measurement', function () {
         qmTests.setTestAccessToken()
         var variableName = "Alertness"
-        return qm.userHelper.getUserFromApi().then(function (user){
-            expect(user.accessToken).to.eq(qmTests.getTestAccessToken())
-            return qm.measurements.deleteLastMeasurementForVariable(variableName).then(function (){
+        return qm.userHelper.getUserFromApi()
+            .then(function (user) {
+                expect(user.accessToken).to.eq(qmTests.getTestAccessToken())
+                return qm.userVariables.getFromApi()
+            })
+            .then(function (userVariables) {
+                expect(userVariables).length.to.be.greaterThan(1)
+                return qm.measurements.getMeasurements({variableName, sort: "-startAt"})
+            })
+            .then(function (measurements) {
+                qm.measurements.logMeasurements(measurements, variableName + " Measurements")
+                return qm.measurements.deleteLastMeasurementForVariable(variableName)
+            })
+            .then(function () {
                 return qm.measurements.recordMeasurement({
                     value: 1,
                     variableName,
                     unitAbbreviatedName: "/5",
-                }).then(function (data){
-                    //TODO: expect(data.measurements).length(1)
-                    expect(data.userVariables).length(1)
-                    var queue = qm.measurements.getMeasurementsFromQueue()
-                    expect(queue).length(0)
-                    qm.userVariables.getFromLocalStorage({}, function(userVariables) {
-                        expect(userVariables).length(1)
-                        qm.userVariables.getFromLocalStorage({}, function(userVariables) {
-                            var uv = userVariables[0]
-                            expect(uv.variableName).to.eq(variableName) // Should be first since it has most recent measurement
-                        })
-                    })
-                    qm.measurements.getLocalMeasurements({variableName}).then(function(measurements){
-                        expect(measurements).length(1)
-                        measurements.forEach(function (measurement){
-                            expect(measurement.pngPath).to.be.a('string')
-                                .and.satisfy((msg) => msg.startsWith("img/rating/face_rating_button_256_happy.png"))
-                        })
-                    })
-                }, function (err){
-                    throw err
                 })
             })
-        })
+            .then(function (data) {
+                //TODO: expect(data.measurements).length(1)
+                expect(data.userVariables).length(1)
+                var queue = qm.measurements.getMeasurementsFromQueue()
+                expect(queue).length(0)
+                return qm.userVariables.getFromLocalStorage({variableName})
+            })
+            .then(function (userVariables) {
+                expect(userVariables).length(1)
+                return qm.userVariables.getFromLocalStorage({})
+            })
+            .then(function (userVariables) {
+                var uv = userVariables[0]
+                expect(uv.variableName).to.eq(variableName) // Should be first since it has most recent measurement
+                return qm.measurements.getLocalMeasurements({variableName})
+            })
+            .then(function (measurements) {
+                expect(measurements).length.to.be.greaterThan(0)
+                measurements.forEach(function (measurement) {
+                    expect(measurement.pngPath).to.be.a('string')
+                        .and.satisfy((msg) => msg.startsWith("img/rating/face_rating_button_256_"))
+                })
+            })
     })
 })
 describe("Notifications", function () {
