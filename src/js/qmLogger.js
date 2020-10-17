@@ -170,6 +170,7 @@ var qmLog = {
         qmLog.mobileDebug = value;
     },
     replaceSecretValuesInString: function(string){
+        if(string.indexOf("test-token") !== -1){return string;}
         if(qmLog.isDebugMode() || qm.appMode.isLocal()){
             return string;
         }
@@ -233,7 +234,7 @@ var qmLog = {
         return object;
     },
     secretAliases: ['secret', 'password', 'token', 'secret', 'private'],
-    stringContainsSecretAliasWord: function(string){
+    redactFollowingSecretWord: function(string){
         if(!string.toLowerCase){
             var consoleMessage = "This is not a string: ";
             if(qmLog.color){
@@ -494,9 +495,11 @@ var qmLog = {
             console.error("logString not a string and is: ", logString);
             return "logString not a string: ";
         }
-        var censored = qmLog.stringContainsSecretAliasWord(logString);
-        if(censored){
-            logString = censored;
+        if(!qm.appMode.isLocal()){
+            var censored = qmLog.redactFollowingSecretWord(logString);
+            if(censored){
+                logString = censored;
+            }
         }
         if(qm.platform.isMobileOrTesting()){
             logString = logLevel + ": " + logString;
