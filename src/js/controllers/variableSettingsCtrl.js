@@ -46,7 +46,7 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
                 return;
             }
             $scope.state.loading = true;
-            qm.userVariables.getFromApi(params, function(userVariables){
+            qm.userVariables.getFromApi(params).then(function(userVariables){
                 if(userVariables && userVariables[0]){
                     setVariableObject(userVariables[0]);
                 }
