@@ -14,7 +14,6 @@ declare function require(path: string): any
 // require untyped library file
 // tslint:disable-next-line:no-var-requires
 const qm = require("../src/js/qmHelpers.js")
-import { ManagedUpload } from "aws-sdk/lib/s3/managed_upload"
 import * as qmGit from "./qm.git"
 import {createSuccessFile, deleteEnvFile, deleteSuccessFile, getBuildLink, getCiProvider} from "./test-helpers"
 

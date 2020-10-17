@@ -75,6 +75,7 @@ var qm = {
             return qm.appMode.isTesting() || qm.appMode.isDevelopment();
         },
         isDevelopment: function(){
+            if(qm.env.isLocal()){return true;}
             if(qm.appMode.mode === 'development'){
                 return true;
             }
@@ -287,6 +288,7 @@ var qm = {
             }
         },
         getUrlFromResponse: function(response){
+            if(!response){return null;}
             if(response.url){
                 return response.url
             }
@@ -650,8 +652,7 @@ var qm = {
                             if (responseSuccessful(response, data)) {
                                 if(successHandler){successHandler(data);}
                             } else {
-                                var err = "qm.api error "+response.status+" from\n\tPOST " + url
-                                err = qm.api.generalErrorHandler(err, data, response)
+                                var err = qm.api.generalErrorHandler(null, data, response)
                                 if(errorHandler){errorHandler(err);}
                             }
                         })
@@ -1590,7 +1591,7 @@ var qm = {
                 return provided;
             }
             if(!params){
-                qmLog.info("No params provided to filterByRequestParams");
+                qmLog.debug("No params provided to filterByRequestParams");
                 return provided;
             }
             var allowedFilterParams = [
@@ -3615,6 +3616,20 @@ var qm = {
             }
         }
     },
+    env: {
+        getEnv: function(name){
+            if(typeof process === "undefined"){
+                return null;
+            }
+            if(typeof process.env[name] === "undefined"){
+                return null;
+            }
+            return process.env[name]
+        },
+        isLocal: function(){
+            return qm.env.getEnv('APP_ENV') === "local"
+        }
+    },
     feed: {
         currentCard: null,
         getMostRecentCard: function(successHandler, errorHandler){
@@ -4986,9 +5001,13 @@ var qm = {
                 indexed = qm.measurements.indexByVariableStartAt(queue, indexed);
                 indexed = qm.measurements.indexByVariableStartAt(notifications, indexed);
                 var filtered = qm.measurements.filterAndSort(indexed, params)
+                qm.measurements.processMeasurements(filtered)
                 deferred.resolve(filtered);
             });
             return deferred.promise;
+        },
+        validateMeasurements: function(measurements){
+            qm.lei(measurements.length && !measurements[0].startAt, "no startAt", measurements[0])
         },
         getByVariableName: function(variableName){
             return qm.measurements.getMeasurements({variableName: variableName});
@@ -5000,6 +5019,8 @@ var qm = {
                     deferred.resolve(measurements);
                 } else {
                     qm.measurements.getMeasurementsFromApi(params).then(function(measurements){
+                        qmLog.info(measurements.length+" measurements from API with params: ", params)
+                        qm.measurements.processMeasurements(measurements)
                         deferred.resolve(measurements)
                     }, function(err){
                         deferred.reject(err)
@@ -5013,7 +5034,7 @@ var qm = {
         },
         filterAndSort: function(measurements, params){
             if(!Array.isArray(measurements)){measurements = qm.measurements.flattenMeasurements(measurements);}
-            measurements = qm.measurements.addInfoAndImagesToMeasurements(measurements);
+            measurements = qm.measurements.processMeasurements(measurements);
             measurements = qm.arrayHelper.filterByRequestParams(measurements, params);
             return measurements;
         },
@@ -5024,6 +5045,9 @@ var qm = {
                 var filtered = qm.measurements.filterAndSort(indexed, params);
                 cb(filtered)
             })
+        },
+        toArray: function(byVariableName){
+            return qm.measurements.flattenMeasurements(byVariableName)
         },
         flattenMeasurements: function(byVariableName){
             if(!byVariableName){
@@ -5144,7 +5168,7 @@ var qm = {
         addToMeasurementsQueue: function(m){
             qmLog.info("Adding to measurements queue: ", m);
             qm.measurements.addLocationAndSource(m);
-            qm.measurements.addInfoAndImagesToMeasurement(m);
+            qm.measurements.processMeasurement(m);
             qm.measurements.addMeasurementsToMemory([m])
             qm.storage.appendToArray(qm.items.measurementsQueue, m);
         },
@@ -5168,13 +5192,13 @@ var qm = {
         getMeasurementsFromQueue: function(params){
             var measurements = qm.storage.getElementsWithRequestParams(qm.items.measurementsQueue, params) || []
             qm.measurements.checkMeasurements(measurements)
-            measurements = qm.measurements.addInfoAndImagesToMeasurements(measurements);
+            measurements = qm.measurements.processMeasurements(measurements);
             qm.measurements.checkMeasurements(measurements)
             qmLog.info("Got " + measurements.length + " measurements from queue with params: " +
                 JSON.stringify(params), measurements);
             return measurements;
         },
-        addInfoAndImagesToMeasurement: function(m){
+        processMeasurement: function(m){
             var ratingInfo = qm.ratingImages.getRatingInfo();
             if(typeof m === "function"){
                 qmLog.error("Measurement is a function")
@@ -5227,16 +5251,17 @@ var qm = {
                 }
             }
         },
-        addInfoAndImagesToMeasurements: function(measurements){
+        processMeasurements: function(measurements){
             measurements = qm.measurements.flattenMeasurements(measurements);
             measurements.forEach(function(m){
-                qm.measurements.addInfoAndImagesToMeasurement(m)
+                qm.measurements.processMeasurement(m)
             });
+            qm.measurements.validateMeasurements(measurements)
             return measurements;
         },
         cache: [],
         getRecentlyPostedMeasurements: function(params){
-            var all = qm.measurements.addInfoAndImagesToMeasurements(qm.measurements.cache || []);
+            var all = qm.measurements.processMeasurements(qm.measurements.cache || []);
             var filtered = qm.arrayHelper.filterByRequestParams(all, params);
             qmLog.info("Got " + filtered.length + " measurements from recentlyPostedMeasurements with params: ",
                 params);
@@ -6922,10 +6947,10 @@ var qm = {
             qm.api.post('v3/trackingReminderNotifications', body, function(response){
                 saveResponse(response);
                 if(successHandler){successHandler(response);}
-            }, function(response){
-                qmLog.error(response.message)
-                saveResponse(response); // Sometimes we still return notifications even with an error
-                if(errorHandler){errorHandler(response.message || response.error);}
+            }, function(err){
+                qm.api.generalErrorHandler(err)
+                saveResponse(err); // Sometimes we still return notifications even with an error
+                if(errorHandler){errorHandler(err);}
             });
         },
         syncIfQueued: function (){
@@ -9178,7 +9203,7 @@ var qm = {
                 qmLog.info("getElementsWithRequestParams: Getting " + localStorageItemName + " WithRequestParams: "+
                     JSON.stringify(params, null, 2) );
             } else{
-                qmLog.info("getElementsWithRequestParams: Getting ALL " + localStorageItemName);
+                qmLog.debug("getElementsWithRequestParams: Getting ALL " + localStorageItemName);
             }
             var array = qm.storage.getItem(localStorageItemName);
             if(!array){
@@ -10023,6 +10048,10 @@ var qm = {
     },
     toast: {
         errorAlert: function(errorMessage, callback){
+            if(qm.appMode.isBackEnd()){
+                qmLog.info("toast.errorAlert: "+errorMessage)
+                return;
+            }
             if(typeof Swal === "undefined"){
                 console.error("Swal not defined to show errorAlert for: "+errorMessage)
                 return;
@@ -10056,7 +10085,7 @@ var qm = {
                     }
                 })
             }catch (e) {
-                qmLog.info("Could not call Toast.fire because "+e.message)
+                qmLog.debug("Could not call Toast.fire because "+e.message)
             }
         },
         showQuestionToast: function(question, successMessage, callback){
@@ -10085,6 +10114,10 @@ var qm = {
             })
         },
         infoToast: function(message, confirmButtonText, callback){
+            if(qm.appMode.isBackEnd()){
+                qmLog.info("infoToast: "+message)
+                return;
+            }
             var params = {
                 toast: true,
                 icon: "success",
@@ -10104,10 +10137,6 @@ var qm = {
                 qmLog.error("Swal not defined to show: "+message);
                 return;
             }
-            if(qm.appMode.isBackEnd()){
-                qmLog.info("Can't call Toast.fire because browser is not available.  TODO: Mock Swal")
-                return;
-            }
             try{
                 var Toast = Swal.mixin(params);
                 Toast.fire({
@@ -10115,7 +10144,7 @@ var qm = {
                     title: message
                 }).then(function(result){
                     if (result.value) {
-                        callback(result);
+                        if(callback){callback(result);}
                     }
                 })
             } catch (e) {
@@ -10843,7 +10872,7 @@ var qm = {
             qmLog.authDebug("Getting user from API...");
             function userSuccessHandler(user){
                 if(user && typeof user.displayName !== "undefined"){
-                    qmLog.info("Got user from API...");
+                    qmLog.info("Got user " + user.id + " from API: " + user.loginName)
                     qm.userHelper.setUser(user);
                     deferred.resolve(user)
                 }else{
