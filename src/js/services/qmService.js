@@ -3582,7 +3582,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             }
             qmService.backgroundGeolocationStartIfEnabled();
             qmLog.setupBugsnag(user);
-            setupGoogleAnalytics(qm.userHelper.getUserFromLocalStorage());
+            setupGoogleAnalytics(qm.userHelper.getUserSync());
             if(qm.storage.getItem(qm.items.deviceTokenOnServer)){
                 qmLog.debug('This token is already on the server: ' + qm.storage.getItem(qm.items.deviceTokenOnServer));
             }
@@ -3650,8 +3650,9 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             if(qm.urlHelper.getParam('userEmail')){
                 params.userEmail = qm.urlHelper.getParam('userEmail');
             }
-            if(qm.userHelper.getUserFromLocalStorage()){
-                params.userId = qm.userHelper.getUserFromLocalStorage().id;
+            var u = qm.userHelper.getUserSync();
+            if(u){
+                params.userId = u.id;
             }
             qm.api.post('api/v3/userSettings', params, function(response){
                 if(!params.userEmail){
@@ -6469,7 +6470,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             qm.userVariables.refreshIfNumberOfRemindersGreaterThanUserVariables();
             qmService.backgroundGeolocationStartIfEnabled();
             qmLog.setupBugsnag();
-            setupGoogleAnalytics(qm.userHelper.getUserFromLocalStorage(), appSettings);
+            setupGoogleAnalytics(qm.userHelper.getUserSync(), appSettings);
             qmService.navBar.hideNavigationMenuIfHideUrlParamSet();
             qmService.scheduleSingleMostFrequentLocalNotification();
             if(qm.urlHelper.getParam('finish_url')){
