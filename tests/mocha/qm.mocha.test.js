@@ -365,7 +365,7 @@ describe("Measurement", function () {
                 return qm.userVariables.getFromApi()
             })
             .then(function (userVariables) {
-                expect(userVariables).length.to.be.greaterThan(1)
+                expect(userVariables).to.be.a('array')
                 return qm.measurements.getMeasurements({variableName, sort: "-startAt"})
             })
             .then(function (measurements) {
@@ -402,9 +402,9 @@ describe("Measurement", function () {
                         .and.satisfy((msg) => msg.startsWith("img/rating/face_rating_button_256_"))
                 })
             })
-            .catch(function (error) {
-                throw Error(error)
-            })
+            // .catch(function (error) {
+            //     throw Error(error)
+            // })
     })
 })
 describe("Notifications", function () {
@@ -570,7 +570,7 @@ describe("Reminders", function () {
         qmTests.setTestAccessToken()
         return qm.userHelper.getUserFromApi({})
             .then(function (user){
-
+                expect(user.accessToken, qmTests.getTestAccessToken())
                 return qm.reminderHelper.deleteByVariableName(variableName)
             })
             .then(function () {
@@ -613,7 +613,7 @@ describe("Reminders", function () {
                 n.value = 1
                 qm.notifications.track(notifications[0])
                 expect(qm.notifications.getQueue()).length(1)
-                return qm.measurements.getLocalMeasurements({})
+                return qm.measurements.getLocalMeasurements({variableName})
             })
             .then(function (measurements) {
                 qm.measurements.logMeasurements(measurements, "Local Measurements")
@@ -702,7 +702,7 @@ describe("Variables", function () {
         //qm.qmLog.setLogLevelName("debug");
         var alreadyCalledBack = false
         qmTests.setTestAccessToken()
-        qm.userHelper.getUserFromLocalStorageOrApi(function (user) {
+        qm.userHelper.getUserFromLocalStorageOrApi().then(function (user) {
             qmLog.debug("User: ", user)
             if(!qm.getUser()){ throw "No user!" }
             var requestParams = {
@@ -717,7 +717,7 @@ describe("Variables", function () {
                 qm.assert.variables.descendingOrder(variables, 'lastSelectedAt')
                 qm.assert.greaterThan(5, variables.length)
                 var variable5 = variables[4]
-                var timestamp = qm.timeHelper.getUnixTimestampInSeconds()
+                var timestamp = qm.timeHelper.at()
                 qm.variablesHelper.setLastSelectedAtAndSave(variable5)
                 var userVariables = qm.globalHelper.getItem(qm.items.userVariables) || []
                 qmLog.info("There are " + userVariables.length + " user variables")
@@ -740,14 +740,14 @@ describe("Variables", function () {
                         }
                     })
                 }, function(error){
-                    qm.qmLog.error(error)
+                    throw Error(error)
                 })
             })
         })
     })
     it('can search manual tracking variables', function(done) {
         qmTests.setTestAccessToken()
-        qm.userHelper.getUserFromLocalStorageOrApi(function (user) {
+        qm.userHelper.getUserFromLocalStorageOrApi().then(function (user) {
             qmLog.info("Got user " + user.loginName)
             if(!qm.getUser()){ throw "No user!" }
             var requestParams = {

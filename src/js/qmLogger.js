@@ -170,6 +170,7 @@ var qmLog = {
         qmLog.mobileDebug = value;
     },
     replaceSecretValuesInString: function(string){
+        if(!string){debugger}
         if(string.indexOf("test-token") !== -1){return string;}
         if(qmLog.isDebugMode() || qm.appMode.isLocal()){
             return string;
@@ -492,6 +493,7 @@ var qmLog = {
             }
         }
         if(!logString || typeof logString !== "string" || !logString.toLowerCase){
+            debugger
             console.error("logString not a string and is: ", logString);
             return "logString not a string: ";
         }
@@ -505,6 +507,7 @@ var qmLog = {
             logString = logLevel + ": " + logString;
         }
         logString = qmLog.replaceSecretValuesInString(logString);
+        if(!logString){debugger}
         return logString;
     },
     shouldWeLog: function(providedLogLevelName){
@@ -615,24 +618,27 @@ var qmLog = {
         if(!qm.platform.getWindow()){
             return false;
         }
+        var u = qm.userHelper.getUserSync();
+        var settings = qm.getAppSettings();
         window.intercomSettings = {
             app_id: "uwtx2m33",
-            name: qm.userHelper.getUserFromLocalStorage().displayName,
-            email: qm.userHelper.getUserFromLocalStorage().email,
-            user_id: qm.userHelper.getUserFromLocalStorage().id,
-            app_name: qm.getAppSettings().appDisplayName,
-            app_version: qm.getAppSettings().versionNumber,
+            name: u.displayName,
+            email: u.email,
+            user_id: u.id,
+            app_name: settings.appDisplayName,
+            app_version: settings.versionNumber,
             platform: qm.platform.getCurrentPlatform()
         };
     },
     setupUserVoice: function(){
         if(typeof UserVoice !== "undefined"){
+            var u = qm.userHelper.getUserSync();
             UserVoice.push(['identify', {
-                email: qm.getUser().email, // User’s email address
-                name: qm.getUser().displayName, // User’s real name
-                created_at: qm.timeHelper.getUnixTimestampInSeconds(qm.userHelper.getUserFromLocalStorage().userRegistered), // Unix timestamp for the date the user signed up
-                id: qm.userHelper.getUserFromLocalStorage().id, // Optional: Unique id of the user (if set, this should not change)
-                type: qm.getSourceName() + ' User (Subscribed: ' + qm.userHelper.getUserFromLocalStorage().subscribed + ')', // Optional: segment your users by type
+                email: u.email, // User’s email address
+                name: u.displayName, // User’s real name
+                created_at: qm.timeHelper.getUnixTimestampInSeconds(u.userRegistered), // Unix timestamp for the date the user signed up
+                id: u.id, // Optional: Unique id of the user (if set, this should not change)
+                type: qm.getSourceName() + ' User (Subscribed: ' + u.subscribed + ')', // Optional: segment your users by type
                 account: {
                     //id: 123, // Optional: associate multiple users with a single account
                     name: qm.getSourceName() + ' v' + qm.getAppSettings().versionNumber, // Account name
