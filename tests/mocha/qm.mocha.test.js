@@ -564,7 +564,7 @@ describe("Menu", function () {
 })
 describe("Reminders", function () {
     it("can create a reminder and track the notification", function () {
-        this.timeout(60000)
+        this.timeout(90000)
         //expect(qm.appMode.isLocal()).to.be.true
         const variableName = "Hostility"
         qmTests.setTestAccessToken()
@@ -626,7 +626,7 @@ describe("Reminders", function () {
                 var measurements = qm.measurements.toArray(response.measurements)
                 expect(measurements).length(1)
                 expect(response.userVariables).length(1)
-                return qm.measurements.getLocalMeasurements({})
+                return qm.measurements.getLocalMeasurements({variableName})
             })
             .then(function (measurements) {
                 expect(measurements).length(1)
@@ -685,7 +685,7 @@ describe("URL Helper", function () {
 describe("Users", function () {
     it('can get users', function(done) {
         this.timeout(10000)
-        expect(qm.api.getApiUrl()).to.eq("https://app.quantimo.do")
+        //expect(qm.api.getApiUrl()).to.eq("https://app.quantimo.do")
         qmTests.setTestAccessToken()
         qm.userHelper.getUsersFromApi(function(users){
             qmLog.debug("users:", users)
@@ -750,18 +750,18 @@ describe("Variables", function () {
         qm.userHelper.getUserFromLocalStorageOrApi().then(function (user) {
             qmLog.info("Got user " + user.loginName)
             if(!qm.getUser()){ throw "No user!" }
-            var requestParams = {
+            var params = {
                 limit: 100,
                 includePublic: true,
                 manualTracking: true,
             }
-            qm.variablesHelper.getFromLocalStorageOrApi(requestParams, function(variables){
+            qm.variablesHelper.getFromLocalStorageOrApi(params, function(variables){
                 qmLog.info('Got ' + variables.length + ' variables')
-                qm.assert.count(requestParams.limit, variables)
+                qm.assert.count(params.limit, variables)
                 var manual = variables.filter(function (v) {
                     return v.manualTracking
                 })
-                qm.assert.count(requestParams.limit, manual)
+                qm.assert.count(params.limit, manual)
                 qm.assert.variables.descendingOrder(variables, 'lastSelectedAt')
                 done()
             })

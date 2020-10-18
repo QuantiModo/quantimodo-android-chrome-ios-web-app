@@ -10913,7 +10913,7 @@ var qm = {
             var u = qm.userHelper.getUserSync();
             if(u){
                 var deferred = Q.defer();
-                deferred.resolve(user)
+                deferred.resolve(u)
                 return deferred.promise;
             }
             return qm.userHelper.getUserFromApi()
