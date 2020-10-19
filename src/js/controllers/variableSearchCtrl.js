@@ -83,6 +83,9 @@ angular.module('starter').controller('VariableSearchCtrl',
         function getNextState() {
             var s = $state.current;
             var next = s.params.nextState;
+            if(!next){
+                qmLog.errorAndExceptionTestingOrDevelopment("No next state!")
+            }
             return next;
         }
         function saveTag(selected) {
