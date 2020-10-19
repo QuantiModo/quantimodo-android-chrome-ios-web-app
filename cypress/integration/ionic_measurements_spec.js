@@ -2,15 +2,18 @@
 /// <reference types="cypress" />
 /**
  * @param {number} initialMoodValue
+ * @param variableName
  */
 function recordMeasurementAndCheckHistory (initialMoodValue, variableName) {
   cy.url().should('contain', '/measurement-add')
   cy.get(`.primary-outcome-variable-history > img:nth-of-type(${initialMoodValue})`)
         .click({ force: true })
   cy.get('#saveButton').click({ force: true })
+    cy.wait('@post-measurement', {timeout: 30000})
+        .should('have.property', 'status', 201)
   cy.log('Waiting for measurement to post to API...')
-  cy.wait(10000)
-  cy.visitIonicAndSetApiUrl('/#/app/history-all-variable/'+variableName)
+
+    goToHistoryForVariable(variableName)
 
     function moodValueToImage(value) {
         return ratingImages.positive[value - 1];
@@ -85,19 +88,81 @@ function editHistoryPageMeasurement (itemTitle) {
   cy.wait(2000)
   cy.url().should('include', 'measurement-add')
 }
+function deleteMeasurements (variableName) {
+    goToHistoryForVariable(variableName);
+    cy.log('Deleting measurements...')
+    let deleted = false
+    cy.get("body").then($body => {
+        let selector = "#showActionSheet-button > i";
+        let number = $body.find(selector).length;
+        cy.log(number+" measurements to delete");
+        if (number > 0) {   //evaluates as true
+            cy.get(selector, { timeout: 30000 })
+                // eslint-disable-next-line no-unused-vars
+                .each(($el, _index, _$list) => {
+                    cy.log(`Deleting ${$el.text()} reminder`)
+                    cy.wrap($el).click({force: true, timeout: 10000})
+                    cy.clickActionSheetButtonContaining('Delete')
+                    cy.wait('@measurements-delete', {timeout: 30000})
+                        .should('have.property', 'status', 204)
+                    deleted = true
+                })
+        }
+    });
+
+    cy.get('#historyList > div', { timeout: 30000 })
+        // eslint-disable-next-line no-unused-vars
+        .each(($el, _index, _$list) => {
+            let html = $el.html() // $el is a wrapped jQuery element
+
+            if (html.indexOf('showActionSheet') !== -1 && $el.is('visible')) {
+                cy.log(`Deleting ${$el.text()} reminder`)
+                cy.wrap($el).click()
+                cy.clickActionSheetButtonContaining('Delete')
+                cy.wait('@measurements-delete', {timeout: 30000})
+                    .should('have.property', 'status', 204)
+                deleted = true
+            } else {
+                // It's a header
+            }
+        })
+    if (deleted) {
+        cy.log('Waiting for deletions to post...')
+        cy.wait(5000)
+    }
+}
+
+function goToHistoryForVariable(variableName, login) {
+
+    if(login){
+        cy.loginWithAccessTokenIfNecessary('/#/app/history-all-variable/' + variableName)
+    } else {
+        cy.visitIonicAndSetApiUrl('/#/app/history-all-variable/' + variableName)
+    }
+
+}
+
 describe('Measurements', function () {
+
+
     // Skipping because it fails randomly and can't reproduce failure locally
     it('Goes to edit measurement from history page', function () {
         cy.loginWithAccessTokenIfNecessary('/#/app/history-all-category/Anything')
+        cy.wait('@measurements', {timeout: 30000})
+            .should('have.property', 'status', 200)
         cy.get('#historyItemTitle', {timeout: 30000}).click({force: true})
         cy.clickActionSheetButtonContaining('Edit')
         cy.wait(2000)
         cy.url().should('include', 'measurement-add')
     })
     // Skipping because it fails randomly and can't reproduce failure locally
-    it.only('Records, edits, and deletes a mood measurement', function () {
-        cy.loginWithAccessTokenIfNecessary('/#/app/measurement-add-search')
+    it.only('Records, edits, and deletes an emotion measurement', function () {
         let variableName = 'Alertness'
+        goToHistoryForVariable(variableName, true)
+        cy.wait('@measurements', {timeout: 30000})
+            .should('have.property', 'status', 200)
+        deleteMeasurements(variableName)
+        cy.loginWithAccessTokenIfNecessary('/#/app/measurement-add-search')
         cy.searchAndClickTopResult(variableName, true)
         let d = new Date()
         let seconds = d.getSeconds()
@@ -105,18 +170,19 @@ describe('Measurements', function () {
         recordMeasurementAndCheckHistory(initialValue, variableName)
         cy.get('#hidden-measurement-id-0').then(($el) => {
             let measurementId = $el.text();
+            expect(measurementId).length.to.be.greaterThan(0)
             cy.get('#action-sheet-button-0').click({force: true});
             cy.clickActionSheetButtonContaining('Edit');
             let newMoodValue = ((initialValue % 5) + 1);
-            cy.visit(`/#/app/measurement-add?measurementId=${measurementId}`);
+            //cy.visit(`/#/app/measurement-add?measurementId=${measurementId}`);
             cy.get('#variable-name').contains(variableName)
-            recordMeasurementAndCheckHistory(newMoodValue, variableName);
+            goToHistoryForVariable(variableName);
             cy.get("#hidden-measurement-id-0").then(($el) => {
                 let editedMeasurementId = $el.text();
                 cy.visitIonicAndSetApiUrl(`/#/app/measurement-add?measurementId=${editedMeasurementId}`);
                 cy.get('#deleteButton').click({force: true});
                 cy.wait(10000);
-                cy.visitIonicAndSetApiUrl(`/#/app/history-all-variable/`+variableName);
+                goToHistoryForVariable(variableName)
                 cy.get("#hidden-measurement-id-0").should('not.contain', editedMeasurementId);
             });
         });

@@ -380,7 +380,8 @@ describe("Measurement", function () {
                 })
             })
             .then(function (data) {
-                //TODO: expect(data.measurements).length(1)
+                var measurements = qm.measurements.toArray(data.measurements)
+                expect(measurements).length(1)
                 expect(data.userVariables).length(1)
                 var queue = qm.measurements.getMeasurementsFromQueue()
                 expect(queue).length(0)
