@@ -293,6 +293,10 @@ var qm = {
                 return response.url
             }
             var req = response.req;
+            if(!req.connection){
+                qmLog.error("No connection property on response.req object on: ", {response: response})
+                return null
+            }
             var url = req.agent.protocol+"//"+req.connection.servername+req.path;
             return url;
         },
