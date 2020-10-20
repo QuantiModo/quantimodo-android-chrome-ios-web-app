@@ -1,21 +1,20 @@
 angular.module('starter')// Parent Controller - This controller runs before every one else
     .controller('AppCtrl', ["$scope", "$timeout", "$ionicPopover", "$ionicLoading", "$state", "$ionicHistory", "$rootScope",
-        "$ionicPopup", "$ionicSideMenuDelegate", "$ionicPlatform", "$injector", "qmService", "qmLogService",
+        "$ionicPopup", "$ionicSideMenuDelegate", "$ionicPlatform", "$injector", "qmService",
         "$cordovaOauth", "clipboard", "$ionicActionSheet", "Analytics", "$locale", "$mdDialog", "$mdToast", "$sce",
         "wikipediaFactory", "appSettingsResponse", "$stateParams",
         function($scope, $timeout, $ionicPopover, $ionicLoading, $state, $ionicHistory, $rootScope,
-                 $ionicPopup, $ionicSideMenuDelegate, $ionicPlatform, $injector, qmService, qmLogService,
+                 $ionicPopup, $ionicSideMenuDelegate, $ionicPlatform, $injector, qmService,
                  $cordovaOauth, clipboard, $ionicActionSheet, Analytics, //$ionicDeploy,
                  $locale, $mdDialog, $mdToast, $sce, wikipediaFactory, appSettingsResponse, $stateParams){
             $scope.controller_name = "AppCtrl";
             qmService.initializeApplication(appSettingsResponse);
-            qm.notifications.numberOfPendingNotifications = null;
             $scope.$on('$ionicView.enter', function(e){
                 qmLog.debug('appCtrl enter in state ' + $state.current.name + ' and url is ' + window.location.href);
             });
             $scope.$on('$ionicView.afterEnter', function(e){
-                qmLog.info($scope.controller_name + ".afterEnter so posting queued notifications if any");
-                qm.notifications.postNotifications();
+                qmLog.debug($scope.controller_name + ".afterEnter so posting queued notifications if any");
+                qm.notifications.syncIfQueued();
                 qmService.refreshUserUsingAccessTokenInUrlIfNecessary();
                 $rootScope.setMicAndSpeechEnabled(qm.mic.getMicEnabled());
                 qm.chatButton.setZohoChatButtonZIndex();
@@ -25,6 +24,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
                     qm.chatButton.hideDriftButton();
                 }
                 if(typeof drift !== "undefined"){drift.page();}
+                qm.storage.setItem(qm.items.lastUrl, window.location.href);
             });
             $scope.$on('$ionicView.beforeLeave', function(e){
                 qmService.stateHelper.previousUrl = window.location.href;
@@ -32,8 +32,8 @@ angular.module('starter')// Parent Controller - This controller runs before ever
             $scope.closeMenu = function(){
                 $ionicSideMenuDelegate.toggleLeft(false);
             };
-            $scope.showVariableActionSheet = function(v, extraButtons){
-                qmService.actionSheets.showVariableObjectActionSheet(v.name, v, extraButtons);
+            $scope.showVariableActionSheet = function(v, extraButtons, state){
+                qmService.actionSheets.showVariableObjectActionSheet(v.name, v, extraButtons, state);
             }
             $scope.generalButtonClickHandler = qmService.buttonClickHandlers.generalButtonClickHandler;
             $scope.$watch(function(){
@@ -92,12 +92,12 @@ angular.module('starter')// Parent Controller - This controller runs before ever
             };
             $scope.shareStudy = function(study, shareType, ev){
                 if(!study){
-                    qmLogService.error("No study provided to shareStudy!");
+                    qmLog.error("No study provided to shareStudy!");
                     return;
                 }
                 var sharingUrl = qm.objectHelper.getValueOfPropertyOrSubPropertyWithNameLike(shareType, study);
                 if(!sharingUrl){
-                    qmLogService.error("No sharing url for this study: ", {study: study});
+                    qmLog.error("No sharing url for this study: ", {study: study});
                 }
                 if(sharingUrl.indexOf('userId') !== -1 && !study.studySharing.shareUserMeasurements){
                     qmService.studyHelper.showShareStudyConfirmation(study, sharingUrl, ev);
@@ -128,9 +128,9 @@ angular.module('starter')// Parent Controller - This controller runs before ever
                 }
             };
             $rootScope.setLocalStorageFlagTrue = function(flagName){
-                qmLogService.debug('Set ' + flagName + ' to true', null);
+                qmLog.debug('Set ' + flagName + ' to true', null);
                 qmService.rootScope.setProperty(flagName, true);
-                qmService.storage.setItem(flagName, true);
+                qm.storage.setItem(flagName, true);
             };
             $scope.showHelpInfoPopup = function(explanationId, ev, modelName){
                 qmService.help.showExplanationsPopup(explanationId, ev, modelName);
@@ -164,9 +164,9 @@ angular.module('starter')// Parent Controller - This controller runs before ever
                     yesCallback = function(){
                         study.studyVotes.userVote = 0;
                         qmService.postVoteToApi(study, function(response){
-                            qmLogService.debug('Down voted!', null);
+                            qmLog.debug('Down voted!', null);
                         }, function(){
-                            qmLogService.error('Down vote failed!');
+                            qmLog.error('Down vote failed!');
                         });
                     };
                     noCallback = function(){
@@ -177,7 +177,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
                     textContent = 'You previously voted that it is IMPOSSIBLE that ' + causeVariableName +
                         ' ' + $scope.increasesDecreases + ' your ' + effectVariableName + '. Do you want to delete this down vote?';
                     yesCallback = function(){
-                        deleteVote(study, $index);
+                        deleteVote(study);
                     };
                     noCallback = function(){
                     };
@@ -203,9 +203,9 @@ angular.module('starter')// Parent Controller - This controller runs before ever
                     yesCallback = function(){
                         study.studyVotes.userVote = 1;
                         qmService.postVoteToApi(study, function(){
-                            qmLogService.debug('upVote', null);
+                            qmLog.debug('upVote', null);
                         }, function(){
-                            qmLogService.error('upVote failed!');
+                            qmLog.error('upVote failed!');
                         });
                     };
                     noCallback = function(){
@@ -216,7 +216,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
                     textContent = 'You previously voted that it is POSSIBLE that ' + causeVariableName +
                         ' ' + $scope.increasesDecreases + ' your ' + effectVariableName + '. Do you want to delete this up vote?';
                     yesCallback = function(){
-                        deleteVote(study, $index);
+                        deleteVote(study);
                     };
                     noCallback = function(){
                     };
@@ -225,15 +225,15 @@ angular.module('starter')// Parent Controller - This controller runs before ever
             };
             function deleteVote(study){
                 study.studyVotes.userVote = null;
-                qmService.deleteVoteToApi(study, function(response){
-                    qmLogService.debug('deleteVote response', null, response);
+                qm.studyHelper.deleteVote(study, function(response){
+                    qmLog.debug('deleteVote response', response);
                 }, function(error){
-                    qmLogService.error("deleteVote error", error);
+                    qmLog.error("deleteVote error", error);
                 });
             }
             $scope.safeApply = function(fn){
-                if(!this.$root){
-                    qmLog.error("this.$root is not set!");
+                if(!this.$root){ // Doesn't seem to cause any problems
+                    qmLog.debug("this.$root is not set!");
                     if(fn && (typeof (fn) === 'function')){
                         fn();
                     }
@@ -249,12 +249,12 @@ angular.module('starter')// Parent Controller - This controller runs before ever
                 }
             };
             $scope.onTextClick = function($event){
-                qmLogService.debug('Auto selecting text so the user doesn\'t have to press backspace...', null);
+                qmLog.debug('Auto selecting text so the user doesn\'t have to press backspace...', null);
                 $event.target.select();
             };
             $scope.favoriteValidationFailure = function(message){
                 qmService.showMaterialAlert('Whoops!', message);
-                qmLogService.error(message);
+                qmLog.error(message);
             };
             $scope.trackFavoriteByValueField = function(trackingReminder, modifiedValue){
                 if(typeof modifiedValue !== "undefined" && modifiedValue !== null){
@@ -266,11 +266,11 @@ angular.module('starter')// Parent Controller - This controller runs before ever
                 }
                 trackingReminder.displayTotal =
                     qm.stringHelper.formatValueUnitDisplayText("Recorded " + trackingReminder.modifiedValue + " " + trackingReminder.unitAbbreviatedName);
-                qmService.postMeasurementByReminder(trackingReminder, trackingReminder.modifiedValue)
+                qm.measurements.postMeasurementByReminder(trackingReminder, trackingReminder.modifiedValue)
                     .then(function(){
-                        qmLogService.debug('Successfully qmService.postMeasurementByReminder: ' + JSON.stringify(trackingReminder));
+                        qmLog.debug('Successfully qmService.postMeasurementByReminder: ' + JSON.stringify(trackingReminder));
                     }, function(error){
-                        qmLogService.error('Failed to track favorite! error: ', error, trackingReminder);
+                        qmLog.error('Failed to track favorite! error: ', error, trackingReminder);
                     });
             };
             $scope.trackByFavorite = function(trackingReminder, modifiedReminderValue){
@@ -287,8 +287,9 @@ angular.module('starter')// Parent Controller - This controller runs before ever
                     qmService.actionSheets.actionSheetButtons.variableSettings
                 ];
                 /** @namespace qm.getAppSettings().favoritesController */
-                if(qm.getAppSettings().favoritesController && qm.getAppSettings().favoritesController.actionMenuButtons){
-                    actionMenuButtons = qm.getAppSettings().favoritesController.actionMenuButtons;
+                var appSettings = qm.getAppSettings();
+                if(appSettings.favoritesController && appSettings.favoritesController.actionMenuButtons){
+                    actionMenuButtons = appSettings.favoritesController.actionMenuButtons;
                 }
                 if(bloodPressure){
                     actionMenuButtons = [];
@@ -298,39 +299,20 @@ angular.module('starter')// Parent Controller - This controller runs before ever
                     destructiveText: '<i class="icon ion-trash-a"></i>Delete From Favorites',
                     cancelText: '<i class="icon ion-ios-close"></i>Cancel',
                     cancel: function(){
-                        qmLogService.debug('CANCELLED', null);
+                        qmLog.debug('CANCELLED', null);
                     },
-                    buttonClicked: function(index, button){
-                        qmLogService.debug('BUTTON CLICKED', null, index);
-                        if(index === 0){
-                            qmService.goToState('app.reminderAdd', {reminder: favorite});
-                        }
-                        if(index === 1){
-                            qmService.goToState('app.measurementAdd', {trackingReminder: favorite});
-                        }
-                        if(index === 2){
-                            qmService.goToState('app.charts', {
-                                trackingReminder: favorite,
-                                fromState: $state.current.name,
-                                fromUrl: window.location.href
-                            });
-                        }
-                        if(index === 3){
-                            qmService.goToState('app.historyAllVariable', {
-                                variableObject: variableObject,
-                                variableName: variableObject.name
-                            });
-                        }
-                        if(index === 4){
-                            qmService.goToVariableSettingsByName(favorite.variableName);
-                        }
+                    buttonClicked: function(i, button){
+                        qmLog.debug('BUTTON CLICKED', null, i);
+                        if(i === 0){qmService.goToState('app.reminderAdd', {reminder: favorite});}
+                        if(i === 1){qmService.goToState('app.measurementAdd', {trackingReminder: favorite});}
+                        if(i === 2){qmService.goToState('app.charts', {trackingReminder: favorite, fromState: $state.current.name,});}
+                        if(i === 3){qmService.goToState('app.historyAllVariable', {variableObject: variableObject});}
+                        if(i === 4){qmService.goToVariableSettingsByName(favorite.variableName);}
                         return true;
                     },
                     destructiveButtonClicked: function(){
-                        state.favoritesArray = state.favoritesArray.filter(function(oneFavorite){
-                            return oneFavorite.id !== favorite.id;
-                        });
-                        qmService.deleteTrackingReminderDeferred(favorite);
+                        state.favoritesArray = state.favoritesArray.filter(function(one){return one.id !== favorite.id;});
+                        qm.reminderHelper.deleteReminder(favorite);
                         return true;
                     }
                 });
@@ -344,11 +326,11 @@ angular.module('starter')// Parent Controller - This controller runs before ever
                     return;
                 }
                 $rootScope.bloodPressure.displayTotal = "Recorded " + $rootScope.bloodPressure.systolicValue + "/" + $rootScope.bloodPressure.diastolicValue + ' Blood Pressure';
-                qmService.postBloodPressureMeasurements($rootScope.bloodPressure)
+                qm.measurements.postBloodPressureMeasurements($rootScope.bloodPressure)
                     .then(function(){
-                        qmLogService.debug('Successfully qmService.postMeasurementByReminder: ' + JSON.stringify($rootScope.bloodPressure), null);
+                        qmLog.debug('Successfully qmService.postMeasurementByReminder: ' + JSON.stringify($rootScope.bloodPressure), null);
                     }, function(error){
-                        qmLogService.error('Failed to Track by favorite! ', $rootScope.bloodPressure);
+                        qmLog.error('Failed to Track by favorite! ', $rootScope.bloodPressure);
                     });
             };
             $scope.showExplanationsPopup = function(parameterOrPropertyName, ev, modelName, title){
@@ -361,16 +343,16 @@ angular.module('starter')// Parent Controller - This controller runs before ever
                 if(trackLocation !== null && typeof trackLocation !== "undefined"){
                     $rootScope.user.trackLocation = trackLocation;
                 }
-                qmLogService.debug('trackLocation', null, $rootScope.user.trackLocation);
+                qmLog.debug('trackLocation', null, $rootScope.user.trackLocation);
                 qmService.updateUserSettingsDeferred({trackLocation: $rootScope.user.trackLocation});
                 if($rootScope.user && $rootScope.user.trackLocation){
-                    qmLogService.debug('Going to execute qmService.backgroundGeolocationStartIfEnabled if $ionicPlatform.ready');
+                    qmLog.debug('Going to execute qmService.backgroundGeolocationStartIfEnabled if $ionicPlatform.ready');
                     qmService.showInfoToast('Location tracking enabled');
                     qmService.updateLocationVariablesAndPostMeasurementIfChanged();
                 }
                 if(!$rootScope.user.trackLocation){
                     qmService.showInfoToast('Location tracking disabled');
-                    qmLogService.debug('Do not track location');
+                    qmLog.debug('Do not track location');
                 }
             };
             $scope.$on('$stateChangeSuccess', function(){
@@ -411,7 +393,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
             $scope.showGeneralVariableSearchDialog = function(ev){
                 function selectVariable(variable){
                     $scope.variableObject = variable;
-                    qmLogService.debug('Selected variable: ' + variable.name);
+                    qmLog.debug('Selected variable: ' + variable.name);
                     qmService.actionSheets.showVariableObjectActionSheet(variable.name, variable);
                 }
                 var dialogParameters = {
@@ -429,10 +411,10 @@ angular.module('starter')// Parent Controller - This controller runs before ever
             };
             $rootScope.setMicAndSpeechEnabled = function(value, hideRobot){
                 if($rootScope.micEnabled === value && $rootScope.speechEnabled === value){
-                    qmLog.info("micEnabled and speechEnabled already set to " + value);
+                    qmLog.debug("micEnabled and speechEnabled already set to " + value);
                     return;
                 }
-                qmLog.info("$rootScope.setMicAndSpeechEnabled");
+                qmLog.debug("$rootScope.setMicAndSpeechEnabled");
                 if(value === 'toggle'){
                     value = !qm.mic.getMicEnabled();
                 }
@@ -468,10 +450,10 @@ angular.module('starter')// Parent Controller - This controller runs before ever
             $scope.robotClick = function(){
                 if(qm.robot.onRobotClick){
                     qm.robot.onRobotClick();
-                }else if($state.current.name === qm.stateNames.chat){
+                }else if($state.current.name === qm.staticData.stateNames.chat){
                     qmService.robot.toggleSpeechAndMicEnabled();
                 }else{
-                    qmService.goToState(qm.stateNames.chat);
+                    qmService.goToState(qm.staticData.stateNames.chat);
                 }
             };
         }]);

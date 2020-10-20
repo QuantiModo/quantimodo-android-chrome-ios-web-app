@@ -1,6 +1,6 @@
 angular.module('starter').controller('OnboardingCtrl',
-    ["$scope", "$state", "$ionicSlideBoxDelegate", "$ionicLoading", "$rootScope", "$stateParams", "qmService", "qmLogService", "$timeout",
-        function($scope, $state, $ionicSlideBoxDelegate, $ionicLoading, $rootScope, $stateParams, qmService, qmLogService, $timeout){
+    ["$scope", "$state", "$ionicSlideBoxDelegate", "$ionicLoading", "$rootScope", "$stateParams", "qmService", "$timeout",
+        function($scope, $state, $ionicSlideBoxDelegate, $ionicLoading, $rootScope, $stateParams, qmService, $timeout){
             var speechEnabled = false;
             var pageIndex = 0;
             $scope.state = {
@@ -16,7 +16,7 @@ angular.module('starter').controller('OnboardingCtrl',
                 setRequireUpgradesInOnboarding();
                 qmService.navBar.hideNavigationMenu();
                 if(qmService.login.sendToLoginIfNecessaryAndComeBack(
-                    "No user in " + $state.current.name, qm.stateNames.onboarding)){
+                    "No user in " + $state.current.name, qm.staticData.stateNames.onboarding)){
                     return;
                 }
                 qmService.setupOnboardingPages();
@@ -108,7 +108,7 @@ angular.module('starter').controller('OnboardingCtrl',
                 qmService.goToState(qm.staticData.stateNames.import);
             };
             $scope.goToUpgradePage = function(){
-                qmService.backButtonState = qm.stateNames.onboarding;
+                qmService.backButtonState = qm.staticData.stateNames.onboarding;
                 qmService.goToState('app.upgrade');
             };
             $scope.skipOnboarding = function(){
@@ -118,11 +118,11 @@ angular.module('starter').controller('OnboardingCtrl',
             };
             $scope.goToReminderSearchFromOnboarding = function(ev){
                 qmService.search.reminderSearch(function(variableObject){
-                    var pages = getPages();
-                    if(pages && pages[0] && pages[0].id.toLowerCase().indexOf('reminder') !== -1){
-                        var page = pages[0];
+                    var page = $scope.circlePage;
+                    if(page.id.toLowerCase().indexOf('reminder') !== -1){
                         if(page.title){
                             page.title = page.title.replace('Any', 'More');
+                            page.title = page.title.replace('any', 'more');
                         }
                         page.addButtonText = "Add Another";
                         page.nextPageButtonText = "All Done";

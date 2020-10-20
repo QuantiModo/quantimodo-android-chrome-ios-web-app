@@ -1,6 +1,6 @@
-angular.module('starter').controller('VariableSearchCtrl', ["$scope", "$state", "$rootScope", "$stateParams", "$timeout",
-    "$filter", "qmService", "qmLogService", function($scope, $state, $rootScope, $stateParams, $timeout, $filter,
-                                                     qmService, qmLogService){
+angular.module('starter').controller('VariableSearchCtrl',
+    ["$scope", "$state", "$rootScope", "$stateParams", "$timeout", "$filter", "qmService",
+        function($scope, $state, $rootScope, $stateParams, $timeout, $filter, qmService){
         $scope.controller_name = "VariableSearchCtrl";
         qmService.navBar.setFilterBarSearchIcon(false);
         $scope.$on('$ionicView.beforeEnter', function(e){
@@ -56,76 +56,85 @@ angular.module('starter').controller('VariableSearchCtrl', ["$scope", "$state", 
                 })
             }
         });
-        $scope.selectVariable = function(variableObject){
-            variableObject = qmService.barcodeScanner.addUpcToVariableObject(variableObject);
-            qmLog.info($state.current.name + ': ' + '$scope.selectVariable: ' + JSON.stringify(variableObject).substring(0, 140) + '...', null);
-            qm.variablesHelper.setLastSelectedAtAndSave(variableObject);
+        function saveTagged(selected) {
+            if ($scope.state.userTagVariableObject.unitAbbreviatedName !== '/5') {
+                qmService.goToState(getNextState(), {
+                    userTaggedVariableObject: selected,
+                    fromState: $scope.state.fromState,
+                    fromStateParams: {variableObject: $scope.state.userTagVariableObject},
+                    userTagVariableObject: $scope.state.userTagVariableObject
+                });
+            } else {
+                qmService.showBlackRingLoader();
+                qmService.postUserTagDeferred({
+                    userTagVariableId: $scope.state.userTagVariableObject.variableId,
+                    userTaggedVariableId: selected.variableId,
+                    conversionFactor: 1
+                }).then(function () {
+                    qmService.hideLoader();
+                    if ($scope.state.fromState) {
+                        qmService.goToState($scope.state.fromState, {variableName: $scope.state.userTagVariableObject.name});
+                    } else {
+                        qmService.goToDefaultState();
+                    }
+                });
+            }
+        }
+        function getNextState() {
+            var s = $state.current;
+            var next = s.params.nextState;
+            return next;
+        }
+        function saveTag(selected) {
+            if ($scope.state.userTaggedVariableObject.unitAbbreviatedName !== '/5') {
+                qmService.goToState(getNextState(), {
+                    userTaggedVariableObject: $scope.state.userTaggedVariableObject,
+                    fromState: $scope.state.fromState,
+                    fromStateParams: {variableObject: $scope.state.userTaggedVariableObject},
+                    userTagVariableObject: selected
+                });
+            } else {
+                qmService.showBlackRingLoader();
+                qmService.postUserTagDeferred({
+                    userTagVariableId: selected.variableId,
+                    userTaggedVariableId: $scope.state.userTaggedVariableObject.variableId,
+                    conversionFactor: 1
+                }).then(function () {
+                    qmService.hideLoader();
+                    if ($scope.state.fromState) {
+                        qmService.goToState($scope.state.fromState, {variableName: $scope.state.userTaggedVariableObject.name});
+                    } else {
+                        qmService.goToDefaultState();
+                    }
+                });
+            }
+        }
+        $scope.selectVariable = function(selected){
+            selected = qmService.barcodeScanner.addUpcToVariableObject(selected);
+            var next = getNextState();
+            var s = $state.current;
+            qmLog.info(s.name + ': ' + '$scope.selectVariable: ' + JSON.stringify(selected).substring(0, 140) + '...', null);
+            qm.variablesHelper.setLastSelectedAtAndSave(selected);
             $scope.state.variableSearchQuery.name = '';
-            var userTagData;
-            if($state.current.name === 'app.favoriteSearch'){
-                qmService.addToFavoritesUsingVariableObject(variableObject);
+            if(s.name === 'app.favoriteSearch'){
+                qmService.addToFavoritesUsingVariableObject(selected);
             }else if(window.location.href.indexOf('reminder-search') !== -1){
-                var options = {
+                qmService.reminders.addToRemindersUsingVariableObject(selected, {
                     skipReminderSettingsIfPossible: $scope.state.skipReminderSettingsIfPossible,
                     doneState: $scope.state.doneState
-                };
-                qmService.reminders.addToRemindersUsingVariableObject(variableObject, options);
-            }else if($scope.state.nextState.indexOf('predictor') !== -1){
-                qmService.goToState($scope.state.nextState, {effectVariableName: variableObject.name});
-            }else if($scope.state.nextState.indexOf('outcome') !== -1){
-                qmService.goToState($scope.state.nextState, {causeVariableName: variableObject.name});
+                });
+            }else if(next.indexOf('predictor') !== -1){
+                qmService.goToState(next, {effectVariableName: selected.name});
+            }else if(next.indexOf('outcome') !== -1){
+                qmService.goToState(next, {causeVariableName: selected.name});
             }else if($scope.state.userTaggedVariableObject){
-                if($scope.state.userTaggedVariableObject.unit.abbreviatedName !== '/5'){
-                    qmService.goToState($scope.state.nextState, {
-                        userTaggedVariableObject: $scope.state.userTaggedVariableObject,
-                        fromState: $scope.state.fromState,
-                        fromStateParams: {variableObject: $scope.state.userTaggedVariableObject},
-                        userTagVariableObject: variableObject
-                    });
-                }else{
-                    userTagData = {
-                        userTagVariableId: variableObject.variableId,
-                        userTaggedVariableId: $scope.state.userTaggedVariableObject.variableId,
-                        conversionFactor: 1
-                    };
-                    qmService.showBlackRingLoader();
-                    qmService.postUserTagDeferred(userTagData).then(function(){
-                        qmService.hideLoader();
-                        if($scope.state.fromState){
-                            qmService.goToState($scope.state.fromState, {variableName: $scope.state.userTaggedVariableObject.name});
-                        }else{
-                            qmService.goToDefaultState();
-                        }
-                    });
-                }
+                saveTag(selected);
             }else if($scope.state.userTagVariableObject){
-                if($scope.state.userTagVariableObject.unit.abbreviatedName !== '/5'){
-                    qmService.goToState($scope.state.nextState, {
-                        userTaggedVariableObject: variableObject,
-                        fromState: $scope.state.fromState,
-                        fromStateParams: {variableObject: $scope.state.userTagVariableObject},
-                        userTagVariableObject: $scope.state.userTagVariableObject
-                    });
-                }else{
-                    userTagData = {
-                        userTagVariableId: $scope.state.userTagVariableObject.variableId,
-                        userTaggedVariableId: variableObject.variableId,
-                        conversionFactor: 1
-                    };
-                    qmService.showBlackRingLoader();
-                    qmService.postUserTagDeferred(userTagData).then(function(){
-                        qmService.hideLoader();
-                        if($scope.state.fromState){
-                            qmService.goToState($scope.state.fromState, {variableName: $scope.state.userTagVariableObject.name});
-                        }else{
-                            qmService.goToDefaultState();
-                        }
-                    });
-                }
+                saveTagged(selected);
             }else{
-                $scope.state.variableName = variableObject.name;
-                $scope.state.variableObject = variableObject;
-                qmService.goToState($scope.state.nextState, $scope.state);
+                $scope.state.variableName = selected.name;
+                $scope.state.variableObject = selected;
+                qmService.goToState(next, $scope.state);
             }
         };
         $scope.goToStateFromVariableSearch = function(stateName, params){
@@ -134,8 +143,8 @@ angular.module('starter').controller('VariableSearchCtrl', ["$scope", "$state", 
         };
         // when a query is searched in the search box
         function showAddVariableButtonIfNecessary(variables){
-            if($scope.state.variableSearchQuery.barcode &&
-                $scope.state.variableSearchQuery.barcode === $scope.state.variableSearchQuery.name){
+            var barcode = $scope.state.variableSearchQuery.barcode;
+            if(barcode && barcode === $scope.state.variableSearchQuery.name){
                 $scope.state.showAddVariableButton = false;
                 return;
             }
@@ -158,9 +167,11 @@ angular.module('starter').controller('VariableSearchCtrl', ["$scope", "$state", 
                 $scope.showSearchLoader = false;
                 qmLog.info($state.current.name + ': ' + '$scope.onVariableSearch: Set showAddVariableButton to true', null);
                 $scope.state.showAddVariableButton = true;
-                if($scope.state.nextState === "app.reminderAdd"){
+                var s = $state.current;
+                var next = s.params.nextState;
+                if(next === "app.reminderAdd"){
                     $scope.state.addNewVariableButtonText = '+ Add ' + $scope.state.variableSearchQuery.name + ' reminder';
-                }else if($scope.state.nextState === "app.measurementAdd"){
+                }else if(next === "app.measurementAdd"){
                     $scope.state.addNewVariableButtonText = '+ Add ' + $scope.state.variableSearchQuery.name + ' measurement';
                 }else{
                     $scope.state.addNewVariableButtonText = '+ ' + $scope.state.variableSearchQuery.name;
@@ -197,7 +208,7 @@ angular.module('starter').controller('VariableSearchCtrl', ["$scope", "$state", 
             showNoVariablesFoundCardIfNecessary(errorHandler);
         }
         function addVariablesToScope(variables){
-            variables = qm.arrayHelper.removeArrayElementsWithDuplicateIds(variables);
+            variables = qm.arrayHelper.removeArrayElementsWithDuplicateIds(variables, 'variable');
             $scope.safeApply(function(){
                 $scope.state.noVariablesFoundCard.show = false;
                 $scope.state.showAddVariableButton = false;
@@ -260,10 +271,8 @@ angular.module('starter').controller('VariableSearchCtrl', ["$scope", "$state", 
                 variableObject.variableCategoryName = getVariableCategoryName();
             }
             qmLog.info($state.current.name + ': ' + '$scope.addNewVariable: ' + JSON.stringify(variableObject));
-            if($scope.state.nextState){
-                $scope.state.variableObject = variableObject;
-                qmService.goToState($scope.state.nextState, $scope.state);
-            }
+            $scope.state.variableObject = variableObject;
+            qmService.goToState(getNextState(), $scope.state);
         };
         function setHelpText(){
             if($scope.state.userTaggedVariableObject){
@@ -306,20 +315,18 @@ angular.module('starter').controller('VariableSearchCtrl', ["$scope", "$state", 
             return null;
         }
         function getVariableCategory(){
-            var variableCategoryName = getVariableCategoryName();
-            if(variableCategoryName && $rootScope.variableCategories[variableCategoryName]){
-                return $rootScope.variableCategories[variableCategoryName];
-            }
+            var name = getVariableCategoryName();
+            if(name){return qm.variableCategoryHelper.findByNameIdObjOrUrl(name);}
             return null;
         }
         function getVariableCategoryName(){
-            var fromUrl = qm.urlHelper.getParam('variableCategoryName');
+            var fromUrl = qm.variableCategoryHelper.getNameFromStateParamsOrUrl();
             if(fromUrl){return fromUrl;}
             var params = getVariableSearchParameters();
             if(params.variableCategoryName){
                 return params.variableCategoryName;
             }
-            return qmService.getVariableCategoryNameFromStateParamsOrUrl($stateParams);
+            return qm.variableCategoryHelper.getNameFromStateParamsOrUrl($stateParams);
         }
         function getPluralVariableCategoryName(){
             return $filter('wordAliases')(pluralize(getVariableCategoryName(), 1));
@@ -327,8 +334,8 @@ angular.module('starter').controller('VariableSearchCtrl', ["$scope", "$state", 
         var checkNameExists = function(item){
             if(!item.name){
                 var message = "variable doesn't have a name! variable: " + JSON.stringify(item);
-                qmLogService.error(message);
-                qmLogService.error(message);
+                qmLog.error(message);
+                qmLog.error(message);
                 return false;
             }
             return true;

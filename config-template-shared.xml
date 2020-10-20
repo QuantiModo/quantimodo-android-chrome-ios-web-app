@@ -69,6 +69,7 @@
       <variable name="ANDROID_FIREBASE_VERSION" value="11.8.0" />
     </plugin>
   </platform>
+    <preference name="AndroidXEnabled" value="true" />
     <preference name="android-targetSdkVersion" value="26"/>
     <preference name="QuantiModoClientId" value="QuantiModoClientId_PLACEHOLDER" />
     <preference name="QuantiModoClientSecret" value="QuantiModoClientSecret_PLACEHOLDER" />
@@ -85,12 +86,12 @@
   <preference name="webviewbounce" value="false" />
   <preference name="windows-target-version" value="8.1"/>
   <preference name="WindowsStoreDisplayName" value="YourAppDisplayNameHere"/>
-<!--  
+<!--
   <plugin name="cordova-android-support-gradle-release" spec="~1.1.2">
     <variable name="ANDROID_SUPPORT_VERSION" value="26.+" />
   </plugin>
 -->
-<!--    
+<!--
   <plugin name="cordova-hot-code-push-plugin" spec="~1.5.3" />
   <chcp>
       <auto-download enabled="true" />

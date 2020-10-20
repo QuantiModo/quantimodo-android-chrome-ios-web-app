@@ -1,6 +1,6 @@
 angular.module('starter').controller('LoginCtrl', ["$scope", "$state", "$rootScope", "$ionicLoading", "$injector",
-    "$stateParams", "$timeout", "qmService", "qmLogService", "$mdDialog",
-    function($scope, $state, $rootScope, $ionicLoading, $injector, $stateParams, $timeout, qmService, qmLogService, $mdDialog){
+    "$stateParams", "$timeout", "qmService", "$mdDialog",
+    function($scope, $state, $rootScope, $ionicLoading, $injector, $stateParams, $timeout, qmService, $mdDialog){
         $scope.state = {
             useLocalUserNamePasswordForms: qm.platform.isMobileOrChromeExtension(),
             loading: false,
@@ -10,9 +10,9 @@ angular.module('starter').controller('LoginCtrl', ["$scope", "$state", "$rootSco
             loginForm: false,
             tryToGetUser: function(force){
                 qmService.showBasicLoader(); // Chrome needs to do this because we can't redirect with access token
-                console.info("Trying to get user");
+                qmLog.authDebug("Trying to get user");
                 qmService.refreshUser(force, {}).then(function(){
-                    console.info("Got user");
+                    qmLog.authDebug("Got user");
                     qmService.hideLoader();
                     leaveIfLoggedIn();
                 }, function(error){
@@ -30,7 +30,7 @@ angular.module('starter').controller('LoginCtrl', ["$scope", "$state", "$rootSco
                     return;
                 }
                 qmService.showBasicLoader();
-                qmService.post('api/v3/userSettings', [], params, function(response){
+                qm.api.post('api/v3/userSettings', params, function(response){
                     qmService.setUserInLocalStorageBugsnagIntercomPush(response.user);
                     qmService.hideLoader();
                     leaveIfLoggedIn();
@@ -103,7 +103,7 @@ angular.module('starter').controller('LoginCtrl', ["$scope", "$state", "$rootSco
         };
         function handleLoginError(error, metaData){
             $scope.retryLogin(error);
-            qmLogService.error('Login failure: ' + error, metaData, metaData);
+            qmLog.error('Login failure: ' + error, metaData, metaData);
         }
         function handleLoginSuccess(){
             if(qm.getUser() && $state.current.name.indexOf('login') !== -1){

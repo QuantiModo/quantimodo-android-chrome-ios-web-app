@@ -134,3 +134,9 @@ secrets/*
 !/secrets/.env.example
 /.gradle/
 /ionic.iml
+/cypress/reports/merged/mochawesome.json
+/last-failed-cypress-test
+/cypress/videos/
+/success-file
+/tests/mochawesome-report/assets/
+debug.log

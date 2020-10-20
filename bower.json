@@ -60,7 +60,8 @@
     "svg-morpheus": "^0.3.2",
     "underscore": "^1.9.1",
     "moment-timezone": "^0.5.23",
-    "qm-redirector": "*"
+    "qm-redirector": "*",
+    "q": "1.0.1"
   },
   "resolutions": {
     "angular": "1.5.9",

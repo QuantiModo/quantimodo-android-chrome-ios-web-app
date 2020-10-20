@@ -1,8 +1,8 @@
 angular.module('starter').controller('FavoritesCtrl', ["$scope", "$state", "$ionicActionSheet", "$timeout", "qmService",
-    "qmLogService", "$rootScope", "$stateParams",
-    function($scope, $state, $ionicActionSheet, $timeout, qmService, qmLogService, $rootScope,$stateParams){
+    "$rootScope", "$stateParams",
+    function($scope, $state, $ionicActionSheet, $timeout, qmService, $rootScope,$stateParams){
     $scope.controller_name = "FavoritesCtrl";
-    qmLogService.debug('Loading ' + $scope.controller_name, null);
+    qmLog.debug('Loading ' + $scope.controller_name, null);
     $scope.state = {
         favoritesArray: [],
         selected1to5Value: false,
@@ -18,22 +18,23 @@ angular.module('starter').controller('FavoritesCtrl', ["$scope", "$state", "$ion
     qmService.navBar.setFilterBarSearchIcon(false);
     $scope.$on('$ionicView.enter', function(e){
         if (document.title !== $scope.state.title) {document.title = $scope.state.title;}
-        qmLogService.debug('Entering state ' + $state.current.name, null);
+        qmLog.debug('Entering state ' + $state.current.name, null);
         qmService.navBar.showNavigationMenuIfHideUrlParamNotSet();
         qmService.rootScope.setProperty('bloodPressure', {
             systolicValue: null,
             diastolicValue: null,
             displayTotal: "Blood Pressure"
         });
-        if($stateParams.variableCategoryName && $stateParams.variableCategoryName !== 'Anything'){
-            $scope.variableCategoryName = $stateParams.variableCategoryName;
-            $scope.state.addButtonText = "Add favorite " + $stateParams.variableCategoryName.toLowerCase();
-            $scope.state.title = 'Favorite ' + $stateParams.variableCategoryName;
+        var categoryName = qm.variableCategoryHelper.getNameFromStateParamsOrUrl($stateParams);
+        if(categoryName){
+            $scope.variableCategoryName = categoryName;
+            $scope.state.addButtonText = "Add favorite " + categoryName.toLowerCase();
+            $scope.state.title = 'Favorite ' + categoryName;
             $scope.state.moreHelpText = null;
         }else{
             $scope.variableCategoryName = null;
         }
-        if($stateParams.variableCategoryName === 'Treatments'){
+        if(categoryName === 'Treatments'){
             $scope.state.addButtonText = "Add an as-needed medication";
             $scope.state.helpText = "Quickly record doses of medications taken as needed just by tapping.  Tap twice for two doses, etc.";
             $scope.state.addButtonIcon = "ion-ios-medkit-outline";
@@ -49,7 +50,8 @@ angular.module('starter').controller('FavoritesCtrl', ["$scope", "$state", "$ion
         }
     });
     var getFavoritesFromLocalStorage = function(){
-        qmService.storage.getFavorites($stateParams.variableCategoryName).then(function(favorites){
+        var categoryName = qm.variableCategoryHelper.getNameFromStateParamsOrUrl($stateParams);
+        qmService.storage.getFavorites(categoryName).then(function(favorites){
             $scope.state.favoritesArray = favorites;
             qmService.showInfoToast('Got ' + favorites.length + ' favorites!');
         });
@@ -58,9 +60,9 @@ angular.module('starter').controller('FavoritesCtrl', ["$scope", "$state", "$ion
         qmService.goToState('app.favoriteSearch');
     };
     $scope.refreshFavorites = function(){
-        qmLogService.info('ReminderMange init: calling refreshFavorites syncTrackingReminders');
+        qmLog.info('ReminderMange init: calling refreshFavorites syncTrackingReminders');
         qmService.showInfoToast('Syncing favorites...');
-        qmService.trackingReminders.syncTrackingReminders(true).then(function(){
+        qm.reminderHelper.syncReminders(true).then(function(){
             getFavoritesFromLocalStorage();
             //Stop the ion-refresher from spinning
             $scope.$broadcast('scroll.refreshComplete');

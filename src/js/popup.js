@@ -243,7 +243,7 @@ function updateQuestion(variableName){
             qmLog.error("Asking " + questionText + "!", "qmPopup.trackingReminderNotification is: " + JSON.stringify(qmPopup.trackingReminderNotification),
                 {trackingReminderNotification: qmPopup.trackingReminderNotification});
         }
-        if (qmPopup.trackingReminderNotification.valence === "positive" || 
+        if (qmPopup.trackingReminderNotification.valence === "positive" ||
             qmPopup.trackingReminderNotification.valence === "negative") {
             numericRatingButtons().style.display = "none";
             faceRatingButtons().style.display = "block";
@@ -312,7 +312,7 @@ document.addEventListener('DOMContentLoaded', function(){
     }else{
         qmLog.pushDebug("popup addEventListener: Calling hidePopup...");
         hidePopup();
-        qm.notifications.refreshNotifications(updateQuestion, qm.notifications.closePopup);
+        qm.notifications.syncNotifications(updateQuestion, qm.notifications.closePopup);
     }
     qmLog.pushDebug("popup addEventListener: calling setFaceButtonListeners...");
     setFaceButtonListeners();

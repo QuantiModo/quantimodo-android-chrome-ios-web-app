@@ -1,15 +1,15 @@
 angular.module("starter").controller("StudyCtrl", [
-    "$scope", "$state", "qmService", "qmLogService", "$stateParams", "$ionicHistory", "$rootScope",
+    "$scope", "$state", "qmService", "$stateParams", "$ionicHistory", "$rootScope",
     "$timeout", "$ionicLoading", "wikipediaFactory", "$ionicActionSheet", "clipboard", "$mdDialog",
-    function($scope, $state, qmService, qmLogService, $stateParams, $ionicHistory, $rootScope,
+    function($scope, $state, qmService, $stateParams, $ionicHistory, $rootScope,
              $timeout, $ionicLoading, wikipediaFactory, $ionicActionSheet, clipboard, $mdDialog){
-    VariableSettingsController.$inject = ["qmService", "qmLogService", "dialogParameters"];
+    VariableSettingsController.$inject = ["qmService", "dialogParameters"];
     $scope.controller_name = "StudyCtrl";
     qmService.navBar.setFilterBarSearchIcon(false);
     $scope.$on("$ionicView.beforeEnter", function(){
         if (document.title !== "Study") {document.title = "Study";}
         $scope.loadingCharts = true;  // Need to do this here so robot works properly
-        qmLogService.debug('beforeEnter state ' + $state.current.name);
+        qmLog.debug('beforeEnter state ' + $state.current.name);
         $scope.state = {
             title: "Loading study...",
             requestParams: {},
@@ -22,7 +22,7 @@ angular.module("starter").controller("StudyCtrl", [
         setAllStateProperties(getScopedStudyIfMatchesVariableNames());
     });
     $scope.$on("$ionicView.enter", function(){
-        qmLogService.debug('enter state ' + $state.current.name);
+        qmLog.debug('enter state ' + $state.current.name);
         qmService.navBar.showNavigationMenuIfHideUrlParamNotSet();
         if($stateParams.study){
             setAllStateProperties($stateParams.study);
@@ -129,7 +129,7 @@ angular.module("starter").controller("StudyCtrl", [
         qm.windowHelper.scrollToTop();
     };
     if(!clipboard.supported){
-        qmLogService.debug('Sorry, copy to clipboard is not supported', null);
+        qmLog.debug('Sorry, copy to clipboard is not supported', null);
         $scope.hideClipboardButton = true;
     }
     $scope.copyStudyUrlToClipboard = function(causeVariableName, effectVariableName){
@@ -159,10 +159,10 @@ angular.module("starter").controller("StudyCtrl", [
                 }
             }else{
                 var error = "Wiki not found for " + causeSearchTerm;
-                qmLogService.error(error);
+                qmLog.error(error);
             }
         }).catch(function(error){
-            qmLogService.error(error);
+            qmLog.error(error);
         });
         var effectSearchTerm = getEffectVariable().commonAlias;
         if(!effectSearchTerm){
@@ -181,10 +181,10 @@ angular.module("starter").controller("StudyCtrl", [
                 }
             }else{
                 var error = "Wiki not found for " + effectSearchTerm;
-                qmLogService.error(error);
+                qmLog.error(error);
             }
         }).catch(function(error){
-            qmLogService.error(error);
+            qmLog.error(error);
         });
     }
     $scope.weightedPeriod = 5;
@@ -201,7 +201,7 @@ angular.module("starter").controller("StudyCtrl", [
                     setAllStateProperties(studiesResponse.studies[0]);
                 }
             }, function(error){
-                qmLogService.error('studiesCtrl: Could not get abstract studies without charts: ' + JSON.stringify(error));
+                qmLog.error('studiesCtrl: Could not get abstract studies without charts: ' + JSON.stringify(error));
             });
         });
     }
@@ -218,7 +218,7 @@ angular.module("starter").controller("StudyCtrl", [
             setActionSheetMenu();
         }
         function errorHandler(error){
-            qmLogService.error(error);
+            qmLog.error(error);
             qmService.hideLoader();
             $scope.loadingCharts = false;
             $scope.state.studyNotFound = true;
@@ -227,11 +227,11 @@ angular.module("starter").controller("StudyCtrl", [
                 $scope.state.requestParams.recalculate = true;
             }
             if(!$scope.state.study){
-                qmService.goToState(qm.stateNames.studyCreation);
+                qmService.goToState(qm.staticData.stateNames.studyCreation);
             }
         }
         if(recalculate){
-            qm.studyHelper.getStudyFromApi(getRequestParams(recalculate), function(study){
+            qm.studyHelper.getStudyFromApi(getRequestParams(recalculate)).then( function(study){
                 successHandler(study);
             }, function(error){
                 errorHandler(error);
@@ -277,7 +277,7 @@ angular.module("starter").controller("StudyCtrl", [
                 destructiveText: '<i class="icon ion-thumbsdown"></i>Seems Wrong',
                 cancelText: '<i class="icon ion-ios-close"></i>Cancel',
                 cancel: function(){
-                    qmLogService.debug($state.current.name + ': ' + 'CANCELLED', null);
+                    qmLog.debug($state.current.name + ': ' + 'CANCELLED', null);
                 },
                 buttonClicked: function(index, button){
                     if(index === 0){
@@ -326,14 +326,14 @@ angular.module("starter").controller("StudyCtrl", [
             qmService.showInfoToast("Re-analyzing data using updated " + qm.stringHelper.camelToTitleCase(propertyToUpdate));
             var postData = {variableName: variable.name};
             postData[propertyToUpdate] = variable[propertyToUpdate];
-            qmService.postUserVariableDeferred(postData).then(function(response){
+            qm.userVariables.postUserVariable(postData).then(function(response){
                 $scope.refreshStudy();
             });
         }, function(){
-            qmLogService.debug('User cancelled selection', null);
+            qmLog.debug('User cancelled selection', null);
         });
     };
-    function VariableSettingsController(qmService, qmLogService, dialogParameters){
+    function VariableSettingsController(qmService, dialogParameters){
         var self = this;
         var explanations = qm.help.getExplanations();
         self.title = explanations[dialogParameters.propertyToUpdate].title;
@@ -348,7 +348,7 @@ angular.module("starter").controller("StudyCtrl", [
             if(self.helpText && !self.showHelp){
                 return self.showHelp = true;
             }
-            qmService.goToState(window.qm.stateNames.help);
+            qmService.goToState(window.qm.staticData.stateNames.help);
             $mdDialog.cancel();
         };
         self.cancel = function(){
