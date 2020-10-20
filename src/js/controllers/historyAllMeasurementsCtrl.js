@@ -139,7 +139,7 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
                 var connectorId = getConnectorId();
                 var connector = qm.connectorHelper.getConnectorById(connectorId);
                 if(!connector){
-                    qm.qmLog.error(
+                    qmLog.error(
                         "Cannot filter by connector id because we could not find a matching connector locally");
                     return null;
                 }
