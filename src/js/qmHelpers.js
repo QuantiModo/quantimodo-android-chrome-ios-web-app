@@ -5108,8 +5108,10 @@ var qm = {
             qmLog.info("Deleting "+toDelete.variableName+" measurement from "+startAt+"...")
             qm.api.post('api/v3/measurements/delete', toDelete, function(response){
                 deferred.resolve(response);
+                qm.measurements.deleteLocally(toDelete);
             }, function(err){
                 deferred.reject(err);
+                qm.measurements.deleteLocally(toDelete);
             });
             return deferred.promise;
         },
@@ -5328,7 +5330,7 @@ var qm = {
                 Q.all(promises).then(function (){
                     qm.measurements.postMeasurements(queueArr).then(function(data){
                         qm.measurements.queue = {};
-                        debugger
+                        //debugger
                         var queue = qm.measurements.getMeasurementsFromQueue();
                         qmLog.lei(queue.length)
                         qm.measurements.getLocalMeasurements().then(function(measurements){

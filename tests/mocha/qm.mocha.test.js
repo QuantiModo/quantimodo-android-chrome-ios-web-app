@@ -363,12 +363,13 @@ describe("Intent Handler", function () {
 })
 describe("Measurement", function () {
     it('can record a measurement', function () {
-        this.timeout(30000)
+        this.timeout(60000)
         let d = new Date()
         let seconds = d.getSeconds()
         let initialValue = (seconds % 5) + 1
         qmTests.setTestAccessToken()
         var variableName = "Alertness"
+        let newMeasurementId
         return qm.userHelper.getUserFromApi()
             .then(function (user) {
                 expect(user.accessToken).to.eq(qmTests.getTestAccessToken())
@@ -395,6 +396,7 @@ describe("Measurement", function () {
                 var measurements = qm.measurements.toArray(data.measurements)
                 measurements.forEach(function(m){
                     expectInteger(m.id)
+                    newMeasurementId = m.id
                     expect(m.variableName).eq(variableName)
                 })
                 expect(measurements).length(1)
@@ -431,6 +433,18 @@ describe("Measurement", function () {
                 measurements.forEach(function (measurement) {
                     expect(measurement.pngPath).to.be.a('string')
                         .and.satisfy((msg) => msg.startsWith("img/rating/face_rating_button_256_"))
+                })
+                return qm.measurements.getLocalMeasurements({variableName})
+            })
+            .then(function (measurements) {
+                return qm.measurements.deleteMeasurement(measurements[0])
+            })
+            .then(function () {
+                return qm.measurements.getLocalMeasurements({variableName})
+            })
+            .then(function (measurements) {
+                measurements.forEach(function(m){
+                    expect(m.id).to.not.eq(newMeasurementId)
                 })
             })
             // .catch(function (error) {
