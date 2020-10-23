@@ -3,8 +3,9 @@
 /**
  * @param {number} initialMoodValue
  * @param variableName
+ * @param valence
  */
-function recordMeasurementAndCheckHistory (initialMoodValue, variableName) {
+function recordMeasurementAndCheckHistory (initialMoodValue, variableName, valence) {
   cy.url().should('contain', '/measurement-add')
   cy.get(`.primary-outcome-variable-history > img:nth-of-type(${initialMoodValue})`)
         .click({ force: true })
@@ -15,11 +16,11 @@ function recordMeasurementAndCheckHistory (initialMoodValue, variableName) {
 
     goToHistoryForVariable(variableName)
 
-    function moodValueToImage(value) {
-        return ratingImages.positive[value - 1];
+    function moodValueToImage(value, valence) {
+        return ratingImages[valence][value - 1];
     }
 
-    let desiredImageName = moodValueToImage(initialMoodValue)
+    let desiredImageName = moodValueToImage(initialMoodValue, valence)
   cy.get("#historyItem-0 > img", {timeout: 30000})
       .invoke('attr', 'src')
       .should('contain', desiredImageName);
@@ -158,6 +159,7 @@ describe('Measurements', function () {
     // Skipping because it fails randomly and can't reproduce failure locally
     it.only('Records, edits, and deletes an emotion measurement', function () {
         let variableName = 'Alertness'
+        let valence = 'positive'
         goToHistoryForVariable(variableName, true)
         cy.wait('@measurements', {timeout: 30000})
             .should('have.property', 'status', 200)
@@ -167,7 +169,7 @@ describe('Measurements', function () {
         let d = new Date()
         let seconds = d.getSeconds()
         let initialValue = (seconds % 5) + 1
-        recordMeasurementAndCheckHistory(initialValue, variableName)
+        recordMeasurementAndCheckHistory(initialValue, variableName, valence)
         cy.get('#hidden-measurement-id-0').then(($el) => {
             let measurementId = $el.text();
             expect(measurementId).length.to.be.greaterThan(0)

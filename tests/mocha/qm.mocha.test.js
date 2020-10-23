@@ -232,6 +232,10 @@ function downloadFile(url, cb) {
     })
     req.end()
 }
+function expectInteger(val){
+    expect(val).to.be.a('number')
+    expect(val % 1).to.equal(0)
+}
 describe("API", function (){
     it("Makes sure api url is app.quantimo.do", function (done) {
         expect(qm.api.getApiUrl()).to.eq("https://app.quantimo.do")
@@ -357,6 +361,9 @@ describe("Intent Handler", function () {
 describe("Measurement", function () {
     it('can record a measurement', function () {
         this.timeout(30000)
+        let d = new Date()
+        let seconds = d.getSeconds()
+        let initialValue = (seconds % 5) + 1
         qmTests.setTestAccessToken()
         var variableName = "Alertness"
         return qm.userHelper.getUserFromApi()
@@ -369,12 +376,14 @@ describe("Measurement", function () {
                 return qm.measurements.getMeasurements({variableName, sort: "-startAt"})
             })
             .then(function (measurements) {
+                qmLog.info("Deleting last " + variableName + " measurement...")
                 qm.measurements.logMeasurements(measurements, variableName + " Measurements")
                 return qm.measurements.deleteLastMeasurementForVariable(variableName)
             })
             .then(function () {
+                qmLog.info("Recording " + initialValue + " /5 " + variableName + " measurement...")
                 return qm.measurements.recordMeasurement({
-                    value: 1,
+                    value: initialValue,
                     variableName,
                     unitAbbreviatedName: "/5",
                 })
@@ -386,6 +395,20 @@ describe("Measurement", function () {
                 var queue = qm.measurements.getMeasurementsFromQueue()
                 expect(queue).length(0)
                 return qm.userVariables.getFromLocalStorage({variableName})
+            })
+            .then(function (userVariables) {
+                expect(userVariables).length(1)
+                return qm.measurements.getLocalMeasurements({variableName})
+            })
+            .then(function (measurements) {
+                var m = measurements[0]
+                expect(m.value).eq(initialValue)
+                expectInteger(m.id)
+                measurements.forEach(function(m){
+                    expectInteger(m.id)
+                    expect(m.variable).eq(variableName)
+                })
+                return qm.userVariables.getFromLocalStorage({})
             })
             .then(function (userVariables) {
                 expect(userVariables).length(1)
@@ -652,7 +675,7 @@ describe("Studies", function () {
             expect(qm.commonVariablesHelper.cached).to.not.have.property(effectName)
             qm.variablesHelper.getFromLocalStorageOrApi({
                 variableName: "Eggs (serving)",
-            }, function(variables){
+            }).then(function(variables){
                 expect(variables).length(1, "Why did we get " + variables.length +
                     " variables for Eggs (serving)?!?!?")
                 qm.getUser(function (user){
@@ -706,14 +729,14 @@ describe("Variables", function () {
         qm.userHelper.getUserFromLocalStorageOrApi().then(function (user) {
             qmLog.debug("User: ", user)
             if(!qm.getUser()){ throw "No user!" }
-            var requestParams = {
+            var params = {
                 excludeLocal: null,
                 includePublic: true,
                 minimumNumberOfResultsRequiredToAvoidAPIRequest: 20,
                 searchPhrase: "car",
             }
-            qm.variablesHelper.getFromLocalStorageOrApi(requestParams, function(variables){
-                qmLog.info('=== Got ' + variables.length + ' variables matching ' + requestParams.searchPhrase)
+            qm.variablesHelper.getFromLocalStorageOrApi(params).then(function(variables){
+                qmLog.info('=== Got ' + variables.length + ' variables matching ' + params.searchPhrase)
                 // Why? qm.assert.doesNotHaveUserId(variables);
                 qm.assert.variables.descendingOrder(variables, 'lastSelectedAt')
                 qm.assert.greaterThan(5, variables.length)
@@ -723,12 +746,13 @@ describe("Variables", function () {
                 var userVariables = qm.globalHelper.getItem(qm.items.userVariables) || []
                 qmLog.info("There are " + userVariables.length + " user variables")
                 //qm.assert.isNull(userVariables, qm.items.userVariables);
-                qm.variablesHelper.getFromLocalStorageOrApi({id: variable5.id, includePublic: true}, function(variables){
+                qm.variablesHelper.getFromLocalStorageOrApi({id: variable5.id, includePublic: true})
+                    .then(function(variables){
                     // Why? qm.assert.doesNotHaveProperty(variables, 'userId');
                     qm.assert.variables.descendingOrder(variables, 'lastSelectedAt')
                     qm.assert.equals(timestamp, variables[0].lastSelectedAt, 'lastSelectedAt')
                     qm.assert.equals(variable5.name, variables[0].name, 'name')
-                    qm.variablesHelper.getFromLocalStorageOrApi(requestParams, function(variables){
+                    qm.variablesHelper.getFromLocalStorageOrApi(params).then(function(variables){
                         qm.assert.variables.descendingOrder(variables, 'lastSelectedAt')
                         var variable1 = variables[0]
                         qmLog.info("Variable 1 is " + variable1.name)
@@ -756,7 +780,7 @@ describe("Variables", function () {
                 includePublic: true,
                 manualTracking: true,
             }
-            qm.variablesHelper.getFromLocalStorageOrApi(params, function(variables){
+            qm.variablesHelper.getFromLocalStorageOrApi(params).then(function(variables){
                 qmLog.info('Got ' + variables.length + ' variables')
                 qm.assert.count(params.limit, variables)
                 var manual = variables.filter(function (v) {

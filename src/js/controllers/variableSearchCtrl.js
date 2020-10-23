@@ -254,7 +254,7 @@ angular.module('starter').controller('VariableSearchCtrl',
             var previous = $scope.state.variableSearchResults;
             if(!previous || previous.length < 1){$scope.state.searching = true;}
             var params = getVariableSearchParameters();
-            qm.variablesHelper.getFromLocalStorageOrApi(params, function(variables){
+            qm.variablesHelper.getFromLocalStorageOrApi(params).then(function(variables){
                 if(variables && variables.length > 0){
                     if($scope.state.variableSearchQuery.name.length < 3){
                         if(previous){variables = previous.concat(variables);}
