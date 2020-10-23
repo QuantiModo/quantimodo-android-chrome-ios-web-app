@@ -71,17 +71,13 @@ export function getApiUrl(): string {
             // @ts-ignore
             return apiUrls[stage]
         } else {
-            throw Error("apiUrl not defined for stage " + stage + "! Available ones are "+qm.stringHelper.prettyJsonStringify(apiUrls))
+            throw Error("apiUrl not defined for RELEASE_STAGE: " + stage + "! Available ones are "+qm.stringHelper.prettyJsonStringify(apiUrls))
         }
-    }
-    if(!process.env.API_URL && stage === "ionic") {
-        console.debug("Using https://app.quantimo.do as apiUrl because API_URL env not set and RELEASE_STAGE is ionic")
-        return "https://app.quantimo.do"
     }
     let url = qmEnv.getArgumentOrEnv("API_URL", null)
     if(!url) {
-
-        throw new Error("Please provide API_URL")
+        console.debug("Using https://app.quantimo.do as apiUrl because API_URL env not set and RELEASE_STAGE is ionic")
+        return "https://app.quantimo.do"
     }
     url = url.replace("production.quantimo.do", "app.quantimo.do")
     if (url.indexOf("http") !== 0) {
