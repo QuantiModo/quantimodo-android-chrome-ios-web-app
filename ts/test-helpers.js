@@ -15,6 +15,7 @@ var qmEnv = __importStar(require("./env-helper"));
 var fileHelper = __importStar(require("./qm.file-helper"));
 var qmGit = __importStar(require("./qm.git"));
 var qmLog = __importStar(require("./qm.log"));
+var qm = require("../src/js/qmHelpers.js");
 function getBuildLink() {
     if (process.env.BUILD_URL_FOR_STATUS) {
         return process.env.BUILD_URL_FOR_STATUS + "console";
@@ -81,20 +82,23 @@ exports.apiUrls = {
     staging: "https://staging.quantimo.do",
 };
 function getApiUrl() {
-    if (!process.env.API_URL && process.env.RELEASE_STAGE === "ionic") {
+    var stage = qmEnv.getArgumentOrEnv("RELEASE_STAGE", null);
+    if (stage) {
+        // @ts-ignore
+        if (typeof exports.apiUrls[stage] !== "undefined") {
+            // @ts-ignore
+            return exports.apiUrls[stage];
+        }
+        else {
+            throw Error("apiUrl not defined for stage " + stage + "! Available ones are " + qm.stringHelper.prettyJsonStringify(exports.apiUrls));
+        }
+    }
+    if (!process.env.API_URL && stage === "ionic") {
         console.debug("Using https://app.quantimo.do as apiUrl because API_URL env not set and RELEASE_STAGE is ionic");
         return "https://app.quantimo.do";
     }
     var url = qmEnv.getArgumentOrEnv("API_URL", null);
     if (!url) {
-        var stage = qmEnv.getArgumentOrEnv("RELEASE_STAGE", null);
-        if (stage) {
-            // @ts-ignore
-            if (typeof exports.apiUrls[stage] !== "undefined") {
-                // @ts-ignore
-                return exports.apiUrls[stage];
-            }
-        }
         throw new Error("Please provide API_URL");
     }
     url = url.replace("production.quantimo.do", "app.quantimo.do");
