@@ -78,6 +78,7 @@ exports.releaseStages = {
 };
 exports.apiUrls = {
     development: "https://local.quantimo.do",
+    ionic: "https://app.quantimo.do",
     production: "https://app.quantimo.do",
     staging: "https://staging.quantimo.do",
 };
@@ -94,7 +95,8 @@ function getApiUrl() {
             return exports.apiUrls[stage];
         }
         else {
-            throw Error("apiUrl not defined for RELEASE_STAGE: " + stage + "! Available ones are " + qm.stringHelper.prettyJsonStringify(exports.apiUrls));
+            throw Error("apiUrl not defined for RELEASE_STAGE: " + stage + "! Available ones are " +
+                qm.stringHelper.prettyJsonStringify(exports.apiUrls));
         }
     }
     console.info("Using https://app.quantimo.do as apiUrl because API_URL env not set and RELEASE_STAGE is ionic");
