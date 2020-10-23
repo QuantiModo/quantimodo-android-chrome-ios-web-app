@@ -338,9 +338,9 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     qmService.barcodeScanner.upcToAttach = scanResult.text;
                     return userErrorMessage;
                 },
-                scanSuccessHandler: function(scanResult, requestParams, variableSearchSuccessHandler, variableSearchErrorHandler){
+                scanSuccessHandler: function(scanResult, params, variableSearchSuccessHandler, variableSearchErrorHandler){
                     qmService.barcodeScanner.scanResult = scanResult;
-                    requestParams = requestParams || {};
+                    params = params || {};
                     qmLog.pushDebug("We got a barcode\n" + "Result: " + scanResult.text + "\n" + "Format: " + scanResult.format +
                         "\n" + "Cancelled: " + scanResult.cancelled);
                     var doneSearching = false;
@@ -351,10 +351,10 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                         }
                     }, 15000);
                     qmService.showBlackRingLoader();
-                    requestParams.upc = scanResult.text;
-                    requestParams.barcodeFormat = scanResult.format;
-                    requestParams.minimumNumberOfResultsRequiredToAvoidAPIRequest = 1;
-                    qm.variablesHelper.getFromLocalStorageOrApi(requestParams, function(variables){
+                    params.upc = scanResult.text;
+                    params.barcodeFormat = scanResult.format;
+                    params.minimumNumberOfResultsRequiredToAvoidAPIRequest = 1;
+                    qm.variablesHelper.getFromLocalStorageOrApi(params).then(function(variables){
                         variableSearchSuccessHandler(variables);
                         doneSearching = true;
                         qmService.hideLoader();
@@ -1154,8 +1154,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                         qmService.goToDefaultState();
                     },
                     "Create Reminder Intent": function(intent, successHandler){
-                        qm.variablesHelper.getFromLocalStorageOrApi({searchPhrase: intent.parameters.variableName},
-                            function(variable){
+                        qm.variablesHelper.getFromLocalStorageOrApi({searchPhrase: intent.parameters.variableName})
+                            .then(function(variable){
                                 qmService.reminders.addToRemindersUsingVariableObject(variable, {
                                     skipReminderSettingsIfPossible: true,
                                     doneState: "false"
@@ -2434,7 +2434,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                         // Debounce in the template doesn't seem to work so we wait 500ms before searching here
                         clearTimeout(qmService.searchTimeout);
                         qmService.searchTimeout = setTimeout(function(){
-                            qm.variablesHelper.getFromLocalStorageOrApi(dialogParams.requestParams, function(variables){
+                            qm.variablesHelper.getFromLocalStorageOrApi(dialogParams.requestParams).then(function(variables){
                                 logDebug('Got ' + variables.length + ' results matching ', query);
                                 showVariableList();
                                 var list = convertVariablesToToResultsList(variables);
@@ -3596,7 +3596,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
         };
         qmService.syncAllUserData = function(){
             qm.reminderHelper.syncReminders();
-            qm.userVariables.getFromLocalStorageOrApi();
+            return qm.userVariables.getFromLocalStorageOrApi();
         };
         qmService.deferredRequests = {};
         qmService.refreshUser = function(force, params){
@@ -5032,7 +5032,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 variableSearchQuery = '*';
             }
             params.searchPhrase = variableSearchQuery;
-            qm.userVariables.getFromLocalStorageOrApi(params, function(variables){
+            qm.userVariables.getFromLocalStorageOrApi(params).then(function(variables){
                 deferred.resolve(variables);
             }, function(error){
                 qmLog.error(error);
@@ -5041,18 +5041,9 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             return deferred.promise;
         };
         qmService.searchVariablesDeferred = function(variableSearchQuery, params){
-            var deferred = $q.defer();
-            if(!variableSearchQuery){
-                variableSearchQuery = '*';
-            }
+            if(!variableSearchQuery){variableSearchQuery = '*';}
             params.searchPhrase = variableSearchQuery;
-            qm.variablesHelper.getFromLocalStorageOrApi(params, function(variables){
-                deferred.resolve(variables);
-            }, function(error){
-                qmLog.error(error);
-                deferred.reject(error);
-            });
-            return deferred.promise;
+            return qm.variablesHelper.getFromLocalStorageOrApi(params);
         };
         qmService.goToPredictorsList = function(variableName){
             qmService.goToState(qm.staticData.stateNames.predictorsAll, {effectVariableName: variableName});

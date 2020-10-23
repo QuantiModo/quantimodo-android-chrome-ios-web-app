@@ -23,8 +23,7 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
                     icon: "ion-calendar"
                 };
             }
-            if($stateParams.refresh){$scope.state.history = [];}
-            qm.measurements.addLocalMeasurements($scope.state.history, getRequestParams(), function(combined){
+            qm.measurements.getLocalMeasurements(getRequestParams(), function(combined){
                 $scope.safeApply(function () {
                     $scope.state.history = combined;
                 })
