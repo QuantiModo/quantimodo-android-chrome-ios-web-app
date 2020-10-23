@@ -98,7 +98,7 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
         }
         function setHistory(measurements){
             $scope.safeApply(function () {
-                debugger
+                //debugger
                 $scope.state.history = measurements;
             })
         }
