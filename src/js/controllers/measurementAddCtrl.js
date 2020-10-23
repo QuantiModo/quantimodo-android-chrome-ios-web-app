@@ -105,8 +105,12 @@ angular.module('starter').controller('MeasurementAddCtrl', ["$scope", "$q", "$ti
         };
         $scope.deleteMeasurementFromMeasurementAddCtrl = function(){
             qmService.showInfoToast('Deleting ' + $scope.state.measurement.variableName + ' measurement');
-            qm.measurements.deleteMeasurement($scope.state.measurement);
-            $scope.goBack({});
+            qm.measurements.deleteMeasurement($scope.state.measurement).then(function(){
+                $scope.goBack({});
+            }, function (err){
+                qmLog.error("Could not delete measurement because: "+err);
+                $scope.goBack({});
+            });
         };
         $scope.done = function(){
             if($rootScope.bloodPressure.show){

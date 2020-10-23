@@ -455,6 +455,7 @@ var qmLog = {
     },
     lei: function(shouldThrow, message, meta){
         if(shouldThrow){
+            debugger
             qmLog.errorAndExceptionTestingOrDevelopment(message, meta);
         }
     },

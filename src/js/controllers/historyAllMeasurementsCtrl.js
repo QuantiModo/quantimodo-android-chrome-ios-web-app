@@ -23,10 +23,9 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
                     icon: "ion-calendar"
                 };
             }
-            qm.measurements.getLocalMeasurements(getRequestParams(), function(combined){
-                $scope.safeApply(function () {
-                    $scope.state.history = combined;
-                })
+            var params = getRequestParams();
+            qm.measurements.getLocalMeasurements(params).then(function(combined){
+                setHistory(combined)
             })
             $scope.state.moreDataCanBeLoaded = true;
             // Need to use rootScope here for some reason
@@ -92,9 +91,16 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
             }, 1);
         }
         function changeSortAndGetHistory(sort){
-            $scope.state.history = qm.arrayHelper.sortByProperty($scope.state.history, sort)
+            var sorted = qm.arrayHelper.sortByProperty($scope.state.history, sort)
+            setHistory(sorted);
             $scope.state.sort = sort;
             $scope.getHistory();
+        }
+        function setHistory(measurements){
+            $scope.safeApply(function () {
+                debugger
+                $scope.state.history = measurements;
+            })
         }
         function hideLoader(){
             //Stop the ion-refresher from spinning
@@ -163,7 +169,7 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
             });
         };
         $scope.refreshHistory = function(){
-            $scope.state.history = [];
+            setHistory([])
             $scope.getHistory();
         };
         function getRequestParams(params){
@@ -190,7 +196,7 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
             }
             $scope.state.loading = true;
             if(!$scope.state.history){
-                $scope.state.history = [];
+                setHistory([])
             }
             var params = {
                 offset: $scope.state.history.length,
@@ -216,7 +222,7 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
                     $scope.state.noHistory = measurements.length === 0;
                 }
                 qm.measurements.addLocalMeasurements(measurements, getRequestParams(),function (combined) {
-                    $scope.state.history = combined;
+                    setHistory(combined)
                     hideLoader();
                 })
             }
@@ -228,6 +234,7 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
             //qmService.showBasicLoader();
             qm.measurements.getMeasurementsFromApi(params).then(successHandler, errorHandler);
         };
+        // noinspection DuplicatedCode
         function setupVariableCategoryActionSheet(){
             qmService.rootScope.setShowActionSheetMenu(function(){
                 var hideSheet = $ionicActionSheet.show({
