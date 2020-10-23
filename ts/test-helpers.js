@@ -82,6 +82,10 @@ exports.apiUrls = {
     staging: "https://staging.quantimo.do",
 };
 function getApiUrl() {
+    var url = qmEnv.getArgumentOrEnv("API_URL", null);
+    if (url) {
+        return url;
+    }
     var stage = qmEnv.getArgumentOrEnv("RELEASE_STAGE", null);
     if (stage) {
         // @ts-ignore
@@ -93,16 +97,8 @@ function getApiUrl() {
             throw Error("apiUrl not defined for RELEASE_STAGE: " + stage + "! Available ones are " + qm.stringHelper.prettyJsonStringify(exports.apiUrls));
         }
     }
-    var url = qmEnv.getArgumentOrEnv("API_URL", null);
-    if (!url) {
-        console.debug("Using https://app.quantimo.do as apiUrl because API_URL env not set and RELEASE_STAGE is ionic");
-        return "https://app.quantimo.do";
-    }
-    url = url.replace("production.quantimo.do", "app.quantimo.do");
-    if (url.indexOf("http") !== 0) {
-        url = "https://" + url;
-    }
-    return url;
+    console.info("Using https://app.quantimo.do as apiUrl because API_URL env not set and RELEASE_STAGE is ionic");
+    return "https://app.quantimo.do";
 }
 exports.getApiUrl = getApiUrl;
 function getReleaseStage() {
