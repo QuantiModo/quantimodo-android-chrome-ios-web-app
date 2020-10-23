@@ -5622,7 +5622,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     "backgroundColor": "#0f9d58",
                     circleColor: "#03c466",
                     bodyText: "Would you like to automatically log location? ",
-                    moreInfo: qm.staticData.variableCategories.Locations.moreInfo,
+                    moreInfo: qm.variableCategoryHelper.findByNameOrId('Locations').moreInfo,
                     buttons: [
                         {
                             id: "hideLocationTrackingInfoCardButton",
@@ -6425,11 +6425,11 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 return toastPosition[pos];
             }).join(' ');
         };
-        qmService.showInfoToast = function(text, hideDelay){
-            if(!hideDelay){
-                hideDelay = 3;
+        qmService.showInfoToast = function(text, seconds){
+            if(!seconds){
+                seconds = 3;
             }
-            $mdToast.show($mdToast.simple().textContent(text).position(getToastPosition()).hideDelay(hideDelay * 1000));
+            $mdToast.show($mdToast.simple().textContent(text).position(getToastPosition()).hideDelay(seconds * 1000));
         };
         qmService.showToastWithButton = function(textContent, buttonText, buttonFunction){
             if(!textContent || textContent === ""){
