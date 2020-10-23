@@ -535,12 +535,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     });
                 }
             },
-            charts: {
-                broadcastUpdateCharts: function(){
-                    qmLog.info("Broadcasting updateCharts");
-                    $rootScope.$broadcast('updateCharts');
-                }
-            },
             connectors: {
                 broadcastRefreshConnectors: function(){
                     if($state.current.name.toLowerCase().indexOf('import') !== -1){
@@ -3687,59 +3681,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 return variableName;
             }
         };
-        qmService.getAndStorePrimaryOutcomeMeasurements = function(){
-            var deferred = $q.defer();
-            var errorMessage;
-            if(!qm.auth.getAccessTokenFromUrlUserOrStorage()){
-                errorMessage = 'Cannot sync because we do not have a user or access token in url';
-                qmLog.error(errorMessage);
-                deferred.reject(errorMessage);
-                return deferred.promise;
-            }
-            var params = {variableName: qm.getPrimaryOutcomeVariable().name, sort: '-startTimeEpoch', limit: 900};
-            qm.measurements.getMeasurementsFromApi(params).then(function(primaryOutcomeMeasurementsFromApi){
-                if(primaryOutcomeMeasurementsFromApi.length > 0){
-                    qm.localForage.setItem(qm.items.primaryOutcomeVariableMeasurements, primaryOutcomeMeasurementsFromApi);
-                    qmService.charts.broadcastUpdateCharts();
-                }
-                deferred.resolve(primaryOutcomeMeasurementsFromApi);
-            }, function(error){
-                deferred.reject(error);
-            });
-            return deferred.promise;
-        };
-        qmService.syncPrimaryOutcomeVariableMeasurements = function(minimumSecondsBetweenGets){
-            function canWeSyncYet(localStorageItemName, minimumSecondsBetweenSyncs){
-                if(qm.storage.getItem(localStorageItemName) && window.qm.timeHelper.getUnixTimestampInSeconds() - qm.storage.getItem(localStorageItemName) < minimumSecondsBetweenSyncs){
-                    var errorMessage = 'Cannot sync because already did within the last ' + minimumSecondsBetweenSyncs + ' seconds';
-                    qmLog.info(errorMessage);
-                    return false;
-                }
-                qmService.storage.setItem(localStorageItemName, window.qm.timeHelper.getUnixTimestampInSeconds());
-                return true;
-            }
-            var defer = $q.defer();
-            if(!qm.auth.getAccessTokenFromUrlUserOrStorage()){
-                qmLog.debug('Not doing syncPrimaryOutcomeVariableMeasurements because we do not have a $rootScope.user', null);
-                defer.resolve();
-                return defer.promise;
-            }
-            if(!minimumSecondsBetweenGets){
-                minimumSecondsBetweenGets = 10;
-            }
-            if(!canWeSyncYet("lastMeasurementSyncTime", minimumSecondsBetweenGets)){
-                defer.reject('Cannot sync because already did within the last ' + minimumSecondsBetweenGets + ' seconds');
-                return defer.promise;
-            }
-            qm.measurements.postMeasurementQueue().then(function(){
-                qmService.getAndStorePrimaryOutcomeMeasurements().then(function(primaryOutcomeMeasurementsFromApi){
-                    defer.resolve(primaryOutcomeMeasurementsFromApi);
-                }, function(error){
-                    defer.reject(error);
-                });
-            });
-            return defer.promise;
-        };
         qmService.createPrimaryOutcomeMeasurement = function(numericRatingValue){
             var v = qm.getPrimaryOutcomeVariable();
             // if val is string (needs conversion)
@@ -6183,7 +6124,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             qmService.deleteAllMeasurementsForVariableDeferred(variableName).then(function(){
                 // If primaryOutcomeVariableName, delete local storage measurements
                 if(variableName === qm.getPrimaryOutcomeVariable().name){
-                    qm.localForage.setItem(qm.items.primaryOutcomeVariableMeasurements, []);
                     qmService.storage.setItem('measurementsQueue', []);
                     qmService.storage.setItem('averagePrimaryOutcomeVariableValue', 0);
                     qmService.storage.setItem('lastMeasurementSyncTime', 0);
