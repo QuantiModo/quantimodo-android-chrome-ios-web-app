@@ -5123,6 +5123,7 @@ var qm = {
             combined = qm.measurements.processMeasurements(combined);
             qm.measurements.cache = {};
             combined.forEach(function(m){
+                qmLog.lei(!m.id, "No id on: ", m)
                 qm.measurements.cache[m.variableName] = qm.measurements.cache[m.variableName] || {}
                 qm.measurements.cache[m.variableName][m.startAt] = m
             })
@@ -5178,7 +5179,6 @@ var qm = {
             qmLog.info("Adding to measurements queue: ", m);
             qm.measurements.addLocationAndSource(m);
             qm.measurements.processMeasurement(m);
-            qm.measurements.addToCache([m])
             qm.storage.appendToArray(qm.items.measurementsQueue, m);
         },
         updateMeasurementInQueue: function(m){
@@ -5268,10 +5268,11 @@ var qm = {
             qm.measurements.validateMeasurements(measurements)
             return measurements;
         },
-        cache: [],
+        cache: {},
         getCachedMeasurements: function(params){
-            var all = qm.measurements.processMeasurements(qm.measurements.cache || []);
-            var filtered = qm.arrayHelper.filterByRequestParams(all, params);
+            var byVariable = qm.measurements.cache;
+            var arr = qm.measurements.processMeasurements(byVariable || []);
+            var filtered = qm.arrayHelper.filterByRequestParams(arr, params);
             qmLog.info("Got " + filtered.length + " measurements from recentlyPostedMeasurements with params: ",
                 params);
             return filtered;
@@ -5309,7 +5310,7 @@ var qm = {
             qm.api.post('api/v3/measurements', measurements, function(response){
                 var data = (response) ? response.data : null;
                 var byVariableName = data.measurements;
-                qm.measurements.addToCache(data.measurements)
+                qm.measurements.addToCache(byVariableName)
                 if(data && data.userVariables){
                     var vars = data.userVariables;
                     vars = qm.arrayHelper.convertObjectToArray(vars);

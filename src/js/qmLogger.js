@@ -453,6 +453,11 @@ var qmLog = {
             qmLog.error(name, message, metaData, stackTrace);
         }
     },
+    lei: function(shouldThrow, message, meta){
+        if(shouldThrow){
+            qmLog.errorAndExceptionTestingOrDevelopment(message, meta);
+        }
+    },
     errorAndExceptionTestingOrDevelopment: function(name, message, metaData, stackTrace){
         message = message || name;
         name = name || message;

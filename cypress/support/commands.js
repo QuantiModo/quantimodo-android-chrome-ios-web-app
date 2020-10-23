@@ -185,7 +185,7 @@ Cypress.Commands.add('enterCredentials', (usernameSelector = 'input[name="user_l
     })
 })
 Cypress.Commands.add('disableSpeechAndSkipIntro', () => {
-    cy.log("=== disableSpeechAndSkipIntro ===")
+    // Seeing if commenting this fixes run error messages cy.log("=== disableSpeechAndSkipIntro ===")
     if(Cypress.browser.name === 'chrome'){
         cy.get('.pane > div > div > #disableSpeechButton > span', {timeout: 30000}).click()
     }
