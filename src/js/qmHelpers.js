@@ -4464,7 +4464,6 @@ var qm = {
         lastPushTimestamp: 'lastPushTimestamp',
         lastPushData: 'lastPushData',
         logLevel: 'logLevel',
-        measurementsQueue: 'measurementsQueue',
         memories: 'memories',
         mostFrequentReminderIntervalInSeconds: 'mostFrequentReminderIntervalInSeconds',
         micEnabled: 'micEnabled',
@@ -4937,7 +4936,7 @@ var qm = {
                 minimumAllowedValue: src.minimumAllowedValue || (unit) ? unit.minimum : null,
                 pngPath: src.pngPath || src.image || (cat) ? cat.pngUrl : null,
                 startAt: qm.timeHelper.toDate(timeAt),
-                startTime: qm.timeHelper.toUnixTime(timeAt),
+                startTime: qm.measurements.getStartAt(timeAt),
                 unitAbbreviatedName: (unit) ? unit.abbreviatedName : null,
                 unitId: (unit) ? unit.id : null,
                 unitName: (unit) ? unit.name : null,
@@ -5001,14 +5000,19 @@ var qm = {
                 indexed = qm.measurements.indexByVariableStartAt(recent, indexed);
                 indexed = qm.measurements.indexByVariableStartAt(queue, indexed);
                 indexed = qm.measurements.indexByVariableStartAt(notifications, indexed);
+                // already processed in filterAndSort below var processed = qm.measurements.processMeasurements(indexed)
                 var filtered = qm.measurements.filterAndSort(indexed, params)
-                qm.measurements.processMeasurements(filtered)
                 deferred.resolve(filtered);
             });
             return deferred.promise;
         },
         validateMeasurements: function(measurements){
-            qm.lei(measurements.length && !measurements[0].startAt, "no startAt", measurements[0])
+            measurements = qm.measurements.toArray(measurements);
+            measurements.forEach(function(m){
+                var startAt = m.startAt
+                qm.lei(!startAt, "no startAt", m)
+                qm.lei(startAt.indexOf("Z") !== -1, "no startAt", m)
+            })
         },
         getByVariableName: function(variableName){
             return qm.measurements.getMeasurements({variableName: variableName});
@@ -5035,15 +5039,16 @@ var qm = {
         },
         filterAndSort: function(measurements, params){
             if(!Array.isArray(measurements)){measurements = qm.measurements.flattenMeasurements(measurements);}
-            measurements = qm.measurements.processMeasurements(measurements);
-            measurements = qm.arrayHelper.filterByRequestParams(measurements, params);
-            return measurements;
+            qmLog.lei(measurements.length && typeof measurements[0] === "string")
+            var processed = qm.measurements.processMeasurements(measurements);
+            var filtered = qm.arrayHelper.filterByRequestParams(processed, params);
+            return filtered;
         },
-        addLocalMeasurements: function(arr, params, cb){
-            qm.measurements.getLocalMeasurements(params).then(function(local){
-                var indexed = qm.measurements.indexByVariableStartAt(arr);
-                indexed = qm.measurements.indexByVariableStartAt(local, indexed);
-                var filtered = qm.measurements.filterAndSort(indexed, params);
+        addLocalMeasurements: function(fromController, params, cb){
+            qm.measurements.getLocalMeasurements(params).then(function(fromCache){
+                var fromController = qm.measurements.indexByVariableStartAt(fromController);
+                var combined = qm.measurements.indexByVariableStartAt(fromCache, fromController);
+                var filtered = qm.measurements.filterAndSort(combined, params);
                 cb(filtered)
             })
         },
@@ -5063,6 +5068,7 @@ var qm = {
                     arr = arr.concat(Object.values(byDate));
                 }
             }
+            qmLog.lei(arr.length && typeof arr[0] === "string")
             return arr;
         },
         deleteLocalById: function(id){
@@ -5081,10 +5087,8 @@ var qm = {
                 qm.measurements.deleteLocalById(id);
             }else{
                 var startAt = qm.measurements.getStartAt(toDelete)
-                var startTime = qm.timeHelper.toUnixTime(startAt);
                 var variableName = toDelete.variableName;
-                qm.storage.deleteByProperty(qm.items.measurementsQueue, 'startTimeEpoch', startTime);
-                qm.storage.deleteByProperty(qm.items.measurementsQueue, 'startTime', startTime);
+                delete qm.measurements.queue[variableName][startAt];
                 var recent = qm.measurements.getCachedMeasurements();
                 recent = recent.filter(function(m){
                     var currentStartAt = qm.measurements.getStartAt(m)
@@ -5125,6 +5129,7 @@ var qm = {
             combined.forEach(function(m){
                 qmLog.lei(!m.id, "No id on: ", m)
                 qm.measurements.cache[m.variableName] = qm.measurements.cache[m.variableName] || {}
+                qmLog.lei(m.startAt.indexOf("Z") !== -1, m.startAt, m)
                 qm.measurements.cache[m.variableName][m.startAt] = m
             })
         },
@@ -5175,33 +5180,17 @@ var qm = {
                 if(!m.sourceName){m.sourceName = qm.getSourceName();}
             }
         },
+        queue: {},
         addToMeasurementsQueue: function(m){
             qmLog.info("Adding to measurements queue: ", m);
             qm.measurements.addLocationAndSource(m);
             qm.measurements.processMeasurement(m);
-            qm.storage.appendToArray(qm.items.measurementsQueue, m);
-        },
-        updateMeasurementInQueue: function(m){
-            var queue = qm.storage.getItem(qm.items.measurementsQueue);
-            if(!queue){queue = [];}
-            var i = 0;
-            while(i < queue.length){
-                if(queue[i].startTimeEpoch === m.prevStartTimeEpoch){
-                    queue[i].startTimeEpoch = m.startTimeEpoch;
-                    queue[i].value = m.value;
-                    queue[i].note = m.note;
-                    qmLog.info("Updating measurement in queue: ", m);
-                    break;
-                }
-                i++;
-            }
-            qm.storage.setItem(qm.items.measurementsQueue, queue);
-            qm.measurements.addToCache(queue)
+            qm.measurements.queue[m.variableName] = qm.measurements.queue[m.variableName] || {};
+            qm.measurements.queue[m.variableName][m.startAt] = m;
         },
         getMeasurementsFromQueue: function(params){
-            var measurements = qm.storage.getElementsWithRequestParams(qm.items.measurementsQueue, params) || []
-            qm.measurements.checkMeasurements(measurements)
-            measurements = qm.measurements.processMeasurements(measurements);
+            var queue = qm.measurements.queue;
+            var measurements = qm.measurements.filterAndSort(queue, params);
             qm.measurements.checkMeasurements(measurements)
             qmLog.info("Got " + measurements.length + " measurements from queue with params: " +
                 JSON.stringify(params), measurements);
@@ -5259,6 +5248,7 @@ var qm = {
                     m.pngPath = category.pngPath;
                 }
             }
+            qm.measurements.validateMeasurements([m])
         },
         processMeasurements: function(measurements){
             measurements = qm.measurements.flattenMeasurements(measurements);
@@ -5271,8 +5261,7 @@ var qm = {
         cache: {},
         getCachedMeasurements: function(params){
             var byVariable = qm.measurements.cache;
-            var arr = qm.measurements.processMeasurements(byVariable || []);
-            var filtered = qm.arrayHelper.filterByRequestParams(arr, params);
+            var filtered = qm.measurements.filterAndSort(byVariable, params);
             qmLog.info("Got " + filtered.length + " measurements from recentlyPostedMeasurements with params: ",
                 params);
             return filtered;
@@ -5294,7 +5283,7 @@ var qm = {
                 m.startAt = qm.timeHelper.iso();
             }
             if(m.prevStartTimeEpoch){ // Primary outcome variable - update through measurementsQueue
-                qm.measurements.updateMeasurementInQueue(m);
+                qm.measurements.addToMeasurementsQueue(m);
             }else if(m.id){
                 qm.localForage.deleteById(qm.items.primaryOutcomeVariableMeasurements, m.id);
                 qm.measurements.addToMeasurementsQueue(m);
@@ -5327,17 +5316,21 @@ var qm = {
         },
         postMeasurementQueue: function(){
             var deferred = Q.defer();
-            var queue = qm.measurements.getMeasurementsFromQueue();
-            if(!queue || queue.length < 1){
+            var queueObj = qm.measurements.queue;
+            var queueArr = qm.measurements.getMeasurementsFromQueue();
+            if(queueArr.length < 1){
                 deferred.resolve([]);
             } else {
                 var promises = [];
-                queue.forEach(function(m){
+                queueArr.forEach(function(m){
                     promises.push(qm.measurements.roundMeasurementTime(m))
                 })
                 Q.all(promises).then(function (){
-                    qm.measurements.postMeasurements(queue).then(function(data){
-                        qm.storage.setItem(qm.items.measurementsQueue, []);
+                    qm.measurements.postMeasurements(queueArr).then(function(data){
+                        qm.measurements.queue = {};
+                        debugger
+                        var queue = qm.measurements.getMeasurementsFromQueue();
+                        qmLog.lei(queue.length)
                         qm.measurements.getLocalMeasurements().then(function(measurements){
                             measurements.forEach(function(m){
                                 qm.lei(!m.id)
@@ -5345,7 +5338,8 @@ var qm = {
                         })
                         deferred.resolve(data);
                     }, function(error){
-                        qm.storage.setItem(qm.items.measurementsQueue, queue);
+                        debugger
+                        qm.measurements.queue = queueObj;
                         deferred.reject(error);
                     });
                 })
@@ -5395,7 +5389,15 @@ var qm = {
             qmLog.error(message, null, {measurement: object});
         },
         getStartAt: function(m){
-            return m.startAt = m.startAt || qm.timeHelper.iso(m.startTimeEpoch || m.startTime || m.startTimeString);
+            var startTimeAt;
+            if(typeof m === "object"){
+                startTimeAt = m.startAt ||m.startTimeEpoch || m.startTime || m.startTimeString;
+            } else {
+                startTimeAt = m;
+            }
+            var startAt = qm.timeHelper.toMySQLTimestamp(startTimeAt);
+            qmLog.lei(startAt.indexOf("Z") !== -1);
+            return startAt;
         },
         getLogString: function(m) {
             return m.value+m.unitAbbreviatedName+" "+ m.variableName+" at "+qm.measurements.getStartAt(m);
@@ -5421,7 +5423,7 @@ var qm = {
                     unitAbbreviatedName: trackingReminder.unitAbbreviatedName,
                     measurements: [
                         {
-                            startTimeEpoch: window.qm.timeHelper.getUnixTimestampInSeconds(),
+                            startTimeEpoch: qm.timeHelper.getUnixTimestampInSeconds(),
                             value: value,
                             note: null
                         }
@@ -9982,8 +9984,15 @@ var qm = {
         yearMonthDayMilitaryTime: function(timeAt){
             var unixTime = qm.timeHelper.universalConversionToUnixTimeSeconds(timeAt);
             var a = new Date(unixTime * 1000);
-            var at = qm.stringHelper.getStringBeforeSubstring('.', a.toISOString())
-            return at.replace("T", " ");
+            try {
+                var at = a.toISOString().slice(0, 19).replace('T', ' ');
+            }catch (e){
+                debugger
+            }
+            return at;
+        },
+        toMySQLTimestamp: function(timeAt){
+            return qm.timeHelper.yearMonthDayMilitaryTime(timeAt)
         },
         dayMonthYearMilitaryTime: function(timeAt){
             var unixTime = qm.timeHelper.universalConversionToUnixTimeSeconds(timeAt);
