@@ -178,7 +178,8 @@ describe('Measurements', function () {
                 let editedMeasurementId = $el.text();
                 cy.visitIonicAndSetApiUrl(`/#/app/measurement-add?measurementId=${editedMeasurementId}`);
                 cy.get('#deleteButton').click({force: true});
-                cy.wait(10000);
+                cy.wait(500);
+                debugger
                 goToHistoryForVariable(variableName)
                 cy.get("#hidden-measurement-id-0").should('not.contain', editedMeasurementId);
             });
