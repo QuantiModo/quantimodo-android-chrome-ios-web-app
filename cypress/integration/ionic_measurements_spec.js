@@ -75,7 +75,7 @@ function recordTreatmentMeasurementAndCheckHistoryPage (dosageValue) {
   cy.visitIonicAndSetApiUrl('/#/app/history-all-category/Treatments')
   let treatmentStringNoQuotes = `${dosageValue} mg Aaa Test Treatment`
 
-  cy.get('#historyItemTitle', { timeout: 40000 })
+  cy.get('#historyItemTitle-0', { timeout: 40000 })
         .should('contain', treatmentStringNoQuotes)
 }
 /**
@@ -83,7 +83,7 @@ function recordTreatmentMeasurementAndCheckHistoryPage (dosageValue) {
  */
 function editHistoryPageMeasurement (itemTitle) {
   cy.log(`Editing history measurement with title containing: ${itemTitle}`)
-  cy.get('#historyItemTitle', { timeout: 30000 }).contains(itemTitle)
+  cy.get('#historyItemTitle-0', { timeout: 30000 }).contains(itemTitle)
   cy.get('#action-sheet-button', { timeout: 30000 }).click({ force: true })
   cy.clickActionSheetButtonContaining('Edit')
   cy.wait(2000)
@@ -132,9 +132,7 @@ function deleteMeasurements (variableName) {
         cy.wait(5000)
     }
 }
-
 function goToHistoryForVariable(variableName, login) {
-
     if(login){
         cy.loginWithAccessTokenIfNecessary('/#/app/history-all-variable/' + variableName)
     } else {
@@ -142,22 +140,19 @@ function goToHistoryForVariable(variableName, login) {
     }
 
 }
-
 describe('Measurements', function () {
-
-
     // Skipping because it fails randomly and can't reproduce failure locally
     it('Goes to edit measurement from history page', function () {
         cy.loginWithAccessTokenIfNecessary('/#/app/history-all-category/Anything')
         cy.wait('@measurements', {timeout: 30000})
             .should('have.property', 'status', 200)
-        cy.get('#historyItemTitle', {timeout: 30000}).click({force: true})
+        cy.get('#historyItemTitle-0', {timeout: 30000}).click({force: true})
         cy.clickActionSheetButtonContaining('Edit')
         cy.wait(2000)
         cy.url().should('include', 'measurement-add')
     })
     // Skipping because it fails randomly and can't reproduce failure locally
-    it.only('Records, edits, and deletes an emotion measurement', function () {
+    it('Records, edits, and deletes an emotion measurement', function () {
         let variableName = 'Alertness'
         let valence = 'positive'
         goToHistoryForVariable(variableName, true)
@@ -209,7 +204,7 @@ describe('Measurements', function () {
         cy.url().should('include', '/#/app/history-all-category/Treatments')
         cy.log('Check that deleted measurement is gone (must use does not equal instead of does not contain because a ' +
             'measurement of 0mg will be true if the value is 50mg)')
-        cy.get('#historyItemTitle', {timeout: 40000})
+        cy.get('#historyItemTitle-0', {timeout: 40000})
             .should('not.contain', treatmentStringEditedNoQuotes)
     })
     // Randomly fails and can't reproduce locally
