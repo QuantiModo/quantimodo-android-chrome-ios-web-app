@@ -7,8 +7,8 @@
 function checkStudyPage (effect, cause) {
   cy.get('i.ion-social-facebook', {timeout: 90000}).should('exist')
   cy.get('.voteButtons', {timeout: 90000}).should('exist')
-  cy.get('#study-title', {timeout: 90000}).should('contain', effect)
-  cy.get('#study-title', {timeout: 90000}).should('contain', cause)
+  cy.get('.study-title', {timeout: 90000}).should('contain', effect)
+  cy.get('.study-title', {timeout: 90000}).should('contain', cause)
   cy.checkForBrokenImages()
 }
 describe('Studies', function () {
@@ -75,7 +75,7 @@ describe('Studies', function () {
     cy.log('Have to go to /#/app/predictors-positive twice for some reason because we randomly get redirected to join study page')
     cy.loginWithAccessTokenIfNecessary('/#/app/predictors-positive', true)
     cy.log('Click the first study.  TODO: Speed this up and reduce timeout')
-    cy.get('#study-tag-line', { timeout: 15000 })
+    cy.get('.study-tag-line:first', { timeout: 15000 })
         .click({ force: true })
     cy.log(
         'Study page displays.  TODO: Reduce timeout and make sure that we populate with initial correlation before fetching full study')
