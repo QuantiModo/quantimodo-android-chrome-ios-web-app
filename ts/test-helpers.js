@@ -15,6 +15,7 @@ var qmEnv = __importStar(require("./env-helper"));
 var fileHelper = __importStar(require("./qm.file-helper"));
 var qmGit = __importStar(require("./qm.git"));
 var qmLog = __importStar(require("./qm.log"));
+var qm = require("../src/js/qmHelpers.js");
 function getBuildLink() {
     if (process.env.BUILD_URL_FOR_STATUS) {
         return process.env.BUILD_URL_FOR_STATUS + "console";
@@ -77,31 +78,29 @@ exports.releaseStages = {
 };
 exports.apiUrls = {
     development: "https://local.quantimo.do",
+    ionic: "https://app.quantimo.do",
     production: "https://app.quantimo.do",
     staging: "https://staging.quantimo.do",
 };
 function getApiUrl() {
-    if (!process.env.API_URL && process.env.RELEASE_STAGE === "ionic") {
-        console.debug("Using https://app.quantimo.do as apiUrl because API_URL env not set and RELEASE_STAGE is ionic");
-        return "https://app.quantimo.do";
-    }
     var url = qmEnv.getArgumentOrEnv("API_URL", null);
-    if (!url) {
-        var stage = qmEnv.getArgumentOrEnv("RELEASE_STAGE", null);
-        if (stage) {
+    if (url) {
+        return url;
+    }
+    var stage = qmEnv.getArgumentOrEnv("RELEASE_STAGE", null);
+    if (stage) {
+        // @ts-ignore
+        if (typeof exports.apiUrls[stage] !== "undefined") {
             // @ts-ignore
-            if (typeof exports.apiUrls[stage] !== "undefined") {
-                // @ts-ignore
-                return exports.apiUrls[stage];
-            }
+            return exports.apiUrls[stage];
         }
-        throw new Error("Please provide API_URL");
+        else {
+            throw Error("apiUrl not defined for RELEASE_STAGE: " + stage + "! Available ones are " +
+                qm.stringHelper.prettyJsonStringify(exports.apiUrls));
+        }
     }
-    url = url.replace("production.quantimo.do", "app.quantimo.do");
-    if (url.indexOf("http") !== 0) {
-        url = "https://" + url;
-    }
-    return url;
+    console.info("Using https://app.quantimo.do as apiUrl because API_URL env not set and RELEASE_STAGE is ionic");
+    return "https://app.quantimo.do";
 }
 exports.getApiUrl = getApiUrl;
 function getReleaseStage() {
