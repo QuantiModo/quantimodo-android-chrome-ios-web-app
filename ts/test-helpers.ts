@@ -1,9 +1,9 @@
-import * as fs from "fs"
 import rimraf from "rimraf"
 import * as qmEnv from "./env-helper"
 import * as fileHelper from "./qm.file-helper"
 import * as qmGit from "./qm.git"
 import * as qmLog from "./qm.log"
+const qm = require("../src/js/qmHelpers.js")
 export function getBuildLink() {
     if (process.env.BUILD_URL_FOR_STATUS) {
         return process.env.BUILD_URL_FOR_STATUS + "console"
@@ -59,32 +59,27 @@ export const releaseStages = {
 }
 export const apiUrls = {
     development: "https://local.quantimo.do",
+    ionic: "https://app.quantimo.do",
     production: "https://app.quantimo.do",
     staging: "https://staging.quantimo.do",
 }
 
 export function getApiUrl(): string {
-    if(!process.env.API_URL && process.env.RELEASE_STAGE === "ionic") {
-        console.debug("Using https://app.quantimo.do as apiUrl because API_URL env not set and RELEASE_STAGE is ionic")
-        return "https://app.quantimo.do"
-    }
-    let url = qmEnv.getArgumentOrEnv("API_URL", null)
-    if(!url) {
-        const stage = qmEnv.getArgumentOrEnv("RELEASE_STAGE", null)
-        if(stage) {
+    const url = qmEnv.getArgumentOrEnv("API_URL", null)
+    if(url) {return url}
+    const stage = qmEnv.getArgumentOrEnv("RELEASE_STAGE", null)
+    if(stage) {
+        // @ts-ignore
+        if(typeof apiUrls[stage] !== "undefined") {
             // @ts-ignore
-            if(typeof apiUrls[stage] !== "undefined") {
-                // @ts-ignore
-                return apiUrls[stage]
-            }
+            return apiUrls[stage]
+        } else {
+            throw Error("apiUrl not defined for RELEASE_STAGE: " + stage + "! Available ones are "+
+                qm.stringHelper.prettyJsonStringify(apiUrls))
         }
-        throw new Error("Please provide API_URL")
     }
-    url = url.replace("production.quantimo.do", "app.quantimo.do")
-    if (url.indexOf("http") !== 0) {
-        url = `https://` + url
-    }
-    return url
+    console.info("Using https://app.quantimo.do as apiUrl because API_URL env not set and RELEASE_STAGE is ionic")
+    return "https://app.quantimo.do"
 }
 export function getReleaseStage() {
     const stage = qmEnv.getArgumentOrEnv("RELEASE_STAGE", null)

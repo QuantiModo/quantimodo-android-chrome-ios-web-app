@@ -308,6 +308,9 @@ describe("File Helper", function () {
 describe("Ghost Inspector", function () {
     it("runs tests on staging API", function (done) {
         var previouslySetApiUrl = process.env.API_URL || null
+        if(previouslySetApiUrl){
+            expect(previouslySetApiUrl).to.eq(qmTests.getApiUrl())
+        }
         delete process.env.API_URL
         chai.assert.isUndefined(process.env.API_URL)
         process.env.RELEASE_STAGE = "staging"
