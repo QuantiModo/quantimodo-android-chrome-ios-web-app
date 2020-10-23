@@ -1,9 +1,9 @@
-import * as fs from "fs"
 import rimraf from "rimraf"
 import * as qmEnv from "./env-helper"
 import * as fileHelper from "./qm.file-helper"
 import * as qmGit from "./qm.git"
 import * as qmLog from "./qm.log"
+const qm = require("../src/js/qmHelpers.js")
 export function getBuildLink() {
     if (process.env.BUILD_URL_FOR_STATUS) {
         return process.env.BUILD_URL_FOR_STATUS + "console"
@@ -64,20 +64,23 @@ export const apiUrls = {
 }
 
 export function getApiUrl(): string {
-    if(!process.env.API_URL && process.env.RELEASE_STAGE === "ionic") {
+    const stage = qmEnv.getArgumentOrEnv("RELEASE_STAGE", null)
+    if(stage){
+        // @ts-ignore
+        if(typeof apiUrls[stage] !== "undefined") {
+            // @ts-ignore
+            return apiUrls[stage]
+        } else {
+            throw Error("apiUrl not defined for stage " + stage + "! Available ones are "+qm.stringHelper.prettyJsonStringify(apiUrls))
+        }
+    }
+    if(!process.env.API_URL && stage === "ionic") {
         console.debug("Using https://app.quantimo.do as apiUrl because API_URL env not set and RELEASE_STAGE is ionic")
         return "https://app.quantimo.do"
     }
     let url = qmEnv.getArgumentOrEnv("API_URL", null)
     if(!url) {
-        const stage = qmEnv.getArgumentOrEnv("RELEASE_STAGE", null)
-        if(stage) {
-            // @ts-ignore
-            if(typeof apiUrls[stage] !== "undefined") {
-                // @ts-ignore
-                return apiUrls[stage]
-            }
-        }
+
         throw new Error("Please provide API_URL")
     }
     url = url.replace("production.quantimo.do", "app.quantimo.do")
