@@ -393,6 +393,10 @@ describe("Measurement", function () {
             })
             .then(function (data) {
                 var measurements = qm.measurements.toArray(data.measurements)
+                measurements.forEach(function(m){
+                    expectInteger(m.id)
+                    expect(m.variableName).eq(variableName)
+                })
                 expect(measurements).length(1)
                 expect(data.userVariables).length(1)
                 var queue = qm.measurements.getMeasurementsFromQueue()
@@ -409,7 +413,7 @@ describe("Measurement", function () {
                 expectInteger(m.id)
                 measurements.forEach(function(m){
                     expectInteger(m.id)
-                    expect(m.variable).eq(variableName)
+                    expect(m.variableName).eq(variableName)
                 })
                 return qm.userVariables.getFromLocalStorage({})
             })
