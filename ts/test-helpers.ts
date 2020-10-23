@@ -59,21 +59,23 @@ export const releaseStages = {
 }
 export const apiUrls = {
     development: "https://local.quantimo.do",
+    ionic: "https://app.quantimo.do",
     production: "https://app.quantimo.do",
     staging: "https://staging.quantimo.do",
 }
 
 export function getApiUrl(): string {
-    let url = qmEnv.getArgumentOrEnv("API_URL", null)
-    if(url){return url}
+    const url = qmEnv.getArgumentOrEnv("API_URL", null)
+    if(url) {return url}
     const stage = qmEnv.getArgumentOrEnv("RELEASE_STAGE", null)
-    if(stage){
+    if(stage) {
         // @ts-ignore
         if(typeof apiUrls[stage] !== "undefined") {
             // @ts-ignore
             return apiUrls[stage]
         } else {
-            throw Error("apiUrl not defined for RELEASE_STAGE: " + stage + "! Available ones are "+qm.stringHelper.prettyJsonStringify(apiUrls))
+            throw Error("apiUrl not defined for RELEASE_STAGE: " + stage + "! Available ones are "+
+                qm.stringHelper.prettyJsonStringify(apiUrls))
         }
     }
     console.info("Using https://app.quantimo.do as apiUrl because API_URL env not set and RELEASE_STAGE is ionic")
