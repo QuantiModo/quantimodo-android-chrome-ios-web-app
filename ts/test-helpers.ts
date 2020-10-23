@@ -64,6 +64,8 @@ export const apiUrls = {
 }
 
 export function getApiUrl(): string {
+    let url = qmEnv.getArgumentOrEnv("API_URL", null)
+    if(url){return url}
     const stage = qmEnv.getArgumentOrEnv("RELEASE_STAGE", null)
     if(stage){
         // @ts-ignore
@@ -74,16 +76,8 @@ export function getApiUrl(): string {
             throw Error("apiUrl not defined for RELEASE_STAGE: " + stage + "! Available ones are "+qm.stringHelper.prettyJsonStringify(apiUrls))
         }
     }
-    let url = qmEnv.getArgumentOrEnv("API_URL", null)
-    if(!url) {
-        console.debug("Using https://app.quantimo.do as apiUrl because API_URL env not set and RELEASE_STAGE is ionic")
-        return "https://app.quantimo.do"
-    }
-    url = url.replace("production.quantimo.do", "app.quantimo.do")
-    if (url.indexOf("http") !== 0) {
-        url = `https://` + url
-    }
-    return url
+    console.info("Using https://app.quantimo.do as apiUrl because API_URL env not set and RELEASE_STAGE is ionic")
+    return "https://app.quantimo.do"
 }
 export function getReleaseStage() {
     const stage = qmEnv.getArgumentOrEnv("RELEASE_STAGE", null)
