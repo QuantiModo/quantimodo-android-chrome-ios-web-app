@@ -21,7 +21,7 @@ loadEnv("local") // https://github.com/motdotla/dotenv#what-happens-to-environme
 const ciProvider = getCiProvider()
 const isWin = process.platform === "win32"
 const outputReportDir = repoPath + "/tests/mochawesome-report"
-const screenshotDirectory = `${repoPath}/tests/mochawesome-report/assets`
+const screenshotDirectory = outputReportDir + `/assets`
 const unmerged = repoPath + "/cypress/reports/mocha"
 const vcsProvider = "github"
 const verbose = true
@@ -400,6 +400,6 @@ export function runLastFailedCypressTest(cb: (err: any) => void) {
 }
 export function uploadTestResults(cb: (err: Error, url: string) => void) {
     const path = "mochawesome/" + qmGit.getCurrentGitCommitSha()
-    fileHelper.uploadToS3("./mochawesome-report/mochawesome.html", path, cb, "quantimodo",
+    fileHelper.uploadToS3(outputReportDir + "/mochawesome.html", path, cb, "quantimodo",
         "public-read", "text/html")
 }

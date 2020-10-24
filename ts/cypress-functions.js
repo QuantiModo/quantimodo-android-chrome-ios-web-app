@@ -30,7 +30,7 @@ env_helper_1.loadEnv("local"); // https://github.com/motdotla/dotenv#what-happen
 var ciProvider = test_helpers_1.getCiProvider();
 var isWin = process.platform === "win32";
 var outputReportDir = app_root_path_1.default + "/tests/mochawesome-report";
-var screenshotDirectory = app_root_path_1.default + "/tests/mochawesome-report/assets";
+var screenshotDirectory = outputReportDir + "/assets";
 var unmerged = app_root_path_1.default + "/cypress/reports/mocha";
 var vcsProvider = "github";
 var verbose = true;
@@ -420,7 +420,7 @@ function runLastFailedCypressTest(cb) {
 exports.runLastFailedCypressTest = runLastFailedCypressTest;
 function uploadTestResults(cb) {
     var path = "mochawesome/" + qmGit.getCurrentGitCommitSha();
-    fileHelper.uploadToS3("./mochawesome-report/mochawesome.html", path, cb, "quantimodo", "public-read", "text/html");
+    fileHelper.uploadToS3(outputReportDir + "/mochawesome.html", path, cb, "quantimodo", "public-read", "text/html");
 }
 exports.uploadTestResults = uploadTestResults;
 //# sourceMappingURL=cypress-functions.js.map

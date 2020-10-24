@@ -2423,8 +2423,11 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                         if(query === "" && dialogParams.requestParams.searchPhrase){
                             delete dialogParams.requestParams.searchPhrase;
                         } // This happens after clicking x clear button
-                        logDebug("getFromLocalStorageOrApi in querySearch with params: " + JSON.stringify(dialogParams.requestParams), query);
-
+                        logDebug("getFromLocalStorageOrApi in querySearch with params: " +
+                            JSON.stringify(dialogParams.requestParams), query);
+                        if(query && query.length){
+                            debugger
+                        }
                         // Debounce in the template doesn't seem to work so we wait 500ms before searching here
                         clearTimeout(qmService.searchTimeout);
                         qmService.searchTimeout = setTimeout(function(){
@@ -2511,7 +2514,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                             return {
                                 value: variable.name.toLowerCase(),
                                 name: variableName,
-                                displayName: variable.displayName,
+                                displayName: variable.name,
                                 variable: variable,
                                 ionIcon: variable.ionIcon,
                                 subtitle: variable.subtitle
@@ -4964,27 +4967,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 chartConfig.series.states = {hover: {lineWidthPlus: 0}};
             }
             return qm.chartHelper.setChartExportingOptionsOnce(chartConfig);
-        };
-        // VARIABLE SERVICE
-        // get user variables (without public)
-        qmService.searchUserVariablesDeferred = function(variableSearchQuery, params){
-            var deferred = $q.defer();
-            if(!variableSearchQuery){
-                variableSearchQuery = '*';
-            }
-            params.searchPhrase = variableSearchQuery;
-            qm.userVariables.getFromLocalStorageOrApi(params).then(function(variables){
-                deferred.resolve(variables);
-            }, function(error){
-                qmLog.error(error);
-                deferred.reject(error);
-            });
-            return deferred.promise;
-        };
-        qmService.searchVariablesDeferred = function(variableSearchQuery, params){
-            if(!variableSearchQuery){variableSearchQuery = '*';}
-            params.searchPhrase = variableSearchQuery;
-            return qm.variablesHelper.getFromLocalStorageOrApi(params);
         };
         qmService.goToPredictorsList = function(variableName){
             qmService.goToState(qm.staticData.stateNames.predictorsAll, {effectVariableName: variableName});

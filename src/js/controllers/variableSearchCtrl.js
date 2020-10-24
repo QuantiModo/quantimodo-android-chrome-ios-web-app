@@ -167,18 +167,24 @@ angular.module('starter').controller('VariableSearchCtrl',
             }
             // If no results or no exact match, show "+ Add [variable]" button for query
             if((variables.length < 1 || !found)){
+                //debugger
                 $scope.showSearchLoader = false;
                 qmLog.info($state.current.name + ': ' + '$scope.onVariableSearch: Set showAddVariableButton to true', null);
                 $scope.state.showAddVariableButton = true;
                 var s = $state.current;
                 var next = s.params.nextState;
-                if(next === "app.reminderAdd"){
-                    $scope.state.addNewVariableButtonText = '+ Add ' + $scope.state.variableSearchQuery.name + ' reminder';
-                }else if(next === "app.measurementAdd"){
-                    $scope.state.addNewVariableButtonText = '+ Add ' + $scope.state.variableSearchQuery.name + ' measurement';
+                var text;
+                var q = $scope.state.variableSearchQuery.name;
+                if(next === qm.staticData.stateNames.reminderAdd){
+                    text = '+ Add ' + q + ' reminder';
+                }else if(next === qm.staticData.stateNames.measurementAdd){
+                    text = '+ Add ' + q + ' measurement';
                 }else{
-                    $scope.state.addNewVariableButtonText = '+ ' + $scope.state.variableSearchQuery.name;
+                    text = '+ ' + q;
                 }
+                $scope.safeApply(function(){
+                    $scope.state.addNewVariableButtonText = text;
+                })
             }
         }
         function showNoVariablesFoundCardIfNecessary(errorHandler){
@@ -206,7 +212,9 @@ angular.module('starter').controller('VariableSearchCtrl',
             }
             addVariablesToScope(variables);
             if(!errorHandler){
-                showAddVariableButtonIfNecessary(variables);
+                $scope.safeApply(function (){
+                    showAddVariableButtonIfNecessary(variables);
+                })
             }
             showNoVariablesFoundCardIfNecessary(errorHandler);
         }
@@ -235,11 +243,11 @@ angular.module('starter').controller('VariableSearchCtrl',
             $scope.state.showAddVariableButton = false;
             var params = getVariableSearchParameters();
             var q = $scope.state.variableSearchQuery.name;
-            qmLog.info($state.current.name + ': ' + 'Search term: ' + q + " with params: \n" +
-                JSON.stringify(params, null, 2));
+            qmLog.info($state.current.name + ': ' + 'Search term: ' + q + " with params: ", params);
             if(q.length > 2){
                 $scope.state.searching = true;
-                qmService.searchVariablesDeferred(q, params).then(function(variables){
+                params.searchPhrase = q;
+                qm.variablesHelper.getFromLocalStorageOrApi(params).then(function(variables){
                     variableSearchSuccessHandler(variables, successHandler, errorHandler);
                 });
             }else{
