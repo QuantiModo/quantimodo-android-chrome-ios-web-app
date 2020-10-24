@@ -207,8 +207,11 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
             params = getRequestParams(params);
             if(getVariableName()){
                 if(!$scope.state.variableObject){
-                    qmService.searchUserVariablesDeferred('*', {variableName: getVariableName()}).then(function(variables){
-                        $scope.state.variableObject = variables[0];
+                    qm.userVariables.getFromLocalStorageOrApi({variableName: getVariableName()})
+                        .then(function(variables){
+                            $scope.safeApply(function(){
+                                $scope.state.variableObject = variables[0];
+                            })
                     }, function(error){
                         qmLog.error(error);
                     });
