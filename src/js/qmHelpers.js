@@ -58,11 +58,18 @@ var qm = {
     },
     appMode: {
         mode: null,
+        modes: {
+            "mocha": "mocha",
+            "testing": "testing",
+        },
         isBrowser: function(){
             return typeof window !== "undefined";
         },
         isTesting: function(){
-            if(qm.appMode.mode === 'testing'){
+            if(qm.appMode.mode === qm.appMode.modes.testing){
+                return true;
+            }
+            if(qm.appMode.mode === qm.appMode.modes.mocha){
                 return true;
             }
             if(qm.userHelper.isTestUser()){
@@ -147,6 +154,9 @@ var qm = {
         },
         isBackEnd: function(){
             return qm.platform.isBackEnd();
+        },
+        isMocha: function(){
+            return qm.appMode.mode === qm.appMode.modes.mocha;
         }
     },
     apiPaths: {
@@ -711,6 +721,9 @@ var qm = {
                 return response.json();
             }).then(function(data){
                 if(successHandler){
+                    if(qm.appMode.isMocha()){
+                        qm.tests.addToFixture("GET", url, data)
+                    }
                     successHandler(data);
                 }
             }).catch(function(err){
@@ -760,7 +773,7 @@ var qm = {
         postMeasurements: function(measurements, onDoneListener){
             qm.api.post("v1/measurements", measurements, onDoneListener);
         },
-        getRequestUrl: function(path, successHandler, params){
+        getRequestUrl: function(path, params, successHandler){
             function addGlobalQueryParameters(url){
                 function addQueryParameter(url, name, value){
                     if(url.indexOf('?') === -1){
@@ -3938,6 +3951,14 @@ var qm = {
         }
     },
     fileHelper: {
+        rimraf: function(){
+            if(qm.modules.rimraf){return qm.modules.rimraf;}
+            return qm.modules.rimraf = require("rimraf")
+        },
+        fs: function(){
+            if(qm.modules.fs){return qm.modules.fs;}
+            return qm.modules.fs = require("fs")
+        },
         writeToFileWithCallback: function(filePath, stringContents, callback){
             if(!stringContents){
                 throw filePath + " stringContents not provided to writeToFileWithCallback";
@@ -3951,17 +3972,38 @@ var qm = {
         outputFileContents: function(path){
             qmLog.info(path + ": " + qm.fs.readFileSync(path));
         },
-        cleanFiles: function(filesArray){
+        cleanFiles: function(filesArray, cb){
             qmLog.info("Cleaning " + JSON.stringify(filesArray) + '...');
-            return qm.gulp.src(filesArray, {read: false}).pipe(qm.clean());
+            var rimraf = qm.fileHelper.rimraf();
+            return rimraf(filesArray, cb);
         },
-        writeToFile: function(filePath, stringContents){
-            filePath = './' + filePath;
+        writeFileSync: function(filePath, stringContents){
             qmLog.info("Writing to " + filePath);
             if(typeof stringContents !== "string"){
                 stringContents = qm.stringHelper.prettyJSONStringify(stringContents);
             }
-            return qm.fs.writeFileSync(filePath, stringContents);
+            var fs = qm.fileHelper.fs();
+            var abs = qm.fileHelper.getAbsolutePath(filePath)
+            qm.fileHelper.ensureDirectoryExistence(abs)
+            return fs.writeFileSync(filePath, stringContents);
+        },
+         ensureDirectoryExistence: function(filePathToCheck) {
+            var path = qm.modules.getPath();
+            var fs = qm.modules.getFs();
+            const dirname = path.dirname(filePathToCheck)
+            if (fs.existsSync(dirname)) {
+                return true
+            }
+            qm.fileHelper.ensureDirectoryExistence(dirname)
+            fs.mkdirSync(dirname)
+        },
+         getAbsolutePath: function(relativePath) {
+            var path = qm.modules.getPath();
+            if (path.isAbsolute(relativePath)) {
+                return relativePath
+            } else {
+                return path.resolve(".", relativePath)
+            }
         },
         copyFiles: function(sourceFiles, destinationPath, excludedFolder){
             console.log("Copying " + sourceFiles + " to " + destinationPath);
@@ -6172,6 +6214,28 @@ var qm = {
                 }
             });
         },
+    },
+    modules: {
+        URL: null,
+        getURL: function(){
+            if(qm.modules.URL){return qm.modules.URL}
+            return qm.modules.URL = require("url")
+        },
+        rimraf: null,
+        getRimraf: function(){
+            if(qm.modules.rimraf){return qm.modules.rimraf}
+            return qm.modules.rimraf = require("rimraf")
+        },
+        fs: null,
+        getFs: function(){
+            if(qm.modules.fs){return qm.modules.fs}
+            return qm.modules.fs = require("fs")
+        },
+        path: null,
+        getPath: function(){
+            if(qm.modules.path){return qm.modules.path}
+            return qm.modules.path = require("path")
+        }
     },
     music: {
         player: {},
@@ -9239,6 +9303,7 @@ var qm = {
         },
     },
     stringHelper: {
+        prettyJSONStringify: function(object) {return JSON.stringify(object, null, '\t');},
         removeFirstCharacter: function(str){
             return str.substring(1);
         },
@@ -9895,6 +9960,32 @@ var qm = {
             testPopupWindow: function(){
                 qm.chrome.createPopup(qm.chrome.windowParams.introWindowParams);
             }
+        },
+        addToFixture: function(method, url, data){
+            var path = qm.tests.urlToFixturePath(method, url)
+            qm.fileHelper.writeFileSync(path, data)
+        },
+        getFixtureData: function(method, url){
+            var path = qm.tests.urlToFixturePath(method, url)
+            var fs = qm.fileHelper.fs();
+            return fs.readFileSync(path)
+        },
+        deleteFixture: function(method, url){
+            var deferred = Q.defer();
+            var path = qm.tests.urlToFixturePath(method, url)
+            qm.fileHelper.cleanFiles(path, function(err){
+                if(err){deferred.reject(err);}
+                deferred.resolve();
+            })
+            return deferred.promise;
+        },
+        urlToFixturePath: function(method, url){
+            var path = qm.urlHelper.stripHost(url);
+            path = qm.stringHelper.removeFirstCharacter(path);
+            path = path.replace("?", "-", path)
+            method = method.toLowerCase();
+            var rel = "cypress/fixtures/"+method+"/"+path+".json";
+            return qm.fileHelper.getAbsolutePath(rel)
         }
     },
     timeHelper: {
@@ -10676,6 +10767,23 @@ var qm = {
             }
             return pathWithQuery.split("?")[0];
         },
+        parseUrl: function(url){
+            var parser = qm.modules.getURL();
+            var loc = parser.parse(url)
+            //"http://example.com:3000/pathname/?search=test#hash"
+            // loc.protocol; // => "http:"
+            // loc.host;     // => "example.com:3000"
+            // loc.hostname; // => "example.com"
+            // loc.port;     // => "3000"
+            // loc.pathname; // => "/pathname/"
+            // loc.hash;     // => "#hash"
+            // loc.search;   // => "?search=test"
+            return loc;
+        },
+        stripHost: function(url){
+            var loc = qm.urlHelper.parseUrl(url);
+            return loc.pathname + loc.search;
+        },
         getBaseAppUrl: function(){
             if(!qm.platform.getWindow()){
                 return false;
@@ -10886,13 +10994,6 @@ var qm = {
             }
             return true;
         },
-        getUserViaXhrOrFetch: function(userSuccessHandler, errorHandler, params){
-            qm.api.getRequestUrl('v1/user', function(url){
-                qm.api.getViaXhrOrFetch(url, function(user){
-                    userSuccessHandler(user);
-                }, errorHandler)
-            }, params);
-        },
         getUserViaSdk: function(userSuccessHandler, errorHandler, params){
             qm.api.configureClient(arguments.callee.name);
             var apiInstance = new qm.Quantimodo.UserApi();
@@ -10910,31 +11011,25 @@ var qm = {
         getUserFromApi: function(params){
             var deferred = Q.defer();
             qmLog.authDebug("Getting user from API...");
-            function userSuccessHandler(user){
-                if(user && typeof user.displayName !== "undefined"){
-                    qmLog.info("Got user " + user.id + " from API: " + user.loginName)
-                    qm.userHelper.setUser(user);
-                    deferred.resolve(user)
-                }else{
-                    var err = "Could not get user from API...";
-                    qmLog.info(err);
-                    if(qm.platform.isChromeExtension()){
-                        qm.chrome.openLoginWindow();
+            // Sdk doesn't return timezone
+            qm.api.getRequestUrl('v1/user', params, function(url){
+                qm.api.getViaXhrOrFetch(url, function(user){
+                    if(user && typeof user.displayName !== "undefined"){
+                        qmLog.info("Got user " + user.id + " from API: " + user.loginName)
+                        qm.userHelper.setUser(user);
+                        deferred.resolve(user)
+                    }else{
+                        var err = "Could not get user from API...";
+                        qmLog.info(err);
+                        if(qm.platform.isChromeExtension()){
+                            qm.chrome.openLoginWindow();
+                        }
+                        deferred.reject(err)
                     }
+                }, function (err){
                     deferred.reject(err)
-                }
-                return deferred.promise;
-            }
-            var alwaysUseXhr = true; // Sdk doesn't return timezone
-            if(alwaysUseXhr || typeof qm.Quantimodo === "undefined"){  // Can't use QM SDK in service worker because it uses XHR instead of fetch
-                qm.userHelper.getUserViaXhrOrFetch(userSuccessHandler, function (err){
-                    deferred.reject(err)
-                }, params);
-            }else{   // Can't use QM SDK in service worker because it uses XHR instead of fetch
-                qm.userHelper.getUserViaSdk(userSuccessHandler, function (err){
-                    deferred.reject(err)
-                }, params);
-            }
+                })
+            });
             return deferred.promise;
         },
         getUserFromLocalStorageOrApi: function(){
