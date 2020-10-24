@@ -63,20 +63,29 @@ export function getS3Client() {
     return new AWS.S3(s3Options)
 }
 
-export function downloadFromS3(filePath: string, bucketName: string, key: string, cb: (arg0: any) => void) {
+export function downloadFromS3(filePath: string, key: string, cb: (filePath: string | null) => void,
+                               bucketName = "quantimodo") {
     const s3 = new AWS.S3()
     s3.getObject({
         Bucket: bucketName,
         Key: key,
     }, (err, data) => {
         if (err) {
+            if (err.name === "NoSuchKey") {
+                console.warn(key + " not found in bucket: " + bucketName)
+                cb(null)
+                return
+            }
             throw err
         }
         if (data && data.Body) {
             fs.writeFileSync(filePath, data.Body.toString())
             console.log(`${filePath} has been created!`)
+            if(cb) {
+                cb(filePath)
+            }
         } else {
-            throw Error("File not found")
+            throw Error(key + " not found in bucket: " + bucketName)
         }
     })
 }
@@ -95,7 +104,7 @@ export function uploadToS3InSubFolderWithCurrentDateTime(filePath: string,
 export function uploadToS3(
     relative: string,
     s3BasePath: string,
-    cb: (err: Error, url: string) => void,
+    cb?: (err: Error, url: string) => void,
     s3Bucket = "quantimodo",
     accessControlLevel = "public-read",
     ContentType?: string | undefined,
@@ -127,7 +136,7 @@ export function uploadToS3(
     })
 }
 
-export function writeToFile(filePath: string, contents: any, cb?: () => void) {
+export function writeToFile(filePath: string, contents: any, cb?: (filePath: string) => void) {
     function ensureDirectoryExistence(filePathToCheck: string) {
         const dirname = path.dirname(filePathToCheck)
         if (fs.existsSync(dirname)) {
@@ -137,17 +146,17 @@ export function writeToFile(filePath: string, contents: any, cb?: () => void) {
         fs.mkdirSync(dirname)
     }
 
-    filePath = getAbsolutePath(filePath)
-    ensureDirectoryExistence(filePath)
-    console.log("Writing to " + filePath)
-    fs.writeFile(filePath, contents, (err) => {
+    const absolutePath = getAbsolutePath(filePath)
+    ensureDirectoryExistence(absolutePath)
+    console.log("Writing to " + absolutePath)
+    fs.writeFile(absolutePath, contents, (err) => {
         if (err) {
             throw err
         }
         // tslint:disable-next-line:no-console
-        console.log(filePath + "\n\tsaved!")
+        console.log(absolutePath + "\n\tsaved!")
         if (cb) {
-            cb()
+            cb(absolutePath)
         }
     })
 }

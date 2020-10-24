@@ -228,7 +228,7 @@ function handleTestSuccess(results, context, cb) {
     });
 }
 function runOneCypressSpec(specName, cb) {
-    fs.writeFileSync(lastFailedCypressTestPath, specName); // Set last failed first so it exists if we have an exception
+    uploadLastFailed(specName); // Set last failed first so it exists if we have an exception
     var specsPath = getSpecsPath();
     var specPath = specsPath + "/" + specName;
     var browser = process.env.CYPRESS_BROWSER || "electron";
@@ -286,6 +286,15 @@ function uploadCypressVideo(specName, cb) {
     fileHelper.uploadToS3InSubFolderWithCurrentDateTime(getVideoPath(specName), "cypress", cb);
 }
 exports.uploadCypressVideo = uploadCypressVideo;
+function uploadLastFailed(specName, cb) {
+    fs.writeFileSync(lastFailedCypressTestPath, specName);
+    fileHelper.uploadToS3(lastFailedCypressTestPath, "cypress", cb, "qmimages");
+}
+exports.uploadLastFailed = uploadLastFailed;
+function downloadLastFailed(cb) {
+    fileHelper.downloadFromS3(lastFailedCypressTestPath, "cypress" + "/" + lastFailedCypressTestPath, cb, "qmimages");
+}
+exports.downloadLastFailed = downloadLastFailed;
 function getSpecsPath() {
     return app_root_path_1.default + "/cypress/integration";
 }
@@ -382,12 +391,24 @@ function runCypressTests(cb) {
     });
 }
 exports.runCypressTests = runCypressTests;
-function getLastFailedCypressTest() {
+function getLastFailedCypressTest(cb) {
     try {
-        return fs.readFileSync(lastFailedCypressTestPath, "utf8");
+        downloadLastFailed(function (absPath) {
+            if (!absPath) {
+                cb(null);
+                return;
+            }
+            try {
+                var spec = fs.readFileSync(absPath, "utf8");
+                cb(spec);
+            }
+            catch (error) {
+                cb(null);
+            }
+        });
     }
     catch (error) {
-        return null;
+        cb(null);
     }
 }
 function deleteLastFailedCypressTest() {
@@ -401,21 +422,22 @@ function deleteLastFailedCypressTest() {
 }
 // tslint:disable-next-line:unified-signatures
 function runLastFailedCypressTest(cb) {
-    var name = getLastFailedCypressTest();
-    if (!name) {
-        console.info("No previously failed test!");
-        cb(false);
-        return;
-    }
-    test_helpers_1.deleteSuccessFile();
-    try {
-        copyCypressEnvConfigIfNecessary();
-    }
-    catch (e) {
-        console.error(e.message + "!  Going to try again...");
-        copyCypressEnvConfigIfNecessary();
-    }
-    runOneCypressSpec(name, cb);
+    getLastFailedCypressTest(function (name) {
+        if (!name) {
+            console.info("No previously failed test!");
+            cb(false);
+            return;
+        }
+        test_helpers_1.deleteSuccessFile();
+        try {
+            copyCypressEnvConfigIfNecessary();
+        }
+        catch (e) {
+            console.error(e.message + "!  Going to try again...");
+            copyCypressEnvConfigIfNecessary();
+        }
+        runOneCypressSpec(name, cb);
+    });
 }
 exports.runLastFailedCypressTest = runLastFailedCypressTest;
 function uploadTestResults(cb) {

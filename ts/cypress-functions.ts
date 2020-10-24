@@ -226,7 +226,7 @@ function handleTestSuccess(results: any, context: string, cb: (err: any) => void
 }
 
 export function runOneCypressSpec(specName: string, cb: ((err: any) => void)) {
-    fs.writeFileSync(lastFailedCypressTestPath, specName) // Set last failed first so it exists if we have an exception
+    uploadLastFailed(specName)  // Set last failed first so it exists if we have an exception
     const specsPath = getSpecsPath()
     const specPath = specsPath + "/" + specName
     const browser = process.env.CYPRESS_BROWSER || "electron"
@@ -280,6 +280,16 @@ export function getVideoPath(specName: string) {
 
 export function uploadCypressVideo(specName: string, cb: (err: Error, url: string) => void) {
     fileHelper.uploadToS3InSubFolderWithCurrentDateTime(getVideoPath(specName), "cypress", cb)
+}
+
+export function uploadLastFailed(specName: string, cb?: (err: Error, url: string) => void) {
+    fs.writeFileSync(lastFailedCypressTestPath, specName)
+    fileHelper.uploadToS3(lastFailedCypressTestPath, "cypress", cb, "qmimages")
+}
+
+export function downloadLastFailed(cb: (filePath: string | null) => void) {
+    fileHelper.downloadFromS3(lastFailedCypressTestPath, "cypress"+"/"+lastFailedCypressTestPath, cb,
+        "qmimages")
 }
 
 function getSpecsPath() {
@@ -366,11 +376,22 @@ export function runCypressTests(cb?: (err: any) => void) {
         })
     })
 }
-function getLastFailedCypressTest() {
+function getLastFailedCypressTest(cb: (specName?: string | null) => void) {
     try {
-        return fs.readFileSync(lastFailedCypressTestPath, "utf8")
+        downloadLastFailed(function(absPath: string | null) {
+            if(!absPath) {
+                cb(null)
+                return
+            }
+            try {
+                const spec = fs.readFileSync(absPath, "utf8")
+                cb(spec)
+            } catch (error) {
+                cb(null)
+            }
+        })
     } catch (error) {
-        return null
+        cb(null)
     }
 }
 function deleteLastFailedCypressTest() {
@@ -383,20 +404,21 @@ function deleteLastFailedCypressTest() {
 }
 // tslint:disable-next-line:unified-signatures
 export function runLastFailedCypressTest(cb: (err: any) => void) {
-    const name = getLastFailedCypressTest()
-    if (!name) {
-        console.info("No previously failed test!")
-        cb(false)
-        return
-    }
-    deleteSuccessFile()
-    try {
-        copyCypressEnvConfigIfNecessary()
-    } catch (e) {
-        console.error(e.message+"!  Going to try again...")
-        copyCypressEnvConfigIfNecessary()
-    }
-    runOneCypressSpec(name, cb)
+    getLastFailedCypressTest(function(name) {
+        if (!name) {
+            console.info("No previously failed test!")
+            cb(false)
+            return
+        }
+        deleteSuccessFile()
+        try {
+            copyCypressEnvConfigIfNecessary()
+        } catch (e) {
+            console.error(e.message+"!  Going to try again...")
+            copyCypressEnvConfigIfNecessary()
+        }
+        runOneCypressSpec(name, cb)
+    })
 }
 export function uploadTestResults(cb: (err: Error, url: string) => void) {
     const path = "mochawesome/" + qmGit.getCurrentGitCommitSha()
