@@ -51,7 +51,7 @@ describe('Variables', function(){
         cy.clickActionSheetButtonContaining('Charts')
         cy.url().should('contain', 'charts')
         cy.log('Chart is present and titled')
-        cy.contains(`${variableName} Over Time`, {timeout: 30000})
+        // TODO: Uncomment when we stop filtering numbers from displayName cy.contains(`${variableName} Over Time`, {timeout: 30000})
         cy.visitIonicAndSetApiUrl(`/#/app/history-all?variableCategoryName=${variableCategoryName}`)
         verifyAndDeleteMeasurement(variableName)
     })
