@@ -372,20 +372,24 @@ describe("Measurement", function () {
         let newMeasurementId
         return qm.userHelper.getUserFromApi()
             .then(function (user) {
+                qmLog.info("mocha: Getting user variables...")
                 expect(user.accessToken).to.eq(qmTests.getTestAccessToken())
                 return qm.userVariables.getFromApi()
             })
             .then(function (userVariables) {
                 expect(userVariables).to.be.a('array')
+                qmLog.info("mocha: getMeasurements...")
                 return qm.measurements.getMeasurements({variableName, sort: "-startAt"})
             })
             .then(function (measurements) {
                 qmLog.info("Deleting last " + variableName + " measurement...")
                 qm.measurements.logMeasurements(measurements, variableName + " Measurements")
+                qmLog.info("mocha: deleteLastMeasurementForVariable...")
                 return qm.measurements.deleteLastMeasurementForVariable(variableName)
             })
             .then(function () {
                 qmLog.info("Recording " + initialValue + " /5 " + variableName + " measurement...")
+                qmLog.info("mocha: recordMeasurement...")
                 return qm.measurements.recordMeasurement({
                     value: initialValue,
                     variableName,
@@ -403,10 +407,12 @@ describe("Measurement", function () {
                 expect(data.userVariables).length(1)
                 var queue = qm.measurements.getMeasurementsFromQueue()
                 expect(queue).length(0)
+                qmLog.info("mocha: userVariables.getFromLocalStorage...")
                 return qm.userVariables.getFromLocalStorage({variableName})
             })
             .then(function (userVariables) {
                 expect(userVariables).length(1)
+                qmLog.info("mocha: measurements.getLocalMeasurements...")
                 return qm.measurements.getLocalMeasurements({variableName})
             })
             .then(function (measurements) {
@@ -417,15 +423,18 @@ describe("Measurement", function () {
                     expectInteger(m.id)
                     expect(m.variableName).eq(variableName)
                 })
+                qmLog.info("mocha: userVariables.getFromLocalStorage...")
                 return qm.userVariables.getFromLocalStorage({})
             })
             .then(function (userVariables) {
                 expect(userVariables).length(1)
+                qmLog.info("mocha: userVariables.getFromLocalStorage 2...")
                 return qm.userVariables.getFromLocalStorage({})
             })
             .then(function (userVariables) {
                 var uv = userVariables[0]
                 expect(uv.variableName).to.eq(variableName) // Should be first since it has most recent measurement
+                qmLog.info("mocha: measurements.getLocalMeasurements 2...")
                 return qm.measurements.getLocalMeasurements({variableName})
             })
             .then(function (measurements) {
@@ -434,12 +443,15 @@ describe("Measurement", function () {
                     expect(measurement.pngPath).to.be.a('string')
                         .and.satisfy((msg) => msg.startsWith("img/rating/face_rating_button_256_"))
                 })
+                qmLog.info("mocha: measurements.getLocalMeasurements 3...")
                 return qm.measurements.getLocalMeasurements({variableName})
             })
             .then(function (measurements) {
+                qmLog.info("mocha: measurements.deleteMeasurement...")
                 return qm.measurements.deleteMeasurement(measurements[0])
             })
             .then(function () {
+                qmLog.info("mocha: measurements.getLocalMeasurements 4...")
                 return qm.measurements.getLocalMeasurements({variableName})
             })
             .then(function (measurements) {
@@ -717,11 +729,13 @@ describe("Test Helper", function () {
         var url = "https://test-url.com/some-path?param=hi"
         var data = {"code": 200, "data": {"param": "hi"}}
         var path = qm.tests.urlToFixturePath(method, url)
-        qm.tests.deleteFixture(method, url)
-        fileHelper.assertDoesNotExist(path)
-        qm.tests.addToFixture(method, url, data)
-        var gotten = qm.tests.getFixtureData(method, url)
-        expect(gotten).to.eq(data)
+        return qm.tests.deleteFixture(method, url)
+            .then(function (){
+                fileHelper.assertDoesNotExist(path)
+                qm.tests.addToFixture(method, url, data)
+                var gotten = qm.tests.getFixtureData(method, url)
+                expect(gotten).to.deep.eq(data)
+            })
     })
 })
 describe("Units", function () {
