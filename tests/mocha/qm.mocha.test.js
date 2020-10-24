@@ -6,7 +6,7 @@ var chai = require("chai")
 var expect = chai.expect
 var qmGit = require("../../ts/qm.git")
 var qmShell = require("../../ts/qm.shell")
-var fileHelper = require("../../ts/qm.file-helper")
+global.fileHelper = require("../../ts/qm.file-helper")
 var cypressFunctions = require("../../ts/cypress-functions")
 var urlParser = require("url")
 var https = require("https")
@@ -20,7 +20,7 @@ global.bugsnagClient = require('./../../node_modules/bugsnag')
 //global.Swal = require('./../../src/lib/swee')
 var argv = require('./../../node_modules/yargs').argv
 global.qm = require('./../../src/js/qmHelpers')
-qm.appMode.mode = 'testing'
+qm.appMode.mode = 'mocha'
 global.qmLog = require('./../../src/js/qmLogger')
 qmLog.color = require('./../../node_modules/ansi-colors')
 qm.github = require('./../../node_modules/gulp-github')
@@ -709,6 +709,19 @@ describe("Studies", function () {
         }, function(error){
             throw Error(error)
         })
+    })
+})
+describe("Test Helper", function () {
+    it('can save to fixtures', function() {
+        var method = "GET"
+        var url = "https://test-url.com/some-path?param=hi"
+        var data = {"code": 200, "data": {"param": "hi"}}
+        var path = qm.tests.urlToFixturePath(method, url)
+        qm.tests.deleteFixture(method, url)
+        fileHelper.assertDoesNotExist(path)
+        qm.tests.addToFixture(method, url, data)
+        var gotten = qm.tests.getFixtureData(method, url)
+        expect(gotten).to.eq(data)
     })
 })
 describe("Units", function () {
