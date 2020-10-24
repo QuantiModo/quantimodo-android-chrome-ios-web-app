@@ -140,3 +140,4 @@ secrets/*
 /success-file
 /tests/mochawesome-report/assets/
 debug.log
+/cypress/fixtures/get/some-path-param=hi.json
