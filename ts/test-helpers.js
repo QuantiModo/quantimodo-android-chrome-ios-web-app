@@ -43,9 +43,9 @@ function createSuccessFile(cb) {
     });
 }
 exports.createSuccessFile = createSuccessFile;
-function deleteSuccessFile(cb) {
+function deleteSuccessFile() {
     qmLog.info("Deleting success file so we know if build completed...");
-    fileHelper.deleteFile(successFilename, cb);
+    return fileHelper.deleteFile(successFilename);
 }
 exports.deleteSuccessFile = deleteSuccessFile;
 function deleteEnvFile(cb) {

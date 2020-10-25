@@ -29,9 +29,9 @@ export function createSuccessFile(cb?: () => void) {
         fileHelper.createFile(successFilename, qmGit.getCurrentGitCommitSha(), cb)
     })
 }
-export function deleteSuccessFile(cb?: () => void) {
+export function deleteSuccessFile() {
     qmLog.info("Deleting success file so we know if build completed...")
-    fileHelper.deleteFile(successFilename, cb)
+    return fileHelper.deleteFile(successFilename)
 }
 export function deleteEnvFile(cb?: () => void) {
     rimraf(".env", function() {
