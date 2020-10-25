@@ -31,8 +31,8 @@ export function exists(filename: string) {
     return fs.existsSync(filepath)
 }
 
-export function createFile(filePath: string, contents: any, cb?: () => void) {
-    writeToFile(filePath, contents, cb)
+export function createFile(filePath: string, contents: any) {
+    return writeToFile(filePath, contents)
 }
 
 export function deleteFile(filename: string) {
@@ -63,9 +63,9 @@ export function getS3Client() {
     return new AWS.S3(s3Options)
 }
 
-export function downloadFromS3(filePath: string, key: string, cb: (filePath: string | null) => void,
-                               bucketName = "quantimodo") {
+export function downloadFromS3(filePath: string, key: string, bucketName = "quantimodo") {
     const s3 = new AWS.S3()
+    const deferred = Q.defer()
     s3.getObject({
         Bucket: bucketName,
         Key: key,
@@ -73,7 +73,7 @@ export function downloadFromS3(filePath: string, key: string, cb: (filePath: str
         if (err) {
             if (err.name === "NoSuchKey") {
                 console.warn(key + " not found in bucket: " + bucketName)
-                cb(null)
+                deferred.resolve(null)
                 return
             }
             throw err
@@ -81,13 +81,12 @@ export function downloadFromS3(filePath: string, key: string, cb: (filePath: str
         if (data && data.Body) {
             fs.writeFileSync(filePath, data.Body.toString())
             console.log(`${filePath} has been created!`)
-            if(cb) {
-                cb(filePath)
-            }
+            deferred.resolve(filePath)
         } else {
             throw Error(key + " not found in bucket: " + bucketName)
         }
     })
+    return deferred.promise
 }
 
 export function uploadToS3InSubFolderWithCurrentDateTime(filePath: string,
@@ -143,7 +142,8 @@ export function uploadToS3(
     return deferred.promise
 }
 
-export function writeToFile(filePath: string, contents: any, cb?: (filePath: string) => void) {
+export function writeToFile(filePath: string, contents: any) {
+    const deferred = Q.defer()
     function ensureDirectoryExistence(filePathToCheck: string) {
         const dirname = path.dirname(filePathToCheck)
         if (fs.existsSync(dirname)) {
@@ -158,14 +158,13 @@ export function writeToFile(filePath: string, contents: any, cb?: (filePath: str
     console.log("Writing to " + absolutePath)
     fs.writeFile(absolutePath, contents, (err) => {
         if (err) {
-            throw err
+            deferred.reject(err)
         }
         // tslint:disable-next-line:no-console
         console.log(absolutePath + "\n\tsaved!")
-        if (cb) {
-            cb(absolutePath)
-        }
+        deferred.resolve(absolutePath)
     })
+    return deferred.promise
 }
 
 export function getAbsolutePath(relativePath: string) {
@@ -176,17 +175,21 @@ export function getAbsolutePath(relativePath: string) {
     }
 }
 
-export function download(url: string, relative: string, cb: any) {
+export function download(url: string, relative: string) {
+    const deferred = Q.defer()
     const absolutePath = getAbsolutePath(relative)
     const file = fs.createWriteStream(absolutePath)
     qmLog.info("Downloading " + url + " to " + absolutePath + "...")
     https.get(url, function(response) {
         response.pipe(file)
         file.on("finish", function() {
-            file.on("close", cb)
+            file.on("close", function() {
+                deferred.resolve(absolutePath)
+            })
             file.close()
         })
     })
+    return deferred.promise
 }
 
 export function uploadFolderToS3(

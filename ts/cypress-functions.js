@@ -18,6 +18,7 @@ var fs = __importStar(require("fs"));
 var mochawesome_merge_1 = require("mochawesome-merge");
 // @ts-ignore
 var mochawesome_report_generator_1 = __importDefault(require("mochawesome-report-generator"));
+var Q = __importStar(require("q"));
 var rimraf_1 = __importDefault(require("rimraf"));
 var env_helper_1 = require("./env-helper");
 var fileHelper = __importStar(require("./qm.file-helper"));
@@ -25,6 +26,7 @@ var fileHelper = __importStar(require("./qm.file-helper"));
 // tslint:disable-next-line:no-var-requires
 var qm = require("../src/js/qmHelpers.js");
 var qmGit = __importStar(require("./qm.git"));
+var qmLog = __importStar(require("./qm.log"));
 var test_helpers_1 = require("./test-helpers");
 env_helper_1.loadEnv("local"); // https://github.com/motdotla/dotenv#what-happens-to-environment-variables-that-were-already-set
 var ciProvider = test_helpers_1.getCiProvider();
@@ -225,7 +227,8 @@ function handleTestSuccess(results, context, cb) {
     deleteLastFailedCypressTest();
     console.info(results.totalPassed + " tests PASSED!");
     qmGit.setGithubStatus("success", context, results.totalPassed + " tests passed", null, function () {
-        test_helpers_1.createSuccessFile(function () {
+        test_helpers_1.createSuccessFile()
+            .then(function () {
             cb(false);
         });
     });
@@ -295,8 +298,8 @@ function uploadLastFailed(specName, cb) {
     return fileHelper.uploadToS3(lastFailedCypressTestPath, "cypress", "qmimages");
 }
 exports.uploadLastFailed = uploadLastFailed;
-function downloadLastFailed(cb) {
-    fileHelper.downloadFromS3(lastFailedCypressTestPath, "cypress" + "/" + lastFailedCypressTestPath, cb, "qmimages");
+function downloadLastFailed() {
+    return fileHelper.downloadFromS3(lastFailedCypressTestPath, "cypress" + "/" + lastFailedCypressTestPath, s3Bucket);
 }
 exports.downloadLastFailed = downloadLastFailed;
 function getSpecsPath() {
@@ -337,7 +340,8 @@ function runCypressTestsInParallel(cb) {
             }
             Promise.all(promises).then(function (values) {
                 console.log(values);
-                test_helpers_1.createSuccessFile(function () {
+                test_helpers_1.createSuccessFile()
+                    .then(function () {
                     test_helpers_1.deleteEnvFile();
                     if (cb) {
                         cb(false);
@@ -374,7 +378,8 @@ function runCypressTests(cb) {
                 p = p.then(function (_) { return new Promise(function (resolve) {
                     runOneCypressSpec(specName, function () {
                         if (i === specFileNames.length - 1) {
-                            test_helpers_1.createSuccessFile(function () {
+                            test_helpers_1.createSuccessFile()
+                                .then(function () {
                                 test_helpers_1.deleteEnvFile();
                                 if (cb) {
                                     cb(false);
@@ -395,25 +400,30 @@ function runCypressTests(cb) {
     });
 }
 exports.runCypressTests = runCypressTests;
-function getLastFailedCypressTest(cb) {
+function getLastFailedCypressTest() {
+    var deferred = Q.defer();
     try {
-        downloadLastFailed(function (absPath) {
+        downloadLastFailed()
+            .then(function (absPath) {
             if (!absPath) {
-                cb(null);
+                deferred.resolve(null);
                 return;
             }
             try {
+                // @ts-ignore
                 var spec = fs.readFileSync(absPath, "utf8");
-                cb(spec);
+                deferred.resolve(spec);
             }
             catch (error) {
-                cb(null);
+                deferred.resolve(null);
             }
         });
     }
     catch (error) {
-        cb(null);
+        qmLog.error(error);
+        deferred.resolve(null);
     }
+    return deferred.promise;
 }
 function deleteLastFailedCypressTest() {
     // tslint:disable-next-line:no-empty
@@ -426,7 +436,8 @@ function deleteLastFailedCypressTest() {
 }
 // tslint:disable-next-line:unified-signatures
 function runLastFailedCypressTest(cb) {
-    getLastFailedCypressTest(function (name) {
+    getLastFailedCypressTest()
+        .then(function (name) {
         if (!name) {
             console.info("No previously failed test!");
             cb(false);
@@ -440,6 +451,7 @@ function runLastFailedCypressTest(cb) {
             console.error(e.message + "!  Going to try again...");
             copyCypressEnvConfigIfNecessary();
         }
+        // @ts-ignore
         runOneCypressSpec(name, cb);
     });
 }

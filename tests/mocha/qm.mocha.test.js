@@ -263,23 +263,23 @@ describe("Cypress", function () {
     it('can upload Cypress video', function(done) {
         const specName = "test_spec"
         const relative = cypressFunctions.getVideoPath(specName)
+        const downloadPath = 'tmp/download.mp4'
+        let s3Url
         fileHelper.deleteFile(relative).then(function (){
             let exists = fileHelper.exists(relative)
             expect(exists).to.be.false
-            fileHelper.createFile(relative, "test video", function (){
-                cypressFunctions.uploadCypressVideo(specName)
-                    .then(function (err, s3Url){
-                        const downloadPath = 'tmp/download.mp4'
-                        fileHelper.deleteFile(downloadPath)
-                            .then(function (){
-                                fileHelper.assertDoesNotExist(downloadPath)
-                                fileHelper.download(s3Url, downloadPath, function (){
-                                    fileHelper.assertExists(downloadPath)
-                                    done()
-                                })
-                            })
-                    })
-            })
+            return fileHelper.createFile(relative, "test video")
+        }).then(function (){
+            return cypressFunctions.uploadCypressVideo(specName)
+        }).then(function (url){
+            s3Url = url
+            return fileHelper.deleteFile(downloadPath)
+        }).then(function (){
+            fileHelper.assertDoesNotExist(downloadPath)
+            return fileHelper.download(s3Url, downloadPath)
+        }).then(function (){
+            fileHelper.assertExists(downloadPath)
+            done()
         })
     })
 })
@@ -290,11 +290,12 @@ describe("File Helper", function () {
             .then(function (){
                 let exists = fileHelper.exists(filename)
                 expect(exists).to.be.false
-                th.createSuccessFile(function (){
-                    exists = fileHelper.exists(filename)
-                    expect(exists).to.be.true
-                    done()
-                })
+                th.createSuccessFile()
+                    .then(function (){
+                        exists = fileHelper.exists(filename)
+                        expect(exists).to.be.true
+                        done()
+                    })
             })
     })
     it("determines the absolute path", function (done) {

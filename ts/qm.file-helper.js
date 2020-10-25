@@ -41,8 +41,8 @@ function exists(filename) {
     return fs.existsSync(filepath);
 }
 exports.exists = exists;
-function createFile(filePath, contents, cb) {
-    writeToFile(filePath, contents, cb);
+function createFile(filePath, contents) {
+    return writeToFile(filePath, contents);
 }
 exports.createFile = createFile;
 function deleteFile(filename) {
@@ -71,9 +71,10 @@ function getS3Client() {
     return new aws_sdk_1.default.S3(s3Options);
 }
 exports.getS3Client = getS3Client;
-function downloadFromS3(filePath, key, cb, bucketName) {
+function downloadFromS3(filePath, key, bucketName) {
     if (bucketName === void 0) { bucketName = "quantimodo"; }
     var s3 = new aws_sdk_1.default.S3();
+    var deferred = Q.defer();
     s3.getObject({
         Bucket: bucketName,
         Key: key,
@@ -81,7 +82,7 @@ function downloadFromS3(filePath, key, cb, bucketName) {
         if (err) {
             if (err.name === "NoSuchKey") {
                 console.warn(key + " not found in bucket: " + bucketName);
-                cb(null);
+                deferred.resolve(null);
                 return;
             }
             throw err;
@@ -89,14 +90,13 @@ function downloadFromS3(filePath, key, cb, bucketName) {
         if (data && data.Body) {
             fs.writeFileSync(filePath, data.Body.toString());
             console.log(filePath + " has been created!");
-            if (cb) {
-                cb(filePath);
-            }
+            deferred.resolve(filePath);
         }
         else {
             throw Error(key + " not found in bucket: " + bucketName);
         }
     });
+    return deferred.promise;
 }
 exports.downloadFromS3 = downloadFromS3;
 function uploadToS3InSubFolderWithCurrentDateTime(filePath, s3BasePath, s3Bucket, accessControlLevel, ContentType) {
@@ -148,7 +148,8 @@ function uploadToS3(relative, s3BasePath, s3Bucket, accessControlLevel, ContentT
     return deferred.promise;
 }
 exports.uploadToS3 = uploadToS3;
-function writeToFile(filePath, contents, cb) {
+function writeToFile(filePath, contents) {
+    var deferred = Q.defer();
     function ensureDirectoryExistence(filePathToCheck) {
         var dirname = path.dirname(filePathToCheck);
         if (fs.existsSync(dirname)) {
@@ -162,14 +163,13 @@ function writeToFile(filePath, contents, cb) {
     console.log("Writing to " + absolutePath);
     fs.writeFile(absolutePath, contents, function (err) {
         if (err) {
-            throw err;
+            deferred.reject(err);
         }
         // tslint:disable-next-line:no-console
         console.log(absolutePath + "\n\tsaved!");
-        if (cb) {
-            cb(absolutePath);
-        }
+        deferred.resolve(absolutePath);
     });
+    return deferred.promise;
 }
 exports.writeToFile = writeToFile;
 function getAbsolutePath(relativePath) {
@@ -181,17 +181,21 @@ function getAbsolutePath(relativePath) {
     }
 }
 exports.getAbsolutePath = getAbsolutePath;
-function download(url, relative, cb) {
+function download(url, relative) {
+    var deferred = Q.defer();
     var absolutePath = getAbsolutePath(relative);
     var file = fs.createWriteStream(absolutePath);
     qmLog.info("Downloading " + url + " to " + absolutePath + "...");
     https.get(url, function (response) {
         response.pipe(file);
         file.on("finish", function () {
-            file.on("close", cb);
+            file.on("close", function () {
+                deferred.resolve(absolutePath);
+            });
             file.close();
         });
     });
+    return deferred.promise;
 }
 exports.download = download;
 function uploadFolderToS3(dir, s3BasePath, s3Bucket, accessControlLevel, ContentType) {

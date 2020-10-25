@@ -24,10 +24,11 @@ export function getBuildLink() {
     }
 }
 const successFilename = "success-file"
-export function createSuccessFile(cb?: () => void) {
-    fileHelper.writeToFile("lastCommitBuilt", qmGit.getCurrentGitCommitSha(), function() {
-        fileHelper.createFile(successFilename, qmGit.getCurrentGitCommitSha(), cb)
-    })
+export function createSuccessFile() {
+    return fileHelper.writeToFile("lastCommitBuilt", qmGit.getCurrentGitCommitSha())
+        .then(function() {
+            return fileHelper.createFile(successFilename, qmGit.getCurrentGitCommitSha())
+        })
 }
 export function deleteSuccessFile() {
     qmLog.info("Deleting success file so we know if build completed...")
