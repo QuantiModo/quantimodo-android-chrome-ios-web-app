@@ -6,6 +6,7 @@ import * as fs from "fs"
 import {merge} from "mochawesome-merge"
 // @ts-ignore
 import marge from "mochawesome-report-generator"
+import * as Q from "q"
 import rimraf from "rimraf"
 import {loadEnv} from "./env-helper"
 import * as fileHelper from "./qm.file-helper"
@@ -15,12 +16,13 @@ declare function require(path: string): any
 // tslint:disable-next-line:no-var-requires
 const qm = require("../src/js/qmHelpers.js")
 import * as qmGit from "./qm.git"
+import * as qmLog from "./qm.log"
 import {createSuccessFile, deleteEnvFile, deleteSuccessFile, getBuildLink, getCiProvider} from "./test-helpers"
 
 loadEnv("local") // https://github.com/motdotla/dotenv#what-happens-to-environment-variables-that-were-already-set
 const ciProvider = getCiProvider()
 const isWin = process.platform === "win32"
-const outputReportDir = repoPath + "/tests/mochawesome-report"
+const outputReportDir = repoPath + "/cypress/reports/mocha"
 const screenshotDirectory = outputReportDir + `/assets`
 const unmerged = repoPath + "/cypress/reports/mocha"
 const vcsProvider = "github"
@@ -31,6 +33,7 @@ const lastFailedCypressTestPath = "last-failed-cypress-test"
 const cypressJson = fileHelper.getAbsolutePath("cypress.json")
 const releaseStage = process.env.RELEASE_STAGE || "production"
 const envPath = fileHelper.getAbsolutePath(`cypress/config/cypress.${releaseStage}.json`)
+const s3Bucket = "qmimages"
 const paths = {
     reports: {
         junit: "./cypress/reports/junit",
@@ -132,7 +135,7 @@ function setGithubStatusAndUploadTestResults(failedTests: any[] | null, context:
     const errorMessage = failedTests[0].error
     qmGit.setGithubStatus("failure", context, failedTestTitle + ": " +
         errorMessage, getReportUrl(), function() {
-        uploadTestResults(function() {
+        uploadMochawesome().then(function(urls) {
             console.error(errorMessage)
             cb(errorMessage)
             // resolve();
@@ -161,7 +164,7 @@ function logFailedTests(failedTests: any[], context: string, cb: (err: any) => v
         console.error(errorMessage)
         console.error("==============================================")
     }
-    deleteSuccessFile(function() {
+    deleteSuccessFile().then(function() {
         mochawesome(failedTests, function() {
             setGithubStatusAndUploadTestResults(failedTests, context, cb)
         })
@@ -183,14 +186,16 @@ export function runWithRecording(specName: string, cb: (err: any) => void) {
         if ("runUrl" in recordingResults) {
             runUrl = recordingResults.runUrl
         }
-        uploadCypressVideo(specName, function(err, s3Url) {
-            qmGit.setGithubStatus("error", context, "View recording of "+specName,
-                s3Url || getBuildLink() || runUrl, function() {
-                    qmGit.createCommitComment(context, "\nView recording of "+specName+"\n"+
-                        "[Cypress Dashboard]("+runUrl+") or [Build Log]("+getBuildLink()+") or [S3]("+s3Url+")",
-                        function() {
-                        cb(recordingResults)
-                    })
+        uploadCypressVideo(specName)
+            .then(function(s3Url) {
+                const url: any = s3Url || getBuildLink() || runUrl
+                qmGit.setGithubStatus("error", context, "View recording of "+specName,
+                    url, function() {
+                        qmGit.createCommitComment(context, "\nView recording of "+specName+"\n"+
+                            "[Cypress Dashboard]("+runUrl+") or [Build Log]("+getBuildLink()+") or [S3]("+s3Url+")",
+                            function() {
+                            cb(recordingResults)
+                        })
                 })
         })
     })
@@ -219,9 +224,10 @@ function handleTestSuccess(results: any, context: string, cb: (err: any) => void
     deleteLastFailedCypressTest()
     console.info(results.totalPassed + " tests PASSED!")
     qmGit.setGithubStatus("success", context, results.totalPassed + " tests passed", null,function() {
-        createSuccessFile(function() {
-            cb(false)
-        })
+        createSuccessFile()
+            .then(function() {
+                cb(false)
+            })
     })
 }
 
@@ -247,21 +253,21 @@ export function runOneCypressSpec(specName: string, cb: ((err: any) => void)) {
             const failedTests = getFailedTestsFromResults(results)
             if (failedTests.length) {
                 process.env.LOGROCKET = "1"
-                fileHelper.uploadToS3InSubFolderWithCurrentDateTime(getVideoPath(specName),
-                    "cypress", function(err, url) {
-                    runWithRecording(specName, function(recordResults) {
-                        const failedRecordedTests = getFailedTestsFromResults(recordResults)
-                        if (failedRecordedTests.length) {
-                            logFailedTests(failedRecordedTests, context, function(errorMessage) {
-                                cb(errorMessage)
-                                process.exit(1)
-                            })
-                        } else {
-                            delete process.env.LOGROCKET
-                            handleTestSuccess(results, context, cb)
-                        }
+                fileHelper.uploadToS3InSubFolderWithCurrentDateTime(getVideoPath(specName), "cypress")
+                    .then( function(url) {
+                        runWithRecording(specName, function(recordResults) {
+                            const failedRecordedTests = getFailedTestsFromResults(recordResults)
+                            if (failedRecordedTests.length) {
+                                logFailedTests(failedRecordedTests, context, function(errorMessage) {
+                                    cb(errorMessage)
+                                    process.exit(1)
+                                })
+                            } else {
+                                delete process.env.LOGROCKET
+                                handleTestSuccess(results, context, cb)
+                            }
+                        })
                     })
-                })
             } else {
                 handleTestSuccess(results, context, cb)
             }
@@ -278,18 +284,17 @@ export function getVideoPath(specName: string) {
     return "cypress/videos/"+specName+".mp4"
 }
 
-export function uploadCypressVideo(specName: string, cb: (err: Error, url: string) => void) {
-    fileHelper.uploadToS3InSubFolderWithCurrentDateTime(getVideoPath(specName), "cypress", cb)
+export function uploadCypressVideo(specName: string) {
+    return fileHelper.uploadToS3InSubFolderWithCurrentDateTime(getVideoPath(specName), "cypress")
 }
 
-export function uploadLastFailed(specName: string, cb?: (err: Error, url: string) => void) {
+export function uploadLastFailed(specName: string, cb?: (url: string) => void) {
     fs.writeFileSync(lastFailedCypressTestPath, specName)
-    fileHelper.uploadToS3(lastFailedCypressTestPath, "cypress", cb, "qmimages")
+    return fileHelper.uploadToS3(lastFailedCypressTestPath, "cypress", "qmimages")
 }
 
-export function downloadLastFailed(cb: (filePath: string | null) => void) {
-    fileHelper.downloadFromS3(lastFailedCypressTestPath, "cypress"+"/"+lastFailedCypressTestPath, cb,
-        "qmimages")
+export function downloadLastFailed() {
+    return fileHelper.downloadFromS3(lastFailedCypressTestPath, "cypress"+"/"+lastFailedCypressTestPath, s3Bucket)
 }
 
 function getSpecsPath() {
@@ -326,11 +331,12 @@ export function runCypressTestsInParallel(cb?: (err: any) => void) {
             }
             Promise.all(promises).then((values) => {
                 console.log(values)
-                createSuccessFile(function() {
-                    deleteEnvFile()
-                    if (cb) {
-                        cb(false)
-                    }
+                createSuccessFile()
+                    .then(function() {
+                        deleteEnvFile()
+                        if (cb) {
+                            cb(false)
+                        }
                 })
             })
         })
@@ -362,12 +368,13 @@ export function runCypressTests(cb?: (err: any) => void) {
                 p = p.then((_) => new Promise((resolve) => {
                     runOneCypressSpec(specName,function() {
                         if (i === specFileNames.length - 1) {
-                            createSuccessFile(function() {
-                                deleteEnvFile()
-                                if (cb) {
-                                    cb(false)
-                                }
-                            })
+                            createSuccessFile()
+                                .then(function() {
+                                    deleteEnvFile()
+                                    if (cb) {
+                                        cb(false)
+                                    }
+                                })
                         }
                         resolve()
                     })
@@ -376,23 +383,28 @@ export function runCypressTests(cb?: (err: any) => void) {
         })
     })
 }
-function getLastFailedCypressTest(cb: (specName?: string | null) => void) {
+function getLastFailedCypressTest() {
+    const deferred = Q.defer()
     try {
-        downloadLastFailed(function(absPath: string | null) {
-            if(!absPath) {
-                cb(null)
-                return
-            }
-            try {
-                const spec = fs.readFileSync(absPath, "utf8")
-                cb(spec)
-            } catch (error) {
-                cb(null)
-            }
-        })
+        downloadLastFailed()
+            .then(function(absPath) {
+                if(!absPath) {
+                    deferred.resolve(null)
+                    return
+                }
+                try {
+                    // @ts-ignore
+                    const spec = fs.readFileSync(absPath, "utf8")
+                    deferred.resolve(spec)
+                } catch (error) {
+                    deferred.resolve(null)
+                }
+            })
     } catch (error) {
-        cb(null)
+        qmLog.error(error)
+        deferred.resolve(null)
     }
+    return deferred.promise
 }
 function deleteLastFailedCypressTest() {
     // tslint:disable-next-line:no-empty
@@ -404,24 +416,26 @@ function deleteLastFailedCypressTest() {
 }
 // tslint:disable-next-line:unified-signatures
 export function runLastFailedCypressTest(cb: (err: any) => void) {
-    getLastFailedCypressTest(function(name) {
-        if (!name) {
-            console.info("No previously failed test!")
-            cb(false)
-            return
-        }
-        deleteSuccessFile()
-        try {
-            copyCypressEnvConfigIfNecessary()
-        } catch (e) {
-            console.error(e.message+"!  Going to try again...")
-            copyCypressEnvConfigIfNecessary()
-        }
-        runOneCypressSpec(name, cb)
-    })
+    getLastFailedCypressTest()
+        .then(function(name) {
+            if (!name) {
+                console.info("No previously failed test!")
+                cb(false)
+                return
+            }
+            deleteSuccessFile()
+            try {
+                copyCypressEnvConfigIfNecessary()
+            } catch (e) {
+                console.error(e.message+"!  Going to try again...")
+                copyCypressEnvConfigIfNecessary()
+            }
+            // @ts-ignore
+            runOneCypressSpec(name, cb)
+        })
 }
-export function uploadTestResults(cb: (err: Error, url: string) => void) {
-    const path = "mochawesome/" + qmGit.getCurrentGitCommitSha()
-    fileHelper.uploadToS3(outputReportDir + "/mochawesome.html", path, cb, "quantimodo",
-        "public-read", "text/html")
+export function uploadMochawesome() {
+    const s3Key = "mochawesome/" + qmGit.getCurrentGitCommitSha()
+    return fileHelper.uploadFolderToS3(outputReportDir, s3Key, s3Bucket,
+        "public-read")
 }
