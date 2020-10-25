@@ -624,7 +624,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 },
                 postConnectorCredentials: function(connectorName, credentials, successHandler, errorHandler){
                     qm.api.post('api/v3/connectors/' + connectorName + '/connect?noRedirect=true',
-
                         {connectorCredentials: credentials},
                         function(response){
                             qmLog.authDebug("postConnectorCredentials got response:", response, response);
@@ -3070,12 +3069,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                             qm.reminderHelper.deleteReminder(v);
                             return true;
                         };
-                    } else if(v.userId){
-                        actionSheetParams.destructiveText = '<i class="icon ion-trash-a"></i>Delete All';
-                        actionSheetParams.destructiveButtonClicked = function(){
-                            qmService.showDeleteAllMeasurementsForVariablePopup(name);
-                            return true;
-                        };
                     }
                     var hideSheet = $ionicActionSheet.show(actionSheetParams);
                 };
@@ -3286,10 +3279,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 effectVariableName: qm.studyHelper.getEffectVariableName(study),
                 vote: (study.studyVotes) ? study.studyVotes.userVote : study.userVote
             }, successHandler, errorHandler);
-        };
-        qmService.deleteUserVariableMeasurements = function(variableName, successHandler, errorHandler){
-            qm.storage.deleteByProperty(qm.items.userVariables, 'variableName', variableName);
-            qmService.post('api/v3/userVariables/delete', ['variableName'], {variableName: variableName}, successHandler, errorHandler);
         };
         qmService.disconnectConnectorToApi = function(name, successHandler, errorHandler){
             qm.api.get('api/v3/connectors/' + name + '/disconnect', [], {}, successHandler, errorHandler);
@@ -5025,20 +5014,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 }
             });
         };
-        // post changes to user variable settings
-        qmService.deleteAllMeasurementsForVariableDeferred = function(variableName){
-            var deferred = $q.defer();
-            qmService.deleteUserVariableMeasurements(variableName, function(){
-                // Delete user variable from local storage
-                qm.storage.deleteByProperty(qm.items.userVariables, 'variableName', variableName);
-                deferred.resolve();
-            }, function(error){
-                qmLog.error(error);
-                qmLog.error('Error deleting all measurements for variable: ', error);
-                deferred.reject(error);
-            });
-            return deferred.promise;
-        };
         qmService.scheduleSingleMostFrequentLocalNotification = function(activeTrackingReminders){
             if(!qm.platform.isMobile() && !qm.platform.isChromeExtension()){
                 return;
@@ -6097,25 +6072,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     $mdDialog.cancel();
                 }
                 //}, function() {if(noCallbackFunction){noCallbackFunction(ev);}}); TODO: What was the point of this? It causes popups to be disabled inadvertently
-            });
-        };
-        var deleteAllMeasurementsForVariable = function(variableName){
-            qmService.showBlackRingLoader();
-            // Delete all measurements for a variable
-            qmService.showInfoToast("Deleted all " + variableName + " measurements");
-            qmService.deleteAllMeasurementsForVariableDeferred(variableName).then(function(){
-                // If primaryOutcomeVariableName, delete local storage measurements
-                if(variableName === qm.getPrimaryOutcomeVariable().name){
-                    qmService.storage.setItem('measurementsQueue', []);
-                    qmService.storage.setItem('averagePrimaryOutcomeVariableValue', 0);
-                    qmService.storage.setItem('lastMeasurementSyncTime', 0);
-                }
-                qmService.hideLoader();
-                qmService.goToDefaultState();
-                qmLog.debug('All measurements for ' + variableName + ' deleted!', null);
-            }, function(error){
-                qmService.hideLoader();
-                qmLog.debug('Error deleting measurements: ', error, null);
             });
         };
         qmService.showDeleteAllMeasurementsForVariablePopup = function(variableName, ev){
