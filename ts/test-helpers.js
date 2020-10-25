@@ -37,9 +37,10 @@ function getBuildLink() {
 }
 exports.getBuildLink = getBuildLink;
 var successFilename = "success-file";
-function createSuccessFile(cb) {
-    fileHelper.writeToFile("lastCommitBuilt", qmGit.getCurrentGitCommitSha(), function () {
-        fileHelper.createFile(successFilename, qmGit.getCurrentGitCommitSha(), cb);
+function createSuccessFile() {
+    return fileHelper.writeToFile("lastCommitBuilt", qmGit.getCurrentGitCommitSha())
+        .then(function () {
+        return fileHelper.createFile(successFilename, qmGit.getCurrentGitCommitSha());
     });
 }
 exports.createSuccessFile = createSuccessFile;

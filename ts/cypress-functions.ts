@@ -6,6 +6,7 @@ import * as fs from "fs"
 import {merge} from "mochawesome-merge"
 // @ts-ignore
 import marge from "mochawesome-report-generator"
+import * as Q from "q"
 import rimraf from "rimraf"
 import {loadEnv} from "./env-helper"
 import * as fileHelper from "./qm.file-helper"
@@ -15,6 +16,7 @@ declare function require(path: string): any
 // tslint:disable-next-line:no-var-requires
 const qm = require("../src/js/qmHelpers.js")
 import * as qmGit from "./qm.git"
+import * as qmLog from "./qm.log"
 import {createSuccessFile, deleteEnvFile, deleteSuccessFile, getBuildLink, getCiProvider} from "./test-helpers"
 
 loadEnv("local") // https://github.com/motdotla/dotenv#what-happens-to-environment-variables-that-were-already-set
@@ -222,9 +224,10 @@ function handleTestSuccess(results: any, context: string, cb: (err: any) => void
     deleteLastFailedCypressTest()
     console.info(results.totalPassed + " tests PASSED!")
     qmGit.setGithubStatus("success", context, results.totalPassed + " tests passed", null,function() {
-        createSuccessFile(function() {
-            cb(false)
-        })
+        createSuccessFile()
+            .then(function() {
+                cb(false)
+            })
     })
 }
 
@@ -290,9 +293,8 @@ export function uploadLastFailed(specName: string, cb?: (url: string) => void) {
     return fileHelper.uploadToS3(lastFailedCypressTestPath, "cypress", "qmimages")
 }
 
-export function downloadLastFailed(cb: (filePath: string | null) => void) {
-    fileHelper.downloadFromS3(lastFailedCypressTestPath, "cypress"+"/"+lastFailedCypressTestPath, cb,
-        "qmimages")
+export function downloadLastFailed() {
+    return fileHelper.downloadFromS3(lastFailedCypressTestPath, "cypress"+"/"+lastFailedCypressTestPath, s3Bucket)
 }
 
 function getSpecsPath() {
@@ -329,11 +331,12 @@ export function runCypressTestsInParallel(cb?: (err: any) => void) {
             }
             Promise.all(promises).then((values) => {
                 console.log(values)
-                createSuccessFile(function() {
-                    deleteEnvFile()
-                    if (cb) {
-                        cb(false)
-                    }
+                createSuccessFile()
+                    .then(function() {
+                        deleteEnvFile()
+                        if (cb) {
+                            cb(false)
+                        }
                 })
             })
         })
@@ -365,12 +368,13 @@ export function runCypressTests(cb?: (err: any) => void) {
                 p = p.then((_) => new Promise((resolve) => {
                     runOneCypressSpec(specName,function() {
                         if (i === specFileNames.length - 1) {
-                            createSuccessFile(function() {
-                                deleteEnvFile()
-                                if (cb) {
-                                    cb(false)
-                                }
-                            })
+                            createSuccessFile()
+                                .then(function() {
+                                    deleteEnvFile()
+                                    if (cb) {
+                                        cb(false)
+                                    }
+                                })
                         }
                         resolve()
                     })
@@ -379,23 +383,28 @@ export function runCypressTests(cb?: (err: any) => void) {
         })
     })
 }
-function getLastFailedCypressTest(cb: (specName?: string | null) => void) {
+function getLastFailedCypressTest() {
+    const deferred = Q.defer()
     try {
-        downloadLastFailed(function(absPath: string | null) {
-            if(!absPath) {
-                cb(null)
-                return
-            }
-            try {
-                const spec = fs.readFileSync(absPath, "utf8")
-                cb(spec)
-            } catch (error) {
-                cb(null)
-            }
-        })
+        downloadLastFailed()
+            .then(function(absPath) {
+                if(!absPath) {
+                    deferred.resolve(null)
+                    return
+                }
+                try {
+                    // @ts-ignore
+                    const spec = fs.readFileSync(absPath, "utf8")
+                    deferred.resolve(spec)
+                } catch (error) {
+                    deferred.resolve(null)
+                }
+            })
     } catch (error) {
-        cb(null)
+        qmLog.error(error)
+        deferred.resolve(null)
     }
+    return deferred.promise
 }
 function deleteLastFailedCypressTest() {
     // tslint:disable-next-line:no-empty
@@ -407,21 +416,23 @@ function deleteLastFailedCypressTest() {
 }
 // tslint:disable-next-line:unified-signatures
 export function runLastFailedCypressTest(cb: (err: any) => void) {
-    getLastFailedCypressTest(function(name) {
-        if (!name) {
-            console.info("No previously failed test!")
-            cb(false)
-            return
-        }
-        deleteSuccessFile()
-        try {
-            copyCypressEnvConfigIfNecessary()
-        } catch (e) {
-            console.error(e.message+"!  Going to try again...")
-            copyCypressEnvConfigIfNecessary()
-        }
-        runOneCypressSpec(name, cb)
-    })
+    getLastFailedCypressTest()
+        .then(function(name) {
+            if (!name) {
+                console.info("No previously failed test!")
+                cb(false)
+                return
+            }
+            deleteSuccessFile()
+            try {
+                copyCypressEnvConfigIfNecessary()
+            } catch (e) {
+                console.error(e.message+"!  Going to try again...")
+                copyCypressEnvConfigIfNecessary()
+            }
+            // @ts-ignore
+            runOneCypressSpec(name, cb)
+        })
 }
 export function uploadMochawesome() {
     const s3Key = "mochawesome/" + qmGit.getCurrentGitCommitSha()
