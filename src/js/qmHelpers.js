@@ -3992,7 +3992,7 @@ var qm = {
          ensureDirectoryExistence: function(filePathToCheck) {
             var path = qm.modules.getPath();
             var fs = qm.modules.getFs();
-            const dirname = path.dirname(filePathToCheck)
+            var dirname = path.dirname(filePathToCheck)
             if (fs.existsSync(dirname)) {
                 return true
             }
