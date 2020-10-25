@@ -125,3 +125,10 @@ Cypress.on('log:added', (options) => {
         }
     }
 });
+
+beforeEach(() => {
+    cy.server()
+    cy.route('GET', '/api/v3/measurements*').as('measurements')
+    cy.route('POST', '/api/v3/measurements*').as('post-measurement')
+    cy.route('POST', '/api/v3/measurements/delete').as('delete-measurements')
+})

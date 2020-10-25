@@ -7,8 +7,8 @@ let chartsPath = `/#/app/charts/${encodeURIComponent(variableName)}`
  * @param {string} variableString
  */
 function verifyAndDeleteMeasurement(variableString){
-    cy.get('#historyItemTitle').should('contain', variableString)
-    cy.get('#historyItemTitle').click({force: true})
+    cy.get('#historyItemTitle-0').should('contain', variableString)
+    cy.get('#historyItemTitle-0').click({force: true})
     cy.get('button.button.destructive').click({force: true})
     cy.log('Waiting for deletion to complete...')
     cy.wait(5000) // Don't remove this
@@ -39,23 +39,21 @@ describe('Variables', function(){
         let variableCategoryName = 'Emotions';
         cy.loginWithAccessTokenIfNecessary(`/#/app/measurement-add-search?variableCategoryName=${variableCategoryName}`, true)
         let d = new Date()
-        let variableString = `Unique Test Variable ${d.getTime()}`
-        cy.get('#variableSearchBox').type(variableString, {force: true})
+        let variableName = `Unique Test Variable ${d.getTime()}`
+        cy.get('#variableSearchBox').type(variableName, {force: true})
         cy.get('#new-variable-button', {timeout: 30000}).click({force: true})
         cy.get('.primary-outcome-variable-history > img:nth-of-type(3)').click({force: true})
         cy.get('#saveButton').click({force: true})
-        cy.visitIonicAndSetApiUrl(`/#/app/history-all?variableCategoryName=${variableCategoryName}`)
-        verifyAndDeleteMeasurement(variableString)
-    })
-    // Randomly started failing
-    it('Goes to charts page from the variable action sheet', function(){
+        cy.wait('@post-measurement', {timeout: 30000})
+            .should('have.property', 'status', 201)
         cy.loginWithAccessTokenIfNecessary('/#/app/reminders-inbox', true)
-        let variableName = 'Overall Mood'
         searchForMoodFromMagnifyingGlassIcon(variableName)
         cy.clickActionSheetButtonContaining('Charts')
         cy.url().should('contain', 'charts')
         cy.log('Chart is present and titled')
-        cy.contains(`${variableName} Over Time`, {timeout: 30000})
+        // TODO: Uncomment when we stop filtering numbers from displayName cy.contains(`${variableName} Over Time`, {timeout: 30000})
+        cy.visitIonicAndSetApiUrl(`/#/app/history-all?variableCategoryName=${variableCategoryName}`)
+        verifyAndDeleteMeasurement(variableName)
     })
     // TODO: This fails randomly.  Make mocha tests for this and re-enable.
     it.skip('Creates reminder from the variable action sheet', function(){
