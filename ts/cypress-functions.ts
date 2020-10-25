@@ -20,7 +20,7 @@ import {createSuccessFile, deleteEnvFile, deleteSuccessFile, getBuildLink, getCi
 loadEnv("local") // https://github.com/motdotla/dotenv#what-happens-to-environment-variables-that-were-already-set
 const ciProvider = getCiProvider()
 const isWin = process.platform === "win32"
-const outputReportDir = repoPath + "/cypress/reports/mochawesome"
+const outputReportDir = repoPath + "/cypress/reports/mocha"
 const screenshotDirectory = outputReportDir + `/assets`
 const unmerged = repoPath + "/cypress/reports/mocha"
 const vcsProvider = "github"
@@ -31,6 +31,7 @@ const lastFailedCypressTestPath = "last-failed-cypress-test"
 const cypressJson = fileHelper.getAbsolutePath("cypress.json")
 const releaseStage = process.env.RELEASE_STAGE || "production"
 const envPath = fileHelper.getAbsolutePath(`cypress/config/cypress.${releaseStage}.json`)
+const s3Bucket = "qmimages"
 const paths = {
     reports: {
         junit: "./cypress/reports/junit",
@@ -132,7 +133,7 @@ function setGithubStatusAndUploadTestResults(failedTests: any[] | null, context:
     const errorMessage = failedTests[0].error
     qmGit.setGithubStatus("failure", context, failedTestTitle + ": " +
         errorMessage, getReportUrl(), function() {
-        uploadMochawesome(function() {
+        uploadMochawesome().then(function(urls) {
             console.error(errorMessage)
             cb(errorMessage)
             // resolve();
@@ -161,7 +162,7 @@ function logFailedTests(failedTests: any[], context: string, cb: (err: any) => v
         console.error(errorMessage)
         console.error("==============================================")
     }
-    deleteSuccessFile(function() {
+    deleteSuccessFile().then(function() {
         mochawesome(failedTests, function() {
             setGithubStatusAndUploadTestResults(failedTests, context, cb)
         })
@@ -183,14 +184,16 @@ export function runWithRecording(specName: string, cb: (err: any) => void) {
         if ("runUrl" in recordingResults) {
             runUrl = recordingResults.runUrl
         }
-        uploadCypressVideo(specName, function(err, s3Url) {
-            qmGit.setGithubStatus("error", context, "View recording of "+specName,
-                s3Url || getBuildLink() || runUrl, function() {
-                    qmGit.createCommitComment(context, "\nView recording of "+specName+"\n"+
-                        "[Cypress Dashboard]("+runUrl+") or [Build Log]("+getBuildLink()+") or [S3]("+s3Url+")",
-                        function() {
-                        cb(recordingResults)
-                    })
+        uploadCypressVideo(specName)
+            .then(function(s3Url) {
+                const url: any = s3Url || getBuildLink() || runUrl
+                qmGit.setGithubStatus("error", context, "View recording of "+specName,
+                    url, function() {
+                        qmGit.createCommitComment(context, "\nView recording of "+specName+"\n"+
+                            "[Cypress Dashboard]("+runUrl+") or [Build Log]("+getBuildLink()+") or [S3]("+s3Url+")",
+                            function() {
+                            cb(recordingResults)
+                        })
                 })
         })
     })
@@ -247,21 +250,21 @@ export function runOneCypressSpec(specName: string, cb: ((err: any) => void)) {
             const failedTests = getFailedTestsFromResults(results)
             if (failedTests.length) {
                 process.env.LOGROCKET = "1"
-                fileHelper.uploadToS3InSubFolderWithCurrentDateTime(getVideoPath(specName),
-                    "cypress", function(err, url) {
-                    runWithRecording(specName, function(recordResults) {
-                        const failedRecordedTests = getFailedTestsFromResults(recordResults)
-                        if (failedRecordedTests.length) {
-                            logFailedTests(failedRecordedTests, context, function(errorMessage) {
-                                cb(errorMessage)
-                                process.exit(1)
-                            })
-                        } else {
-                            delete process.env.LOGROCKET
-                            handleTestSuccess(results, context, cb)
-                        }
+                fileHelper.uploadToS3InSubFolderWithCurrentDateTime(getVideoPath(specName), "cypress")
+                    .then( function(url) {
+                        runWithRecording(specName, function(recordResults) {
+                            const failedRecordedTests = getFailedTestsFromResults(recordResults)
+                            if (failedRecordedTests.length) {
+                                logFailedTests(failedRecordedTests, context, function(errorMessage) {
+                                    cb(errorMessage)
+                                    process.exit(1)
+                                })
+                            } else {
+                                delete process.env.LOGROCKET
+                                handleTestSuccess(results, context, cb)
+                            }
+                        })
                     })
-                })
             } else {
                 handleTestSuccess(results, context, cb)
             }
@@ -278,13 +281,13 @@ export function getVideoPath(specName: string) {
     return "cypress/videos/"+specName+".mp4"
 }
 
-export function uploadCypressVideo(specName: string, cb: (err: Error, url: string) => void) {
-    fileHelper.uploadToS3InSubFolderWithCurrentDateTime(getVideoPath(specName), "cypress", cb)
+export function uploadCypressVideo(specName: string) {
+    return fileHelper.uploadToS3InSubFolderWithCurrentDateTime(getVideoPath(specName), "cypress")
 }
 
-export function uploadLastFailed(specName: string, cb?: (err: Error, url: string) => void) {
+export function uploadLastFailed(specName: string, cb?: (url: string) => void) {
     fs.writeFileSync(lastFailedCypressTestPath, specName)
-    fileHelper.uploadToS3(lastFailedCypressTestPath, "cypress", cb, "qmimages")
+    return fileHelper.uploadToS3(lastFailedCypressTestPath, "cypress", "qmimages")
 }
 
 export function downloadLastFailed(cb: (filePath: string | null) => void) {
@@ -420,8 +423,8 @@ export function runLastFailedCypressTest(cb: (err: any) => void) {
         runOneCypressSpec(name, cb)
     })
 }
-export function uploadMochawesome(cb: (err: Error, url: string) => void) {
-    const path = "mochawesome/" + qmGit.getCurrentGitCommitSha()
-    fileHelper.uploadFolderToS3(outputReportDir, path, cb, "qmimmages",
+export function uploadMochawesome() {
+    const s3Key = "mochawesome/" + qmGit.getCurrentGitCommitSha()
+    return fileHelper.uploadFolderToS3(outputReportDir, s3Key, s3Bucket,
         "public-read")
 }

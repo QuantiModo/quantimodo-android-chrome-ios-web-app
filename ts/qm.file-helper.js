@@ -16,6 +16,7 @@ var fs = __importStar(require("fs"));
 var https = __importStar(require("https"));
 var mime = __importStar(require("mime"));
 var path = __importStar(require("path"));
+var Q = __importStar(require("q"));
 var rimraf_1 = __importDefault(require("rimraf"));
 var qmLog = __importStar(require("./qm.log"));
 function assertDoesNotExist(relative) {
@@ -44,14 +45,14 @@ function createFile(filePath, contents, cb) {
     writeToFile(filePath, contents, cb);
 }
 exports.createFile = createFile;
-function deleteFile(filename, cb) {
+function deleteFile(filename) {
+    var deferred = Q.defer();
     var filepath = getAbsolutePath(filename);
     rimraf_1.default(filepath, function () {
         qmLog.info(filepath + "\n\tdeleted!");
-        if (cb) {
-            cb();
-        }
+        deferred.resolve();
     });
+    return deferred.promise;
 }
 exports.deleteFile = deleteFile;
 function getS3Client() {
@@ -98,17 +99,18 @@ function downloadFromS3(filePath, key, cb, bucketName) {
     });
 }
 exports.downloadFromS3 = downloadFromS3;
-function uploadToS3InSubFolderWithCurrentDateTime(filePath, s3BasePath, cb, s3Bucket, accessControlLevel, ContentType) {
+function uploadToS3InSubFolderWithCurrentDateTime(filePath, s3BasePath, s3Bucket, accessControlLevel, ContentType) {
     if (s3Bucket === void 0) { s3Bucket = "quantimodo"; }
     if (accessControlLevel === void 0) { accessControlLevel = "public-read"; }
     var at = new Date();
     var dateTime = at.toISOString();
-    uploadToS3(filePath, s3BasePath + "/" + dateTime, cb, s3Bucket, accessControlLevel, ContentType);
+    return uploadToS3(filePath, s3BasePath + "/" + dateTime, s3Bucket, accessControlLevel, ContentType);
 }
 exports.uploadToS3InSubFolderWithCurrentDateTime = uploadToS3InSubFolderWithCurrentDateTime;
-function uploadToS3(relative, s3BasePath, cb, s3Bucket, accessControlLevel, ContentType) {
+function uploadToS3(relative, s3BasePath, s3Bucket, accessControlLevel, ContentType) {
     if (s3Bucket === void 0) { s3Bucket = "quantimodo"; }
     if (accessControlLevel === void 0) { accessControlLevel = "public-read"; }
+    var deferred = Q.defer();
     var s3 = getS3Client();
     var abs = getAbsolutePath(relative);
     assertExists(abs);
@@ -135,13 +137,15 @@ function uploadToS3(relative, s3BasePath, cb, s3Bucket, accessControlLevel, Cont
     }
     s3.upload(params, function (err, SendData) {
         if (err) {
-            throw err;
+            qmLog.error(s3Key + "\n\t FAILED to uploaded");
+            deferred.reject(err);
         }
-        qmLog.info(s3Key + "\n\tuploaded to\t\n" + SendData.Location);
-        if (cb) {
-            cb(err, SendData.Location);
+        else {
+            qmLog.info(s3Key + "\n\tuploaded to\t\n" + SendData.Location);
+            deferred.resolve(SendData.Location);
         }
     });
+    return deferred.promise;
 }
 exports.uploadToS3 = uploadToS3;
 function writeToFile(filePath, contents, cb) {
@@ -190,41 +194,39 @@ function download(url, relative, cb) {
     });
 }
 exports.download = download;
-function uploadFolderToS3(dir, s3BasePath, cb, s3Bucket, accessControlLevel, ContentType) {
+function uploadFolderToS3(dir, s3BasePath, s3Bucket, accessControlLevel, ContentType) {
     if (s3Bucket === void 0) { s3Bucket = "quantimodo"; }
     if (accessControlLevel === void 0) { accessControlLevel = "public-read"; }
-    listFilesRecursively(dir, function (err, files) {
-        var i = 0;
+    return listFilesRecursively(dir)
+        .then(function (files) {
+        var promises = [];
+        // @ts-ignore
         files.forEach(function (file) {
-            i++;
-            uploadToS3(file, s3BasePath, function (fileErr, url) {
-                if (fileErr) {
-                    throw fileErr;
-                }
-                if (i === files.length) {
-                    cb(err, dir);
-                }
-            }, s3Bucket, ContentType);
+            promises.push(uploadToS3(file, s3BasePath, s3Bucket, ContentType));
         });
+        return Q.all(promises);
     });
 }
 exports.uploadFolderToS3 = uploadFolderToS3;
-function listFilesRecursively(dir, done) {
+function listFilesRecursively(dir) {
     var results = [];
+    var deferred = Q.defer();
     fs.readdir(dir, function (err, list) {
         if (err) {
-            return done(err, []);
+            deferred.reject(err);
+            return;
         }
         var i = 0;
         (function next() {
             var file = list[i++];
             if (!file) {
-                return done(null, results);
+                deferred.resolve(results);
+                return;
             }
             file = path.resolve(dir, file);
             fs.stat(file, function (statErr, stat) {
                 if (stat && stat.isDirectory()) {
-                    listFilesRecursively(file, function (loopErr, res) {
+                    listFilesRecursively(file).then(function (res) {
                         results = results.concat(res);
                         next();
                     });
@@ -236,6 +238,7 @@ function listFilesRecursively(dir, done) {
             });
         })();
     });
+    return deferred.promise;
 }
 exports.listFilesRecursively = listFilesRecursively;
 //# sourceMappingURL=qm.file-helper.js.map

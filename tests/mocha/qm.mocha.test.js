@@ -31,7 +31,7 @@ qm.qmLog = qmLog
 qmLog.qm = qm
 qm.qmLog.setLogLevelName(process.env.LOG_LEVEL || 'info')
 global.nlp = require('./../../src/lib/compromise')
-global.Q = require('./../../src/lib/q')
+var Q = global.Q = require('./../../src/lib/q')
 global.Swal = require('./../../node_modules/sweetalert2/dist/sweetalert2.all')
 //global.moment = require('./../../src/lib/moment/moment')
 global.moment = require('./../../src/lib/moment-timezone/moment-timezone')
@@ -201,13 +201,17 @@ afterEach(function (done) {
         done()
     })
 })
-function downloadFileContains(url, expectedToContain, cb) {
-    downloadFile(url, function (str) {
-        expect(str).to.contain(expectedToContain)
-        cb()
-    })
+function downloadFileContains(url, expectedToContain) {
+    const deferred = Q.defer()
+    downloadFile(url)
+        .then(function (str) {
+            expect(str).to.contain(expectedToContain)
+            deferred.resolve(str)
+        })
+    return deferred.promise
 }
-function downloadFile(url, cb) {
+function downloadFile(url) {
+    const deferred = Q.defer()
     var parsedUrl = urlParser.parse(url)
     var options = {
         hostname: parsedUrl.hostname,
@@ -224,13 +228,15 @@ function downloadFile(url, cb) {
         })
         res.on("end", function () {
             console.log("RESPONSE: " + _str.truncate(str, 30))
-            cb(str)
+            deferred.resolve(str)
         })
     })
     req.on("error", function (error) {
         console.error(error)
+        deferred.reject(error)
     })
     req.end()
+    return deferred.promise
 }
 function expectInteger(val){
     expect(val).to.be.a('number')
@@ -257,20 +263,22 @@ describe("Cypress", function () {
     it('can upload Cypress video', function(done) {
         const specName = "test_spec"
         const relative = cypressFunctions.getVideoPath(specName)
-        fileHelper.deleteFile(relative, function (){
+        fileHelper.deleteFile(relative).then(function (){
             let exists = fileHelper.exists(relative)
             expect(exists).to.be.false
             fileHelper.createFile(relative, "test video", function (){
-                cypressFunctions.uploadCypressVideo(specName, function (err, s3Url){
-                    const downloadPath = 'tmp/download.mp4'
-                    fileHelper.deleteFile(downloadPath, function (){
-                        fileHelper.assertDoesNotExist(downloadPath)
-                        fileHelper.download(s3Url, downloadPath, function (){
-                            fileHelper.assertExists(downloadPath)
-                            done()
-                        })
+                cypressFunctions.uploadCypressVideo(specName)
+                    .then(function (err, s3Url){
+                        const downloadPath = 'tmp/download.mp4'
+                        fileHelper.deleteFile(downloadPath)
+                            .then(function (){
+                                fileHelper.assertDoesNotExist(downloadPath)
+                                fileHelper.download(s3Url, downloadPath, function (){
+                                    fileHelper.assertExists(downloadPath)
+                                    done()
+                                })
+                            })
                     })
-                })
             })
         })
     })
@@ -278,31 +286,35 @@ describe("Cypress", function () {
 describe("File Helper", function () {
     it("creates success file", function (done) {
         const filename = "success-file"
-        fileHelper.deleteFile(filename, function (){
-            let exists = fileHelper.exists(filename)
-            expect(exists).to.be.false
-            th.createSuccessFile(function (){
-                exists = fileHelper.exists(filename)
-                expect(exists).to.be.true
-                done()
+        fileHelper.deleteFile(filename)
+            .then(function (){
+                let exists = fileHelper.exists(filename)
+                expect(exists).to.be.false
+                th.createSuccessFile(function (){
+                    exists = fileHelper.exists(filename)
+                    expect(exists).to.be.true
+                    done()
+                })
             })
-        })
     })
     it("determines the absolute path", function (done) {
         var abs = fileHelper.getAbsolutePath("tests/ionIcons.js")
         expect(abs).contains(appDir)
         done()
     })
-    it("uploads a file", function (done) {
-        fileHelper.uploadToS3(appDir + "/tests/ionIcons.js", "tests", function (err, url) {
-            downloadFileContains(url, "iosArrowUp", done)
-        })
+    it("uploads a file", function () {
+        return fileHelper.uploadToS3(appDir + "/tests/ionIcons.js", "tests")
+            .then(function (url) {
+                return downloadFileContains(url, "iosArrowUp")
+            })
     })
-    it.skip("uploads test results", function (done) {
-        this.timeout(10000) // Default 2000 is too fast
-        cypressFunctions.uploadMochawesome(function (uploadResponse) {
-            downloadFileContains(uploadResponse.Location, "mocha", done)
-        })
+    it("uploads test results", function (done) {
+        this.timeout(60000) // Default 2000 is too fast
+        cypressFunctions.uploadMochawesome()
+            .then(function(urls) {
+                expect(urls).length.to.be.greaterThan(2)
+                done()
+            })
     })
 })
 describe("Ghost Inspector", function () {

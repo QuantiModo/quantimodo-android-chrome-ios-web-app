@@ -4,6 +4,7 @@ import * as fs from "fs"
 import * as https from "https"
 import * as mime from "mime"
 import * as path from "path"
+import * as Q from "q"
 import rimraf from "rimraf"
 import * as qmLog from "./qm.log"
 
@@ -34,14 +35,14 @@ export function createFile(filePath: string, contents: any, cb?: () => void) {
     writeToFile(filePath, contents, cb)
 }
 
-export function deleteFile(filename: string, cb?: () => void) {
+export function deleteFile(filename: string) {
+    const deferred = Q.defer()
     const filepath = getAbsolutePath(filename)
     rimraf(filepath, function() {
         qmLog.info(filepath + "\n\tdeleted!")
-        if (cb) {
-            cb()
-        }
+        deferred.resolve()
     })
+    return deferred.promise
 }
 
 export function getS3Client() {
@@ -91,23 +92,22 @@ export function downloadFromS3(filePath: string, key: string, cb: (filePath: str
 
 export function uploadToS3InSubFolderWithCurrentDateTime(filePath: string,
                                                          s3BasePath: string,
-                                                         cb: (err: Error, url: string) => void,
                                                          s3Bucket = "quantimodo",
                                                          accessControlLevel = "public-read",
                                                          ContentType?: string | undefined) {
     const at = new Date()
     const dateTime = at.toISOString()
-    uploadToS3(filePath, s3BasePath + "/" + dateTime, cb, s3Bucket, accessControlLevel, ContentType)
+    return uploadToS3(filePath, s3BasePath + "/" + dateTime, s3Bucket, accessControlLevel, ContentType)
 }
 
 export function uploadToS3(
     relative: string,
     s3BasePath: string,
-    cb?: (err: Error, url: string) => void,
     s3Bucket = "quantimodo",
     accessControlLevel = "public-read",
     ContentType?: string | undefined | null,
 ) {
+    const deferred = Q.defer()
     const s3 = getS3Client()
     const abs = getAbsolutePath(relative)
     assertExists(abs)
@@ -133,13 +133,14 @@ export function uploadToS3(
     }
     s3.upload(params, (err: any, SendData: any) => {
         if (err) {
-            throw err
-        }
-        qmLog.info(s3Key + "\n\tuploaded to\t\n"+ SendData.Location)
-        if (cb) {
-            cb(err, SendData.Location)
+            qmLog.error(s3Key + "\n\t FAILED to uploaded")
+            deferred.reject(err)
+        } else {
+            qmLog.info(s3Key + "\n\tuploaded to\t\n"+ SendData.Location)
+            deferred.resolve(SendData.Location)
         }
     })
+    return deferred.promise
 }
 
 export function writeToFile(filePath: string, contents: any, cb?: (filePath: string) => void) {
@@ -191,40 +192,40 @@ export function download(url: string, relative: string, cb: any) {
 export function uploadFolderToS3(
     dir: string,
     s3BasePath: string,
-    cb: (err: Error, url: string) => void,
     s3Bucket = "quantimodo",
     accessControlLevel = "public-read",
     ContentType?: string | undefined,
 ) {
-    listFilesRecursively(dir, function(err, files) {
-        let i = 0
-        files.forEach(function(file) {
-            i++
-            uploadToS3(file, s3BasePath, function(fileErr, url) {
-                if(fileErr) {
-                    throw fileErr
-                }
-                if(i === files.length) {
-                    cb(err, dir)
-                }
-            }, s3Bucket, ContentType)
+    return listFilesRecursively(dir)
+        .then(function(files) {
+            const promises: Q.IWhenable<any[]> = []
+            // @ts-ignore
+            files.forEach(function(file) {
+                promises.push(uploadToS3(file, s3BasePath, s3Bucket, ContentType))
+            })
+            return Q.all(promises)
         })
-    })
 }
 
-export function listFilesRecursively(dir: string, done: (arg0: any | null,
-                                                         arg1: string[]) => void) {
+export function listFilesRecursively(dir: string) {
     let results: any[] = []
+    const deferred = Q.defer()
     fs.readdir(dir, function(err, list) {
-        if (err) { return done(err, []) }
+        if (err) {
+           deferred.reject(err)
+           return
+        }
         let i = 0;
         (function next() {
             let file = list[i++]
-            if (!file) { return done(null, results) }
+            if (!file) {
+                deferred.resolve(results)
+                return
+            }
             file = path.resolve(dir, file)
             fs.stat(file, function(statErr, stat) {
                 if (stat && stat.isDirectory()) {
-                    listFilesRecursively(file, function(loopErr, res) {
+                    listFilesRecursively(file).then(function(res) {
                         results = results.concat(res)
                         next()
                     })
@@ -235,4 +236,5 @@ export function listFilesRecursively(dir: string, done: (arg0: any | null,
             })
         })()
     })
+    return deferred.promise
 }
