@@ -1,4 +1,6 @@
-angular.module('starter').controller('TrackPrimaryOutcomeCtrl', ["$scope", "$state", "$timeout", "$rootScope", "$ionicLoading", "qmService", function($scope, $state, $timeout, $rootScope, $ionicLoading, qmService){
+angular.module('starter').controller('TrackPrimaryOutcomeCtrl',
+    ["$scope", "$state", "$rootScope", "qmService",
+    function($scope, $state, $rootScope, qmService){
     $scope.controller_name = "TrackPrimaryOutcomeCtrl";
     $scope.state = {};
     $scope.primaryOutcomeVariableDetails = qm.getPrimaryOutcomeVariable();
@@ -9,85 +11,56 @@ angular.module('starter').controller('TrackPrimaryOutcomeCtrl', ["$scope", "$sta
     $scope.primaryOutcomeVariable = qm.getPrimaryOutcomeVariable();
     var syncDisplayText = 'Syncing ' + qm.getPrimaryOutcomeVariable().name + ' measurements...';
     $scope.$on('$ionicView.enter', function(e){
-        qmLog.debug('Entering state ' + $state.current.name, null);
-        qmLog.debug('TrackPrimaryOutcomeCtrl enter. Updating charts and syncing..', null);
+        qmLog.debug('Entering state ' + $state.current.name+' Updating charts and syncing..');
         qmService.navBar.showNavigationMenuIfHideUrlParamNotSet();
+        qmService.showBlackRingLoader();
         updateCharts();
         $scope.showRatingFaces = true;
         $scope.timeRemaining = false;
         qmService.showInfoToast(syncDisplayText);
-        qmLog.debug($state.current.name + ' going to syncPrimaryOutcomeVariableMeasurements', null);
-        qmService.syncPrimaryOutcomeVariableMeasurements().then(function(){
-            updateCharts();
-            qmService.hideLoader();
-        });
     });
-    $scope.$on('$ionicView.afterEnter', function(e){
-        qmService.hideLoader();
-    });
+    $scope.$on('$ionicView.afterEnter', function(e){});
     $scope.storeRatingLocalAndServerAndUpdateCharts = function(numericRatingValue){
+        //debugger
         $scope.timeRemaining = true;
         $scope.showRatingFaces = false;
-        var primaryOutcomeMeasurement = qmService.createPrimaryOutcomeMeasurement(numericRatingValue);
-        qm.measurements.addToMeasurementsQueue(primaryOutcomeMeasurement);
-        updateCharts();
-        if(!$rootScope.isSyncing && $rootScope.user){
-            qmService.showInfoToast(syncDisplayText);
-            qmService.syncPrimaryOutcomeVariableMeasurements().then(function(){
-                updateCharts();
-            });
-        }
+        var measurement = qmService.createPrimaryOutcomeMeasurement(numericRatingValue);
+        qm.measurements.recordMeasurement(measurement).then(function (){
+            updateCharts();
+        });
     };
-    var updateAveragePrimaryOutcomeRatingView = function(){
+    var updateAveragePrimaryOutcomeRatingView = function(measurements){
         var sum = 0;
-        for(var j = 0; j < $scope.state.primaryOutcomeMeasurements.length; j++){
-            sum += $scope.state.primaryOutcomeMeasurements[j].value;
+        for(var j = 0; j < measurements.length; j++){
+            sum += measurements[j].value;
         }
-        $scope.averagePrimaryOutcomeVariableValue = Math.round(sum / $scope.state.primaryOutcomeMeasurements.length);
+        $scope.averagePrimaryOutcomeVariableValue = Math.round(sum / measurements.length);
         $scope.averagePrimaryOutcomeVariableText = qm.getPrimaryOutcomeVariable().ratingValueToTextConversionDataSet[$scope.averagePrimaryOutcomeVariableValue];
         if($scope.averagePrimaryOutcomeVariableText){
             $scope.averagePrimaryOutcomeVariableImage = qmService.getRatingFaceImageByText($scope.averagePrimaryOutcomeVariableText);
         }
     };
     var updateCharts = function(){
-        qm.localForage.getItem(qm.items.primaryOutcomeVariableMeasurements, function(measurements){
-            if(measurements){
-                qmLog.info("Got " + measurements.length + " measurements from localforage");
-            }else{
-                qmLog.info("Got 0 measurements from localforage");
-            }
-            $scope.state.primaryOutcomeMeasurements = measurements;
-            var queue = qm.storage.getItem('measurementsQueue');
-            if(queue){
-                qmLog.info("Got " + queue.length + " measurements from measurementsQueue");
-            }else{
-                qmLog.info("Got 0 measurements from measurementsQueue");
-            }
-            if(!$scope.state.primaryOutcomeMeasurements){
-                $scope.state.primaryOutcomeMeasurements = [];
-            }
-            if(queue){
-                $scope.state.primaryOutcomeMeasurements = $scope.state.primaryOutcomeMeasurements.concat(queue);
-            }
-            if($scope.state.primaryOutcomeMeasurements){
-                $scope.state.distributionChartConfig = null; // Necessary to render update for some reason
-                $timeout(function(){
-                    if($scope.state.primaryOutcomeMeasurements){
-                        qmLog.info("Updating charts with " + $scope.state.primaryOutcomeMeasurements.length + " measurements");
-                    }else{
-                        qmLog.info("Updating charts with 0 measurements");
-                    }
-                    $scope.state.hourlyChartConfig = qmService.processDataAndConfigureHourlyChart($scope.state.primaryOutcomeMeasurements, qm.getPrimaryOutcomeVariable());
-                    $scope.state.weekdayChartConfig = qmService.processDataAndConfigureWeekdayChart($scope.state.primaryOutcomeMeasurements, qm.getPrimaryOutcomeVariable());
-                    $scope.state.lineChartConfig = qmService.processDataAndConfigureLineChart($scope.state.primaryOutcomeMeasurements, qm.getPrimaryOutcomeVariable());
-                    $scope.state.distributionChartConfig = qmService.processDataAndConfigureDistributionChart($scope.state.primaryOutcomeMeasurements, qm.getPrimaryOutcomeVariable());
-                    updateAveragePrimaryOutcomeRatingView();
-                }, 1);
-            }
+        //debugger
+        var uv = qm.getPrimaryOutcomeVariable()
+        qm.measurements.getMeasurements({limit: 900, variableName: uv.name}).then(function (measurements){
+            //debugger
+            $scope.state.distributionChartConfig = null; // Necessary to render update for some reason
+            $scope.safeApply(function(){
+                if(measurements){
+                    qmLog.info("Updating charts with " + measurements.length + " measurements");
+                }else{
+                    qmLog.info("Updating charts with 0 measurements");
+                }
+                $scope.state.hourlyChartConfig = qmService.processDataAndConfigureHourlyChart(measurements, uv);
+                $scope.state.weekdayChartConfig = qmService.processDataAndConfigureWeekdayChart(measurements, uv);
+                $scope.state.lineChartConfig = qmService.processDataAndConfigureLineChart(measurements, uv);
+                $scope.state.distributionChartConfig = qmService.processDataAndConfigureDistributionChart(measurements, uv);
+                updateAveragePrimaryOutcomeRatingView(measurements);
+                qmService.hideLoader();
+            }, 1);
+        }, function (err){
+            qmLog.errorAndExceptionTestingOrDevelopment(err);
         });
     };
-    $scope.$on('updateCharts', function(){
-        qmLog.debug('updateCharts broadcast received..');
-        updateCharts();
-    });
 }]);

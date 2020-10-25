@@ -226,13 +226,13 @@ var qmLog = {
     },
     fileHelper: {
         writeToFile: function(filePath, stringContents) {
-    if(!stringContents || stringContents === "undefined" || stringContents === "null"){
-        throw "String contents are " + stringContents;
+        if(!stringContents || stringContents === "undefined" || stringContents === "null"){
+            throw "String contents are " + stringContents;
+        }
+        qmLog.info("Writing to " + filePath);
+        if(typeof stringContents !== "string"){stringContents = qmLog.prettyJSONStringify(stringContents);}
+        return fs.writeFileSync(filePath, stringContents);
     }
-    qmLog.info("Writing to " + filePath);
-    if(typeof stringContents !== "string"){stringContents = qmLog.prettyJSONStringify(stringContents);}
-    return fs.writeFileSync(filePath, stringContents);
-}
     },
     isDebugMode: function() {
         return qmLog.getLogLevelName() === "debug";

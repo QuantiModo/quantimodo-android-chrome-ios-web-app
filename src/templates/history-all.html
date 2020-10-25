@@ -69,30 +69,30 @@
              ng-include="'templates/fragments/help-info-card-fragment.html'"></div>
         <ion-list id="historyList">
             <!-- Not sure why orderBy was necessary but it breaks alternative sorting <div ng-repeat="historyItem in state.history | orderBy: 'startTimeEpoch':true track by $index" -->
-            <div id="historyItem"
+            <div id="historyItem-{{$index}}"
                  ng-repeat="historyItem in state.history track by $index"
                  ng-hide="historyItem.hide"
                  data-measurementid="{{historyItem.id}}"
                  class="item item-avatar item-button-right">
-                <i id="historyItemIcon"
+                <i id="historyItemIcon-{{$index}}"
                    class="icon positive {{historyItem.icon}} icon-positive"
                    ng-click="showActionSheetForMeasurement(historyItem)"
                    ng-if="!historyItem.pngPath"
                    style="position: absolute; top: 15px; left: 15px; font-size: 36px; max-width: 40px; max-height: 40px; width: 100%; border-radius: 4px;">
                 </i>
-                <img id="history-item-image"
+                <img id="history-item-image-{{$index}}"
                      ng-if="historyItem.pngPath"
                      ng-src="{{historyItem.pngPath}}"
                      style="border-radius: 0"
                      ng-click="showActionSheetForMeasurement(historyItem)">
-                <p id="hidden-measurement-id"
+                <p id="hidden-measurement-id-{{$index}}"
                    ng-hide="true">{{historyItem.id}}</p>
-                <h2 id="historyItemTitle"
+                <h2 id="historyItemTitle-{{$index}}"
                     style="font-weight:bold; white-space:normal; line-height: normal; max-width: 90%"
                     ng-click="showActionSheetForMeasurement(historyItem)">
                     {{historyItem.valueUnitVariableName}}
                 </h2>
-                <p id="historyItemBody"
+                <p id="historyItemBody-{{$index}}"
                    ng-click="showActionSheetForMeasurement(historyItem)">
                     <span ng-if="historyItem.id">{{historyItem.startTimeEpoch | timeOfDay}}</span>
                     {{historyItem.startTimeEpoch | dayOfWeekAndDate}}
@@ -101,16 +101,16 @@
                           ng-bind-html="historyItem.noteHtml"></span>
                     <span ng-if="!historyItem.noteHtml">{{historyItem.note}}</span>
                 </p>
-                <div id="history-item-buttons"
+                <div id="history-item-buttons-{{$index}}"
                      class="buttons">
-                    <button id="buy-now-button"
+                    <button id="buy-now-button-{{$index}}"
                             ng-if="historyItem.productUrl && !appSettings.additionalSettings.monetizationSettings.hideBuyNowButtons.value"
                             class="button button-assertive"
                             ng-click="openUrl(historyItem.productUrl, 'yes', '_system')">
                         <md-tooltip md-direction="down">Buy Now</md-tooltip>
                         <i class="icon ion-bag"></i>
                     </button>
-                    <button id="action-sheet-button"
+                    <button id="action-sheet-button-{{$index}}"
                             ng-if="!platform.isMobile"
                             class="button button-dark"
                             ng-click="showActionSheetForMeasurement(historyItem)">
