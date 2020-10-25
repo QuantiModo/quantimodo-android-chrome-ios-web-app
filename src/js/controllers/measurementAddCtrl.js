@@ -1,5 +1,5 @@
-angular.module('starter').controller('MeasurementAddCtrl', ["$scope", "$q", "$timeout", "$state", "$rootScope",
-    "$stateParams", "$filter", "$ionicActionSheet", "$ionicHistory", "qmService",
+angular.module('starter').controller('MeasurementAddCtrl', [
+    "$scope", "$q", "$timeout", "$state", "$rootScope", "$stateParams", "$filter", "$ionicActionSheet", "$ionicHistory", "qmService",
     function($scope, $q, $timeout, $state, $rootScope, $stateParams, $filter, $ionicActionSheet, $ionicHistory, qmService){
         $scope.controller_name = "MeasurementAddCtrl";
         qmService.navBar.setFilterBarSearchIcon(false);
