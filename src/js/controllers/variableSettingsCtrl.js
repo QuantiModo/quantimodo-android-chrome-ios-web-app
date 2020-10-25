@@ -64,45 +64,46 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
             qmService.hideLoader();
             $scope.state.loading = false;
         }
-        function setShowActionSheetMenu(variableObject){
+        function setShowActionSheetMenu(uv){
             qmService.rootScope.setShowActionSheetMenu(function(){
-                qmLog.debug('variableSettingsCtrl.showActionSheetMenu: Show the action sheet!  $scope.state.variableObject: ', null, variableObject);
+                qmLog.debug('variableSettingsCtrl.showActionSheetMenu: Show the action sheet!  $scope.state.variableObject: ',
+                    uv);
                 var hideSheet = $ionicActionSheet.show({
                     buttons: [
                         qmService.actionSheets.actionSheetButtons.measurementAddVariable,
                         qmService.actionSheets.actionSheetButtons.reminderAdd,
                         qmService.actionSheets.actionSheetButtons.chartSearch,
                         qmService.actionSheets.actionSheetButtons.historyAllVariable,
-                        {text: '<i class="icon ion-pricetag"></i>Tag ' + qmService.getTruncatedVariableName(variableObject.name)},
+                        {text: '<i class="icon ion-pricetag"></i>Tag ' + qmService.getTruncatedVariableName(uv.name)},
                     ],
-                    destructiveText: '<i class="icon ion-trash-a"></i>Delete All',
+                    destructiveText: '<i class="icon ion-trash-a"></i>Reset to Default Settings',
                     cancelText: '<i class="icon ion-ios-close"></i>Cancel',
                     cancel: function(){
                         qmLog.debug('CANCELLED');
                     },
                     buttonClicked: function(index, button){
                         if(index === 0){
-                            qmService.goToState('app.measurementAddVariable', {variableObject: variableObject});
+                            qmService.goToState('app.measurementAddVariable', {variableObject: uv});
                         }
                         if(index === 1){
-                            qmService.goToState('app.reminderAdd', {variableObject: variableObject});
+                            qmService.goToState('app.reminderAdd', {variableObject: uv});
                         }
                         if(index === 2){
-                            qmService.goToState('app.charts', {variableObject: variableObject});
+                            qmService.goToState('app.charts', {variableObject: uv});
                         }
                         if(index === 3){
-                            qmService.goToState('app.historyAllVariable', {variableObject: variableObject});
+                            qmService.goToState('app.historyAllVariable', {variableObject: uv});
                         }
                         if(index === 4){
                             qmService.goToState('app.tagSearch', {
                                 fromState: $state.current.name,
-                                userTaggedVariableObject: variableObject
+                                userTaggedVariableObject: uv
                             });
                         }
                         return true;
                     },
                     destructiveButtonClicked: function(){
-                        qmService.showDeleteAllMeasurementsForVariablePopup(variableObject.name);
+                        $scope.resetVariableToDefaultSettings(uv)
                         return true;
                     }
                 });
@@ -362,13 +363,13 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
                 qmLog.debug('User cancelled selection', null);
             });
         };
-        $scope.resetVariableToDefaultSettings = function(variableObject){
-            variableObject = variableObject || $scope.state.variableObject;
-            qmService.showInfoToast('Resetting ' + variableObject.name +
+        $scope.resetVariableToDefaultSettings = function(uv){
+            uv = uv || $scope.state.variableObject;
+            qmService.showInfoToast('Resetting ' + uv.name +
                 ' analysis settings back to global defaults (this could take a minute)', 30);
             qmService.showBlackRingLoader();
             $scope.state.variableObject = null;
-            qm.userVariables.resetUserVariable(variableObject.variableId).then(function(userVariable){
+            qm.userVariables.resetUserVariable(uv.variableId).then(function(userVariable){
                 setVariableObject(userVariable);
                 //qmService.addWikipediaExtractAndThumbnail($scope.state.variableObject);
             });
