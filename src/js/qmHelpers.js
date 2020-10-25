@@ -3994,7 +3994,7 @@ var qm = {
             qm.fileHelper.ensureDirectoryExistence(abs)
             return fs.writeFileSync(filePath, stringContents);
         },
-         ensureDirectoryExistence: function(filePathToCheck) {
+        ensureDirectoryExistence: function(filePathToCheck) {
             var path = qm.modules.getPath();
             var fs = qm.modules.getFs();
             var dirname = path.dirname(filePathToCheck)
@@ -4004,7 +4004,7 @@ var qm = {
             qm.fileHelper.ensureDirectoryExistence(dirname)
             fs.mkdirSync(dirname)
         },
-         getAbsolutePath: function(relativePath) {
+        getAbsolutePath: function(relativePath) {
             var path = qm.modules.getPath();
             if (path.isAbsolute(relativePath)) {
                 return relativePath
@@ -5343,6 +5343,9 @@ var qm = {
         postMeasurements: function (measurements) {
             var deferred = Q.defer();
             qm.measurements.addLocationAndSource(measurements);
+            measurements.forEach(function(m){
+                delete m.originalValue // originalValue overrides value in api
+            })
             qm.api.post('api/v3/measurements', measurements, function(response){
                 var data = (response) ? response.data : null;
                 var byVariableName = data.measurements;
@@ -9527,21 +9530,17 @@ var qm = {
         slugify: function(str){
             str = str.replace(/^\s+|\s+$/g, ''); // trim
             str = str.toLowerCase();
-
             // remove accents, swap ñ for n, etc
             var from = "àáäâèéëêìíïîòóöôùúüûñç·/_,:;";
             var to   = "aaaaeeeeiiiioooouuuunc------";
-
             for (var i=0, l=from.length ; i<l ; i++)
             {
                 str = str.replace(new RegExp(from.charAt(i), 'g'), to.charAt(i));
             }
-
             str = str.replace('.', '-') // replace a dot by a dash
                 .replace(/[^a-z0-9 -]/g, '') // remove invalid chars
                 .replace(/\s+/g, '-') // collapse whitespace and replace by a dash
                 .replace(/-+/g, '-'); // collapse dashes
-
             return str;
         },
         str_replace: function(arr, replace, str) {
@@ -9705,20 +9704,16 @@ var qm = {
             }
             var causeVariableName = study.causeVariableName;
             if(!causeVariableName && study.causeVariable){causeVariableName = study.causeVariable.name;}
-
             var effectVariableName = study.effectVariableName;
             if(!effectVariableName && study.effectVariable){effectVariableName = study.effectVariable.name;}
-
             var causeVariableId = study.causeVariableId;
             if(!causeVariableId && study.causeVariable){
                 causeVariableId = study.causeVariable.variableId;
             }
-
             var effectVariableId = study.effectVariableId;
             if(!effectVariableId && study.effectVariable){
                 effectVariableId = study.effectVariable.variableId;
             }
-
             if(params.causeVariableId && params.causeVariableId !== causeVariableId){
                 return false;
             }
@@ -10010,7 +10005,7 @@ var qm = {
     },
     timeHelper: {
         at: function(timeAt){
-          return qm.timeHelper.iso(timeAt);
+            return qm.timeHelper.iso(timeAt);
         },
         iso: function(timeAt){
             if(!timeAt){
@@ -11400,7 +11395,6 @@ var qm = {
             if(params.excludeLocal){
                 getFromApi(null, "excludeLocal is " + params.excludeLocal +
                     " (excludeLocal is necessary for complex filtering like tag searches)");
-
             }
             if(params.includePublic){
                 qm.variablesHelper.getUserAndCommonVariablesFromLocalStorage(params)
@@ -11563,7 +11557,7 @@ var qm = {
         getVariableByIdFromApi: function(variableId){
             var deferred = Q.defer();
             qm.api.get('api/v3/variables', [], {id: variableId}, function (data){
-                deferred.resolve(variables)
+                deferred.resolve(data)
             }, function(err){
                 deferred.reject(err)
             })
@@ -12304,7 +12298,6 @@ if(qm.platform.isChromeExtension()){
             return false;
         }
     }
-
     if (typeof window !== "undefined" && !isSupported()) {
         function init(undef) {
             var store = {
@@ -12321,7 +12314,6 @@ if(qm.platform.isChromeExtension()){
                     init();
                 }
             };
-
             window.localStorage = store;
         }
         init();
