@@ -20,7 +20,7 @@ import {createSuccessFile, deleteEnvFile, deleteSuccessFile, getBuildLink, getCi
 loadEnv("local") // https://github.com/motdotla/dotenv#what-happens-to-environment-variables-that-were-already-set
 const ciProvider = getCiProvider()
 const isWin = process.platform === "win32"
-const outputReportDir = repoPath + "/tests/mochawesome-report"
+const outputReportDir = repoPath + "/cypress/reports/mochawesome"
 const screenshotDirectory = outputReportDir + `/assets`
 const unmerged = repoPath + "/cypress/reports/mocha"
 const vcsProvider = "github"
@@ -132,7 +132,7 @@ function setGithubStatusAndUploadTestResults(failedTests: any[] | null, context:
     const errorMessage = failedTests[0].error
     qmGit.setGithubStatus("failure", context, failedTestTitle + ": " +
         errorMessage, getReportUrl(), function() {
-        uploadTestResults(function() {
+        uploadMochawesome(function() {
             console.error(errorMessage)
             cb(errorMessage)
             // resolve();
@@ -420,8 +420,8 @@ export function runLastFailedCypressTest(cb: (err: any) => void) {
         runOneCypressSpec(name, cb)
     })
 }
-export function uploadTestResults(cb: (err: Error, url: string) => void) {
+export function uploadMochawesome(cb: (err: Error, url: string) => void) {
     const path = "mochawesome/" + qmGit.getCurrentGitCommitSha()
-    fileHelper.uploadToS3(outputReportDir + "/mochawesome.html", path, cb, "quantimodo",
-        "public-read", "text/html")
+    fileHelper.uploadFolderToS3(outputReportDir, path, cb, "qmimmages",
+        "public-read")
 }

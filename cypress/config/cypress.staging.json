@@ -16,5 +16,5 @@
   "reporterOptions": {
     "configFile": "tests/reporterOpts.json"
   },
-  "screenshotsFolder": "tests/mochawesome-report/assets"
+  "screenshotsFolder": "tests/mochawesome-report/mocha/assets"
 }

@@ -1,9 +1,8 @@
 // noinspection JSUnusedGlobalSymbols,JSUnusedGlobalSymbols
 import AWS from "aws-sdk"
-import {ManagedUpload} from "aws-sdk/clients/s3"
 import * as fs from "fs"
-import * as http from "http"
 import * as https from "https"
+import * as mime from "mime"
 import * as path from "path"
 import rimraf from "rimraf"
 import * as qmLog from "./qm.log"
@@ -107,7 +106,7 @@ export function uploadToS3(
     cb?: (err: Error, url: string) => void,
     s3Bucket = "quantimodo",
     accessControlLevel = "public-read",
-    ContentType?: string | undefined,
+    ContentType?: string | undefined | null,
 ) {
     const s3 = getS3Client()
     const abs = getAbsolutePath(relative)
@@ -120,6 +119,13 @@ export function uploadToS3(
         Body: fileContent,
         Bucket: s3Bucket,
         Key: s3Key,
+    }
+    if(!ContentType) {
+        try {
+            ContentType = mime.getType(s3Key)
+        } catch (e) {
+            qmLog.error(e)
+        }
     }
     if (ContentType) {
         // @ts-ignore
@@ -179,5 +185,54 @@ export function download(url: string, relative: string, cb: any) {
             file.on("close", cb)
             file.close()
         })
+    })
+}
+
+export function uploadFolderToS3(
+    dir: string,
+    s3BasePath: string,
+    cb: (err: Error, url: string) => void,
+    s3Bucket = "quantimodo",
+    accessControlLevel = "public-read",
+    ContentType?: string | undefined,
+) {
+    listFilesRecursively(dir, function(err, files) {
+        let i = 0
+        files.forEach(function(file) {
+            i++
+            uploadToS3(file, s3BasePath, function(fileErr, url) {
+                if(fileErr) {
+                    throw fileErr
+                }
+                if(i === files.length) {
+                    cb(err, dir)
+                }
+            }, s3Bucket, ContentType)
+        })
+    })
+}
+
+export function listFilesRecursively(dir: string, done: (arg0: any | null,
+                                                         arg1: string[]) => void) {
+    let results: any[] = []
+    fs.readdir(dir, function(err, list) {
+        if (err) { return done(err, []) }
+        let i = 0;
+        (function next() {
+            let file = list[i++]
+            if (!file) { return done(null, results) }
+            file = path.resolve(dir, file)
+            fs.stat(file, function(statErr, stat) {
+                if (stat && stat.isDirectory()) {
+                    listFilesRecursively(file, function(loopErr, res) {
+                        results = results.concat(res)
+                        next()
+                    })
+                } else {
+                    results.push(file)
+                    next()
+                }
+            })
+        })()
     })
 }

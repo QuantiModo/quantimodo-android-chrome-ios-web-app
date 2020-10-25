@@ -6,7 +6,7 @@ var chai = require("chai")
 var expect = chai.expect
 var qmGit = require("../../ts/qm.git")
 var qmShell = require("../../ts/qm.shell")
-global.fileHelper = require("../../ts/qm.file-helper")
+var fileHelper = global.fileHelper = require("../../ts/qm.file-helper")
 var cypressFunctions = require("../../ts/cypress-functions")
 var urlParser = require("url")
 var https = require("https")
@@ -300,7 +300,7 @@ describe("File Helper", function () {
     })
     it.skip("uploads test results", function (done) {
         this.timeout(10000) // Default 2000 is too fast
-        cypressFunctions.uploadTestResults(function (uploadResponse) {
+        cypressFunctions.uploadMochawesome(function (uploadResponse) {
             downloadFileContains(uploadResponse.Location, "mocha", done)
         })
     })
