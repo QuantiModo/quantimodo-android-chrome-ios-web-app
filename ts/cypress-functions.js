@@ -29,7 +29,7 @@ var test_helpers_1 = require("./test-helpers");
 env_helper_1.loadEnv("local"); // https://github.com/motdotla/dotenv#what-happens-to-environment-variables-that-were-already-set
 var ciProvider = test_helpers_1.getCiProvider();
 var isWin = process.platform === "win32";
-var outputReportDir = app_root_path_1.default + "/tests/mochawesome-report";
+var outputReportDir = app_root_path_1.default + "/cypress/reports/mochawesome";
 var screenshotDirectory = outputReportDir + "/assets";
 var unmerged = app_root_path_1.default + "/cypress/reports/mocha";
 var vcsProvider = "github";
@@ -139,7 +139,7 @@ function setGithubStatusAndUploadTestResults(failedTests, context, cb) {
     var errorMessage = failedTests[0].error;
     qmGit.setGithubStatus("failure", context, failedTestTitle + ": " +
         errorMessage, getReportUrl(), function () {
-        uploadTestResults(function () {
+        uploadMochawesome(function () {
             console.error(errorMessage);
             cb(errorMessage);
             // resolve();
@@ -440,9 +440,9 @@ function runLastFailedCypressTest(cb) {
     });
 }
 exports.runLastFailedCypressTest = runLastFailedCypressTest;
-function uploadTestResults(cb) {
+function uploadMochawesome(cb) {
     var path = "mochawesome/" + qmGit.getCurrentGitCommitSha();
-    fileHelper.uploadToS3(outputReportDir + "/mochawesome.html", path, cb, "quantimodo", "public-read", "text/html");
+    fileHelper.uploadFolderToS3(outputReportDir, path, cb, "qmimmages", "public-read");
 }
-exports.uploadTestResults = uploadTestResults;
+exports.uploadMochawesome = uploadMochawesome;
 //# sourceMappingURL=cypress-functions.js.map

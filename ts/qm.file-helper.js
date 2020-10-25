@@ -14,6 +14,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var aws_sdk_1 = __importDefault(require("aws-sdk"));
 var fs = __importStar(require("fs"));
 var https = __importStar(require("https"));
+var mime = __importStar(require("mime"));
 var path = __importStar(require("path"));
 var rimraf_1 = __importDefault(require("rimraf"));
 var qmLog = __importStar(require("./qm.log"));
@@ -120,6 +121,14 @@ function uploadToS3(relative, s3BasePath, cb, s3Bucket, accessControlLevel, Cont
         Bucket: s3Bucket,
         Key: s3Key,
     };
+    if (!ContentType) {
+        try {
+            ContentType = mime.getType(s3Key);
+        }
+        catch (e) {
+            qmLog.error(e);
+        }
+    }
     if (ContentType) {
         // @ts-ignore
         params.ContentType = ContentType;
@@ -181,4 +190,52 @@ function download(url, relative, cb) {
     });
 }
 exports.download = download;
+function uploadFolderToS3(dir, s3BasePath, cb, s3Bucket, accessControlLevel, ContentType) {
+    if (s3Bucket === void 0) { s3Bucket = "quantimodo"; }
+    if (accessControlLevel === void 0) { accessControlLevel = "public-read"; }
+    listFilesRecursively(dir, function (err, files) {
+        var i = 0;
+        files.forEach(function (file) {
+            i++;
+            uploadToS3(file, s3BasePath, function (fileErr, url) {
+                if (fileErr) {
+                    throw fileErr;
+                }
+                if (i === files.length) {
+                    cb(err, dir);
+                }
+            }, s3Bucket, ContentType);
+        });
+    });
+}
+exports.uploadFolderToS3 = uploadFolderToS3;
+function listFilesRecursively(dir, done) {
+    var results = [];
+    fs.readdir(dir, function (err, list) {
+        if (err) {
+            return done(err, []);
+        }
+        var i = 0;
+        (function next() {
+            var file = list[i++];
+            if (!file) {
+                return done(null, results);
+            }
+            file = path.resolve(dir, file);
+            fs.stat(file, function (statErr, stat) {
+                if (stat && stat.isDirectory()) {
+                    listFilesRecursively(file, function (loopErr, res) {
+                        results = results.concat(res);
+                        next();
+                    });
+                }
+                else {
+                    results.push(file);
+                    next();
+                }
+            });
+        })();
+    });
+}
+exports.listFilesRecursively = listFilesRecursively;
 //# sourceMappingURL=qm.file-helper.js.map
