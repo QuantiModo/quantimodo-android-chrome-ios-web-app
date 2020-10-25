@@ -1849,6 +1849,11 @@ var qm = {
             if(value !== null){
                 throw name + " should be null but is " + JSON.stringify(value);
             }
+        },
+        isInteger: function(value){
+            if(!Number.isInteger(value)){
+                qmLog.lei("not an integer: ", {value: value})
+            }
         }
     },
     auth: {
@@ -5138,6 +5143,8 @@ var qm = {
         },
         deleteMeasurement: function(toDelete){
             var deferred = Q.defer();
+            qm.assert.isInteger(toDelete.id);
+            //debugger
             qm.measurements.deleteLocally(toDelete);
             qm.toast.infoToast("Deleted " + toDelete.variableName + " measurement");
             var startAt = qm.measurements.getStartAt(toDelete)
