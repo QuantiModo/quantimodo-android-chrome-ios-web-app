@@ -176,6 +176,8 @@ describe('Measurements', function () {
             let newMoodValue = ((initialValue % 5) + 1)
             cy.get('#variable-name').contains(variableName)
             recordRatingCheckHistory(newMoodValue, variableName, valence)
+            cy.loginWithAccessTokenIfNecessary('/#/app/measurement-add?id=' + measurementId)
+            cy.get('#variable-name').contains(variableName)
             cy.wait(1000)
             goToHistoryForVariable(variableName)
             cy.get("#hidden-measurement-id-0").then(($el) => {
@@ -212,25 +214,5 @@ describe('Measurements', function () {
     // Randomly fails and can't reproduce locally
     it('Records a treatment measurement and checks history', function () {
         recordTreatmentMeasurementAndCheckHistoryPage()
-    })
-    it.skip('can edit measurement by id', function () {
-        //qm.auth.setAccessToken("test-token")
-        return cy.request({
-            method: 'GET',
-            url: 'api/v1/measurements',
-            followRedirect: false,
-            headers: {
-                'accept': 'application/json',
-                'authorization': "Bearer test-token",
-            },
-        }).then((response) => {
-            // Parse JSON the body.
-            var measurements = response.body
-            cy.log("Got " + measurements.length + " measurements")
-            var m = measurements[0]
-            cy.loginWithAccessTokenIfNecessary('/#/app/measurement-add?id=' + m.id)
-            cy.url().should('include', 'measurement-add')
-            cy.get('#variable-name').contains(m.variableName)
-        })
     })
 })
