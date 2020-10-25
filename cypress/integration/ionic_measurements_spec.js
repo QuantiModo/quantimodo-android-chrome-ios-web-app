@@ -16,12 +16,12 @@ function saveMeasurement() {
 function recordRatingCheckHistory(val, variableName, valence) {
     cy.url().should('contain', '/measurement-add')
     cy.get("#" + valence + "-rating-with-value-" + val).click({force: true})
-    saveMeasurement();
+    saveMeasurement()
     goToHistoryForVariable(variableName)
     let desiredImageName = ratingValueToImage(val, valence)
     cy.get("#historyItem-0 > img", {timeout: 30000})
         .invoke('attr', 'src')
-        .should('contain', desiredImageName);
+        .should('contain', desiredImageName)
 }
 
 function ratingValueToImage(value, valence) {
@@ -48,7 +48,7 @@ function ratingValueToImage(value, valence) {
             'img/rating/numeric_rating_button_256_5.png',
         ],
     }
-    return ratingImages[valence][value - 1];
+    return ratingImages[valence][value - 1]
 }
 
 /**
@@ -92,14 +92,14 @@ function editHistoryPageMeasurement(itemTitle) {
 }
 
 function deleteMeasurements(variableName) {
-    goToHistoryForVariable(variableName);
+    goToHistoryForVariable(variableName)
     cy.log('Deleting measurements...')
     let deleted = false
-    cy.get("body").then($body => {
-        let selector = "#showActionSheet-button > i";
-        let number = $body.find(selector).length;
-        cy.log(number + " measurements to delete");
-        if (number > 0) {   //evaluates as true
+    cy.get("body").then(($body) => {
+        let selector = "#showActionSheet-button > i"
+        let number = $body.find(selector).length
+        cy.log(number + " measurements to delete")
+        if (number > 0) { //evaluates as true
             cy.get(selector, {timeout: 30000})
                 // eslint-disable-next-line no-unused-vars
                 .each(($el, _index, _$list) => {
@@ -111,7 +111,7 @@ function deleteMeasurements(variableName) {
                     deleted = true
                 })
         }
-    });
+    })
     cy.get('#historyList > div', {timeout: 30000})
         // eslint-disable-next-line no-unused-vars
         .each(($el, _index, _$list) => {
@@ -168,27 +168,27 @@ describe('Measurements', function () {
         let initialValue = (seconds % 5) + 1
         recordRatingCheckHistory(initialValue, variableName, valence)
         cy.get('#hidden-measurement-id-0').then(($el) => {
-            let measurementId = $el.text();
+            let measurementId = $el.text()
             //debugger
             expect(measurementId).length.to.be.greaterThan(0)
-            cy.get('#action-sheet-button-0').click({force: true});
-            cy.clickActionSheetButtonContaining('Edit');
-            let newMoodValue = ((initialValue % 5) + 1);
+            cy.get('#action-sheet-button-0').click({force: true})
+            cy.clickActionSheetButtonContaining('Edit')
+            let newMoodValue = ((initialValue % 5) + 1)
             cy.get('#variable-name').contains(variableName)
             recordRatingCheckHistory(newMoodValue, variableName, valence)
             cy.wait(1000)
-            goToHistoryForVariable(variableName);
+            goToHistoryForVariable(variableName)
             cy.get("#hidden-measurement-id-0").then(($el) => {
-                let editedMeasurementId = $el.text();
+                let editedMeasurementId = $el.text()
                 expect(measurementId).length.to.be.greaterThan(0)
-                cy.get('#action-sheet-button-0').click({force: true});
-                cy.clickActionSheetButtonContaining('Edit');
-                cy.get('#deleteButton').click({force: true});
-                cy.wait(500);
+                cy.get('#action-sheet-button-0').click({force: true})
+                cy.clickActionSheetButtonContaining('Edit')
+                cy.get('#deleteButton').click({force: true})
+                cy.wait(500)
                 goToHistoryForVariable(variableName)
-                cy.get("#hidden-measurement-id-0").should('not.contain', editedMeasurementId);
-            });
-        });
+                cy.get("#hidden-measurement-id-0").should('not.contain', editedMeasurementId)
+            })
+        })
     })
     // Skipping because it fails randomly and can't reproduce failure locally
     it('Record, edit, and delete a treatment measurement', function () {
@@ -221,8 +221,8 @@ describe('Measurements', function () {
             followRedirect: false,
             headers: {
                 'accept': 'application/json',
-                'authorization': "Bearer test-token"
-            }
+                'authorization': "Bearer test-token",
+            },
         }).then((response) => {
             // Parse JSON the body.
             var measurements = response.body
