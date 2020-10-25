@@ -321,6 +321,74 @@ describe("File Helper", function () {
             })
     })
 })
+describe("Favorites", function () {
+    it("record measurement by favorite", function () {
+        this.timeout(90000)
+        //expect(qm.appMode.isLocal()).to.be.true
+        const variableName = "Aaa Test Treatment"
+        const variableCategoryName = "Treatments"
+        qmTests.setTestAccessToken()
+        return qm.userHelper.getUserFromApi({})
+            .then(function (user){
+                expect(user.accessToken, qmTests.getTestAccessToken())
+                return qm.reminderHelper.deleteByVariableName(variableName)
+            })
+            .then(function () {
+                return qm.reminderHelper.getReminders({variableName})
+            })
+            .then(function (reminders) {
+                expect(reminders).length(0)
+                expect(qm.reminderHelper.getQueue()).length(0)
+                qm.reminderHelper.addToQueue([{variableName, reminderFrequency: 0, defaultValue: 100}])
+                expect(qm.reminderHelper.getQueue()).length(1)
+                expect(qm.reminderHelper.getCached()).length(0)
+                return qm.reminderHelper.syncReminders()
+            })
+            .then(function (response) {
+                const data = (response && response.data) ? response.data : null
+                expect(data.trackingReminders).length(1)
+                expect(data.trackingReminders[0].reminderFrequency).to.eq(0)
+                expect(data.userVariables).length(1)
+                expect(data.trackingReminderNotifications).length(0)
+                expect(qm.notifications.getCached()).length(0)
+                expect(qm.reminderHelper.getCached()).length(1)
+                return qm.reminderHelper.syncReminders()
+            })
+            .then(function(){
+                return qm.measurements.getMeasurements({variableName}).then(function (measurements){
+                    qm.measurements.logMeasurements(measurements, variableName + " Measurements Before Deleting")
+                }).then(function(){
+                    return qm.measurements.deleteLastMeasurementForVariable(variableName)
+                }).then(function(){
+                    return qm.measurements.getMeasurements({variableName}).then(function (measurements){
+                        qm.measurements.logMeasurements(measurements, variableName + " Measurements After Deleting")
+                    })
+                })
+            })
+            .then(function() {
+                return qm.reminderHelper.getFavorites(variableCategoryName)
+            })
+            .then(function (favorites) {
+                expect(favorites).length(1)
+                expect(qm.reminderHelper.getQueue()).length(0)
+                const notifications = qm.notifications.getCached()
+                expect(notifications).length(0)
+                var f = favorites[0]
+                qm.reminderHelper.trackByFavorite(f, 100)
+                expect(f.value).to.eq(100)
+                expect(f.displayTotal).to.eq("Recorded " + f.value + " " + f.unitAbbreviatedName)
+                var timeout = f.timeout
+                timeout._onTimeout()
+                clearTimeout(timeout)
+                return qm.measurements.getLocalMeasurements({variableName})
+            })
+            .then(function (measurements) {
+                expect(measurements).length(1)
+                var m = measurements[0]
+                expect(m.value).to.eq(100)
+            })
+    })
+})
 describe("Ghost Inspector", function () {
     it("runs tests on staging API", function (done) {
         var previouslySetApiUrl = process.env.API_URL || null
