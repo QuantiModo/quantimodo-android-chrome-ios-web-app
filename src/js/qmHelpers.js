@@ -5512,13 +5512,18 @@ var qm = {
         },
         roundMeasurementTime: function(m){
             var deferred = Q.defer();
-            qm.variablesHelper.findVariable(m).then(function(v){
+            qm.variablesHelper.findInLocalStorage(m).then(function(v){
                 var minSecs = v.minimumAllowedSecondsBetweenMeasurements;
                 m.originalStartAt = qm.measurements.getStartAt(m);
                 m.startAt = qm.timeHelper.roundTime(m.originalStartAt, minSecs);
                 deferred.resolve(m.startAt)
             }, function (err){
-                throw Error(err);
+                qmLog.warn("Could not get variable for minimumAllowedSecondsBetweenMeasurements so rounding "+
+                    "startTime to 60s for this measurement: ", m)
+                var minSecs = 60;
+                m.originalStartAt = qm.measurements.getStartAt(m);
+                m.startAt = qm.timeHelper.roundTime(m.originalStartAt, minSecs);
+                deferred.resolve(m.startAt)
             })
             return deferred.promise;
         },
@@ -11462,6 +11467,31 @@ var qm = {
                     both = qm.arrayHelper.getUnique(both, 'variableId');
                     deferred.resolve(both);
                 });
+            return deferred.promise;
+        },
+        findInLocalStorage: function(nameIdObj){
+            var deferred = Q.defer();
+            var params = {};
+            var nameOrId;
+            if(typeof nameIdObj === 'object' && nameIdObj !== null){
+                nameOrId = nameIdObj.variableId || nameIdObj.variableName || null
+            }
+            qmLog.lei(!nameOrId)
+            if(Number.isInteger(nameOrId)){
+                params.id = nameOrId;
+            } else {
+                var name = nameOrId.toLowerCase();
+                params.name = name.replace("+", " ")
+            }
+            qm.variablesHelper.getUserAndCommonVariablesFromLocalStorage(params).then(function(variables){
+                if(variables.length){
+                    deferred.resolve(variables[0])
+                } else {
+                    deferred.reject("variable "+nameOrId+" not found")
+                }
+            }, function(err){
+                deferred.reject(err)
+            })
             return deferred.promise;
         },
         updateSubtitles: function(variables, params){
