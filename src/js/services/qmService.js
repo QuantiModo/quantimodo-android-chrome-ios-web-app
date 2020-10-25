@@ -2426,7 +2426,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                         logDebug("getFromLocalStorageOrApi in querySearch with params: " +
                             JSON.stringify(dialogParams.requestParams), query);
                         if(query && query.length){
-                            debugger
+                            //debugger
                         }
                         // Debounce in the template doesn't seem to work so we wait 500ms before searching here
                         clearTimeout(qmService.searchTimeout);
