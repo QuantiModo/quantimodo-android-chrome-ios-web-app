@@ -2,8 +2,10 @@
 /// <reference types="cypress" />
 function saveMeasurement() {
     cy.get('#saveButton').click({force: true})
-    cy.wait('@post-measurement', {timeout: 30000}).should('have.property', 'status', 201)
     cy.log('Waiting for measurement to post to API...')
+    cy.wait('@post-measurement', {timeout: 30000}).should('have.property', 'status', 201)
+    cy.log('Waiting for measurement with id to be stored...')
+    cy.wait(500)
 }
 
 /**
@@ -16,39 +18,37 @@ function recordRatingCheckHistory(val, variableName, valence) {
     cy.get("#" + valence + "-rating-with-value-" + val).click({force: true})
     saveMeasurement();
     goToHistoryForVariable(variableName)
-
-    function moodValueToImage(value, valence) {
-        return ratingImages[valence][value - 1];
-    }
-
-    let desiredImageName = moodValueToImage(val, valence)
+    let desiredImageName = ratingValueToImage(val, valence)
     cy.get("#historyItem-0 > img", {timeout: 30000})
         .invoke('attr', 'src')
         .should('contain', desiredImageName);
 }
 
-const ratingImages = {
-    positive: [
-        'img/rating/face_rating_button_256_depressed.png',
-        'img/rating/face_rating_button_256_sad.png',
-        'img/rating/face_rating_button_256_ok.png',
-        'img/rating/face_rating_button_256_happy.png',
-        'img/rating/face_rating_button_256_ecstatic.png',
-    ],
-    negative: [
-        'img/rating/face_rating_button_256_ecstatic.png',
-        'img/rating/face_rating_button_256_happy.png',
-        'img/rating/face_rating_button_256_ok.png',
-        'img/rating/face_rating_button_256_sad.png',
-        'img/rating/face_rating_button_256_depressed.png',
-    ],
-    numeric: [
-        'img/rating/numeric_rating_button_256_1.png',
-        'img/rating/numeric_rating_button_256_2.png',
-        'img/rating/numeric_rating_button_256_3.png',
-        'img/rating/numeric_rating_button_256_4.png',
-        'img/rating/numeric_rating_button_256_5.png',
-    ],
+function ratingValueToImage(value, valence) {
+    const ratingImages = {
+        positive: [
+            'img/rating/face_rating_button_256_depressed.png',
+            'img/rating/face_rating_button_256_sad.png',
+            'img/rating/face_rating_button_256_ok.png',
+            'img/rating/face_rating_button_256_happy.png',
+            'img/rating/face_rating_button_256_ecstatic.png',
+        ],
+        negative: [
+            'img/rating/face_rating_button_256_ecstatic.png',
+            'img/rating/face_rating_button_256_happy.png',
+            'img/rating/face_rating_button_256_ok.png',
+            'img/rating/face_rating_button_256_sad.png',
+            'img/rating/face_rating_button_256_depressed.png',
+        ],
+        numeric: [
+            'img/rating/numeric_rating_button_256_1.png',
+            'img/rating/numeric_rating_button_256_2.png',
+            'img/rating/numeric_rating_button_256_3.png',
+            'img/rating/numeric_rating_button_256_4.png',
+            'img/rating/numeric_rating_button_256_5.png',
+        ],
+    }
+    return ratingImages[valence][value - 1];
 }
 
 /**
@@ -169,6 +169,7 @@ describe('Measurements', function () {
         recordRatingCheckHistory(initialValue, variableName, valence)
         cy.get('#hidden-measurement-id-0').then(($el) => {
             let measurementId = $el.text();
+            //debugger
             expect(measurementId).length.to.be.greaterThan(0)
             cy.get('#action-sheet-button-0').click({force: true});
             cy.clickActionSheetButtonContaining('Edit');
@@ -179,7 +180,9 @@ describe('Measurements', function () {
             goToHistoryForVariable(variableName);
             cy.get("#hidden-measurement-id-0").then(($el) => {
                 let editedMeasurementId = $el.text();
-                cy.visitIonicAndSetApiUrl(`/#/app/measurement-add?measurementId=${editedMeasurementId}`);
+                expect(measurementId).length.to.be.greaterThan(0)
+                cy.get('#action-sheet-button-0').click({force: true});
+                cy.clickActionSheetButtonContaining('Edit');
                 cy.get('#deleteButton').click({force: true});
                 cy.wait(500);
                 goToHistoryForVariable(variableName)
