@@ -25,7 +25,7 @@ merge(options).then(function (report) {
         vcsProvider: "github",
         screenshotDir: base + "/cypress/screenshots",
         verbose: true,
-        reportDir: base + "/mochawesome-report"
+        reportDir: base + "/cypress/reports"
     };
     var ciProvider = program.ciProvider;
     var vcsProvider = program.vcsProvider;

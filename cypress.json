@@ -14,7 +14,7 @@
   },
   "reporter": "cypress-multi-reporters",
   "reporterOptions": {
-    "configFile": "tests/reporterOpts.json"
+    "configFile": "cypress/reporterOpts.json"
   },
-  "screenshotsFolder": "tests/mochawesome-report/assets"
+  "screenshotsFolder": "cypress/reports/assets"
 }
