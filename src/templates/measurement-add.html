@@ -5,7 +5,8 @@
              style="overflow: visible"
              ng-show="state.measurement.variableName"
              id="measurementAddCard">
-            <div ng-if="!bloodPressure.show"
+            <div id="variable-name"
+                ng-if="!bloodPressure.show"
                  class="item item-divider">{{state.measurement.variableName}}
             </div>
             <div ng-if="bloodPressure.show"
@@ -57,7 +58,7 @@
                 </label>
                 <div class="primary-outcome-variable-rating-buttons primary-outcome-variable-history col"
                      ng-if="state.measurement.inputType === 'oneToFiveNumbers'">
-                    <img id="{{'rating-button-with-value-' + option.numericValue}}"
+                    <img id="{{'neutral-rating-with-value-' + option.numericValue}}"
                          ng-repeat="option in numericRatingOptions"
                          ng-click="selectPrimaryOutcomeVariableValue($event, option.numericValue)"
                          title="{{option.numericValue}}/5"
@@ -67,7 +68,7 @@
                 </div>
                 <div class="primary-outcome-variable-rating-buttons primary-outcome-variable-history col"
                      ng-if="state.measurement.inputType === 'happiestFaceIsFive'">
-                    <img id="{{'positiveRatingOption-with-value-' + option.numericValue}}"
+                    <img id="{{'positive-rating-with-value-' + option.numericValue}}"
                          ng-repeat="option in positiveRatingOptions"
                          ng-click="selectPrimaryOutcomeVariableValue($event, option.numericValue)"
                          title="{{option.numericValue}}/5"
@@ -77,7 +78,7 @@
                 </div>
                 <div class="primary-outcome-variable-rating-buttons primary-outcome-variable-history col"
                      ng-if="state.measurement.inputType === 'saddestFaceIsFive'">
-                    <img id="{{'negativeRatingOption-with-value-' + option.numericValue}}"
+                    <img id="{{'negative-rating-with-value-' + option.numericValue}}"
                          ng-repeat="option in negativeRatingOptions"
                          ng-click="selectPrimaryOutcomeVariableValue($event, option.numericValue)"
                          title="{{option.numericValue}}/5"

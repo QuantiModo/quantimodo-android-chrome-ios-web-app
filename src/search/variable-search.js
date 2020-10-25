@@ -87,7 +87,7 @@ function search(query) {
             successHandler(searchCache[query])
         }
     }else{
-        qm.variablesHelper.getFromLocalStorageOrApi({searchPhrase: query}, successHandler)
+        qm.variablesHelper.getFromLocalStorageOrApi({searchPhrase: query}).then(successHandler)
     }
 }
 function variableSearchV6(query) {

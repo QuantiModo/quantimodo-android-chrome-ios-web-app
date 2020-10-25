@@ -17,7 +17,7 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
             var id = qmService.variableIdToGetOnReturnToSettings;
             if(id){
                 getUserVariableWithTags(id);
-                qm.userVariables.getFromLocalStorageOrApi({id: id}, function(variables){
+                qm.userVariables.getFromLocalStorageOrApi({id: id}).then(function(variables){
                     setVariableObject(variables[0])
                 });
                 delete qmService.variableIdToGetOnReturnToSettings;
@@ -46,7 +46,7 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
                 return;
             }
             $scope.state.loading = true;
-            qm.userVariables.getFromApi(params, function(userVariables){
+            qm.userVariables.getFromApi(params).then(function(userVariables){
                 if(userVariables && userVariables[0]){
                     setVariableObject(userVariables[0]);
                 }

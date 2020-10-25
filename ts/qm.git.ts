@@ -6,6 +6,8 @@ import {loadEnv} from "./env-helper"
 import * as qmLog from "./qm.log"
 import * as qmShell from "./qm.shell"
 import {getBuildLink} from "./test-helpers"
+// tslint:disable-next-line:no-var-requires
+const qm = require("../src/js/qmHelpers.js")
 export function getOctoKit() {
     return new Octokit({auth: getAccessToken()})
 }
@@ -115,7 +117,9 @@ export function setGithubStatus(testState: "error" | "failure" | "pending" | "su
     if(!url) {
         url = "No url from getBuildLink()"
         const message = "No build link or target url for status!"
-        console.error(message)
+        if(!qm.env.isLocal()) {
+            console.error(message)
+        }
         if (cb) {cb(message)}
         return
     }
