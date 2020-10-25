@@ -23,7 +23,7 @@ merge(options).then((report: any) => {
         vcsProvider: "github",
         screenshotDir: `${base}/cypress/screenshots`,
         verbose: true,
-        reportDir: `${base}/mochawesome-report`
+        reportDir: `${base}/cypress/reports/mocha`
     };
     const ciProvider: string = program.ciProvider;
     const vcsProvider: string = program.vcsProvider;

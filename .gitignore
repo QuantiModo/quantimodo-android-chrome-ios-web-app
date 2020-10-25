@@ -138,6 +138,7 @@ secrets/*
 /last-failed-cypress-test
 /cypress/videos/
 /success-file
-/tests/mochawesome-report/assets/
+/cypress/mochawesome-report/assets/
 debug.log
 /cypress/fixtures/get/some-path-param=hi.json
+/cypress/reports/mocha/
