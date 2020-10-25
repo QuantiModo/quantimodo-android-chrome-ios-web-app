@@ -1,0 +1,15 @@
+name: PR update
+
+on:
+  push:
+    branches: develop
+
+jobs:
+  autoupdate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: update all prs
+        uses: maxkomarychev/pr-updater-action@v1.0.1
+        with:
+          token: ${{ secrets.USER_TOKEN }}
