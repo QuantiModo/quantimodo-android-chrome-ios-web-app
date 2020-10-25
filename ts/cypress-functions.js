@@ -18,6 +18,7 @@ var fs = __importStar(require("fs"));
 var mochawesome_merge_1 = require("mochawesome-merge");
 // @ts-ignore
 var mochawesome_report_generator_1 = __importDefault(require("mochawesome-report-generator"));
+var Q = __importStar(require("q"));
 var rimraf_1 = __importDefault(require("rimraf"));
 var env_helper_1 = require("./env-helper");
 var fileHelper = __importStar(require("./qm.file-helper"));
@@ -25,11 +26,12 @@ var fileHelper = __importStar(require("./qm.file-helper"));
 // tslint:disable-next-line:no-var-requires
 var qm = require("../src/js/qmHelpers.js");
 var qmGit = __importStar(require("./qm.git"));
+var qmLog = __importStar(require("./qm.log"));
 var test_helpers_1 = require("./test-helpers");
 env_helper_1.loadEnv("local"); // https://github.com/motdotla/dotenv#what-happens-to-environment-variables-that-were-already-set
 var ciProvider = test_helpers_1.getCiProvider();
 var isWin = process.platform === "win32";
-var outputReportDir = app_root_path_1.default + "/tests/mochawesome-report";
+var outputReportDir = app_root_path_1.default + "/cypress/reports/mocha";
 var screenshotDirectory = outputReportDir + "/assets";
 var unmerged = app_root_path_1.default + "/cypress/reports/mocha";
 var vcsProvider = "github";
@@ -40,6 +42,7 @@ var lastFailedCypressTestPath = "last-failed-cypress-test";
 var cypressJson = fileHelper.getAbsolutePath("cypress.json");
 var releaseStage = process.env.RELEASE_STAGE || "production";
 var envPath = fileHelper.getAbsolutePath("cypress/config/cypress." + releaseStage + ".json");
+var s3Bucket = "qmimages";
 var paths = {
     reports: {
         junit: "./cypress/reports/junit",
@@ -139,7 +142,7 @@ function setGithubStatusAndUploadTestResults(failedTests, context, cb) {
     var errorMessage = failedTests[0].error;
     qmGit.setGithubStatus("failure", context, failedTestTitle + ": " +
         errorMessage, getReportUrl(), function () {
-        uploadTestResults(function () {
+        uploadMochawesome().then(function (urls) {
             console.error(errorMessage);
             cb(errorMessage);
             // resolve();
@@ -167,7 +170,7 @@ function logFailedTests(failedTests, context, cb) {
         console.error(errorMessage);
         console.error("==============================================");
     }
-    test_helpers_1.deleteSuccessFile(function () {
+    test_helpers_1.deleteSuccessFile().then(function () {
         mochawesome(failedTests, function () {
             setGithubStatusAndUploadTestResults(failedTests, context, cb);
         });
@@ -188,8 +191,10 @@ function runWithRecording(specName, cb) {
         if ("runUrl" in recordingResults) {
             runUrl = recordingResults.runUrl;
         }
-        uploadCypressVideo(specName, function (err, s3Url) {
-            qmGit.setGithubStatus("error", context, "View recording of " + specName, s3Url || test_helpers_1.getBuildLink() || runUrl, function () {
+        uploadCypressVideo(specName)
+            .then(function (s3Url) {
+            var url = s3Url || test_helpers_1.getBuildLink() || runUrl;
+            qmGit.setGithubStatus("error", context, "View recording of " + specName, url, function () {
                 qmGit.createCommitComment(context, "\nView recording of " + specName + "\n" +
                     "[Cypress Dashboard](" + runUrl + ") or [Build Log](" + test_helpers_1.getBuildLink() + ") or [S3](" + s3Url + ")", function () {
                     cb(recordingResults);
@@ -222,7 +227,8 @@ function handleTestSuccess(results, context, cb) {
     deleteLastFailedCypressTest();
     console.info(results.totalPassed + " tests PASSED!");
     qmGit.setGithubStatus("success", context, results.totalPassed + " tests passed", null, function () {
-        test_helpers_1.createSuccessFile(function () {
+        test_helpers_1.createSuccessFile()
+            .then(function () {
             cb(false);
         });
     });
@@ -250,7 +256,8 @@ function runOneCypressSpec(specName, cb) {
             var failedTests = getFailedTestsFromResults(results);
             if (failedTests.length) {
                 process.env.LOGROCKET = "1";
-                fileHelper.uploadToS3InSubFolderWithCurrentDateTime(getVideoPath(specName), "cypress", function (err, url) {
+                fileHelper.uploadToS3InSubFolderWithCurrentDateTime(getVideoPath(specName), "cypress")
+                    .then(function (url) {
                     runWithRecording(specName, function (recordResults) {
                         var failedRecordedTests = getFailedTestsFromResults(recordResults);
                         if (failedRecordedTests.length) {
@@ -282,17 +289,17 @@ function getVideoPath(specName) {
     return "cypress/videos/" + specName + ".mp4";
 }
 exports.getVideoPath = getVideoPath;
-function uploadCypressVideo(specName, cb) {
-    fileHelper.uploadToS3InSubFolderWithCurrentDateTime(getVideoPath(specName), "cypress", cb);
+function uploadCypressVideo(specName) {
+    return fileHelper.uploadToS3InSubFolderWithCurrentDateTime(getVideoPath(specName), "cypress");
 }
 exports.uploadCypressVideo = uploadCypressVideo;
 function uploadLastFailed(specName, cb) {
     fs.writeFileSync(lastFailedCypressTestPath, specName);
-    fileHelper.uploadToS3(lastFailedCypressTestPath, "cypress", cb, "qmimages");
+    return fileHelper.uploadToS3(lastFailedCypressTestPath, "cypress", "qmimages");
 }
 exports.uploadLastFailed = uploadLastFailed;
-function downloadLastFailed(cb) {
-    fileHelper.downloadFromS3(lastFailedCypressTestPath, "cypress" + "/" + lastFailedCypressTestPath, cb, "qmimages");
+function downloadLastFailed() {
+    return fileHelper.downloadFromS3(lastFailedCypressTestPath, "cypress" + "/" + lastFailedCypressTestPath, s3Bucket);
 }
 exports.downloadLastFailed = downloadLastFailed;
 function getSpecsPath() {
@@ -333,7 +340,8 @@ function runCypressTestsInParallel(cb) {
             }
             Promise.all(promises).then(function (values) {
                 console.log(values);
-                test_helpers_1.createSuccessFile(function () {
+                test_helpers_1.createSuccessFile()
+                    .then(function () {
                     test_helpers_1.deleteEnvFile();
                     if (cb) {
                         cb(false);
@@ -370,7 +378,8 @@ function runCypressTests(cb) {
                 p = p.then(function (_) { return new Promise(function (resolve) {
                     runOneCypressSpec(specName, function () {
                         if (i === specFileNames.length - 1) {
-                            test_helpers_1.createSuccessFile(function () {
+                            test_helpers_1.createSuccessFile()
+                                .then(function () {
                                 test_helpers_1.deleteEnvFile();
                                 if (cb) {
                                     cb(false);
@@ -391,25 +400,30 @@ function runCypressTests(cb) {
     });
 }
 exports.runCypressTests = runCypressTests;
-function getLastFailedCypressTest(cb) {
+function getLastFailedCypressTest() {
+    var deferred = Q.defer();
     try {
-        downloadLastFailed(function (absPath) {
+        downloadLastFailed()
+            .then(function (absPath) {
             if (!absPath) {
-                cb(null);
+                deferred.resolve(null);
                 return;
             }
             try {
+                // @ts-ignore
                 var spec = fs.readFileSync(absPath, "utf8");
-                cb(spec);
+                deferred.resolve(spec);
             }
             catch (error) {
-                cb(null);
+                deferred.resolve(null);
             }
         });
     }
     catch (error) {
-        cb(null);
+        qmLog.error(error);
+        deferred.resolve(null);
     }
+    return deferred.promise;
 }
 function deleteLastFailedCypressTest() {
     // tslint:disable-next-line:no-empty
@@ -422,7 +436,8 @@ function deleteLastFailedCypressTest() {
 }
 // tslint:disable-next-line:unified-signatures
 function runLastFailedCypressTest(cb) {
-    getLastFailedCypressTest(function (name) {
+    getLastFailedCypressTest()
+        .then(function (name) {
         if (!name) {
             console.info("No previously failed test!");
             cb(false);
@@ -436,13 +451,14 @@ function runLastFailedCypressTest(cb) {
             console.error(e.message + "!  Going to try again...");
             copyCypressEnvConfigIfNecessary();
         }
+        // @ts-ignore
         runOneCypressSpec(name, cb);
     });
 }
 exports.runLastFailedCypressTest = runLastFailedCypressTest;
-function uploadTestResults(cb) {
-    var path = "mochawesome/" + qmGit.getCurrentGitCommitSha();
-    fileHelper.uploadToS3(outputReportDir + "/mochawesome.html", path, cb, "quantimodo", "public-read", "text/html");
+function uploadMochawesome() {
+    var s3Key = "mochawesome/" + qmGit.getCurrentGitCommitSha();
+    return fileHelper.uploadFolderToS3(outputReportDir, s3Key, s3Bucket, "public-read");
 }
-exports.uploadTestResults = uploadTestResults;
+exports.uploadMochawesome = uploadMochawesome;
 //# sourceMappingURL=cypress-functions.js.map

@@ -37,15 +37,16 @@ function getBuildLink() {
 }
 exports.getBuildLink = getBuildLink;
 var successFilename = "success-file";
-function createSuccessFile(cb) {
-    fileHelper.writeToFile("lastCommitBuilt", qmGit.getCurrentGitCommitSha(), function () {
-        fileHelper.createFile(successFilename, qmGit.getCurrentGitCommitSha(), cb);
+function createSuccessFile() {
+    return fileHelper.writeToFile("lastCommitBuilt", qmGit.getCurrentGitCommitSha())
+        .then(function () {
+        return fileHelper.createFile(successFilename, qmGit.getCurrentGitCommitSha());
     });
 }
 exports.createSuccessFile = createSuccessFile;
-function deleteSuccessFile(cb) {
+function deleteSuccessFile() {
     qmLog.info("Deleting success file so we know if build completed...");
-    fileHelper.deleteFile(successFilename, cb);
+    return fileHelper.deleteFile(successFilename);
 }
 exports.deleteSuccessFile = deleteSuccessFile;
 function deleteEnvFile(cb) {
