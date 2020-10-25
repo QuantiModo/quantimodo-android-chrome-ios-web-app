@@ -7771,10 +7771,10 @@ var qm = {
         },
         removeArchivedReminders: function(allReminders){
             var activeReminders = qm.reminderHelper.getActive(allReminders);
-            var favorites = qm.reminderHelper.getFavorites(allReminders);
+            var favorites = qm.reminderHelper.pluckFavorites(allReminders);
             return activeReminders.concat(favorites);
         },
-        getFavorites: function(allReminders){
+        pluckFavorites: function(allReminders){
             if(allReminders && !Array.isArray(allReminders) && allReminders.data){allReminders = allReminders.data;}
             if(!allReminders){
                 allReminders = qm.reminderHelper.getTrackingRemindersFromLocalStorage();
@@ -7824,7 +7824,7 @@ var qm = {
                 // TODO: Why is this necessary?
                 qmLog.error(error, "trying again after JSON.parse(JSON.stringify(trackingReminders)). Why is this necessary?", {trackingReminders: reminders});
                 reminders = JSON.parse(JSON.stringify(reminders));
-                separated.favorites = qm.reminderHelper.getFavorites(reminders);
+                separated.favorites = qm.reminderHelper.pluckFavorites(reminders);
                 //reminderTypesArray.favorites = [];
             }
             try{
@@ -7939,9 +7939,15 @@ var qm = {
             var notifications = data.trackingReminderNotifications;
             var reminder = postedReminders[0];
             if(!notifications){
+                if(reminder.reminderFrequency){
+                    qmLog.lei("no notifications even though frequency is "+reminder.reminderFrequency, reminder)
+                }
                 qmLog.error("No response.trackingReminderNotifications returned from postTrackingRemindersDeferred")
             }else if(!notifications.length){
-                qmLog.error("response.trackingReminderNotifications is an empty array in postTrackingRemindersDeferred")
+                if(reminder.reminderFrequency){
+                    qmLog.lei("no notifications even though frequency is "+reminder.reminderFrequency, reminder)
+                }
+                qmLog.info("No trackingReminderNotifications returned in response")
             }else{
                 var notificationExists = false;
                 for(var i = 0; i < notifications.length; i++){
@@ -8014,6 +8020,44 @@ var qm = {
                 deferred.resolve(separated);
             });
             return deferred.promise;
+        },
+        getFavorites: function(categoryName){
+            var deferred = Q.defer();
+            qm.reminderHelper.getRemindersFavoritesArchived(categoryName).then(function(allTypes){
+                deferred.resolve(allTypes.favorites);
+            }, function(error){
+                deferred.reject(error);
+            });
+            return deferred.promise;
+        },
+        trackByFavorite: function(tr, modifiedReminderValue, cb){
+            if(typeof modifiedReminderValue === "undefined" || modifiedReminderValue === null){
+                modifiedReminderValue = tr.defaultValue;
+            }
+            tr.value = tr.value || 0;
+            if(tr.combinationOperation === "SUM"){
+                tr.value = tr.value + modifiedReminderValue;
+            }else{
+                tr.value = modifiedReminderValue;
+            }
+            tr.displayTotal = qm.stringHelper.formatValueUnitDisplayText(
+                "Recorded " + tr.value + " " + tr.unitAbbreviatedName);
+            qm.toast.infoToast(tr.displayTotal + " " + tr.variableName);
+            if(tr.timeout){clearTimeout(tr.timeout)}
+            if(cb){cb(tr)}
+            tr.timeout = setTimeout(function(){
+                delete tr.timeout
+                if(tr.value !== null){
+                    var m = qm.measurements.newMeasurement(tr)
+                    qm.measurements.recordMeasurement(m)
+                        .then(function(){
+                            qmLog.debug('Successfully posted MeasurementByReminder: ', tr);
+                        }, function(error){
+                            qmLog.error('Failed to Track by favorite! '+error, tr);
+                        });
+                    tr.value = null;
+                }
+            }, 2000);
         },
         getActiveReminders: function(categoryName){
             var deferred = Q.defer();

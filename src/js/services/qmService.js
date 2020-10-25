@@ -2973,7 +2973,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     return true;
                 }
                 if(b.action && b.action.modifiedValue){
-                    qmService.trackByFavorite(params.variableObject, b.action.modifiedValue);
+                    qm.reminderHelper.trackByFavorite(params.variableObject, b.action.modifiedValue);
                 }
                 var allButtons = qmService.actionSheets.actionSheetButtons;
                 if(b.id === allButtons.compare.id){
@@ -6837,43 +6837,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 $stateParams.variableName = qm.getPrimaryOutcomeVariable().name;
             }
             return $stateParams.variableName;
-        };
-        qmService.trackByFavorite = function(tr, modifiedReminderValue){
-            if(typeof modifiedReminderValue === "undefined" || modifiedReminderValue === null){
-                modifiedReminderValue = tr.defaultValue;
-            }
-            if(tr.combinationOperation === "SUM"){
-                tr.total = tr.total + modifiedReminderValue;
-            }else{
-                tr.total = modifiedReminderValue;
-            }
-            tr.displayTotal = qm.stringHelper.formatValueUnitDisplayText(
-                "Recorded " + tr.total + " " + tr.unitAbbreviatedName);
-            if(!tr.tally){
-                tr.tally = 0;
-            }
-            if(tr.combinationOperation === "SUM"){
-                tr.tally += modifiedReminderValue;
-            }else{
-                tr.tally = modifiedReminderValue;
-            }
-            qmService.showInfoToast(tr.displayTotal + " " + tr.variableName);
-            $timeout(function(){
-                if(typeof tr === "undefined"){
-                    qmLog.error("$rootScope.favoritesTally[trackingReminder.id] is undefined so we can't send tally in favorite controller. Not sure how this is happening.");
-                    return;
-                }
-                if(tr.tally !== null){
-                    qm.measurements.postMeasurementByReminder(tr, tr.tally)
-                        .then(function(){
-                            qmLog.debug('Successfully qmService.postMeasurementByReminder: ', tr);
-                        }, function(error){
-                            qmLog.error(error);
-                            qmLog.error('Failed to Track by favorite! ', tr);
-                        });
-                    tr.tally = null;
-                }
-            }, 2000);
         };
         qmService.patient = {
             switchToPatientInNewTab: function (user) {

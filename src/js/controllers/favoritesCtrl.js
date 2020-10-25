@@ -51,13 +51,21 @@ angular.module('starter').controller('FavoritesCtrl', ["$scope", "$state", "$ion
     });
     var getFavoritesFromLocalStorage = function(){
         var categoryName = qm.variableCategoryHelper.getNameFromStateParamsOrUrl($stateParams);
-        qmService.storage.getFavorites(categoryName).then(function(favorites){
+        qm.reminderHelper.getFavorites(categoryName).then(function(favorites){
             $scope.state.favoritesArray = favorites;
             qmService.showInfoToast('Got ' + favorites.length + ' favorites!');
         });
     };
     $scope.favoriteAddButtonClick = function(){
         qmService.goToState('app.favoriteSearch');
+    };
+    $scope.trackByFavorite = function(tr, modifiedReminderValue){
+        var favorites = $scope.state.favoritesArray;
+        qm.reminderHelper.trackByFavorite(tr, modifiedReminderValue, function (){
+            $scope.safeApply(function (){ // Update display text
+                $scope.state.favoritesArray = favorites
+            })
+        });
     };
     $scope.refreshFavorites = function(){
         qmLog.info('ReminderMange init: calling refreshFavorites syncTrackingReminders');
