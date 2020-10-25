@@ -721,7 +721,7 @@ var qm = {
                 return response.json();
             }).then(function(data){
                 if(successHandler){
-                    if(qm.appMode.isMocha()){
+                    if(qm.appMode.isMocha() && qm.env.isLocal()){
                         qm.tests.addToFixture("GET", url, data)
                     }
                     successHandler(data);
