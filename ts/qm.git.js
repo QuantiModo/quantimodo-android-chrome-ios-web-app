@@ -18,6 +18,8 @@ var env_helper_1 = require("./env-helper");
 var qmLog = __importStar(require("./qm.log"));
 var qmShell = __importStar(require("./qm.shell"));
 var test_helpers_1 = require("./test-helpers");
+// tslint:disable-next-line:no-var-requires
+var qm = require("../src/js/qmHelpers.js");
 function getOctoKit() {
     return new rest_1.default({ auth: getAccessToken() });
 }
@@ -133,7 +135,9 @@ function setGithubStatus(testState, context, description, url, cb) {
     if (!url) {
         url = "No url from getBuildLink()";
         var message = "No build link or target url for status!";
-        console.error(message);
+        if (!qm.env.isLocal()) {
+            console.error(message);
+        }
         if (cb) {
             cb(message);
         }

@@ -195,6 +195,8 @@
     "requireCurlyBraces": null
   },
   "scripts": {
+    "cy:open:development": "cypress open --config-file cypress/config/cypress.development.json",
+    "cy:open:ionic": "cypress open --config-file cypress/config/cypress.ionic.json",
     "bower": "bower install --allow-root --quiet",
     "build": "bower install --allow-root --quiet && gulp configureAppAfterNpmInstall && npm run types",
     "ci": "npm run test",
@@ -205,8 +207,6 @@
     "cy:chrome": "cypress run --browser chrome",
     "cy:heroku-test-setup": "whoami && node -e 'console.log(process.geteuid())' && npx cypress install && npx cypress cache path && npx cypress cache list && npx cypress verify",
     "cy:open": "cypress open --config-file cypress.json",
-    "cy:open:development": "cypress open --config-file cypress/config/cypress.development.json",
-    "cy:open:ionic": "cypress open --config-file cypress/config/cypress.ionic.json",
     "cy:open:production": "cypress open --config-file cypress/config/cypress.production.json",
     "cy:open:staging": "cypress open --config-file cypress/config/cypress.staging.json",
     "cy:record": "cypress run --record",
