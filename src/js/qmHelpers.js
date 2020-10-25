@@ -5125,7 +5125,9 @@ var qm = {
             }else{
                 var startAt = qm.measurements.getStartAt(toDelete)
                 var variableName = toDelete.variableName;
-                delete qm.measurements.queue[variableName][startAt];
+                if(qm.measurements.queue[variableName]){
+                    delete qm.measurements.queue[variableName][startAt];
+                }
                 var recent = qm.measurements.getCachedMeasurements();
                 recent = recent.filter(function(m){
                     var currentStartAt = qm.measurements.getStartAt(m)
