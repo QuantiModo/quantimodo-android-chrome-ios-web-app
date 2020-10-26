@@ -19,6 +19,7 @@ var path = __importStar(require("path"));
 var Q = __importStar(require("q"));
 var rimraf_1 = __importDefault(require("rimraf"));
 var qmLog = __importStar(require("./qm.log"));
+var defaultS3Bucket = "qmimages";
 function assertDoesNotExist(relative) {
     var abs = getAbsolutePath(relative);
     if (fs.existsSync(abs)) {
@@ -72,7 +73,7 @@ function getS3Client() {
 }
 exports.getS3Client = getS3Client;
 function downloadFromS3(filePath, key, bucketName) {
-    if (bucketName === void 0) { bucketName = "quantimodo"; }
+    if (bucketName === void 0) { bucketName = defaultS3Bucket; }
     var s3 = new aws_sdk_1.default.S3();
     var deferred = Q.defer();
     s3.getObject({
@@ -99,24 +100,22 @@ function downloadFromS3(filePath, key, bucketName) {
     return deferred.promise;
 }
 exports.downloadFromS3 = downloadFromS3;
-function uploadToS3InSubFolderWithCurrentDateTime(filePath, s3BasePath, s3Bucket, accessControlLevel, ContentType) {
-    if (s3Bucket === void 0) { s3Bucket = "quantimodo"; }
+function uploadToS3InSubFolderWithCurrentDateTime(relative, s3BasePath, s3Bucket, accessControlLevel, ContentType) {
+    if (s3Bucket === void 0) { s3Bucket = defaultS3Bucket; }
     if (accessControlLevel === void 0) { accessControlLevel = "public-read"; }
     var at = new Date();
     var dateTime = at.toISOString();
-    return uploadToS3(filePath, s3BasePath + "/" + dateTime, s3Bucket, accessControlLevel, ContentType);
+    return uploadToS3(relative, s3BasePath + "/" + dateTime + "/" + relative, s3Bucket, accessControlLevel, ContentType);
 }
 exports.uploadToS3InSubFolderWithCurrentDateTime = uploadToS3InSubFolderWithCurrentDateTime;
-function uploadToS3(relative, s3BasePath, s3Bucket, accessControlLevel, ContentType) {
-    if (s3Bucket === void 0) { s3Bucket = "quantimodo"; }
+function uploadToS3(filePath, s3Key, s3Bucket, accessControlLevel, ContentType) {
+    if (s3Bucket === void 0) { s3Bucket = defaultS3Bucket; }
     if (accessControlLevel === void 0) { accessControlLevel = "public-read"; }
     var deferred = Q.defer();
     var s3 = getS3Client();
-    var abs = getAbsolutePath(relative);
+    var abs = getAbsolutePath(filePath);
     assertExists(abs);
     var fileContent = fs.readFileSync(abs);
-    var fileName = path.basename(relative);
-    var s3Key = s3BasePath + "/" + fileName;
     var params = {
         ACL: accessControlLevel,
         Body: fileContent,
@@ -199,14 +198,19 @@ function download(url, relative) {
 }
 exports.download = download;
 function uploadFolderToS3(dir, s3BasePath, s3Bucket, accessControlLevel, ContentType) {
-    if (s3Bucket === void 0) { s3Bucket = "quantimodo"; }
+    if (s3Bucket === void 0) { s3Bucket = defaultS3Bucket; }
     if (accessControlLevel === void 0) { accessControlLevel = "public-read"; }
     return listFilesRecursively(dir)
         .then(function (files) {
         var promises = [];
         // @ts-ignore
         files.forEach(function (file) {
-            promises.push(uploadToS3(file, s3BasePath, s3Bucket, ContentType));
+            var dirWithForwardSlashes = qm.stringHelper.replaceBackSlashes(dir, "/");
+            var fileWithForwardSlashes = qm.stringHelper.replaceBackSlashes(file, "/");
+            var relativePath = fileWithForwardSlashes.replace(dirWithForwardSlashes, "");
+            var s3Key = s3BasePath + relativePath;
+            s3Key = s3Key.replace("\\", "/");
+            promises.push(uploadToS3(file, s3Key, s3Bucket, ContentType));
         });
         return Q.all(promises);
     });
