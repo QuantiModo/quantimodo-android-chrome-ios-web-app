@@ -9396,6 +9396,9 @@ var qm = {
         },
     },
     stringHelper: {
+        replaceBackSlashes: function(haystack, replace){
+            return haystack.replace(/\\/g, replace)
+        },
         prettyJSONStringify: function(object) {return JSON.stringify(object, null, '\t');},
         removeFirstCharacter: function(str){
             return str.substring(1);
