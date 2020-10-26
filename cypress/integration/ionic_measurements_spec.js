@@ -177,7 +177,7 @@ describe('Measurements', function () {
         cy.url().should('include', 'measurement-add')
     })
     // Skipping because it fails randomly and can't reproduce failure locally
-    it.only('Records, edits, and deletes an emotion measurement', function () {
+    it('Records, edits, and deletes an emotion measurement', function () {
         let variableName = 'Alertness'
         let valence = 'positive'
         cy.loginWithAccessTokenIfNecessary('/#/app/measurement-add-search')
