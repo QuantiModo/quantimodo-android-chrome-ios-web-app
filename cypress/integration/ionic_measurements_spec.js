@@ -35,15 +35,9 @@ function checkChartsPage (variableName) {
     cy.url().should('contain', 'charts')
     cy.url().should('contain', variableName)
     cy.log('Chart is present and titled')
-    cy.contains(`${variableName} Over Time`).then(function (){
-        debugger
-    })
-    // cy.get('#app-container > ion-side-menu-content > ion-nav-view > ion-view > ion-content > div.scroll > div:nth-child(2) > div:nth-child(2) > div:nth-child(2) > div > h2',
-    //     { timeout: 30000 })
-    //     .should('contain', `${variableName} Over Time`)
-    // cy.get('.scroll > div:nth-of-type(2) > div:nth-of-type(2) > .card:nth-of-type(2) > .item.item-text-wrap > h2',
-    //     { timeout: 60000 })
-    //     .should('contain', variableName)
+    cy.contains(`${variableName} Over Time`)
+    cy.get('#menu-more-button').click({ force: true })
+    cy.clickActionSheetButtonContaining('Settings')
 }
 
 function ratingValueToImage(value, valence) {
@@ -249,11 +243,5 @@ describe('Measurements', function () {
         cy.get('div.scroll-bar.scroll-bar-v > div')
         cy.get('#lineChart > div > svg > text > tspan').should('contain', 'Mood Over Time')
         cy.get('#distributionChart > div > svg > g:nth-child(9)').should('exist')
-    })
-    it.skip('Goes to variable settings from charts page', function () {
-        checkChartsPage('Aaa Test Treatment')
-        cy.get('ion-view.pane > ion-content.scroll-content.ionic-scroll.has-header').click({ force: true })
-        cy.get('#menu-more-button').click({ force: true })
-        cy.clickActionSheetButtonContaining('Settings')
     })
 })
