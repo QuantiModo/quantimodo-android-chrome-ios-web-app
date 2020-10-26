@@ -245,6 +245,147 @@ function expectInteger(val){
 function info(str, meta){
     qmLog.info("mocha: " + str, meta)
 }
+describe("Measurement", function () {
+    function checkPostMeasurementResponse(data, variableName, value) {
+        var measurements = qm.measurements.toArray(data.measurements)
+        var id
+        measurements.forEach(function (m) {
+            id = m.id
+            expectInteger(id)
+            expect(m.variableName).eq(variableName)
+            expect(m.value).eq(value)
+        })
+        expect(measurements).length(1)
+        expect(data.userVariables).length(1)
+        var queue = qm.measurements.getMeasurementsFromQueue()
+        expect(queue).length(0)
+        return id
+    }
+    it('can record, edit, and delete a rating measurement', function () {
+        this.timeout(60000)
+        let d = new Date()
+        let seconds = d.getSeconds()
+        let initialValue = (seconds % 5) + 1
+        let editedValue = ((initialValue % 5) + 1)
+        qmTests.setTestAccessToken()
+        var variableName = "Alertness"
+        let measurementId
+        return qm.userHelper.getUserFromApi()
+            .then(function (user) {
+                info("Getting user variables...")
+                expect(user.accessToken).to.eq(qmTests.getTestAccessToken())
+                return qm.userVariables.getFromApi()
+            })
+            .then(function (userVariables) {
+                expect(userVariables).to.be.a('array')
+                info("getMeasurements...")
+                return qm.measurements.getMeasurements({variableName, sort: "-startAt"})
+            })
+            .then(function (measurements) {
+                info("Deleting last " + variableName + " measurement...")
+                qm.measurements.logMeasurements(measurements, variableName + " Measurements")
+                info("deleteLastMeasurementForVariable...")
+                return qm.measurements.deleteLastMeasurementForVariable(variableName)
+            })
+            .then(function () {
+                info("Recording " + initialValue + " /5 " + variableName + " measurement...")
+                var body = {
+                    value: initialValue,
+                    variableName,
+                    unitAbbreviatedName: "/5",
+                }
+                info("qm.measurements.recordMeasurement: ", body)
+                return qm.measurements.recordMeasurement(body)
+            })
+            .then(function (data) {
+                info("Checking post measurement response...")
+                measurementId = checkPostMeasurementResponse(data, variableName, initialValue)
+                info("userVariables.getFromLocalStorage...")
+                return qm.userVariables.getFromLocalStorage({variableName})
+            })
+            .then(function (userVariables) {
+                info("Checking qm.userVariables.getFromLocalStorage({variableName}) after post measurement response...")
+                expect(userVariables).length(1)
+                info("getting charts...")
+                return qm.userVariables.findWithCharts(variableName)
+            })
+            .then(function (uv) {
+                expect(uv.charts).to.not.be.null
+                info("measurements.getLocalMeasurements...")
+                return qm.measurements.getLocalMeasurements({variableName})
+            })
+            .then(function (measurements) {
+                info("Checking qm.measurements.getLocalMeasurements({variableName}) measurements...")
+                var m = measurements[0]
+                expect(m.value).eq(initialValue)
+                expectInteger(m.id)
+                measurements.forEach(function(m){
+                    expectInteger(m.id)
+                    expect(m.variableName).eq(variableName)
+                })
+                info("userVariables.getFromLocalStorage...")
+                return qm.userVariables.getFromLocalStorage({variableName})
+            })
+            .then(function (userVariables) {
+                expect(userVariables).length(1)
+                info("Checking qm.userVariables.getFromLocalStorage({})...")
+                var uv = userVariables[0]
+                expect(uv.variableName).to.eq(variableName) // Should be first since it has most recent measurement
+                info("measurements.getLocalMeasurements 2...")
+                return qm.measurements.getLocalMeasurements({variableName})
+            })
+            .then(function (measurements) {
+                info("Checking qm.measurements.getLocalMeasurements({variableName})...")
+                expect(measurements).length.to.be.greaterThan(0)
+                measurements.forEach(function (measurement) {
+                    expect(measurement.pngPath).to.be.a('string')
+                        .and.satisfy((msg) => msg.startsWith("img/rating/face_rating_button_256_"))
+                })
+                info("Finding local measurement by id...")
+                return qm.measurements.find(measurementId)
+            })
+            .then(function (measurement) {
+                expect(measurement.id).to.eq(measurementId)
+                qm.measurements.cache = {}
+                info("Finding remote measurement by id...")
+                return qm.measurements.find(measurementId)
+            })
+            .then(function (measurement) {
+                expect(measurement.id).to.eq(measurementId)
+                return qm.measurements.getLocalMeasurements({variableName})
+            })
+            .then(function (measurements) {
+                info("Editing measurement...")
+                var m = measurements[0]
+                expect(m.id).to.eq(measurementId)
+                m.value = editedValue
+                return qm.measurements.recordMeasurement(m)
+            })
+            .then(function (data) {
+                var editedId = checkPostMeasurementResponse(data, variableName, editedValue)
+                expect(editedId).to.eq(measurementId)
+                info("qm.measurements.getLocalMeasurements({variableName})...")
+                return qm.measurements.getLocalMeasurements({variableName})
+            })
+            .then(function (measurements) {
+                expect(measurements[0].value).to.eq(editedValue)
+                info("measurements.deleteMeasurement...")
+                return qm.measurements.deleteMeasurement(measurements[0])
+            })
+            .then(function () {
+                info("measurements.getLocalMeasurements 4...")
+                return qm.measurements.getLocalMeasurements({variableName})
+            })
+            .then(function (measurements) {
+                measurements.forEach(function(m){
+                    expect(m.id).to.not.eq(measurementId)
+                })
+            })
+        // .catch(function (error) {
+        //     throw Error(error)
+        // })
+    })
+})
 describe("API", function (){
     it("Makes sure api url is app.quantimo.do", function (done) {
         expect(qm.api.getApiUrl()).to.eq("https://app.quantimo.do")
@@ -450,147 +591,6 @@ describe("Intent Handler", function () {
         var expectedEntities = {interrogativeWord: 'where', rememberCommand: "remember"}
         var expectedParameters = {memoryQuestion: 'where my keys are'}
         qmTests.tests.checkIntent(userInput, expectedIntentName, expectedEntities, expectedParameters, done)
-    })
-})
-describe("Measurement", function () {
-    function checkPostMeasurementResponse(data, variableName, value) {
-        var measurements = qm.measurements.toArray(data.measurements)
-        var id
-        measurements.forEach(function (m) {
-            id = m.id
-            expectInteger(id)
-            expect(m.variableName).eq(variableName)
-            expect(m.value).eq(value)
-        })
-        expect(measurements).length(1)
-        expect(data.userVariables).length(1)
-        var queue = qm.measurements.getMeasurementsFromQueue()
-        expect(queue).length(0)
-        return id
-    }
-    it('can record, edit, and delete a rating measurement', function () {
-        this.timeout(60000)
-        let d = new Date()
-        let seconds = d.getSeconds()
-        let initialValue = (seconds % 5) + 1
-        let editedValue = ((initialValue % 5) + 1)
-        qmTests.setTestAccessToken()
-        var variableName = "Alertness"
-        let measurementId
-        return qm.userHelper.getUserFromApi()
-            .then(function (user) {
-                info("Getting user variables...")
-                expect(user.accessToken).to.eq(qmTests.getTestAccessToken())
-                return qm.userVariables.getFromApi()
-            })
-            .then(function (userVariables) {
-                expect(userVariables).to.be.a('array')
-                info("getMeasurements...")
-                return qm.measurements.getMeasurements({variableName, sort: "-startAt"})
-            })
-            .then(function (measurements) {
-                info("Deleting last " + variableName + " measurement...")
-                qm.measurements.logMeasurements(measurements, variableName + " Measurements")
-                info("deleteLastMeasurementForVariable...")
-                return qm.measurements.deleteLastMeasurementForVariable(variableName)
-            })
-            .then(function () {
-                info("Recording " + initialValue + " /5 " + variableName + " measurement...")
-                var body = {
-                    value: initialValue,
-                    variableName,
-                    unitAbbreviatedName: "/5",
-                }
-                info("qm.measurements.recordMeasurement: ", body)
-                return qm.measurements.recordMeasurement(body)
-            })
-            .then(function (data) {
-                info("Checking post measurement response...")
-                measurementId = checkPostMeasurementResponse(data, variableName, initialValue)
-                info("userVariables.getFromLocalStorage...")
-                return qm.userVariables.getFromLocalStorage({variableName})
-            })
-            .then(function (userVariables) {
-                info("Checking qm.userVariables.getFromLocalStorage({variableName}) after post measurement response...")
-                expect(userVariables).length(1)
-                info("getting charts...")
-                return qm.userVariables.findWithCharts(variableName)
-            })
-            .then(function (uv) {
-                expect(uv.charts).to.not.be.null
-                info("measurements.getLocalMeasurements...")
-                return qm.measurements.getLocalMeasurements({variableName})
-            })
-            .then(function (measurements) {
-                info("Checking qm.measurements.getLocalMeasurements({variableName}) measurements...")
-                var m = measurements[0]
-                expect(m.value).eq(initialValue)
-                expectInteger(m.id)
-                measurements.forEach(function(m){
-                    expectInteger(m.id)
-                    expect(m.variableName).eq(variableName)
-                })
-                info("userVariables.getFromLocalStorage...")
-                return qm.userVariables.getFromLocalStorage({variableName})
-            })
-            .then(function (userVariables) {
-                expect(userVariables).length(1)
-                info("Checking qm.userVariables.getFromLocalStorage({})...")
-                var uv = userVariables[0]
-                expect(uv.variableName).to.eq(variableName) // Should be first since it has most recent measurement
-                info("measurements.getLocalMeasurements 2...")
-                return qm.measurements.getLocalMeasurements({variableName})
-            })
-            .then(function (measurements) {
-                info("Checking qm.measurements.getLocalMeasurements({variableName})...")
-                expect(measurements).length.to.be.greaterThan(0)
-                measurements.forEach(function (measurement) {
-                    expect(measurement.pngPath).to.be.a('string')
-                        .and.satisfy((msg) => msg.startsWith("img/rating/face_rating_button_256_"))
-                })
-                info("Finding local measurement by id...")
-                return qm.measurements.find(measurementId)
-            })
-            .then(function (measurement) {
-                expect(measurement.id).to.eq(measurementId)
-                qm.measurements.cache = {}
-                info("Finding remote measurement by id...")
-                return qm.measurements.find(measurementId)
-            })
-            .then(function (measurement) {
-                expect(measurement.id).to.eq(measurementId)
-                return qm.measurements.getLocalMeasurements({variableName})
-            })
-            .then(function (measurements) {
-                info("Editing measurement...")
-                var m = measurements[0]
-                expect(m.id).to.eq(measurementId)
-                m.value = editedValue
-                return qm.measurements.recordMeasurement(m)
-            })
-            .then(function (data) {
-                var editedId = checkPostMeasurementResponse(data, variableName, editedValue)
-                expect(editedId).to.eq(measurementId)
-                info("qm.measurements.getLocalMeasurements({variableName})...")
-                return qm.measurements.getLocalMeasurements({variableName})
-            })
-            .then(function (measurements) {
-                expect(measurements[0].value).to.eq(editedValue)
-                info("measurements.deleteMeasurement...")
-                return qm.measurements.deleteMeasurement(measurements[0])
-            })
-            .then(function () {
-                info("measurements.getLocalMeasurements 4...")
-                return qm.measurements.getLocalMeasurements({variableName})
-            })
-            .then(function (measurements) {
-                measurements.forEach(function(m){
-                    expect(m.id).to.not.eq(measurementId)
-                })
-            })
-            // .catch(function (error) {
-            //     throw Error(error)
-            // })
     })
 })
 describe("Notifications", function () {
