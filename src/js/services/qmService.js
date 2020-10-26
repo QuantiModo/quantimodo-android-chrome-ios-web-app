@@ -4973,9 +4973,10 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 }
             }
             if(typeof variable === "string"){
-                qm.userVariables.getByName(variable, {}, null, function(userVariable){
-                    goToCorrelationsList(userVariable);
-                })
+                qm.userVariables.findByName(variable, {}, null)
+                    .then(function(userVariable){
+                        goToCorrelationsList(userVariable);
+                    })
             }else{
                 goToCorrelationsList(variable);
             }
@@ -4992,17 +4993,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             }else{
                 qmService.goToStudyCreationForPredictor(variable);
             }
-        };
-        qmService.getVariableWithCharts = function(variableName, refresh, successHandler){
-            if(!variableName){
-                variableName = qm.getPrimaryOutcomeVariable().name;
-            }
-            qm.userVariables.getByName(variableName, {includeCharts: true}, refresh, function(variableObject){
-                qmService.hideLoader();
-                if(successHandler){
-                    successHandler(variableObject);
-                }
-            });
         };
         qmService.addWikipediaExtractAndThumbnail = function(variableObject){
             qmService.getWikipediaArticle(variableObject.name).then(function(page){
@@ -6348,6 +6338,9 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             qmService.deploy.setVersionInfo();
             qmService.deploy.fetchUpdate(); // fetchUpdate done manually instead of auto-update to address iOS white screen. See: https://github.com/nordnet/cordova-hot-code-push/issues/259
             qmService.rootScope.setProperty(qm.items.speechAvailable, qm.speech.getSpeechAvailable());
+            qmService.rootScope.setProperty('variableCategoryNames', qm.staticData.variableCategories.map(function(cat){
+                return cat.name
+            }));
             if(qm.speech.getSpeechAvailable()){
                 qmService.rootScope.setProperty(qm.items.speechEnabled, qm.speech.getSpeechEnabled());
             }

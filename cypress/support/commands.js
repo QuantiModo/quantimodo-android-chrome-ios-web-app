@@ -276,7 +276,9 @@ Cypress.Commands.add('searchAndClickTopResult', (variableName, topResultShouldCo
     cy.get('#variableSearchBox').type(variableName, { force: true, timeout: 5000 })
     let firstResultSelector = '#variable-search-result > div > p'
     cy.log('Wait for search results to load')
-    cy.wait('@get-variables', {timeout: 30000}).should('have.property', 'status', 200)
+    cy.wait(1000) // Wait in case we only have common variables locally
+    // Sometimes we just get local variables so we can't cy.wait('@get-variables')
+    // cy.wait('@get-variables', {timeout: 30000}).should('have.property', 'status', 200)
     cy.log(`Click on ${variableName} in dropdown search results`)
     if (topResultShouldContainSearchTerm) {
         cy.get(firstResultSelector, { timeout: 20000 })
