@@ -8,6 +8,7 @@
 import './commands' // Import commands.js using ES2015 syntax:
 // eslint-disable-next-line no-unused-vars
 // noinspection JSUnusedLocalSymbols
+var allowLogging = false // For some reason cypress always logs in staging even if env isn't set
 Cypress.on('uncaught:exception', (err, runnable) => {
     if(err.message.indexOf('runnable must have an id') !== false){
         cy.log(err.message)
@@ -24,7 +25,7 @@ beforeEach(function(){ // runs before each test in the block
     let url = Cypress.config('baseUrl')
     if(!url){
         debugger
-        throw "baseUrl not set!"
+        throw Error("baseUrl not set!")
     }
     cy.log(`baseUrl is ${url}`)
     cy.log(`API_HOST is ${Cypress.env('API_HOST')}`)
@@ -61,8 +62,8 @@ function truncate(str, length, ending) {
 
 }
 Cypress.on('window:before:load', (win) => {
-    if(Cypress.env('ELECTRON_ENABLE_LOGGING')) {
-        win.console.log = (...args) => { // Needs ELECTRON_ENABLE_LOGGING=1
+    if(allowLogging && Cypress.env('ELECTRON_ENABLE_LOGGING')) {
+        win.console.log = (...args) => {  // Needs ELECTRON_ENABLE_LOGGING=1
             try {
                 let str = JSON.stringify(args)
                 if (str.indexOf("[bugsnag] Loaded") !== -1) {
@@ -98,7 +99,7 @@ Cypress.on('window:before:load', (win) => {
 })
 
 Cypress.on('log:added', (options) => {
-    if(Cypress.env('ELECTRON_ENABLE_LOGGING')) {
+    if(allowLogging && Cypress.env('ELECTRON_ENABLE_LOGGING')) {
         if (options.instrument === 'command' && options.consoleProps) {
             let detailMessage = ''
             if (options.name === 'xhr') {
