@@ -189,7 +189,7 @@ describe('Reminders', function () {
     cy.get(firstReminderTime).should('contain', time)
     cy.wait(1500) // Have to wait for save to complete
     goToCategoryInbox(variableCategoryName)
-    cy.get('#notification-settings').click({ force: true })
+    cy.get('#notification-settings').click({ force: true, timeout: 15000 })
     cy.url().should('include', '#/app/reminder-add/')
     cy.get('#reminder-header').contains(variableName, {matchCase: false})
     changeUnit('Minutes')
