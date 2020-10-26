@@ -288,21 +288,22 @@ angular.module('starter').controller('MeasurementAddCtrl', [
         }
         var setupFromVariableName = function(variableName){
             qmService.showBlackRingLoader();
-            qm.userVariables.getByName(variableName, {}, null, function(variable){
-                qmService.hideLoader();
-                setupFromVariable(variable);
-            }, function(error){
-                //Stop the ion-refresher from spinning
-                $scope.$broadcast('scroll.refreshComplete');
-                qmService.hideLoader();
-                qmLog.error(error);
-            });
+            qm.userVariables.findByName(variableName, {}, null)
+                .then(function(variable){
+                    qmService.hideLoader();
+                    setupFromVariable(variable);
+                }, function(error){
+                    //Stop the ion-refresher from spinning
+                    $scope.$broadcast('scroll.refreshComplete');
+                    qmService.hideLoader();
+                    qmLog.error(error);
+                });
         };
         var setupByID = function(id){
             var deferred = $q.defer();
             qmService.showBlackRingLoader();
             qm.toast.infoToast("Fetching measurement...")
-            debugger
+            //debugger
             qm.measurements.find(id)
                 .then(function(m){
                         qmService.hideLoader();
