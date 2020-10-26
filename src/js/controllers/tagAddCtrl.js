@@ -114,17 +114,19 @@ angular.module('starter').controller('TagAddCtrl', ["$scope", "$q", "$timeout", 
     function setDebugVariables(){
         if(!$scope.stateParams.userTagVariableObject){
             qmService.showBlackRingLoader();
-            qm.userVariables.getByName('Anxiety', {}, null, function(variable){
-                $scope.stateParams.userTagVariableObject = variable;
-                qmService.hideLoader();
-            });
+            qm.userVariables.findByName('Anxiety', {}, null)
+                .then(function(variable){
+                    $scope.stateParams.userTagVariableObject = variable;
+                    qmService.hideLoader();
+                });
         }
         if(!$scope.stateParams.userTaggedVariableObject){
             qmService.showBlackRingLoader();
-            qm.userVariables.getByName('Overall Mood', {}, null, function(variable){
-                $scope.stateParams.userTaggedVariableObject = variable;
-                qmService.hideLoader();
-            });
+            qm.userVariables.findByName('Overall Mood', {}, null)
+                .then(function(variable){
+                    $scope.stateParams.userTaggedVariableObject = variable;
+                    qmService.hideLoader();
+                });
         }
     }
 }]);

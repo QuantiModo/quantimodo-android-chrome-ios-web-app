@@ -67,9 +67,9 @@ angular.module('starter').controller('ChartsPageCtrl', ["$scope", "$q", "$state"
         function removeHiddenCharts(variableObject){
             var clonedVariable = JSON.parse(JSON.stringify(variableObject));
             var charts = clonedVariable.charts;
-            qm.chartHelper.configureHighchartSubProperties(charts);
             for(var property in charts){
                 if(charts.hasOwnProperty(property)){
+                    var chart = charts[property];
                     var hideParamName = 'hide' + qm.stringHelper.capitalizeFirstLetter(property);
                     var shouldHide = qmService.stateHelper.getValueFromScopeStateParamsOrUrl(hideParamName, $scope, $stateParams);
                     if(shouldHide){
@@ -80,28 +80,27 @@ angular.module('starter').controller('ChartsPageCtrl', ["$scope", "$q", "$state"
             return clonedVariable;
         }
         function getCharts(refresh){
-            var params = {includeCharts: true, refresh: true};
-            if(refresh){params.refresh = true;}
-            qm.userVariables.getByName(getVariableName(), params, refresh, function(variableObject){
-                qmLog.info("Got variable " + variableObject.name);
-                if(!variableObject.charts){
-                    qmLog.error("No charts!");
-                    if(!$scope.state.variableObject || !$scope.state.variableObject.charts){
-                        qmService.goToDefaultState();
-                        return;
+            qm.userVariables.findWithCharts(getVariableName(), refresh)
+                .then(function(uv){
+                    qmLog.info("Got variable " + uv.name);
+                    if(!uv.charts){
+                        qmLog.error("No charts!");
+                        if(!$scope.state.variableObject || !$scope.state.variableObject.charts){
+                            qmService.goToDefaultState();
+                            return;
+                        }
                     }
-                }
-                $scope.state.variableObject = removeHiddenCharts(variableObject);
-                if(variableObject){
-                    qmLog.info("Setting action sheet with variable " + variableObject.name);
-                    qmService.rootScope.setShowActionSheetMenu(function setActionSheet(){
-                        return qmService.actionSheets.showVariableObjectActionSheet(getVariableName(), variableObject);
-                    });
-                }else{
-                    qmLog.error("No variable for action sheet!");
-                }
-                hideLoader();
-            });
+                    $scope.state.variableObject = removeHiddenCharts(uv);
+                    if(uv){
+                        qmLog.info("Setting action sheet with variable " + uv.name);
+                        qmService.rootScope.setShowActionSheetMenu(function setActionSheet(){
+                            return qmService.actionSheets.showVariableObjectActionSheet(getVariableName(), uv);
+                        });
+                    }else{
+                        qmLog.error("No variable for action sheet!");
+                    }
+                    hideLoader();
+                });
         }
         $scope.refreshCharts = function(){
             getCharts(true);
