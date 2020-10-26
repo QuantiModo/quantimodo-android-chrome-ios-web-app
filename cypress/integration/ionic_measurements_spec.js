@@ -17,11 +17,33 @@ function recordRatingCheckHistory(val, variableName, valence) {
     cy.url().should('contain', '/measurement-add')
     cy.get("#" + valence + "-rating-with-value-" + val).click({force: true})
     saveMeasurement()
+    checkChartsPage(variableName)
     goToHistoryForVariable(variableName)
     let desiredImageName = ratingValueToImage(val, valence)
     cy.get("#historyItem-0 > img", {timeout: 30000})
         .invoke('attr', 'src')
         .should('contain', desiredImageName)
+}
+/**
+ * @param {string} variableName
+ */
+function checkChartsPage (variableName) {
+    cy.loginWithAccessTokenIfNecessary('/#/app/chart-search', true)
+    cy.wait(2000)
+    cy.searchAndClickTopResult(variableName, true)
+    cy.wait(2000)
+    cy.url().should('contain', 'charts')
+    cy.url().should('contain', variableName)
+    cy.log('Chart is present and titled')
+    cy.contains(`${variableName} Over Time`).then(function (){
+        debugger
+    })
+    // cy.get('#app-container > ion-side-menu-content > ion-nav-view > ion-view > ion-content > div.scroll > div:nth-child(2) > div:nth-child(2) > div:nth-child(2) > div > h2',
+    //     { timeout: 30000 })
+    //     .should('contain', `${variableName} Over Time`)
+    // cy.get('.scroll > div:nth-of-type(2) > div:nth-of-type(2) > .card:nth-of-type(2) > .item.item-text-wrap > h2',
+    //     { timeout: 60000 })
+    //     .should('contain', variableName)
 }
 
 function ratingValueToImage(value, valence) {
@@ -53,14 +75,16 @@ function ratingValueToImage(value, valence) {
 
 /**
  * @param {number} [dosageValue]
+ * @param variableName
  */
-function recordTreatmentMeasurementAndCheckHistoryPage(dosageValue) {
+function recordTreatmentMeasurementAndCheckHistoryPage(dosageValue, variableName) {
     if (!dosageValue) {
         let d = new Date()
         dosageValue = d.getMinutes()
     }
-    cy.loginWithAccessTokenIfNecessary('/#/app/measurement-add-search?variableCategoryName=Treatments')
-    let variableName = 'Aaa Test Treatment'
+    var variableCategory = 'Treatments'
+    cy.loginWithAccessTokenIfNecessary('/#/app/measurement-add-search?variableCategoryName=' + variableCategory)
+    cy.get('#variable-category-selector').should('have.value', variableCategory)
     cy.searchAndClickTopResult(variableName, true)
     cy.log('Click Remind me to track')
     cy.get('#reminderButton').click({force: true})
@@ -73,7 +97,7 @@ function recordTreatmentMeasurementAndCheckHistoryPage(dosageValue) {
     cy.get('#unitSelector').should('contain', 'Milligrams')
     cy.log('Check that mg is selected')
     saveMeasurement()
-    cy.visitIonicAndSetApiUrl('/#/app/history-all-category/Treatments')
+    cy.visitIonicAndSetApiUrl('/#/app/history-all-category/' + variableCategory)
     let treatmentStringNoQuotes = `${dosageValue} mg Aaa Test Treatment`
     cy.get('#historyItemTitle-0', {timeout: 40000})
         .should('contain', treatmentStringNoQuotes)
@@ -153,10 +177,11 @@ describe('Measurements', function () {
         cy.url().should('include', 'measurement-add')
     })
     // Skipping because it fails randomly and can't reproduce failure locally
-    it('Records, edits, and deletes an emotion measurement', function () {
+    it.only('Records, edits, and deletes an emotion measurement', function () {
         let variableName = 'Alertness'
         let valence = 'positive'
         cy.loginWithAccessTokenIfNecessary('/#/app/measurement-add-search')
+        checkChartsPage(variableName)
         goToHistoryForVariable(variableName, true)
         cy.wait('@measurements', {timeout: 30000})
             .should('have.property', 'status', 200)
@@ -195,24 +220,40 @@ describe('Measurements', function () {
     // Skipping because it fails randomly and can't reproduce failure locally
     it('Record, edit, and delete a treatment measurement', function () {
         let dosageValue = 100
-        recordTreatmentMeasurementAndCheckHistoryPage(dosageValue)
+        let variableName = 'Aaa Test Treatment'
+        let variableCategoryName = 'Treatments'
+        recordTreatmentMeasurementAndCheckHistoryPage(dosageValue, variableName)
         editHistoryPageMeasurement(dosageValue.toString())
         let newDosageValue = dosageValue / 10
         cy.get('#defaultValue').type(newDosageValue.toString(), {force: true})
         saveMeasurement()
-        cy.visitIonicAndSetApiUrl('/#/app/history-all-category/Treatments')
-        let treatmentStringEditedNoQuotes = `${newDosageValue} mg Aaa Test Treatment`
+        cy.visitIonicAndSetApiUrl('/#/app/history-all-category/' + variableCategoryName)
+        let treatmentStringEditedNoQuotes = `${newDosageValue} mg ` + variableName
         editHistoryPageMeasurement(newDosageValue.toString())
         cy.get('button.button.icon-left.ion-trash-a').click({force: true})
         cy.wait(1000)
-        cy.url().should('include', '/#/app/history-all-category/Treatments')
+        cy.url().should('include', '/#/app/history-all-category/' + variableCategoryName)
         cy.log('Check that deleted measurement is gone (must use does not equal instead of does not contain because a ' +
             'measurement of 0mg will be true if the value is 50mg)')
         cy.get('#historyItemTitle-0', {timeout: 40000})
             .should('not.contain', treatmentStringEditedNoQuotes)
     })
-    // Randomly fails and can't reproduce locally
-    it('Records a treatment measurement and checks history', function () {
-        recordTreatmentMeasurementAndCheckHistoryPage()
+    it('Looks at primary outcome charts', function () {
+        cy.loginWithAccessTokenIfNecessary('/#/app/track', true)
+        cy.loginWithAccessTokenIfNecessary('/#/app/track', true) // Avoid leftover redirects
+        cy.get('div.primary-outcome-variable-rating-buttons > img:nth-child(4)').click({ force: true })
+        cy.get('g.highcharts-series > rect:nth-of-type(1)', {timeout: 30000}).should('exist')
+        cy.get('#distributionChart > div > svg > text.highcharts-title > tspan')
+            .should('contain', 'Mood Distribution')
+        cy.log('Use the scroll bar to see the charts below')
+        cy.get('div.scroll-bar.scroll-bar-v > div')
+        cy.get('#lineChart > div > svg > text > tspan').should('contain', 'Mood Over Time')
+        cy.get('#distributionChart > div > svg > g:nth-child(9)').should('exist')
+    })
+    it.skip('Goes to variable settings from charts page', function () {
+        checkChartsPage('Aaa Test Treatment')
+        cy.get('ion-view.pane > ion-content.scroll-content.ionic-scroll.has-header').click({ force: true })
+        cy.get('#menu-more-button').click({ force: true })
+        cy.clickActionSheetButtonContaining('Settings')
     })
 })
