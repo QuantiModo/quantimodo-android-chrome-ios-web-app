@@ -307,7 +307,7 @@ describe("File Helper", function () {
         done()
     })
     it("uploads a file", function () {
-        return fileHelper.uploadToS3(appDir + "/tests/ionIcons.js", "tests")
+        return fileHelper.uploadToS3("tests/ionIcons.js", "tests/ionIcons.js")
             .then(function (url) {
                 return downloadFileContains(url, "iosArrowUp")
             })
@@ -316,6 +316,12 @@ describe("File Helper", function () {
         this.timeout(60000) // Default 2000 is too fast
         cypressFunctions.uploadMochawesome()
             .then(function(urls) {
+                expect(urls.find(function(url){
+                    return url.indexOf("/assets/app.css") !== -1
+                })).is.not.null
+                expect(urls.find(function(url){
+                    return url.indexOf("/assets/app.js") !== -1
+                })).is.not.null
                 expect(urls).length.to.be.greaterThan(2)
                 done()
             })
