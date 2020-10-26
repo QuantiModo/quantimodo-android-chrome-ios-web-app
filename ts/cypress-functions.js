@@ -295,7 +295,7 @@ function uploadCypressVideo(specName) {
 exports.uploadCypressVideo = uploadCypressVideo;
 function uploadLastFailed(specName, cb) {
     fs.writeFileSync(lastFailedCypressTestPath, specName);
-    return fileHelper.uploadToS3(lastFailedCypressTestPath, "cypress", "qmimages");
+    return fileHelper.uploadToS3(lastFailedCypressTestPath, "cypress/" + lastFailedCypressTestPath, "qmimages");
 }
 exports.uploadLastFailed = uploadLastFailed;
 function downloadLastFailed() {

@@ -290,7 +290,7 @@ export function uploadCypressVideo(specName: string) {
 
 export function uploadLastFailed(specName: string, cb?: (url: string) => void) {
     fs.writeFileSync(lastFailedCypressTestPath, specName)
-    return fileHelper.uploadToS3(lastFailedCypressTestPath, "cypress", "qmimages")
+    return fileHelper.uploadToS3(lastFailedCypressTestPath, "cypress/"+lastFailedCypressTestPath, "qmimages")
 }
 
 export function downloadLastFailed() {
