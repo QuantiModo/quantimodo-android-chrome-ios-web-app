@@ -453,7 +453,7 @@ describe("File Helper", function () {
                 return downloadFileContains(url, "iosArrowUp")
             })
     })
-    it("uploads test results", function (done) {
+    it.skip("uploads test results", function (done) {
         this.timeout(60000) // Default 2000 is too fast
         cypressFunctions.uploadMochawesome()
             .then(function(urls) {
