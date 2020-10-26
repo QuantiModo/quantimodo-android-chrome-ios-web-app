@@ -462,7 +462,6 @@ describe("Measurement", function () {
         expect(queue).length(0)
         return id
     }
-
     it('can record, edit, and delete a rating measurement', function () {
         this.timeout(60000)
         let d = new Date()
@@ -508,6 +507,11 @@ describe("Measurement", function () {
             .then(function (userVariables) {
                 info("Checking qm.userVariables.getFromLocalStorage({variableName}) after post measurement response...")
                 expect(userVariables).length(1)
+                info("getting charts...")
+                return qm.userVariables.findWithCharts(variableName)
+            })
+            .then(function (uv) {
+                expect(uv.charts).to.not.be.null
                 info("measurements.getLocalMeasurements...")
                 return qm.measurements.getLocalMeasurements({variableName})
             })
@@ -521,14 +525,10 @@ describe("Measurement", function () {
                     expect(m.variableName).eq(variableName)
                 })
                 info("userVariables.getFromLocalStorage...")
-                return qm.userVariables.getFromLocalStorage({})
+                return qm.userVariables.getFromLocalStorage({variableName})
             })
             .then(function (userVariables) {
-                info("Checking qm.userVariables.getFromLocalStorage({})...")
                 expect(userVariables).length(1)
-                return qm.userVariables.getFromLocalStorage({})
-            })
-            .then(function (userVariables) {
                 info("Checking qm.userVariables.getFromLocalStorage({})...")
                 var uv = userVariables[0]
                 expect(uv.variableName).to.eq(variableName) // Should be first since it has most recent measurement

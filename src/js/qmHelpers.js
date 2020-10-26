@@ -1060,24 +1060,25 @@ var qm = {
             if(builderClientId){
                 localStorageKey = qm.items.appSettingsRevisions;
             }
-            qm.localForage.getItem(localStorageKey, function(appSettings){
-                if(builderClientId && appSettings && appSettings.length && builderClientId === appSettings[0].clientId){
-                    qm.appsManager.processAndSaveAppSettings(appSettings[0], successHandler);
-                    return;
-                }
-                if(qm.platform.isWeb() && qm.urlHelper.indexOfCurrentUrl('.quantimo.do') !== -1){
-                    qm.appsManager.getAppSettingsFromApi(null, successHandler, errorHandler);
-                    return;
-                }
-                var clientIdFromUrl = qm.api.getClientIdFromBuilderQueryOrSubDomain();
-                if(appSettings){
-                    if(!clientIdFromUrl || appSettings.clientId.toLowerCase() === clientIdFromUrl.toLowerCase()){   // For some reason clientId from url is lowercase sometimes
-                        qm.appsManager.processAndSaveAppSettings(appSettings, successHandler);
+            qm.localForage.getItem(localStorageKey)
+                .then(function(appSettings){
+                    if(builderClientId && appSettings && appSettings.length && builderClientId === appSettings[0].clientId){
+                        qm.appsManager.processAndSaveAppSettings(appSettings[0], successHandler);
                         return;
                     }
-                }
-                qm.appsManager.getAppSettingsFromApi(null, successHandler, errorHandler);
-            });
+                    if(qm.platform.isWeb() && qm.urlHelper.indexOfCurrentUrl('.quantimo.do') !== -1){
+                        qm.appsManager.getAppSettingsFromApi(null, successHandler, errorHandler);
+                        return;
+                    }
+                    var clientIdFromUrl = qm.api.getClientIdFromBuilderQueryOrSubDomain();
+                    if(appSettings){
+                        if(!clientIdFromUrl || appSettings.clientId.toLowerCase() === clientIdFromUrl.toLowerCase()){   // For some reason clientId from url is lowercase sometimes
+                            qm.appsManager.processAndSaveAppSettings(appSettings, successHandler);
+                            return;
+                        }
+                    }
+                    qm.appsManager.getAppSettingsFromApi(null, successHandler, errorHandler);
+                });
         },
         getAppSettingsFromMemory: function(){
             //if(qm.appMode.isPhysician() && qm.staticData){return qm.staticData.appSettings;}
@@ -2255,6 +2256,13 @@ var qm = {
         configureHighchart: function(highchartConfig){
             qm.chartHelper.setChartExportingOptionsOnce(highchartConfig);
             qm.chartHelper.setTooltipFormatterFunction(highchartConfig);
+            highchartConfig.series.forEach(function(series){
+                try {
+                    qm.chartHelper.setTooltipFormatterFunction(series)
+                }catch (e) {
+                    qmLog.error(e)
+                };
+            })
         },
         setChartExportingOptionsOnce: function(highchartConfig){
             if(!highchartConfig){
@@ -3677,7 +3685,8 @@ var qm = {
             return apiInstance;
         },
         getFeedFromLocalForage: function(successHandler, errorHandler){
-            qm.localForage.getItem(qm.items.feed, successHandler, errorHandler);
+            qm.localForage.getItem(qm.items.feed)
+                .then(successHandler, errorHandler);
         },
         getFeedFromApi: function(params, successHandler, errorHandler){
             params = qm.api.addGlobalParams(params);
@@ -3709,10 +3718,12 @@ var qm = {
             return cards;
         },
         saveFeedInLocalForage: function(feedCards, successHandler, errorHandler){
-            qm.localForage.setItem(qm.items.feed, feedCards, successHandler, errorHandler);
+            qm.localForage.setItem(qm.items.feed, feedCards)
+                .then(successHandler, errorHandler);
         },
         getFeedFromLocalForageOrApi: function(params, successHandler, errorHandler){
-            qm.localForage.getItem(qm.items.feed, function(cards){
+            qm.localForage.getItem(qm.items.feed)
+                .then(function(cards){
                 if(cards && cards.length){
                     successHandler(cards);
                     return;
@@ -3750,7 +3761,8 @@ var qm = {
                 post(feedQueue);
                 return;
             }
-            qm.localForage.getItem(qm.items.feedQueue, function(feedQueue){
+            qm.localForage.getItem(qm.items.feedQueue)
+                .then(function(feedQueue){
                 post(feedQueue);
             }, errorHandler);
         },
@@ -4709,35 +4721,37 @@ var qm = {
             qmLog.info("Clearing localforage!");
             localforage.clear();
         },
-        saveWithUniqueId: function(key, arrayToSave, successHandler, errorHandler){
+        saveWithUniqueId: function(key, arrayToSave){
+            var deferred = Q.defer();
             if(!qm.arrayHelper.variableIsArray(arrayToSave)){
                 arrayToSave = [arrayToSave];
             }
             if(!arrayToSave || !arrayToSave.length){
                 qmLog.error("Noting provided to saveWithUniqueId for " + key);
-                if(successHandler){
-                    successHandler();
-                }
+                deferred.resolve()
+                return deferred.promise;
             }
             qmLog.info("saving " + key + " with unique id");
-            qm.localForage.getItem(key, function(existingData){
-                if(!existingData){
-                    existingData = [];
-                }
-                for(var i = 0; i < arrayToSave.length; i++){
-                    var newObjectToSave = arrayToSave[i];
-                    //newObjectToSave.lastSelectedAt = qm.timeHelper.getUnixTimestampInSeconds(); // Can't do this her because we do this for all API results we ever get
-                    existingData = existingData.filter(function(obj){
-                        return obj.id !== newObjectToSave.id;
-                    });
-                    existingData.unshift(newObjectToSave);
-                }
-                qm.localForage.setItem(key, existingData, successHandler, errorHandler);
-            });
+            return qm.localForage.getItem(key)
+                .then(function(existingData){
+                    if(!existingData){
+                        existingData = [];
+                    }
+                    for(var i = 0; i < arrayToSave.length; i++){
+                        var newObjectToSave = arrayToSave[i];
+                        //newObjectToSave.lastSelectedAt = qm.timeHelper.getUnixTimestampInSeconds(); // Can't do this her because we do this for all API results we ever get
+                        existingData = existingData.filter(function(obj){
+                            return obj.id !== newObjectToSave.id;
+                        });
+                        existingData.unshift(newObjectToSave);
+                    }
+                    return qm.localForage.setItem(key, existingData);
+                });
         },
         deleteById: function(key, id, successHandler, errorHandler){
             qmLog.info("deleting " + key + " by id " + id);
-            qm.localForage.getItem(key, function(existingData){
+            qm.localForage.getItem(key)
+                .then(function(existingData){
                 if(!existingData){
                     existingData = [];
                 }
@@ -4747,100 +4761,97 @@ var qm = {
                 qm.localForage.setItem(key, existingData, successHandler, errorHandler);
             });
         },
-        searchByProperty: function(key, propertyName, searchTerm, successHandler, errorHandler){
+        searchByProperty: function(key, propertyName, searchTerm){
+            var deferred = Q.defer();
             searchTerm = searchTerm.toLowerCase();
             qmLog.info("searching " + key + " by " + propertyName + " " + searchTerm);
-            qm.localForage.getItem(key, function(existingData){
-                if(!existingData){
-                    existingData = [];
-                }
-                existingData = existingData.filter(function(obj){
-                    var currentValue = obj[propertyName].toLowerCase();
-                    return currentValue.indexOf(searchTerm) !== -1;
+            qm.localForage.getItem(key)
+                .then(function(existingData){
+                    if(!existingData || !existingData.length){
+                        deferred.reject("not found in localforage");
+                        return;
+                    }
+                    var matches = existingData.filter(function(obj){
+                        var currentValue = obj[propertyName].toLowerCase();
+                        return currentValue.indexOf(searchTerm) !== -1;
+                    });
+                    if(!matches || !matches.length){
+                        deferred.reject("not found in localforage");
+                        return;
+                    }
+                    deferred.resolve(matches);
+                }, function(err){
+                    deferred.reject(err);
                 });
-                successHandler(existingData);
-            }, errorHandler);
+            return deferred.promise;
         },
-        getItem: function(key, successHandler, errorHandler){
-            if(!successHandler){
-                qmLog.error("No successHandler provided to localForage.getItem!");
-                return;
-            }
+        getItem: function(key){
+            var deferred = Q.defer();
             qmLog.debug("Getting " + key + " from globals");
             var fromGlobals = qm.globalHelper.getItem(key);
             if(fromGlobals || fromGlobals === false || fromGlobals === 0){
-                successHandler(fromGlobals);
-                return fromGlobals;
+                deferred.resolve(fromGlobals);
+                return deferred.promise;
             }
             if(qm.platform.isBackEnd()){
-                if(successHandler){
-                    successHandler(fromGlobals);
-                }
-                return fromGlobals;
+                deferred.resolve(fromGlobals);
+                return deferred.promise;
             }
             if(typeof localforage === "undefined"){
                 var error = "localforage not defined so can't get " + key + "!";
                 qmLog.error(error);
-                if(errorHandler){
-                    errorHandler(error);
-                }
-                return;
+                deferred.reject(error);
+                return deferred.promise;
             }
             qmLog.debug("Getting " + key + " from localforage");
             localforage.getItem(key, function(err, data){
                 if(err){
                     qmLog.error(err);
-                    if(errorHandler){
-                        errorHandler(err);
-                    }
+                    deferred.reject(err);
                 }else{
-                    successHandler(data);
+                    deferred.resolve(data);
                 }
             })
+            return deferred.promise;
         },
-        setItem: function(key, value, successHandler, errorHandler){
+        setItem: function(key, value){
+            var deferred = Q.defer();
             if(!qm.storage.valueIsValid(value, key)){
                 return false;
             }
             value = JSON.parse(JSON.stringify(value)); // Failed to execute 'put' on 'IDBObjectStore': could not be cloned.
             qm.globalHelper.setItem(key, value);
             if(qm.platform.isBackEnd()){
-                if(successHandler){
-                    successHandler(value);
-                }
-                return value;
+                deferred.resolve(value)
+                return deferred.promise;
             }
             if(typeof localforage === "undefined"){
-                var errorMessage = "local storage is undefined so can't set " + key;
-                qmLog.error(errorMessage);
-                if(errorHandler){
-                    errorHandler(errorMessage);
-                }
-                return;
+                var err = "local storage is undefined so can't set " + key;
+                qmLog.error(err);
+                deferred.reject(err)
+                return deferred.promise;
             }
             if(!qm.storage.valueIsValid(value, key)){
-                return false;
+                deferred.reject(err)
             }
             if(qm.pouch.enabled){
                 qm.pouch.getDb().upsert(key, function(doc){
-                    return value;
+                    deferred.resolve(value)
                 }).then(function(res){
                     qmLog.info(res); // success, res is {rev: '1-xxx', updated: true, id: 'myDocId'}
                 }).catch(function(err){
                     qmLog.error(err);
+                    deferred.reject(err)
                 });
             }
             localforage.setItem(key, value, function(err){
                 if(err){
-                    if(errorHandler){
-                        errorHandler(err);
-                    }
+                    deferred.reject(err)
                 }else{
-                    if(successHandler){
-                        successHandler(value);
-                    }
+                    deferred.resolve(value)
                 }
             })
+            return deferred.promise;
         },
         removeItem: function(key, successHandler, errorHandler){
             qm.globalHelper.removeItem(key);
@@ -4850,7 +4861,8 @@ var qm = {
                 }
                 return;
             }
-            qm.localForage.getItem(key, function(data){
+            qm.localForage.getItem(key)
+                .then(function(data){
                 localforage.removeItem(key, function(err){
                     if(err){
                         if(errorHandler){
@@ -4867,7 +4879,8 @@ var qm = {
         getWithFilters: function(localStorageItemName, successHandler, errorHandler, filterPropertyName, filterPropertyValue,
                                  lessThanPropertyName, lessThanPropertyValue,
                                  greaterThanPropertyName, greaterThanPropertyValue){
-            qm.localForage.getItem(localStorageItemName, function(data){
+            qm.localForage.getItem(localStorageItemName)
+                .then(function(data){
                 data = qm.arrayHelper.filterByPropertyOrSize(data, filterPropertyName, filterPropertyValue,
                     lessThanPropertyName, lessThanPropertyValue, greaterThanPropertyName, greaterThanPropertyValue);
                 successHandler(data);
@@ -4878,7 +4891,8 @@ var qm = {
             });
         },
         getElementsWithRequestParams: function(localStorageItemName, params, successHandler, errorHandler){
-            qm.localForage.getItem(localStorageItemName, function(unfiltered){
+            qm.localForage.getItem(localStorageItemName)
+                .then(function(unfiltered){
                 if(!unfiltered){
                     successHandler([]);
                     return;
@@ -4895,7 +4909,8 @@ var qm = {
             qmLog.debug('qm.localForage.addToOrReplaceByIdAndMoveToFront in ' + localStorageItemName + ': ' +
                 JSON.stringify(replacementElementArray).substring(0, 20) + '...');
             // Have to stringify/parse to create cloned variable or it adds all stored reminders to the array to be posted
-            qm.localForage.getItem(localStorageItemName, function(localStorageItemArray){
+            qm.localForage.getItem(localStorageItemName)
+                .then(function(localStorageItemArray){
                 var elementsToKeep = qm.arrayHelper.addToOrReplaceByIdAndMoveToFront(localStorageItemArray, replacementElementArray, localStorageItemName);
                 qm.localForage.setItem(localStorageItemName, elementsToKeep);
                 if(successHandler){
@@ -4910,46 +4925,50 @@ var qm = {
                 newElementsArray = [newElementsArray];
             }
             qmLog.debug('adding to ' + localStorageItemName + ': ' + JSON.stringify(newElementsArray).substring(0, 20) + '...');
-            qm.localForage.getItem(localStorageItemName, function(localStorageItemArray){
+            qm.localForage.getItem(localStorageItemName)
+                .then(function(localStorageItemArray){
                 localStorageItemArray = localStorageItemArray || [];
                 localStorageItemArray = newElementsArray.concat(localStorageItemArray);
                 localStorageItemArray = localStorageItemArray.filter(function(element){
                     return element !== null;
                 });
-                qm.localForage.setItem(localStorageItemName, localStorageItemArray, function(){
-                    qmLog.info("addToArray in LocalForage " + localStorageItemName + " completed!");
-                    if(successHandler){
-                        successHandler(localStorageItemArray);
-                    }
-                }, function(error){
-                    qmLog.error(error);
-                    if(errorHandler){
-                        errorHandler(error);
-                    }
-                });
+                qm.localForage.setItem(localStorageItemName, localStorageItemArray)
+                    .then(function(){
+                        qmLog.info("addToArray in LocalForage " + localStorageItemName + " completed!");
+                        if(successHandler){
+                            successHandler(localStorageItemArray);
+                        }
+                    }, function(error){
+                        qmLog.error(error);
+                        if(errorHandler){
+                            errorHandler(error);
+                        }
+                    });
             });
         },
         addToArrayWithLimit: function(localStorageItemName, limit, newElementOrArray, successHandler, errorHandler){
             qm.functionHelper.checkTypes(arguments, ['string', 'number'] );
             if(!qm.arrayHelper.variableIsArray(newElementOrArray)){newElementOrArray = [newElementOrArray];}
-            qm.localForage.getItem(localStorageItemName, function(existing){
+            qm.localForage.getItem(localStorageItemName)
+                .then(function(existing){
                 existing = existing || [];
                 var toStore = newElementOrArray.concat(existing);
                 toStore = toStore.filter(function(element){
                     return element !== null;
                 });
                 toStore = toStore.slice(0, limit);
-                qm.localForage.setItem(localStorageItemName, toStore, function(){
-                    qmLog.info("addToArray in LocalForage " + localStorageItemName + " completed!");
-                    if(successHandler){
-                        successHandler(toStore);
-                    }
-                }, function(error){
-                    qmLog.error(error);
-                    if(errorHandler){
-                        errorHandler(error);
-                    }
-                });
+                qm.localForage.setItem(localStorageItemName, toStore)
+                    .then(function(){
+                        qmLog.info("addToArray in LocalForage " + localStorageItemName + " completed!");
+                        if(successHandler){
+                            successHandler(toStore);
+                        }
+                    }, function(error){
+                        qmLog.error(error);
+                        if(errorHandler){
+                            errorHandler(error);
+                        }
+                    });
             });
         }
     },
@@ -5570,7 +5589,8 @@ var qm = {
     ],
     memory: {
         askForMemoryAnswer: function(memoryQuestionStatement){
-            qm.localForage.getItem(qm.items.memories, function(memories){
+            qm.localForage.getItem(qm.items.memories)
+                .then(function(memories){
                 memories = memories || {};
                 var response;
                 var memoryQuestionQuestion = memoryQuestionStatement;
@@ -5588,9 +5608,10 @@ var qm = {
                     var memoryQuestionAnswer = qm.arrayHelper.getFirstElementIfArray(possiblePhrases);
                     memories[memoryQuestionQuestion] = memoryQuestionAnswer;
                     memories[memoryQuestionStatement] = memoryQuestionAnswer;
-                    qm.localForage.setItem(qm.items.memories, memories, function(){
-                        qm.speech.talkRobot("OK. When you want me to remind you, just say Recall " + memoryQuestionStatement + "! ");
-                    })
+                    qm.localForage.setItem(qm.items.memories, memories)
+                        .then(function(){
+                            qm.speech.talkRobot("OK. When you want me to remind you, just say Recall " + memoryQuestionStatement + "! ");
+                        })
                 };
                 qm.speech.talkRobot(response);
             }, function(error){
@@ -8233,7 +8254,8 @@ var qm = {
     },
     memories: {
         recall: function(memoryQuestionQuestion){
-            qm.localForage.getItem(qm.items.memories, function(memories){
+            qm.localForage.getItem(qm.items.memories)
+                .then(function(memories){
                 memories = memories || {};
                 var response = "I'm afraid I don't know " + memoryQuestionQuestion + ".  Say Remember " + memoryQuestionQuestion +
                     " so I'll know in the future. ";
@@ -8250,7 +8272,8 @@ var qm = {
             });
         },
         askForMemoryAnswer: function(memoryQuestionStatement){
-            qm.localForage.getItem(qm.items.memories, function(memories){
+            qm.localForage.getItem(qm.items.memories)
+                .then(function(memories){
                 memories = memories || {};
                 var response;
                 var memoryQuestionQuestion = memoryQuestionStatement;
@@ -8268,9 +8291,10 @@ var qm = {
                     var memoryQuestionAnswer = qm.arrayHelper.getFirstElementIfArray(possiblePhrases);
                     memories[memoryQuestionQuestion] = memoryQuestionAnswer;
                     memories[memoryQuestionStatement] = memoryQuestionAnswer;
-                    qm.localForage.setItem(qm.items.memories, memories, function(){
-                        qm.speech.talkRobot("OK. When you want me to remind you, just say Recall " + memoryQuestionStatement + "! ");
-                    })
+                    qm.localForage.setItem(qm.items.memories, memories)
+                        .then(function(){
+                            qm.speech.talkRobot("OK. When you want me to remind you, just say Recall " + memoryQuestionStatement + "! ");
+                        })
                 };
                 qm.speech.talkRobot(response);
             }, function(error){
@@ -8806,7 +8830,8 @@ var qm = {
                 qmLog.error("No successHandler provided to authorizedClients getFromLocalStorage");
                 return;
             }
-            qm.localForage.getItem(qm.items.authorizedClients, function(authorizedClients){
+            qm.localForage.getItem(qm.items.authorizedClients)
+                .then(function(authorizedClients){
                 successHandler(authorizedClients);
             }, function(error){
                 qmLog.error(error);
@@ -8916,7 +8941,8 @@ var qm = {
                 qmLog.error("No successHandler provided to studiesCreated getFromLocalStorage");
                 return;
             }
-            qm.localForage.getItem(qm.items.studiesCreated, function(studiesCreated){
+            qm.localForage.getItem(qm.items.studiesCreated)
+                .then(function(studiesCreated){
                 successHandler(studiesCreated);
             }, function(error){
                 qmLog.error(error);
@@ -8994,7 +9020,8 @@ var qm = {
                 qmLog.error("No successHandler provided to studiesJoined getFromLocalStorage");
                 return;
             }
-            qm.localForage.getItem(qm.items.studiesJoined, function(studiesJoined){
+            qm.localForage.getItem(qm.items.studiesJoined)
+                .then(function(studiesJoined){
                 successHandler(studiesJoined);
             }, function(error){
                 qmLog.error(error);
@@ -9808,7 +9835,8 @@ var qm = {
                 successHandler(study);
                 return;
             }
-            qm.localForage.getItem(qm.items.lastStudy, function(study){
+            qm.localForage.getItem(qm.items.lastStudy)
+                .then(function(study){
                 if(!study){
                     if(errorHandler){
                         errorHandler("No last study saved");
@@ -11210,45 +11238,78 @@ var qm = {
             }
             if(!params.limit){params.limit = qm.userVariables.defaultLimit;}
             qm.api.get('api/v3/variables', [], params, function (variables){
+                qm.variablesHelper.saveToLocalStorage(variables);
                 deferred.resolve(variables);
             }, function (err){
                 deferred.reject(err);
             })
             return deferred.promise;
         },
-        getByNameFromApi: function(variableName, params, successHandler, errorHandler){
+        findByNameFromApi: function(variableName, params){
+            var deferred = Q.defer();
             if(!params){
                 params = {};
             }
             params.name = variableName;
-            qm.userVariables.getFromApi(params).then(function(userVariables){
-                qm.variablesHelper.saveToLocalStorage(userVariables);
-                successHandler(userVariables[0]);
-            }, errorHandler)
-        },
-        getByName: function(variableName, params, refresh, successHandler, errorHandler){
-            if(!params){
-                params = {};
-            }
-            if(!variableName){
-                variableName = qm.getPrimaryOutcomeVariable().name;
-            }
-            if(refresh){
-                qm.userVariables.getByNameFromApi(variableName, params, successHandler, errorHandler);
-                return;
-            }
-            qm.localForage.searchByProperty(qm.items.userVariables, 'name', variableName, function(userVariables){
-                if(userVariables && userVariables.length){
-                    var userVariable = userVariables[0];
-                    /** @namespace userVariable.charts.lineChartWithoutSmoothing */
-                    if(typeof params.includeCharts === "undefined" ||
-                        (userVariable.charts && userVariable.charts.lineChartWithoutSmoothing && userVariable.charts.lineChartWithoutSmoothing.highchartConfig)){
-                        successHandler(userVariable);
-                        return;
+            qm.userVariables.getFromApi(params)
+                .then(function(variables){
+                    if(variables.length){
+                        deferred.resolve(variables[0])
+                    } else {
+                        deferred.reject("could not get variable "+variableName+" from API")
                     }
-                }
-                qm.userVariables.getByNameFromApi(variableName, params, successHandler, errorHandler);
-            });
+                }, function (err){
+                    deferred.reject(err)
+                });
+            return deferred.promise;
+        },
+        findWithCharts: function (variableName, refresh){
+            var deferred = Q.defer();
+            qm.userVariables.findByName(variableName, {includeCharts: true}, refresh)
+                .then(function(uv){
+                    qm.chartHelper.configureHighchartSubProperties(uv);
+                    deferred.resolve(uv)
+                }, function(err){
+                    qmLog.error(err);
+                    deferred.reject(err)
+                }).catch(function(err){
+                    qmLog.error(err);
+                    throw Error(err)
+                })
+            return deferred.promise;
+        },
+        findByName: function(variableName, params, refresh){
+            qmLog.lei(typeof variableName !== "string")
+            if(!params){params = {};}
+            if(!variableName){variableName = qm.getPrimaryOutcomeVariable().name;}
+            if(refresh){return qm.userVariables.findByNameFromApi(variableName, params);}
+            var deferred = Q.defer();
+            function searchAPI(){
+                qm.userVariables.findByNameFromApi(variableName, params)
+                    .then(function(uv){
+                        deferred.resolve(uv)
+                    }, function (err){
+                        deferred.reject(err)
+                    });
+            }
+            qm.localForage.searchByProperty(qm.items.userVariables, 'name', variableName)
+                .then(function(userVariables){
+                    if(userVariables && userVariables.length){
+                        var uv = userVariables[0];
+                        /** @namespace uv.charts.lineChartWithoutSmoothing */
+                        if(typeof params.includeCharts === "undefined" ||
+                            (uv.charts &&
+                                uv.charts.lineChartWithoutSmoothing &&
+                                uv.charts.lineChartWithoutSmoothing.highchartConfig)){
+                            deferred.resolve(uv);
+                            return;
+                        }
+                    }
+                    searchAPI();
+                }, function (err){
+                    searchAPI();
+                });
+            return deferred.promise;
         },
         getFromLocalStorage: function(params){
             var deferred = Q.defer();

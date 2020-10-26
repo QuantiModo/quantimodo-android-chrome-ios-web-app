@@ -22,7 +22,7 @@ describe('Reminders', function () {
      * @param {string} variableCategoryName
      */
     function goToManageReminders (variableCategoryName) {
-        if(!variableCategoryName){variableCategoryName = 'Anything'}
+        if(!variableCategoryName){ variableCategoryName = 'Anything' }
         cy.loginWithAccessTokenIfNecessary(`/#/app/variable-list-category/${variableCategoryName}`)
     }
   /**
@@ -58,11 +58,11 @@ describe('Reminders', function () {
     let reminderListSelector = '#remindersList > div'
     let deleted = false
       //cy.debug();
-      cy.get("body").then($body => {
-          let selector = "#showActionSheet-button > i";
-          let numberOfReminders = $body.find(selector).length;
-          cy.log(numberOfReminders+" reminders to delete");
-          if (numberOfReminders > 0) {   //evaluates as true
+      cy.get("body").then(($body) => {
+          let selector = "#showActionSheet-button > i"
+          let numberOfReminders = $body.find(selector).length
+          cy.log(numberOfReminders + " reminders to delete")
+          if (numberOfReminders > 0) { //evaluates as true
               cy.get(selector, { timeout: 30000 })
                   // eslint-disable-next-line no-unused-vars
                   .each(($el, _index, _$list) => {
@@ -72,7 +72,7 @@ describe('Reminders', function () {
                       deleted = true
                   })
           }
-      });
+      })
 
     cy.get(reminderListSelector, { timeout: 30000 })
     // eslint-disable-next-line no-unused-vars
@@ -97,13 +97,11 @@ describe('Reminders', function () {
         cy.loginWithAccessTokenIfNecessary(`/#/app/favorites`)
         cy.log('Deleting favorites...')
         cy.wait(1000)
-        let deleted = false
-        //cy.debug();
-        cy.get("body").then($body => {
-            let selector = "#favoriteItemSettings > i";
-            let numberOfReminders = $body.find(selector).length;
-            cy.log(numberOfReminders+" reminders to delete");
-            if (numberOfReminders > 0) {   //evaluates as true
+        cy.get("body").then(($body) => {
+            let selector = "#favoriteItemSettings > i"
+            let numberOfReminders = $body.find(selector).length
+            cy.log(numberOfReminders + " reminders to delete")
+            if (numberOfReminders > 0) { //evaluates as true
                 cy.get(selector, { timeout: 30000 })
                     // eslint-disable-next-line no-unused-vars
                     .each(($el, _index, _$list) => {
@@ -113,7 +111,7 @@ describe('Reminders', function () {
                         deleted = true
                     })
             }
-        });
+        })
     }
   /**
    * @param {string} unitName
@@ -164,12 +162,11 @@ describe('Reminders', function () {
     cy.get('#notification-skip').should('not.be.visible')
     deleteReminders(variableCategoryName)
   })
-    // TODO: Create mocha tests and re-enable.  This randomly fails.
-  it.skip('Creates a sleep reminder and changes unit', function () {
+  it('Creates a sleep reminder and changes unit', function () {
     let variableName = 'Sleep Duration'
     let variableCategoryName = 'Sleep'
-
-    deleteReminders(variableCategoryName)
+      cy.log("Deleting all reminders to make sure we can get a sleep notification after reminder creation...")
+    deleteReminders('Anything')
     addReminder(variableName)
     //cy.get('#defaultValue').should('not.exist')
     let hour = 8
@@ -182,14 +179,13 @@ describe('Reminders', function () {
       goToManageReminders(variableCategoryName)
     cy.log('Should not contain reminder time because the frequency is below a day')
     //let firstReminderTime = '#remindersList > div > div > div:nth-child(1) > div.col.col-70 > p';
-    let firstReminderTime = '#remindersList'
     let time = `${hour}:${minute}`
 
     //assertReminderListContains(time);
-    cy.get(firstReminderTime).should('contain', time)
+    cy.get("#valueAndFrequencyTextDescriptionWithTime").should('contain', time)
     cy.wait(1500) // Have to wait for save to complete
     goToCategoryInbox(variableCategoryName)
-    cy.get('#notification-settings').click({ force: true })
+    cy.get('#notification-settings').click({ force: true, timeout: 15000 })
     cy.url().should('include', '#/app/reminder-add/')
     cy.get('#reminder-header').contains(variableName, {matchCase: false})
     changeUnit('Minutes')
@@ -219,10 +215,10 @@ describe('Reminders', function () {
     let variableCategoryName = 'Symptoms'
     let frequency = '30 minutes'
     deleteRemindersAddOneAndGoToCategoryInbox(variableName, frequency, variableCategoryName)
-    cy.get('#negativeRatingOptions4').click({ force: true,timeout: 30000 })
-    cy.get('#menu-item-chart-search > a').click({ force: true,timeout: 20000 })
+    cy.get('#negativeRatingOptions4').click({ force: true, timeout: 30000 })
+    cy.get('#menu-item-chart-search > a').click({ force: true, timeout: 20000 })
     cy.log("waiting for notifications to post after leaving inbox state before checking history...")
-    cy.wait(1000)
+      cy.wait('@post-notifications', {timeout: 30000}).should('have.property', 'status', 201)
     cy.searchAndClickTopResult(variableName, true)
     cy.contains(`${variableName} Over Time`, {timeout: 30000})
     cy.get('#menu-more-button').click({ force: true })
@@ -267,7 +263,7 @@ describe('Reminders', function () {
         cy.visitIonicAndSetApiUrl('/#/app/favorites')
         cy.log('Check that favorite was added')
         cy.get('#favoriteItemTitle').should('contain', variableName)
-        cy.debug();
+        cy.debug()
         cy.get('#recordDefaultValue', { timeout: 20000 }).should('contain', 'Record ')
         cy.log('Click Record 100 mg')
 

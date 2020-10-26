@@ -482,16 +482,17 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
                 qmService.showBlackRingLoader();
             }
             var params = {includeTags: true};
-            qm.userVariables.getByName(variableName, params, refresh, function(variableObject){
-                $scope.$broadcast('scroll.refreshComplete');  //Stop the ion-refresher from spinning
-                qmService.hideLoader();
-                setVariableObject(variableObject);
-                //qmService.addWikipediaExtractAndThumbnail($scope.state.variableObject);
-                qmService.setupVariableByVariableObject(variableObject);
-            }, function(error){
-                $scope.$broadcast('scroll.refreshComplete');  //Stop the ion-refresher from spinning
-                qmService.hideLoader();
-                qmLog.error(error);
-            });
+            qm.userVariables.findByName(variableName, params, refresh)
+                .then(function(variableObject){
+                    $scope.$broadcast('scroll.refreshComplete');  //Stop the ion-refresher from spinning
+                    qmService.hideLoader();
+                    setVariableObject(variableObject);
+                    //qmService.addWikipediaExtractAndThumbnail($scope.state.variableObject);
+                    qmService.setupVariableByVariableObject(variableObject);
+                }, function(error){
+                    $scope.$broadcast('scroll.refreshComplete');  //Stop the ion-refresher from spinning
+                    qmService.hideLoader();
+                    qmLog.error(error);
+                });
         };
     }]);
