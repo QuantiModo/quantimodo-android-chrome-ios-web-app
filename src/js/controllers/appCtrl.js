@@ -273,9 +273,6 @@ angular.module('starter')// Parent Controller - This controller runs before ever
                         qmLog.error('Failed to track favorite! error: ', error, trackingReminder);
                     });
             };
-            $scope.trackByFavorite = function(trackingReminder, modifiedReminderValue){
-                qmService.trackByFavorite(trackingReminder, modifiedReminderValue);
-            };
             // Triggered on a button click, or some other target
             $scope.showFavoriteActionSheet = function(favorite, $index, bloodPressure, state){
                 var variableObject = {id: favorite.variableId, name: favorite.variableName};

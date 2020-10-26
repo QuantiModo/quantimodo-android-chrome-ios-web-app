@@ -245,145 +245,6 @@ function expectInteger(val){
 function info(str, meta){
     qmLog.info("mocha: " + str, meta)
 }
-describe("API", function (){
-    it("Makes sure api url is app.quantimo.do", function (done) {
-        expect(qm.api.getApiUrl()).to.eq("https://app.quantimo.do")
-        done()
-    })
-})
-describe("Chrome Extension", function () {
-    before(function () {
-        global.chrome = chrome
-    })
-    it('can create a popup window', function(done) {
-        info("TODO: Figure out how to mock chrome.extension.onMessage")
-        done()
-        //qm.chrome.initialize()
-        //qmTests.runAllTestsForType('chrome', done)
-    })
-})
-describe("Cypress", function () {
-    it('can upload Cypress video', function(done) {
-        const specName = "test_spec"
-        const relative = cypressFunctions.getVideoPath(specName)
-        const downloadPath = 'tmp/download.mp4'
-        let s3Url
-        fileHelper.deleteFile(relative).then(function (){
-            let exists = fileHelper.exists(relative)
-            expect(exists).to.be.false
-            return fileHelper.createFile(relative, "test video")
-        }).then(function (){
-            return cypressFunctions.uploadCypressVideo(specName)
-        }).then(function (url){
-            s3Url = url
-            return fileHelper.deleteFile(downloadPath)
-        }).then(function (){
-            fileHelper.assertDoesNotExist(downloadPath)
-            return fileHelper.download(s3Url, downloadPath)
-        }).then(function (){
-            fileHelper.assertExists(downloadPath)
-            done()
-        })
-    })
-})
-describe("File Helper", function () {
-    it("creates success file", function (done) {
-        const filename = "success-file"
-        fileHelper.deleteFile(filename)
-            .then(function (){
-                let exists = fileHelper.exists(filename)
-                expect(exists).to.be.false
-                th.createSuccessFile()
-                    .then(function (){
-                        exists = fileHelper.exists(filename)
-                        expect(exists).to.be.true
-                        done()
-                    })
-            })
-    })
-    it("determines the absolute path", function (done) {
-        var abs = fileHelper.getAbsolutePath("tests/ionIcons.js")
-        expect(abs).contains(appDir)
-        done()
-    })
-    it("uploads a file", function () {
-        return fileHelper.uploadToS3("tests/ionIcons.js", "tests/ionIcons.js")
-            .then(function (url) {
-                return downloadFileContains(url, "iosArrowUp")
-            })
-    })
-    it("uploads test results", function (done) {
-        this.timeout(60000) // Default 2000 is too fast
-        cypressFunctions.uploadMochawesome()
-            .then(function(urls) {
-                expect(urls.find(function(url){
-                    return url.indexOf("/assets/app.css") !== -1
-                })).is.not.null
-                expect(urls.find(function(url){
-                    return url.indexOf("/assets/app.js") !== -1
-                })).is.not.null
-                expect(urls).length.to.be.greaterThan(2)
-                done()
-            })
-    })
-})
-describe("Ghost Inspector", function () {
-    it("runs tests on staging API", function (done) {
-        var previouslySetApiUrl = process.env.API_URL || null
-        if(previouslySetApiUrl){
-            expect(previouslySetApiUrl).to.eq(qmTests.getApiUrl())
-        }
-        delete process.env.API_URL
-        chai.assert.isUndefined(process.env.API_URL)
-        process.env.RELEASE_STAGE = "staging"
-        var url = th.getApiUrl()
-        expect(url).to.contain("https://staging.quantimo.do")
-        if (previouslySetApiUrl) {
-            process.env.API_URL = previouslySetApiUrl
-        }
-        done()
-    })
-})
-describe("Git Helper", function () {
-    it.skip("sets commit status", function (done) {
-        qmGit.setGithubStatus("pending", "test context", "test description",
-            "https://get-bent.com", function (res) {
-            expect(res.status).to.eq(201)
-            done()
-        })
-    })
-    it.skip("creates a feature branch and deletes it", function (done) {
-        var featureName = "test-feature"
-        var branchName = "feature/" + featureName
-        qmGit.createFeatureBranch("test-feature")
-        git.branchLocal().then(function (branchSummary) {
-            expect(branchSummary.all).to.contain(branchName)
-            qmShell.executeSynchronously("git checkout -B develop", true)
-            git.deleteLocalBranch(branchName).then(function () {
-                git.branchLocal().then(function (branchSummary) {
-                    expect(branchSummary.all).not.to.contain(branchName)
-                    done()
-                })
-            })
-        })
-    })
-})
-describe("Intent Handler", function () {
-    it('can record measurement from user speech command', function(done) {
-        var userInput = "Record 1 Overall Mood"
-        var expectedIntentName = 'Record Measurement Intent'
-        var expectedEntities = {variableName: 'Overall Mood', recordMeasurementTriggerPhrase: "record"}
-        var expectedParameters = {variableName: 'Overall Mood', value: 1}
-        qmTests.tests.checkIntent(userInput, expectedIntentName, expectedEntities, expectedParameters, done)
-    })
-    it.skip('can remember stuff', function(done) {
-        var userInput = "Remember where my keys are"
-        var expectedIntentName = 'Remember Intent'
-        var expectedEntities = {interrogativeWord: 'where', rememberCommand: "remember"}
-        var expectedParameters = {memoryQuestion: 'where my keys are'}
-        qmTests.tests.checkIntent(userInput, expectedIntentName, expectedEntities, expectedParameters, done)
-    })
-})
 describe("Measurement", function () {
     function checkPostMeasurementResponse(data, variableName, value) {
         var measurements = qm.measurements.toArray(data.measurements)
@@ -520,9 +381,216 @@ describe("Measurement", function () {
                     expect(m.id).to.not.eq(measurementId)
                 })
             })
-            // .catch(function (error) {
-            //     throw Error(error)
-            // })
+        // .catch(function (error) {
+        //     throw Error(error)
+        // })
+    })
+})
+describe("API", function (){
+    it("Makes sure api url is app.quantimo.do", function (done) {
+        expect(qm.api.getApiUrl()).to.eq("https://app.quantimo.do")
+        done()
+    })
+})
+describe("Chrome Extension", function () {
+    before(function () {
+        global.chrome = chrome
+    })
+    it('can create a popup window', function(done) {
+        info("TODO: Figure out how to mock chrome.extension.onMessage")
+        done()
+        //qm.chrome.initialize()
+        //qmTests.runAllTestsForType('chrome', done)
+    })
+})
+describe("Cypress", function () {
+    it('can upload Cypress video', function(done) {
+        const specName = "test_spec"
+        const relative = cypressFunctions.getVideoPath(specName)
+        const downloadPath = 'tmp/download.mp4'
+        let s3Url
+        fileHelper.deleteFile(relative).then(function (){
+            let exists = fileHelper.exists(relative)
+            expect(exists).to.be.false
+            return fileHelper.createFile(relative, "test video")
+        }).then(function (){
+            return cypressFunctions.uploadCypressVideo(specName)
+        }).then(function (url){
+            s3Url = url
+            return fileHelper.deleteFile(downloadPath)
+        }).then(function (){
+            fileHelper.assertDoesNotExist(downloadPath)
+            return fileHelper.download(s3Url, downloadPath)
+        }).then(function (){
+            fileHelper.assertExists(downloadPath)
+            done()
+        })
+    })
+})
+describe("File Helper", function () {
+    it("creates success file", function (done) {
+        const filename = "success-file"
+        fileHelper.deleteFile(filename)
+            .then(function (){
+                let exists = fileHelper.exists(filename)
+                expect(exists).to.be.false
+                th.createSuccessFile()
+                    .then(function (){
+                        exists = fileHelper.exists(filename)
+                        expect(exists).to.be.true
+                        done()
+                    })
+            })
+    })
+    it("determines the absolute path", function (done) {
+        var abs = fileHelper.getAbsolutePath("tests/ionIcons.js")
+        expect(abs).contains(appDir)
+        done()
+    })
+    it("uploads a file", function () {
+        return fileHelper.uploadToS3("tests/ionIcons.js", "tests/ionIcons.js")
+            .then(function (url) {
+                return downloadFileContains(url, "iosArrowUp")
+            })
+    })
+    it("uploads test results", function (done) {
+        this.timeout(60000) // Default 2000 is too fast
+        cypressFunctions.uploadMochawesome()
+            .then(function(urls) {
+                expect(urls.find(function(url){
+                    return url.indexOf("/assets/app.css") !== -1
+                })).is.not.null
+                expect(urls.find(function(url){
+                    return url.indexOf("/assets/app.js") !== -1
+                })).is.not.null
+                expect(urls).length.to.be.greaterThan(2)
+                done()
+            })
+    })
+})
+describe("Favorites", function () {
+    it("record measurement by favorite", function () {
+        this.timeout(90000)
+        //expect(qm.appMode.isLocal()).to.be.true
+        const variableName = "Aaa Test Treatment"
+        const variableCategoryName = "Treatments"
+        qmTests.setTestAccessToken()
+        return qm.userHelper.getUserFromApi({})
+            .then(function (user){
+                expect(user.accessToken, qmTests.getTestAccessToken())
+                return qm.reminderHelper.deleteByVariableName(variableName)
+            })
+            .then(function () {
+                return qm.reminderHelper.getReminders({variableName})
+            })
+            .then(function (reminders) {
+                expect(reminders).length(0)
+                expect(qm.reminderHelper.getQueue()).length(0)
+                qm.reminderHelper.addToQueue([{variableName, reminderFrequency: 0, defaultValue: 100}])
+                expect(qm.reminderHelper.getQueue()).length(1)
+                expect(qm.reminderHelper.getCached()).length(0)
+                return qm.reminderHelper.syncReminders()
+            })
+            .then(function (response) {
+                const data = (response && response.data) ? response.data : null
+                expect(data.trackingReminders).length(1)
+                expect(data.trackingReminders[0].reminderFrequency).to.eq(0)
+                expect(data.userVariables).length(1)
+                expect(data.trackingReminderNotifications).length(0)
+                expect(qm.notifications.getCached()).length(0)
+                expect(qm.reminderHelper.getCached()).length(1)
+                return qm.reminderHelper.syncReminders()
+            })
+            .then(function(){
+                return qm.measurements.getMeasurements({variableName}).then(function (measurements){
+                    qm.measurements.logMeasurements(measurements, variableName + " Measurements Before Deleting")
+                }).then(function(){
+                    return qm.measurements.deleteLastMeasurementForVariable(variableName)
+                }).then(function(){
+                    return qm.measurements.getMeasurements({variableName}).then(function (measurements){
+                        qm.measurements.logMeasurements(measurements, variableName + " Measurements After Deleting")
+                    })
+                })
+            })
+            .then(function() {
+                return qm.reminderHelper.getFavorites(variableCategoryName)
+            })
+            .then(function (favorites) {
+                expect(favorites).length(1)
+                expect(qm.reminderHelper.getQueue()).length(0)
+                const notifications = qm.notifications.getCached()
+                expect(notifications).length(0)
+                var f = favorites[0]
+                qm.reminderHelper.trackByFavorite(f, 100)
+                expect(f.value).to.eq(100)
+                expect(f.displayTotal).to.eq("Recorded " + f.value + " " + f.unitAbbreviatedName)
+                var timeout = f.timeout
+                timeout._onTimeout()
+                clearTimeout(timeout)
+                return qm.measurements.getLocalMeasurements({variableName})
+            })
+            .then(function (measurements) {
+                expect(measurements).length(1)
+                var m = measurements[0]
+                expect(m.value).to.eq(100)
+            })
+    })
+})
+describe("Ghost Inspector", function () {
+    it("runs tests on staging API", function (done) {
+        var previouslySetApiUrl = process.env.API_URL || null
+        if(previouslySetApiUrl){
+            expect(previouslySetApiUrl).to.eq(qmTests.getApiUrl())
+        }
+        delete process.env.API_URL
+        chai.assert.isUndefined(process.env.API_URL)
+        process.env.RELEASE_STAGE = "staging"
+        var url = th.getApiUrl()
+        expect(url).to.contain("https://staging.quantimo.do")
+        if (previouslySetApiUrl) {
+            process.env.API_URL = previouslySetApiUrl
+        }
+        done()
+    })
+})
+describe("Git Helper", function () {
+    it.skip("sets commit status", function (done) {
+        qmGit.setGithubStatus("pending", "test context", "test description",
+            "https://get-bent.com", function (res) {
+            expect(res.status).to.eq(201)
+            done()
+        })
+    })
+    it.skip("creates a feature branch and deletes it", function (done) {
+        var featureName = "test-feature"
+        var branchName = "feature/" + featureName
+        qmGit.createFeatureBranch("test-feature")
+        git.branchLocal().then(function (branchSummary) {
+            expect(branchSummary.all).to.contain(branchName)
+            qmShell.executeSynchronously("git checkout -B develop", true)
+            git.deleteLocalBranch(branchName).then(function () {
+                git.branchLocal().then(function (branchSummary) {
+                    expect(branchSummary.all).not.to.contain(branchName)
+                    done()
+                })
+            })
+        })
+    })
+})
+describe("Intent Handler", function () {
+    it('can record measurement from user speech command', function(done) {
+        var userInput = "Record 1 Overall Mood"
+        var expectedIntentName = 'Record Measurement Intent'
+        var expectedEntities = {variableName: 'Overall Mood', recordMeasurementTriggerPhrase: "record"}
+        var expectedParameters = {variableName: 'Overall Mood', value: 1}
+        qmTests.tests.checkIntent(userInput, expectedIntentName, expectedEntities, expectedParameters, done)
+    })
+    it.skip('can remember stuff', function(done) {
+        var userInput = "Remember where my keys are"
+        var expectedIntentName = 'Remember Intent'
+        var expectedEntities = {interrogativeWord: 'where', rememberCommand: "remember"}
+        var expectedParameters = {memoryQuestion: 'where my keys are'}
+        qmTests.tests.checkIntent(userInput, expectedIntentName, expectedEntities, expectedParameters, done)
     })
 })
 describe("Notifications", function () {

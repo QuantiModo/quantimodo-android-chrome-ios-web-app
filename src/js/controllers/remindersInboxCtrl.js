@@ -163,7 +163,7 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
         function getFavoritesOrReminders(){
             var cat = getVariableCategoryName();
             if(!$scope.state.favoritesArray || !$scope.state.favoritesArray.length){
-                qmService.storage.getFavorites(cat).then(function(favorites){
+                qm.reminderHelper.getFavorites(cat).then(function(favorites){
                     if(favorites && favorites.length){
                         $scope.state.favoritesArray = favorites;
                     } else {
@@ -176,6 +176,14 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
                 });
             }
         }
+        $scope.trackByFavorite = function(tr, modifiedReminderValue){
+            var favorites = $scope.state.favoritesArray;
+            qm.reminderHelper.trackByFavorite(tr, modifiedReminderValue, function (){
+                $scope.safeApply(function (){ // Update display text
+                    $scope.state.favoritesArray = favorites
+                })
+            });
+        };
         function getNumberOfDisplayedNotifications() {
             var total = 0;
             var dividers = $scope.notificationDividers;
