@@ -7,7 +7,7 @@ import * as path from "path"
 import * as Q from "q"
 import rimraf from "rimraf"
 import * as qmLog from "./qm.log"
-
+const defaultS3Bucket = "qmimages"
 export function assertDoesNotExist(relative: string) {
     const abs = getAbsolutePath(relative)
     if (fs.existsSync(abs)) {
@@ -63,7 +63,7 @@ export function getS3Client() {
     return new AWS.S3(s3Options)
 }
 
-export function downloadFromS3(filePath: string, key: string, bucketName = "quantimodo") {
+export function downloadFromS3(filePath: string, key: string, bucketName = defaultS3Bucket) {
     const s3 = new AWS.S3()
     const deferred = Q.defer()
     s3.getObject({
@@ -89,30 +89,28 @@ export function downloadFromS3(filePath: string, key: string, bucketName = "quan
     return deferred.promise
 }
 
-export function uploadToS3InSubFolderWithCurrentDateTime(filePath: string,
+export function uploadToS3InSubFolderWithCurrentDateTime(relative: string,
                                                          s3BasePath: string,
-                                                         s3Bucket = "quantimodo",
+                                                         s3Bucket = defaultS3Bucket,
                                                          accessControlLevel = "public-read",
                                                          ContentType?: string | undefined) {
     const at = new Date()
     const dateTime = at.toISOString()
-    return uploadToS3(filePath, s3BasePath + "/" + dateTime, s3Bucket, accessControlLevel, ContentType)
+    return uploadToS3(relative, s3BasePath + "/" + dateTime+"/"+relative, s3Bucket, accessControlLevel, ContentType)
 }
 
 export function uploadToS3(
-    relative: string,
-    s3BasePath: string,
-    s3Bucket = "quantimodo",
+    filePath: string,
+    s3Key: string,
+    s3Bucket = defaultS3Bucket,
     accessControlLevel = "public-read",
     ContentType?: string | undefined | null,
 ) {
     const deferred = Q.defer()
     const s3 = getS3Client()
-    const abs = getAbsolutePath(relative)
+    const abs = getAbsolutePath(filePath)
     assertExists(abs)
     const fileContent = fs.readFileSync(abs)
-    const fileName = path.basename(relative)
-    const s3Key = s3BasePath + "/" + fileName
     const params = {
         ACL: accessControlLevel,
         Body: fileContent,
@@ -195,7 +193,7 @@ export function download(url: string, relative: string) {
 export function uploadFolderToS3(
     dir: string,
     s3BasePath: string,
-    s3Bucket = "quantimodo",
+    s3Bucket = defaultS3Bucket,
     accessControlLevel = "public-read",
     ContentType?: string | undefined,
 ) {
@@ -204,7 +202,12 @@ export function uploadFolderToS3(
             const promises: Q.IWhenable<any[]> = []
             // @ts-ignore
             files.forEach(function(file) {
-                promises.push(uploadToS3(file, s3BasePath, s3Bucket, ContentType))
+                const dirWithForwardSlashes = qm.stringHelper.replaceBackSlashes(dir, "/")
+                const fileWithForwardSlashes = qm.stringHelper.replaceBackSlashes(file, "/")
+                const relativePath = fileWithForwardSlashes.replace(dirWithForwardSlashes, "")
+                let s3Key = s3BasePath + relativePath
+                s3Key = s3Key.replace("\\", "/")
+                promises.push(uploadToS3(file, s3Key, s3Bucket, ContentType))
             })
             return Q.all(promises)
         })
