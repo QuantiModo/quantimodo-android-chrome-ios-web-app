@@ -97,8 +97,6 @@ describe('Reminders', function () {
         cy.loginWithAccessTokenIfNecessary(`/#/app/favorites`)
         cy.log('Deleting favorites...')
         cy.wait(1000)
-        let deleted = false
-        //cy.debug();
         cy.get("body").then(($body) => {
             let selector = "#favoriteItemSettings > i"
             let numberOfReminders = $body.find(selector).length
@@ -164,12 +162,11 @@ describe('Reminders', function () {
     cy.get('#notification-skip').should('not.be.visible')
     deleteReminders(variableCategoryName)
   })
-    // TODO: Create mocha tests and re-enable.  This randomly fails.
   it('Creates a sleep reminder and changes unit', function () {
     let variableName = 'Sleep Duration'
     let variableCategoryName = 'Sleep'
-
-    deleteReminders(variableCategoryName)
+      cy.log("Deleting all reminders to make sure we can get a sleep notification after reminder creation...")
+    deleteReminders('Anything')
     addReminder(variableName)
     //cy.get('#defaultValue').should('not.exist')
     let hour = 8
@@ -182,11 +179,10 @@ describe('Reminders', function () {
       goToManageReminders(variableCategoryName)
     cy.log('Should not contain reminder time because the frequency is below a day')
     //let firstReminderTime = '#remindersList > div > div > div:nth-child(1) > div.col.col-70 > p';
-    let firstReminderTime = '#remindersList'
     let time = `${hour}:${minute}`
 
     //assertReminderListContains(time);
-    cy.get(firstReminderTime).should('contain', time)
+    cy.get("#valueAndFrequencyTextDescriptionWithTime").should('contain', time)
     cy.wait(1500) // Have to wait for save to complete
     goToCategoryInbox(variableCategoryName)
     cy.get('#notification-settings').click({ force: true, timeout: 15000 })
