@@ -171,6 +171,7 @@ var qm = {
                 'X-App-Version': qm.appsManager.getAppVersion(),
                 'X-Framework': 'ionic',
                 "Content-Type": "application/json;charset=UTF-8",
+                'Accept': "application/json"
             };
             if(!qm.appMode.isBackEnd() && typeof moment !== "undefined"){
                 if(typeof moment.tz === "undefined"){
