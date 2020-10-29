@@ -1,0 +1,10 @@
+typescript*
+quantimodo-api.js
+quantimodo-web.js
+js/psychedelic-loader.js
+plain-javascript-client
+dist
+test
+ts
+cypress
+gulpfile.js

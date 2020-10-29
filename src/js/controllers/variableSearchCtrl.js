@@ -1,6 +1,6 @@
 angular.module('starter').controller('VariableSearchCtrl',
-    ["$scope", "$state", "$rootScope", "$stateParams", "$timeout", "$filter", "qmService", "qmLogService",
-        function($scope, $state, $rootScope, $stateParams, $timeout, $filter, qmService, qmLogService){
+    ["$scope", "$state", "$rootScope", "$stateParams", "$timeout", "$filter", "qmService",
+        function($scope, $state, $rootScope, $stateParams, $timeout, $filter, qmService){
         $scope.controller_name = "VariableSearchCtrl";
         qmService.navBar.setFilterBarSearchIcon(false);
         $scope.$on('$ionicView.beforeEnter', function(e){
@@ -83,6 +83,9 @@ angular.module('starter').controller('VariableSearchCtrl',
         function getNextState() {
             var s = $state.current;
             var next = s.params.nextState;
+            if(!next){
+                qmLog.errorAndExceptionTestingOrDevelopment("No next state!")
+            }
             return next;
         }
         function saveTag(selected) {
@@ -164,18 +167,24 @@ angular.module('starter').controller('VariableSearchCtrl',
             }
             // If no results or no exact match, show "+ Add [variable]" button for query
             if((variables.length < 1 || !found)){
+                //debugger
                 $scope.showSearchLoader = false;
                 qmLog.info($state.current.name + ': ' + '$scope.onVariableSearch: Set showAddVariableButton to true', null);
                 $scope.state.showAddVariableButton = true;
                 var s = $state.current;
                 var next = s.params.nextState;
-                if(next === "app.reminderAdd"){
-                    $scope.state.addNewVariableButtonText = '+ Add ' + $scope.state.variableSearchQuery.name + ' reminder';
-                }else if(next === "app.measurementAdd"){
-                    $scope.state.addNewVariableButtonText = '+ Add ' + $scope.state.variableSearchQuery.name + ' measurement';
+                var text;
+                var q = $scope.state.variableSearchQuery.name;
+                if(next === qm.staticData.stateNames.reminderAdd){
+                    text = '+ Add ' + q + ' reminder';
+                }else if(next === qm.staticData.stateNames.measurementAdd){
+                    text = '+ Add ' + q + ' measurement';
                 }else{
-                    $scope.state.addNewVariableButtonText = '+ ' + $scope.state.variableSearchQuery.name;
+                    text = '+ ' + q;
                 }
+                $scope.safeApply(function(){
+                    $scope.state.addNewVariableButtonText = text;
+                })
             }
         }
         function showNoVariablesFoundCardIfNecessary(errorHandler){
@@ -203,7 +212,9 @@ angular.module('starter').controller('VariableSearchCtrl',
             }
             addVariablesToScope(variables);
             if(!errorHandler){
-                showAddVariableButtonIfNecessary(variables);
+                $scope.safeApply(function (){
+                    showAddVariableButtonIfNecessary(variables);
+                })
             }
             showNoVariablesFoundCardIfNecessary(errorHandler);
         }
@@ -232,11 +243,11 @@ angular.module('starter').controller('VariableSearchCtrl',
             $scope.state.showAddVariableButton = false;
             var params = getVariableSearchParameters();
             var q = $scope.state.variableSearchQuery.name;
-            qmLog.info($state.current.name + ': ' + 'Search term: ' + q + " with params: \n" +
-                JSON.stringify(params, null, 2));
+            qmLog.info($state.current.name + ': ' + 'Search term: ' + q + " with params: ", params);
             if(q.length > 2){
                 $scope.state.searching = true;
-                qmService.searchVariablesDeferred(q, params).then(function(variables){
+                params.searchPhrase = q;
+                qm.variablesHelper.getFromLocalStorageOrApi(params).then(function(variables){
                     variableSearchSuccessHandler(variables, successHandler, errorHandler);
                 });
             }else{
@@ -251,7 +262,7 @@ angular.module('starter').controller('VariableSearchCtrl',
             var previous = $scope.state.variableSearchResults;
             if(!previous || previous.length < 1){$scope.state.searching = true;}
             var params = getVariableSearchParameters();
-            qm.variablesHelper.getFromLocalStorageOrApi(params, function(variables){
+            qm.variablesHelper.getFromLocalStorageOrApi(params).then(function(variables){
                 if(variables && variables.length > 0){
                     if($scope.state.variableSearchQuery.name.length < 3){
                         if(previous){variables = previous.concat(variables);}
@@ -316,17 +327,17 @@ angular.module('starter').controller('VariableSearchCtrl',
         }
         function getVariableCategory(){
             var name = getVariableCategoryName();
-            if(name){return qm.variableCategoryHelper.findVariableCategory(name);}
+            if(name){return qm.variableCategoryHelper.findByNameIdObjOrUrl(name);}
             return null;
         }
         function getVariableCategoryName(){
-            var fromUrl = qm.variableCategoryHelper.getVariableCategoryNameFromStateParamsOrUrl();
+            var fromUrl = qm.variableCategoryHelper.getNameFromStateParamsOrUrl();
             if(fromUrl){return fromUrl;}
             var params = getVariableSearchParameters();
             if(params.variableCategoryName){
                 return params.variableCategoryName;
             }
-            return qm.variableCategoryHelper.getVariableCategoryNameFromStateParamsOrUrl($stateParams);
+            return qm.variableCategoryHelper.getNameFromStateParamsOrUrl($stateParams);
         }
         function getPluralVariableCategoryName(){
             return $filter('wordAliases')(pluralize(getVariableCategoryName(), 1));
@@ -334,8 +345,8 @@ angular.module('starter').controller('VariableSearchCtrl',
         var checkNameExists = function(item){
             if(!item.name){
                 var message = "variable doesn't have a name! variable: " + JSON.stringify(item);
-                qmLogService.error(message);
-                qmLogService.error(message);
+                qmLog.error(message);
+                qmLog.error(message);
                 return false;
             }
             return true;

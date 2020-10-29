@@ -1,0 +1,20 @@
+{
+  "chromeWebSecurity": false,
+  "baseUrl": "https://staging.quantimo.do",
+  "projectId": "ee8wan",
+  "pageLoadTimeout": 60000,
+  "videoCompression": false,
+  "videoUploadOnPasses": false,
+  "video": true,
+  "env": {
+    "API_HOST": "staging.quantimo.do",
+    "OAUTH_APP_HOST": "web.quantimo.do",
+    "BUILDER_HOST": "staging-builder.quantimo.do",
+    "abort_strategy": true
+  },
+  "reporter": "cypress-multi-reporters",
+  "reporterOptions": {
+    "configFile": "cypress/reporterOpts.json"
+  },
+  "screenshotsFolder": "tests/mochawesome-report/mocha/assets"
+}

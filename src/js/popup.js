@@ -312,7 +312,7 @@ document.addEventListener('DOMContentLoaded', function(){
     }else{
         qmLog.pushDebug("popup addEventListener: Calling hidePopup...");
         hidePopup();
-        qm.notifications.syncTrackingReminderNotifications(updateQuestion, qm.notifications.closePopup);
+        qm.notifications.syncNotifications(updateQuestion, qm.notifications.closePopup);
     }
     qmLog.pushDebug("popup addEventListener: calling setFaceButtonListeners...");
     setFaceButtonListeners();
@@ -323,7 +323,7 @@ document.addEventListener('DOMContentLoaded', function(){
     qmLog.pushDebug("popup addEventListener: calling qm.notifications.refreshIfEmptyOrStale...");
     qm.notifications.refreshIfEmptyOrStale();
     qmLog.pushDebug("popup addEventListener: calling getUserFromLocalStorage...");
-    qm.userHelper.getUserFromLocalStorageOrApi(function(user){
+    qm.userHelper.getUserFromLocalStorageOrApi().then(function(user){
         qmLog.setupBugsnag(user);
     });
 });

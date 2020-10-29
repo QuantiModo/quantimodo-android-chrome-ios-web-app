@@ -1,0 +1,38 @@
+language: node_js
+node_js:
+  - 10
+
+## Cache NPM folder and Cypress binary
+## to avoid downloading Cypress again and again
+cache:
+  directories:
+    - ~/.npm
+    # Causes timeouts, I think - ~/.cache
+
+install:
+  # use the new "ci" command for fastest installs on CI
+  - npm ci
+  - npm install -g gulp-cli
+
+script: echo "npm test temporarily disabled. Running tests on Jenkins so it's consistent with testing on other repos and to avoid secret leakage"
+#script: npm test
+
+jobs:
+  include:
+    # Too slow to run both suites and we might have broken medimodo.herokuapp.com in a feature branch
+    # By only testing production that should all be passing already, we can be confident that any failures are a
+    # result of changes to these tests instead of application changes
+#    - stage: Test 3rd Party OAuth Client at medimodo.herokuapp.com
+#      script: export RELEASE_STAGE=ionic && npm run test
+# Test 2nd Party OAuth Client at web.quantimo.do is already done in the release stage
+#    - stage: Test 2nd Party OAuth Client at web.quantimo.do
+#      script: export RELEASE_STAGE=production && npm run test
+    # Define the release stage that runs semantic-release
+    - stage: Test web.quantimo.do with API URL app.quantimo.do and release if necessary
+      node_js: lts/*
+      # Advanced: optionally overwrite your default `script` step to skip the tests
+      # script: skip
+      deploy:
+        provider: script
+        cleanup: false
+        script: npx semantic-release

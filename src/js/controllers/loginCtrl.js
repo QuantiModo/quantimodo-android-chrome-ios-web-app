@@ -1,6 +1,6 @@
 angular.module('starter').controller('LoginCtrl', ["$scope", "$state", "$rootScope", "$ionicLoading", "$injector",
-    "$stateParams", "$timeout", "qmService", "qmLogService", "$mdDialog",
-    function($scope, $state, $rootScope, $ionicLoading, $injector, $stateParams, $timeout, qmService, qmLogService, $mdDialog){
+    "$stateParams", "$timeout", "qmService", "$mdDialog",
+    function($scope, $state, $rootScope, $ionicLoading, $injector, $stateParams, $timeout, qmService, $mdDialog){
         $scope.state = {
             useLocalUserNamePasswordForms: qm.platform.isMobileOrChromeExtension(),
             loading: false,
@@ -30,7 +30,7 @@ angular.module('starter').controller('LoginCtrl', ["$scope", "$state", "$rootSco
                     return;
                 }
                 qmService.showBasicLoader();
-                qmService.post('api/v3/userSettings', [], params, function(response){
+                qm.api.post('api/v3/userSettings', params, function(response){
                     qmService.setUserInLocalStorageBugsnagIntercomPush(response.user);
                     qmService.hideLoader();
                     leaveIfLoggedIn();
@@ -103,7 +103,7 @@ angular.module('starter').controller('LoginCtrl', ["$scope", "$state", "$rootSco
         };
         function handleLoginError(error, metaData){
             $scope.retryLogin(error);
-            qmLogService.error('Login failure: ' + error, metaData, metaData);
+            qmLog.error('Login failure: ' + error, metaData, metaData);
         }
         function handleLoginSuccess(){
             if(qm.getUser() && $state.current.name.indexOf('login') !== -1){

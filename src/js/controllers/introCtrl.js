@@ -1,9 +1,9 @@
 angular.module('starter').controller('IntroCtrl', ["$scope", "$state", "$ionicSlideBoxDelegate", "$ionicLoading",
-    "$rootScope", "$stateParams", "qmService", "qmLogService", "appSettingsResponse", "$timeout",
+    "$rootScope", "$stateParams", "qmService", "appSettingsResponse", "$timeout",
     function($scope, $state, $ionicSlideBoxDelegate, $ionicLoading,
-             $rootScope, $stateParams, qmService, qmLogService, appSettingsResponse, $timeout){
+             $rootScope, $stateParams, qmService, appSettingsResponse, $timeout){
 
-        qmLogService.debug('IntroCtrl first starting in state: ' + $state.current.name);
+        qmLog.debug('IntroCtrl first starting in state: ' + $state.current.name);
         qmService.initializeApplication(appSettingsResponse);
         qmService.navBar.setFilterBarSearchIcon(false);
         $scope.state = {
@@ -43,9 +43,9 @@ angular.module('starter').controller('IntroCtrl', ["$scope", "$state", "$ionicSl
                             return;
                         }
                         if(qm.platform.isDesignMode()){
-                            qmService.goToState(qm.stateNames.configuration);
+                            qmService.goToState(qm.staticData.stateNames.configuration);
                         }else{
-                            qmService.goToState(qm.stateNames.onboarding);
+                            qmService.goToState(qm.staticData.stateNames.onboarding);
                         }
                     }
                     var message = "Now let's create a mathematical model of YOU!  ";
@@ -87,7 +87,7 @@ angular.module('starter').controller('IntroCtrl', ["$scope", "$state", "$ionicSl
         $scope.$on('$ionicView.beforeEnter', function(e){
             if (document.title !== "Welcome") {document.title = "Welcome";}
             $rootScope.hideNavigationMenu = true; // Need set hideNavigationMenu immediately (without timeout) in intro beforeEnter or it will show part of the second slide
-            //qmLogService.debug("Entering state " + $state.current.name);
+            //qmLog.debug("Entering state " + $state.current.name);
             if(!$rootScope.appSettings){
                 qmService.rootScope.setProperty('appSettings', window.qm.getAppSettings());
             }
@@ -95,11 +95,11 @@ angular.module('starter').controller('IntroCtrl', ["$scope", "$state", "$ionicSl
             makeBackgroundTransparentIfUsingFuturisticBackground();
             setColorsFromSlide(introSlides()[0]);
             if(qm.auth.getAccessTokenFromCurrentUrl() && !$stateParams.doNotRedirect){
-                qmLogService.debug('introCtrl beforeEnter: Skipping to default state because we have access token in url: ' +
+                qmLog.debug('introCtrl beforeEnter: Skipping to default state because we have access token in url: ' +
                     qm.getAppSettings().appDesign.defaultState, null);
                 qmService.goToDefaultState();
             }else{
-                //qmLogService.debug($state.current.name + ' initializing...');
+                //qmLog.debug($state.current.name + ' initializing...');
             }
             if(!qm.speech.getSpeechAvailable() || useFuturisticBackground() === false){
                 $scope.state.setSpeechEnabled(false);

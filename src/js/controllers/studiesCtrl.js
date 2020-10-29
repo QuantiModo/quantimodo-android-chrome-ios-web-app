@@ -1,6 +1,6 @@
-angular.module('starter').controller('StudiesCtrl', ["$scope", "$ionicLoading", "$state", "$stateParams", "qmService",
-    "qmLogService", "$rootScope", "$ionicActionSheet", "$mdDialog",
-    function($scope, $ionicLoading, $state, $stateParams, qmService, qmLogService, $rootScope, $ionicActionSheet, $mdDialog){
+angular.module('starter').controller('StudiesCtrl',
+    ["$scope", "$ionicLoading", "$state", "$stateParams", "qmService", "$rootScope", "$ionicActionSheet", "$mdDialog",
+    function($scope, $ionicLoading, $state, $stateParams, qmService, $rootScope, $ionicActionSheet, $mdDialog){
         $scope.controller_name = "StudiesCtrl";
         $scope.state = {
             variableName: null,
@@ -13,7 +13,7 @@ angular.module('starter').controller('StudiesCtrl', ["$scope", "$ionicLoading", 
         $scope.searching = true;
         $scope.$on('$ionicView.beforeEnter', function(e){
             if (document.title !== $scope.state.title) {document.title = $scope.state.title;}
-            qmLogService.info('beforeEnter state ' + $state.current.name);
+            qmLog.info('beforeEnter state ' + $state.current.name);
             $scope.showSearchFilterBox = false;
             qmService.navBar.setFilterBarSearchIcon(true);
             qmService.navBar.showNavigationMenuIfHideUrlParamNotSet();
@@ -39,7 +39,7 @@ angular.module('starter').controller('StudiesCtrl', ["$scope", "$ionicLoading", 
                     ],
                     cancelText: '<i class="icon ion-ios-close"></i>Cancel',
                     cancel: function(){
-                        qmLogService.debug('CANCELLED', null);
+                        qmLog.debug('CANCELLED', null);
                     },
                     buttonClicked: function(index, button){
                         if(index === 0){
@@ -69,7 +69,7 @@ angular.module('starter').controller('StudiesCtrl', ["$scope", "$ionicLoading", 
                             $scope.refreshList();
                         }
                         if(index === 8){
-                            qmService.goToState(qm.stateNames.settings);
+                            qmService.goToState(qm.staticData.stateNames.settings);
                         }
                         return true;
                     }
@@ -79,7 +79,7 @@ angular.module('starter').controller('StudiesCtrl', ["$scope", "$ionicLoading", 
         // Have to get url params after entering.  Otherwise, we get params from study if coming back
         $scope.$on('$ionicView.afterEnter', function(e){
             qm.loaders.robots();
-            qmLogService.info('afterEnter state ' + $state.current.name);
+            qmLog.info('afterEnter state ' + $state.current.name);
             $scope.state.requestParams.aggregated = qm.urlHelper.getParam('aggregated');
             if(!variablesHaveChanged()){
                 return;
@@ -111,11 +111,11 @@ angular.module('starter').controller('StudiesCtrl', ["$scope", "$ionicLoading", 
                     $scope.goBack();
                     return;
                 }
-                qmLogService.info('Got ' + studiesResponse.studies.length + ' studies with params ' + JSON.stringify(params));
+                qmLog.info('Got ' + studiesResponse.studies.length + ' studies with params ' + JSON.stringify(params));
                 if(studiesResponse && !$scope.state.studiesResponse.studies.length){
                     $scope.state.studiesResponse = studiesResponse;
                 } else if(studiesResponse.studies.length){
-                    qmLogService.info('First correlation is ' + studiesResponse.studies[0].causeVariableName + " vs " +
+                    qmLog.info('First correlation is ' + studiesResponse.studies[0].causeVariableName + " vs " +
                         studiesResponse.studies[0].effectVariableName);
                     if($scope.state.studiesResponse.studies){
                         $scope.state.studiesResponse.studies =
@@ -124,20 +124,20 @@ angular.module('starter').controller('StudiesCtrl', ["$scope", "$ionicLoading", 
                         $scope.state.studiesResponse.studies = studiesResponse.studies;
                     }
                 }else{
-                    qmLogService.info('Did not get any studies with params ' + JSON.stringify(params));
+                    qmLog.info('Did not get any studies with params ' + JSON.stringify(params));
                     $scope.state.noStudies = true;
                 }
                 showLoadMoreButtonIfNecessary();
                 hideLoader();
             }, function(error){
                 hideLoader();
-                qmLogService.error('studiesCtrl: Could not get studies: ' + JSON.stringify(error));
+                qmLog.error('studiesCtrl: Could not get studies: ' + JSON.stringify(error));
             });
         }
         function populateStudyListBySortParam(newSortParam, refresh){
             if(newSortParam){
                 $scope.state.studiesResponse.studies = [];
-                qmLogService.debug('Sort by ' + newSortParam);
+                qmLog.debug('Sort by ' + newSortParam);
                 $scope.state.requestParams.sort = newSortParam;
             }
             $scope.searching = true;
@@ -208,7 +208,7 @@ angular.module('starter').controller('StudiesCtrl', ["$scope", "$ionicLoading", 
             $scope.showSearchFilterBox = !$scope.showSearchFilterBox;
         };
         $scope.filterSearch = function(){
-            qmLogService.debug($scope.data.search, null);
+            qmLog.debug($scope.data.search, null);
             if($scope.outcomeList){
                 $scope.state.studiesResponse.studies = $scope.state.studiesResponse.studies.filter(function(obj){
                     return obj.effectVariableName.toLowerCase().indexOf($scope.data.search.toLowerCase()) !== -1;
@@ -255,7 +255,7 @@ angular.module('starter').controller('StudiesCtrl', ["$scope", "$ionicLoading", 
             populateStudyListBySortParam(null, true);
         };
         $scope.openStore = function(name){
-            qmLogService.debug('open store for ', null, name); // make url
+            qmLog.debug('open store for ', null, name); // make url
             name = name.split(' ').join('+'); // launch inAppBrowser
             var url = 'http://www.amazon.com/gp/aw/s/ref=mh_283155_is_s_stripbooks?ie=UTF8&n=283155&k=' + name;
             $scope.openUrl(url);
@@ -275,7 +275,7 @@ angular.module('starter').controller('StudiesCtrl', ["$scope", "$ionicLoading", 
                 clickOutsideToClose: false // I think true causes auto-close on iOS
             });
         };
-        var StudySearchCtrl = function($scope, $state, $rootScope, $stateParams, $filter, qmService, qmLogService, $q, $log){
+        var StudySearchCtrl = function($scope, $state, $rootScope, $stateParams, $filter, qmService, $q, $log){
             var self = this;
             self.studies = loadAll();
             self.querySearch = querySearch;
@@ -298,7 +298,7 @@ angular.module('starter').controller('StudiesCtrl', ["$scope", "$ionicLoading", 
                 if(self.helpText && !self.showHelp){
                     return self.showHelp = true;
                 }
-                qmService.goToState(window.qm.stateNames.help);
+                qmService.goToState(window.qm.staticData.stateNames.help);
                 $mdDialog.cancel();
             };
             self.cancel = function(){
@@ -360,5 +360,5 @@ angular.module('starter').controller('StudiesCtrl', ["$scope", "$ionicLoading", 
                 });
             }
         };
-        StudySearchCtrl.$inject = ["$scope", "$state", "$rootScope", "$stateParams", "$filter", "qmService", "qmLogService", "$q", "$log"];
+        StudySearchCtrl.$inject = ["$scope", "$state", "$rootScope", "$stateParams", "$filter", "qmService", "$q", "$log"];
     }]);

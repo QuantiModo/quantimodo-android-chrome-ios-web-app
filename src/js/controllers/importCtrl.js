@@ -1,6 +1,6 @@
 angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "$state", "$rootScope", "qmService",
-    "qmLogService", "$cordovaOauth", "$ionicActionSheet", "Upload", "$timeout", "$ionicPopup", "$mdDialog",
-    function($scope, $ionicLoading, $state, $rootScope, qmService, qmLogService, $cordovaOauth, $ionicActionSheet,
+    "$cordovaOauth", "$ionicActionSheet", "Upload", "$timeout", "$ionicPopup", "$mdDialog",
+    function($scope, $ionicLoading, $state, $rootScope, qmService, $cordovaOauth, $ionicActionSheet,
              Upload, $timeout, $ionicPopup, $mdDialog){
         $scope.controller_name = "ImportCtrl";
         qmService.navBar.setFilterBarSearchIcon(false);
@@ -36,7 +36,7 @@ angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "
                     icon: "ion-ios-cloud-download"
                 };
             }
-            qmLogService.debug('ImportCtrl beforeEnter', null);
+            qmLog.debug('ImportCtrl beforeEnter', null);
             if(typeof $rootScope.hideNavigationMenu === "undefined"){
                 qmService.navBar.showNavigationMenuIfHideUrlParamNotSet();
             }
@@ -104,7 +104,7 @@ angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "
             var connectorButtons = JSON.parse(JSON.stringify(connector.buttons));
             connectorButtons.push({
                 text: '<i class="icon ' + ionIcons.history + '"></i>' + connector.displayName + ' History',
-                id: 'history', state: qm.stateNames.historyAll, stateParams: {connectorName: connector.name}
+                id: 'history', state: qm.staticData.stateNames.historyAll, stateParams: {connectorName: connector.name}
             });
             connectorButtons = qmService.actionSheets.addHtmlToActionSheetButtonArray(connectorButtons);
             connectorButtons.map(function(button){
@@ -116,7 +116,7 @@ angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "
                 destructiveText: (connector.connected) ? '<i class="icon ion-trash-a"></i>Disconnect ' : null,
                 cancelText: '<i class="icon ion-ios-close"></i>Cancel',
                 cancel: function(){
-                    qmLogService.debug('CANCELLED');
+                    qmLog.debug('CANCELLED');
                 },
                 buttonClicked: function(index, button){
                     if(connectorButtons[index].state){
@@ -137,7 +137,7 @@ angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "
                 return;
             }
             if(!file){
-                qmLogService.debug('No file provided to uploadAppFile', null);
+                qmLog.debug('No file provided to uploadAppFile', null);
                 return;
             }
             $scope.f = file;
@@ -153,7 +153,7 @@ angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "
                 file.upload.then(function(response){
                     button.text = "Import Scheduled";
                     connector.message = "You should start seeing your data within the next hour or so";
-                    qmLogService.debug('File upload response: ', null, response);
+                    qmLog.debug('File upload response: ', null, response);
                     $timeout(function(){
                         file.result = response.data;
                     });
@@ -237,7 +237,7 @@ angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "
                     if(self.helpText && !self.showHelp){
                         return self.showHelp = true;
                     }
-                    qmService.goToState(window.qm.stateNames.help);
+                    qmService.goToState(window.qm.staticData.stateNames.help);
                     $mdDialog.cancel();
                 };
                 $scope.answer = function(answer){
@@ -265,7 +265,7 @@ angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "
             qmService.disconnectConnectorDeferred(connector.name).then(function(){
                 $scope.refreshConnectors();
             }, function(error){
-                qmLogService.error("error disconnecting ", error);
+                qmLog.error("error disconnecting ", error);
             });
         };
         var updateConnector = function(connector, button){
@@ -298,7 +298,7 @@ angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "
             }
         };
         $rootScope.$on('broadcastRefreshConnectors', function(){
-            qmLogService.info('broadcastRefreshConnectors broadcast received..');
+            qmLog.info('broadcastRefreshConnectors broadcast received..');
             $scope.refreshConnectors();
         });
         $scope.refreshConnectors = function(){
@@ -310,7 +310,7 @@ angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "
                     qmService.hideLoader();
                     $scope.state.text = '';
                 }, function(response){
-                    qmLogService.error(response);
+                    qmLog.error(response);
                     $scope.$broadcast('scroll.refreshComplete');
                     qmService.hideLoader();
                 });
@@ -326,14 +326,14 @@ angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "
                         ],
                         cancelText: '<i class="icon ion-ios-close"></i>Cancel',
                         cancel: function(){
-                            qmLogService.debug('CANCELLED', null);
+                            qmLog.debug('CANCELLED', null);
                         },
                         buttonClicked: function(index, button){
                             if(index === 0){
                                 $scope.refreshConnectors();
                             }
                             if(index === 1){
-                                qmService.goToState(qm.stateNames.settings);
+                                qmService.goToState(qm.staticData.stateNames.settings);
                             }
                             return true;
                         }

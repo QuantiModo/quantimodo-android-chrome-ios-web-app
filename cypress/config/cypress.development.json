@@ -1,0 +1,20 @@
+{
+  "chromeWebSecurity": false,
+  "baseUrl": "https://local.quantimo.do",
+  "projectId": "ee8wan",
+  "pageLoadTimeout": 60000,
+  "videoCompression": false,
+  "videoUploadOnPasses": false,
+  "video": false,
+  "env": {
+    "API_HOST": "local.quantimo.do",
+    "OAUTH_APP_HOST": "dev-web.quantimo.do",
+    "BUILDER_HOST": "dev-builder.quantimo.do",
+    "abort_strategy": true
+  },
+  "reporter": "cypress-multi-reporters",
+  "reporterOptions": {
+    "configFile": "cypress/reporterOpts.json"
+  },
+  "screenshotsFolder": "cypress/reports/mocha/assets"
+}

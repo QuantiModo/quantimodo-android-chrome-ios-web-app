@@ -1,6 +1,6 @@
 angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$state", "$stateParams", "$rootScope",
-    "$timeout", "$ionicActionSheet", "qmService", "qmLogService", function($scope, $state, $stateParams, $rootScope, $timeout,
-                                                                           $ionicActionSheet, qmService, qmLogService){
+    "$timeout", "$ionicActionSheet", "qmService", function($scope, $state, $stateParams, $rootScope, $timeout,
+                                                                           $ionicActionSheet, qmService){
         $scope.controller_name = "historyAllMeasurementsCtrl";
         $scope.state = {
             helpCardTitle: "Past Measurements",
@@ -23,11 +23,9 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
                     icon: "ion-calendar"
                 };
             }
-            if($stateParams.refresh){$scope.state.history = [];}
-            qm.measurements.addLocalMeasurements($scope.state.history, getRequestParams(), function(combined){
-                $scope.safeApply(function () {
-                    $scope.state.history = combined;
-                })
+            var params = getRequestParams();
+            qm.measurements.getLocalMeasurements(params).then(function(combined){
+                setHistory(combined)
             })
             $scope.state.moreDataCanBeLoaded = true;
             // Need to use rootScope here for some reason
@@ -53,36 +51,37 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
             $timeout(function(){
                 qmService.rootScope.setShowActionSheetMenu(function(){
                     // Show the action sheet
+                    var allButtons = qmService.actionSheets.actionSheetButtons;
                     var hideSheet = $ionicActionSheet.show({
                         buttons: [
-                            qmService.actionSheets.actionSheetButtons.refresh,
-                            qmService.actionSheets.actionSheetButtons.settings,
-                            qmService.actionSheets.actionSheetButtons.sortDescendingValue,
-                            qmService.actionSheets.actionSheetButtons.sortAscendingValue,
-                            qmService.actionSheets.actionSheetButtons.sortDescendingTime,
-                            qmService.actionSheets.actionSheetButtons.sortAscendingTime
+                            allButtons.refresh,
+                            allButtons.settings,
+                            allButtons.sortDescendingValue,
+                            allButtons.sortAscendingValue,
+                            allButtons.sortDescendingTime,
+                            allButtons.sortAscendingTime
                         ],
                         cancelText: '<i class="icon ion-ios-close"></i>Cancel',
                         cancel: function(){
-                            qmLogService.debug('CANCELLED', null);
+                            qmLog.debug('CANCELLED', null);
                         },
                         buttonClicked: function(index, button){
                             if(index === 0){
                                 $scope.refreshHistory();
                             }
                             if(index === 1){
-                                qmService.goToState(qm.stateNames.settings);
+                                qmService.goToState(qm.staticData.stateNames.settings);
                             }
-                            if(button.text === qmService.actionSheets.actionSheetButtons.sortDescendingValue.text){
+                            if(button.text === allButtons.sortDescendingValue.text){
                                 changeSortAndGetHistory('-value');
                             }
-                            if(button.text === qmService.actionSheets.actionSheetButtons.sortAscendingValue.text){
+                            if(button.text === allButtons.sortAscendingValue.text){
                                 changeSortAndGetHistory('value');
                             }
-                            if(button.text === qmService.actionSheets.actionSheetButtons.sortDescendingTime.text){
+                            if(button.text === allButtons.sortDescendingTime.text){
                                 changeSortAndGetHistory('-startTime');
                             }
-                            if(button.text === qmService.actionSheets.actionSheetButtons.sortAscendingTime.text){
+                            if(button.text === allButtons.sortAscendingTime.text){
                                 changeSortAndGetHistory('startTime');
                             }
                             return true;
@@ -92,9 +91,16 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
             }, 1);
         }
         function changeSortAndGetHistory(sort){
-            $scope.state.history = qm.arrayHelper.sortByProperty($scope.state.history, sort)
+            var sorted = qm.arrayHelper.sortByProperty($scope.state.history, sort)
+            setHistory(sorted);
             $scope.state.sort = sort;
             $scope.getHistory();
+        }
+        function setHistory(measurements){
+            $scope.safeApply(function () {
+                //debugger
+                $scope.state.history = measurements;
+            })
         }
         function hideLoader(){
             //Stop the ion-refresher from spinning
@@ -122,10 +128,10 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
             if(qm.urlHelper.getParam('variableName')){
                 return qm.urlHelper.getParam('variableName');
             }
-            qmLog.info("Could not get variableName")
+            qmLog.debug("Could not get variableName")
         }
         function getVariableCategoryName(){
-            return qm.variableCategoryHelper.getVariableCategoryNameFromStateParamsOrUrl($stateParams);
+            return qm.variableCategoryHelper.getNameFromStateParamsOrUrl($stateParams);
         }
         function getConnectorName(){
             if($stateParams.connectorName){
@@ -138,7 +144,7 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
                 var connectorId = getConnectorId();
                 var connector = qm.connectorHelper.getConnectorById(connectorId);
                 if(!connector){
-                    qm.qmLog.error(
+                    qmLog.error(
                         "Cannot filter by connector id because we could not find a matching connector locally");
                     return null;
                 }
@@ -163,7 +169,7 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
             });
         };
         $scope.refreshHistory = function(){
-            $scope.state.history = [];
+            setHistory([])
             $scope.getHistory();
         };
         function getRequestParams(params){
@@ -190,7 +196,7 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
             }
             $scope.state.loading = true;
             if(!$scope.state.history){
-                $scope.state.history = [];
+                setHistory([])
             }
             var params = {
                 offset: $scope.state.history.length,
@@ -201,10 +207,13 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
             params = getRequestParams(params);
             if(getVariableName()){
                 if(!$scope.state.variableObject){
-                    qmService.searchUserVariablesDeferred('*', {variableName: getVariableName()}).then(function(variables){
-                        $scope.state.variableObject = variables[0];
+                    qm.userVariables.getFromLocalStorageOrApi({variableName: getVariableName()})
+                        .then(function(variables){
+                            $scope.safeApply(function(){
+                                $scope.state.variableObject = variables[0];
+                            })
                     }, function(error){
-                        qmLogService.error(error);
+                        qmLog.error(error);
                     });
                 }
             }
@@ -216,18 +225,19 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
                     $scope.state.noHistory = measurements.length === 0;
                 }
                 qm.measurements.addLocalMeasurements(measurements, getRequestParams(),function (combined) {
-                    $scope.state.history = combined;
+                    setHistory(combined)
                     hideLoader();
                 })
             }
             function errorHandler(error){
-                qmLogService.error("History update error: ", error);
+                qmLog.error("History update error: ", error);
                 $scope.state.noHistory = true;
                 hideLoader();
             }
             //qmService.showBasicLoader();
-            qm.measurements.getMeasurementsFromApi(params, successHandler, errorHandler);
+            qm.measurements.getMeasurementsFromApi(params).then(successHandler, errorHandler);
         };
+        // noinspection DuplicatedCode
         function setupVariableCategoryActionSheet(){
             qmService.rootScope.setShowActionSheetMenu(function(){
                 var hideSheet = $ionicActionSheet.show({
@@ -243,7 +253,7 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
                     ],
                     cancelText: '<i class="icon ion-ios-close"></i>Cancel',
                     cancel: function(){
-                        qmLogService.debug('CANCELLED', null);
+                        qmLog.debug('CANCELLED', null);
                     },
                     buttonClicked: function(index, button){
                         if(index === 0){
@@ -277,36 +287,37 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
                 }, 20000);
             });
         }
-        $scope.deleteMeasurement = function(measurement){
-            measurement.hide = true;
-            qmService.deleteMeasurementFromServer(measurement);
+        $scope.deleteMeasurement = function(m){
+            m.hide = true;
+            qm.measurements.deleteMeasurement(m);
         };
         qmService.navBar.setFilterBarSearchIcon(false);
-        $scope.showActionSheetForMeasurement = function(measurement){
-            $scope.state.measurement = measurement;
-            var variableObject = JSON.parse(JSON.stringify(measurement));
-            variableObject.variableId = measurement.variableId;
-            variableObject.name = measurement.variableName;
+        $scope.showActionSheetForMeasurement = function(m){
+            $scope.state.measurement = m;
+            var variableObject = JSON.parse(JSON.stringify(m));
+            variableObject.variableId = m.variableId;
+            variableObject.name = m.variableName;
+            var allButtons = qmService.actionSheets.actionSheetButtons;
             var buttons = [
                 {text: '<i class="icon ion-edit"></i>Edit Measurement'},
-                qmService.actionSheets.actionSheetButtons.reminderAdd,
-                qmService.actionSheets.actionSheetButtons.charts,
-                qmService.actionSheets.actionSheetButtons.historyAllVariable,
-                qmService.actionSheets.actionSheetButtons.variableSettings,
-                qmService.actionSheets.actionSheetButtons.relationships
+                allButtons.reminderAdd,
+                allButtons.charts,
+                allButtons.historyAllVariable,
+                allButtons.variableSettings,
+                allButtons.relationships
             ];
-            if(measurement.url){
-                buttons.push(qmService.actionSheets.actionSheetButtons.openUrl);
+            if(m.url){
+                buttons.push(allButtons.openUrl);
             }
             var hideSheet = $ionicActionSheet.show({
                 buttons: buttons,
                 destructiveText: '<i class="icon ion-trash-a"></i>Delete Measurement',
                 cancelText: '<i class="icon ion-ios-close"></i>Cancel',
                 cancel: function(){
-                    qmLogService.debug(null, $state.current.name + ': ' + 'CANCELLED', null);
+                    qmLog.debug(null, $state.current.name + ': ' + 'CANCELLED', null);
                 },
                 buttonClicked: function(index, button){
-                    qmLogService.debug(null, $state.current.name + ': ' + 'BUTTON CLICKED', null, index);
+                    qmLog.debug(null, $state.current.name + ': ' + 'BUTTON CLICKED', null, index);
                     if(index === 0){
                         $scope.editMeasurement($scope.state.measurement);
                     }
@@ -327,12 +338,12 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
                         qmService.goToCorrelationsListForVariable($scope.state.measurement.variableName);
                     }
                     if(index === 6){
-                        qm.urlHelper.openUrlInNewTab(measurement.url);
+                        qm.urlHelper.openUrlInNewTab(m.url);
                     }
                     return true;
                 },
                 destructiveButtonClicked: function(){
-                    $scope.deleteMeasurement(measurement);
+                    $scope.deleteMeasurement(m);
                     return true;
                 }
             });
