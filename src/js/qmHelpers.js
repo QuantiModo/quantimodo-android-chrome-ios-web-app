@@ -6647,7 +6647,7 @@ var qm = {
             qm.notifications.timeout = setTimeout(function (){
                 qm.notifications.syncIfQueued()
                 qm.notifications.timeout = null;
-            }, 15000);
+            }, 10000);
         },
         refreshIfEmpty: function(successHandler, errorHandler){
             if(!qm.notifications.getNumberInGlobalsOrLocalStorage()){
