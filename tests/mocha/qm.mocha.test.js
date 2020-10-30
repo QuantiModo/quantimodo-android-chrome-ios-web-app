@@ -797,7 +797,9 @@ describe("Reminders", function () {
                 expect(notifications).length(1)
                 const n = notifications[0]
                 n.value = 1
+                expect(qm.notifications.timeout).to.be.null
                 qm.notifications.track(notifications[0])
+                expect(qm.notifications.timeout).to.not.be.null
                 expect(qm.notifications.getQueue()).length(1)
                 return qm.measurements.getLocalMeasurements({variableName})
             })
