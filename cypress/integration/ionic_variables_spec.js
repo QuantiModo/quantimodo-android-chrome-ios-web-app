@@ -36,7 +36,7 @@ function recordRatingMeasurement(value){
 }
 describe('Variables', function(){
     it('Creates a new emotion variable by measurement', function(){
-        let variableCategoryName = 'Emotions';
+        let variableCategoryName = 'Emotions'
         cy.loginWithAccessTokenIfNecessary(`/#/app/measurement-add-search?variableCategoryName=${variableCategoryName}`, true)
         let d = new Date()
         let variableName = `Unique Test Variable ${d.getTime()}`
@@ -56,7 +56,7 @@ describe('Variables', function(){
         verifyAndDeleteMeasurement(variableName)
     })
     // TODO: This fails randomly.  Make mocha tests for this and re-enable.
-    it.skip('Creates reminder from the variable action sheet', function(){
+    it('Creates reminder from the variable action sheet', function(){
         cy.loginWithAccessTokenIfNecessary('/#/app/reminders-inbox', true)
         let variableName = 'Overall Mood'
         searchForMoodFromMagnifyingGlassIcon(variableName)
@@ -106,15 +106,15 @@ describe('Variables', function(){
         cy.visitIonicAndSetApiUrl(settingsPath)
         cy.wait(1500)
         cy.log("TODO: TEST TO MAKE SURE THE CHANGES STUCK. IT'S CURRENTLY VERY FLAKEY")
-        cy.log("minimumAllowedValue should be "+min)
-        cy.assertInputValueContains('#minimumAllowedValue', min);
-        cy.log("maximumAllowedValue should be "+max)
-        cy.assertInputValueEquals('#maximumAllowedValue', max);
-        cy.log("onsetDelay should be "+delay)
+        cy.log("minimumAllowedValue should be " + min)
+        cy.assertInputValueContains('#minimumAllowedValue', min)
+        cy.log("maximumAllowedValue should be " + max)
+        cy.assertInputValueEquals('#maximumAllowedValue', max)
+        cy.log("onsetDelay should be " + delay)
         cy.assertInputValueEquals('#onsetDelay', delay)
-        cy.log("durationOfAction should be "+duration)
+        cy.log("durationOfAction should be " + duration)
         cy.assertInputValueEquals('#durationOfAction', duration)
-        cy.log("fillingValue should be "+filling)
+        cy.log("fillingValue should be " + filling)
         // TODO: cy.assertInputValueEquals('#fillingValue', filling)
         cy.get('#resetButton').click({force: true, timeout: 30000})
         cy.wait(1500)
@@ -122,7 +122,7 @@ describe('Variables', function(){
         //cy.visit(settingsPath);
         // TODO: cy.log("minimumAllowedValue should be 0")
         cy.assertInputValueEquals('#minimumAllowedValue', '0')
-        cy.log("maximumAllowedValue should be "+max)
+        cy.log("maximumAllowedValue should be " + max)
         cy.assertInputValueDoesNotContain('#maximumAllowedValue', max)
         cy.log("onsetDelay should be 0.5")
         cy.assertInputValueEquals('#onsetDelay', '0.5')
@@ -133,7 +133,7 @@ describe('Variables', function(){
         cy.loginWithAccessTokenIfNecessary('/#/app/chart-search')
         cy.searchAndClickTopResult(variableName, true)
         cy.url().should('contain', chartsPath)
-        cy.contains(variableName+" Over Time", {timeout: 30000}).then(() => { // Need to wait for variable for action sheet to work
+        cy.contains(variableName + " Over Time", {timeout: 30000}).then(() => { // Need to wait for variable for action sheet to work
             cy.get('#menu-more-button').click({ force: true })
             cy.clickActionSheetButtonContaining("Settings")
             cy.wait(2000)
@@ -144,7 +144,7 @@ describe('Variables', function(){
     it('Creates a new symptom rating variable by measurement', function(){
         cy.loginWithAccessTokenIfNecessary(`/#/app/measurement-add-search`, true)
         let d = new Date()
-        let variableString = `Unique Test Variable ${d.getTime()}`;
+        let variableString = `Unique Test Variable ${d.getTime()}`
         let variableCategoryName = 'Symptoms'
         cy.get('#variableSearchBox').type(variableString, {force: true})
         cy.get('#new-variable-button', {timeout: 30000}).click({force: true})
