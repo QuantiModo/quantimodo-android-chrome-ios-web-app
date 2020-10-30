@@ -13,6 +13,8 @@ console.log("Service worker importing libraries from " + libUrl);
 importScripts(libUrl+'firebase/firebase-app.js');
 importScripts(libUrl+'firebase/firebase-messaging.js');
 importScripts(libUrl+'localforage/dist/localforage.js');
+importScripts(libUrl+'q/q.js');
+//importScripts(libUrl+'bugsnag/dist/bugsnag.min.js');
 importScripts(getIonicAppBaseUrl()+'js/qmLogger.js');
 importScripts(getIonicAppBaseUrl()+'js/qmHelpers.js');
 importScripts(getIonicAppBaseUrl()+'data/qmStaticData.js');
