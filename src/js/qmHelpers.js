@@ -169,7 +169,9 @@ var qm = {
                 'X-Client-Id': qm.getClientId(),
                 'X-Platform': qm.platform.getCurrentPlatform(),
                 'X-App-Version': qm.appsManager.getAppVersion(),
-                'X-Framework': 'ionic'
+                'X-Framework': 'ionic',
+                "Content-Type": "application/json;charset=UTF-8",
+                'Accept': "application/json"
             };
             if(!qm.appMode.isBackEnd() && typeof moment !== "undefined"){
                 if(typeof moment.tz === "undefined"){
@@ -177,9 +179,7 @@ var qm = {
                 } else {
                     var tz = moment.tz;
                     var guess = tz.guess();
-                    if(guess){
-                        headers['X-Timezone'] = guess;
-                    }
+                    if(guess){headers['X-Timezone'] = guess;}
                 }
             }
             var token = qm.auth.getAccessToken();
@@ -636,7 +636,6 @@ var qm = {
                 if(typeof XMLHttpRequest !== "undefined"){
                     var xhr = new XMLHttpRequest();   // new HttpRequest instance
                     xhr.open("POST", url);
-                    xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
                     xhr = qm.api.addXhrHeaders(xhr);
                     xhr.onreadystatechange = function(){//Call a function when the state changes.
                         if(xhr.readyState === XMLHttpRequest.DONE){
