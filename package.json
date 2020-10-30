@@ -59,7 +59,7 @@
     "de.appplant.cordova.plugin.local-notification": "git+https://github.com/katzer/cordova-plugin-local-notifications.git#744d8ac0165d54e92eb6ae64c76db32fe0556cda",
     "download-file": "0.1.5",
     "eslint": "5.16.0",
-    "eslint-config-standard": "16.0.0",
+    "eslint-config-standard": "16.0.1",
     "eslint-plugin-cypress": "2.7.0",
     "eslint-plugin-cypress-dev": "2.1.0",
     "eslint-plugin-mocha": "5.3.0",
