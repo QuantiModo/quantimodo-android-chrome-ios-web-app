@@ -404,11 +404,10 @@ angular.module('starter').controller('SettingsCtrl', ["$state", "$scope", "$ioni
                 .required(true)
                 .ok('DELETE ALL MY DATA')
                 .cancel('Give me another chance?');
-
             $mdDialog.show(confirm).then(function(reason) {
                 qmLog.error("User DELETED ACCOUNT!  Reason for deletion: " + reason);
                 qm.userHelper.deleteUserAccount(reason, function () {
-                    qmService.completelyResetAppStateAndLogout();
+                    qmService.auth.completelyResetAppStateAndLogout();
                 });
             }, function(reason) {
                 qmLog.error("User canceled DELETE ACCOUNT!  Reason for deletion: " + reason);
@@ -426,7 +425,6 @@ angular.module('starter').controller('SettingsCtrl', ["$state", "$scope", "$ioni
                 .required(true)
                 .ok('Okay!')
                 .cancel('Cancel');
-
             $mdDialog.show(confirm).then(function(result) {
                 qmService.showInfoToast("Bio updated!");
                 qmService.updateUserSettingsDeferred({description: result})
