@@ -169,7 +169,9 @@ var qm = {
                 'X-Client-Id': qm.getClientId(),
                 'X-Platform': qm.platform.getCurrentPlatform(),
                 'X-App-Version': qm.appsManager.getAppVersion(),
-                'X-Framework': 'ionic'
+                'X-Framework': 'ionic',
+                "Content-Type": "application/json;charset=UTF-8",
+                'Accept': "application/json"
             };
             if(!qm.appMode.isBackEnd() && typeof moment !== "undefined"){
                 if(typeof moment.tz === "undefined"){
@@ -177,9 +179,7 @@ var qm = {
                 } else {
                     var tz = moment.tz;
                     var guess = tz.guess();
-                    if(guess){
-                        headers['X-Timezone'] = guess;
-                    }
+                    if(guess){headers['X-Timezone'] = guess;}
                 }
             }
             var token = qm.auth.getAccessToken();
@@ -636,7 +636,6 @@ var qm = {
                 if(typeof XMLHttpRequest !== "undefined"){
                     var xhr = new XMLHttpRequest();   // new HttpRequest instance
                     xhr.open("POST", url);
-                    xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
                     xhr = qm.api.addXhrHeaders(xhr);
                     xhr.onreadystatechange = function(){//Call a function when the state changes.
                         if(xhr.readyState === XMLHttpRequest.DONE){
@@ -6632,12 +6631,22 @@ var qm = {
             qmLog.info("Last notifications refresh " + qm.timeHelper.getTimeSinceString(qm.notifications.getLastNotificationsRefreshTime()));
             return qm.timeHelper.getUnixTimestampInSeconds() - qm.notifications.getLastNotificationsRefreshTime();
         },
+        timeout: null,
         addToQueue: function(n){
             qm.notifications.deleteById(n.id);
             qm.userVariables.updateLatestMeasurementTime(n.variableName, n.modifiedValue);
-            var res = qm.storage.addToOrReplaceByIdAndMoveToFront(qm.items.notificationsSyncQueue, n);
-            setTimeout(qm.notifications.syncIfQueued, 15000);
-            return res;
+            qm.storage.addToOrReplaceByIdAndMoveToFront(qm.items.notificationsSyncQueue, n);
+            if(qm.notifications.timeout){
+                if(qm.notifications.getCached().length > 3){
+                    clearTimeout(qm.notifications.timeout);
+                } else {
+                    return;
+                }
+            }
+            qm.notifications.timeout = setTimeout(function (){
+                qm.notifications.syncIfQueued()
+                qm.notifications.timeout = null;
+            }, 10000);
         },
         refreshIfEmpty: function(successHandler, errorHandler){
             if(!qm.notifications.getNumberInGlobalsOrLocalStorage()){
@@ -7732,16 +7741,16 @@ var qm = {
                     qm.reminderHelper.saveToLocalStorage(reminders, function(){
                         qm.userVariables.refreshIfNumberOfRemindersGreaterThanUserVariables();
                     });
-                }
-                var active = qm.reminderHelper.getActive(reminders);
-                if(active && active.length){
-                    qm.push.checkHoursSinceLastPushNotificationReceived();
-                    if(qm.qmService){
-                        qm.qmService.notifications.getDrawOverAppsPopupPermissionIfNecessary();
-                        qm.qmService.scheduleSingleMostFrequentLocalNotification(reminders);
+                    var active = qm.reminderHelper.getActive(reminders);
+                    if(active && active.length){
+                        qm.push.checkHoursSinceLastPushNotificationReceived();
+                        if(qm.qmService){
+                            qm.qmService.notifications.getDrawOverAppsPopupPermissionIfNecessary();
+                            qm.qmService.scheduleSingleMostFrequentLocalNotification(reminders);
+                        }
                     }
+                    reminders = qm.reminderHelper.validateReminderArray(reminders);
                 }
-                reminders = qm.reminderHelper.validateReminderArray(reminders);
                 qm.api.generalResponseHandler(error, reminders, response, successHandler, errorHandler, params,
                     'getTrackingRemindersFromApi');
             });
