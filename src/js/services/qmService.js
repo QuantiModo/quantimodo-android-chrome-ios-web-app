@@ -4171,22 +4171,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             }
             return parseInt((qm.timeHelper.getUnixTimestampInMilliseconds() - lastGotNotificationsAtMilliseconds) / 1000);
         };
-        qmService.getTrackingReminderByIdDeferred = function(reminderId){
-            var deferred = $q.defer();
-            var params = {id: reminderId};
-            qm.reminderHelper.getRemindersFromApi(params, function(remindersResponse){
-                var trackingReminders = remindersResponse.data;
-                if(remindersResponse.success){
-                    deferred.resolve(trackingReminders);
-                }else{
-                    deferred.reject("error");
-                }
-            }, function(error){
-                qmLog.error(error);
-                deferred.reject(error);
-            });
-            return deferred.promise;
-        };
         qmService.storage.deleteTrackingReminderNotification = function(body){
             qm.storage.deleteTrackingReminderNotification(body);
         };
