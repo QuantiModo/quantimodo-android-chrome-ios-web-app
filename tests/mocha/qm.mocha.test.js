@@ -243,7 +243,10 @@ function expectInteger(val){
     expect(val % 1).to.equal(0)
 }
 function info(str, meta){
-    qmLog.info("mocha: " + str, meta)
+    qmLog.info("MOCHA: " + str, meta)
+}
+function checking(str, meta){
+    info("Checking that " + str + "...", meta)
 }
 describe("Measurement", function () {
     function checkPostMeasurementResponse(data, variableName, value) {
@@ -774,12 +777,14 @@ describe("Reminders", function () {
         return qm.userHelper.getUserFromApi({})
             .then(function (user){
                 expect(user.accessToken, qmTests.getTestAccessToken())
+                info("Deleting reminders...")
                 return qm.reminderHelper.deleteByVariableName(variableName)
             })
             .then(function () {
                 return qm.reminderHelper.getReminders({variableName})
             })
             .then(function (reminders) {
+                checking("reminders have been deleted")
                 expect(reminders).length(0)
                 expect(qm.reminderHelper.getQueue()).length(0)
                 return createReminder({variableName, frequency: 60},
@@ -787,6 +792,7 @@ describe("Reminders", function () {
             })
             .then(deleteLastMeasurement(variableName))
             .then(function () {
+                checking("measurements have been deleted")
                 expect(qm.reminderHelper.getQueue()).length(0)
                 expect(qm.reminderHelper.getCached()).length(1)
                 const notifications = qm.notifications.getCached()
@@ -797,26 +803,32 @@ describe("Reminders", function () {
                 qm.notifications.track(notifications[0])
                 expect(qm.notifications.timeout).to.not.be.null
                 expect(qm.notifications.getQueue()).length(1)
+                checking("we get a local measurement for the notification we tracked before sync")
                 return qm.measurements.getLocalMeasurements({variableName})
             })
             .then(function (measurements) {
                 qm.measurements.logMeasurements(measurements, "Local Measurements")
                 expect(measurements).length(1)
+                info("syncing notifications...")
                 return qm.notifications.syncIfQueued()
             })
             .then(function (response) {
+                info("Checking post notifications response...")
                 expect(qm.notifications.getQueue()).length(0)
                 expect(qm.notifications.getCached()).length(0)
                 var measurements = qm.measurements.toArray(response.measurements)
                 expect(measurements).length(1)
                 expect(response.userVariables).length(1)
+                checking("we stored measurement from post notification response")
                 return qm.measurements.getLocalMeasurements({variableName})
             })
             .then(function (measurements) {
+                checking("we get a measurement for the notification we tracked")
                 expect(measurements).length(1)
                 return qm.reminderHelper.getReminders({variableName})
             })
             .then(function (reminders) {
+                checking("we get reminder we created")
                 expect(reminders).length(1)
                 expect(qm.reminderHelper.getQueue()).length(0)
                 var tr = reminders[0]
@@ -826,9 +838,11 @@ describe("Reminders", function () {
                 expect(qm.reminderHelper.getArchived()).length(0)
                 tr.stopTrackingDate = yesterday
                 expect(qm.reminderHelper.getQueue()).length(0)
+                info("setting stopTrackingDate to " + yesterday)
                 return createReminder(tr, 1, 0, 1)
             })
             .then(function (){
+                checking("reminder is disabled")
                 var reminders = qm.reminderHelper.getCached()
                 expect(qm.reminderHelper.getQueue()).length(0)
                 expect(reminders).length(1)
@@ -838,9 +852,11 @@ describe("Reminders", function () {
                 var tr = reminders[0]
                 expect(tr.stopTrackingDate).to.eq(yesterday)
                 tr.stopTrackingDate = null
+                info("re-enabling reminder...")
                 return createReminder(tr, 1, 1, 1)
             })
             .then(function (){
+                checking("reminder is re-enabled")
                 var reminders = qm.reminderHelper.getCached()
                 expect(qm.reminderHelper.getQueue()).length(0)
                 expect(reminders).length(1)
@@ -849,7 +865,6 @@ describe("Reminders", function () {
                 var tr = reminders[0]
                 expect(tr.stopTrackingDate).to.be.null
                 expect(qm.notifications.getCached()).length(1)
-                return createReminder(tr, 1, 1, 1)
             })
     })
 })
