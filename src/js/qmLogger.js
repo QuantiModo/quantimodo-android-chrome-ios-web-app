@@ -170,7 +170,10 @@ var qmLog = {
         qmLog.mobileDebug = value;
     },
     replaceSecretValuesInString: function(string){
-        if(!string){debugger}
+        if(!string){
+            debugger
+            return;
+        }
         if(string.indexOf("test-token") !== -1){return string;}
         if(qmLog.isDebugMode() || qm.appMode.isLocal()){
             return string;
