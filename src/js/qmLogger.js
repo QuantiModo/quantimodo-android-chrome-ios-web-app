@@ -172,13 +172,14 @@ var qmLog = {
     replaceSecretValuesInString: function(string){
         if(!string){
             debugger
-            return;
+            return string;
+        }
+        if(typeof string !== "string"){
+            debugger
+            return string;
         }
         if(string.indexOf("test-token") !== -1){return string;}
         if(qmLog.isDebugMode() || qm.appMode.isLocal()){
-            return string;
-        }
-        if(typeof string !== 'string'){
             return string;
         }
         var secretValues = qmLog.getSecretValues();
@@ -463,6 +464,10 @@ var qmLog = {
         }
     },
     errorAndExceptionTestingOrDevelopment: function(name, message, metaData, stackTrace){
+        if(typeof message === "object"){
+            metaData = message;
+            message = null;
+        }
         message = message || name;
         name = name || message;
         qmLog.globalMetaData = qmLog.globalMetaData || null;

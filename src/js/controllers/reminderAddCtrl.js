@@ -464,13 +464,13 @@ angular.module('starter').controller('ReminderAddCtrl', ["$scope", "$state", "$s
             }
         }
         function setupReminderEditingFromUrlParameter(reminderIdUrlParameter){
-            qmService.getTrackingReminderByIdDeferred(reminderIdUrlParameter)
-                .then(function(reminders){
-                    if(reminders.length !== 1){
+            qm.reminderHelper.findReminder(reminderIdUrlParameter)
+                .then(function(reminder){
+                    if(!reminder){
                         validationFailure("Reminder id " + reminderIdUrlParameter + " not found!", 'assertive');
                         $scope.goBack();
                     }
-                    $stateParams.reminder = reminders[0];
+                    $stateParams.reminder = reminder;
                     setupEditReminder($stateParams.reminder);
                     qmService.hideLoader();
                 }, function(){
