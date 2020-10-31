@@ -34,10 +34,11 @@ angular.module('starter').controller('OnboardingCtrl',
                     $rootScope.setMicAndSpeechEnabled(false);
                 }
                 qmService.getConnectorsDeferred(); // Make sure they're ready in advance
-                qm.reminderHelper.getNumberOfReminders(function(number){
-                    if(number > 5){
-                        $scope.state.showSkipButton = true;
-                    }
+                qm.reminderHelper.getNumberOfReminders()
+                    .then(function(number){
+                        if(number > 5){
+                            $scope.state.showSkipButton = true;
+                        }
                 });
                 initializeAddRemindersPageIfNecessary();
             });

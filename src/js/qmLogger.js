@@ -172,13 +172,14 @@ var qmLog = {
     replaceSecretValuesInString: function(string){
         if(!string){
             debugger
-            return;
+            return string;
+        }
+        if(typeof string !== "string"){
+            debugger
+            return string;
         }
         if(string.indexOf("test-token") !== -1){return string;}
         if(qmLog.isDebugMode() || qm.appMode.isLocal()){
-            return string;
-        }
-        if(typeof string !== 'string'){
             return string;
         }
         var secretValues = qmLog.getSecretValues();
