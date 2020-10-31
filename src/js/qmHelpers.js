@@ -1518,13 +1518,14 @@ var qm = {
             }
             return arrayToSort;
         },
-        unsetNullProperties: function(array){
+        unsetNullProperties: function(array, except){
+            except = except || []
             if(!array){
                 qmLog.error("Nothing provided to unsetNullProperties");
                 return null;
             }
             for(var i = 0; i < array.length; i++){
-                array[i] = qm.objectHelper.unsetNullProperties(array[i]);
+                array[i] = qm.objectHelper.unsetNullProperties(array[i], except);
             }
             return array;
         },
@@ -5002,7 +5003,7 @@ var qm = {
                 maximumAllowedValue: src.maximumAllowedValue || (unit) ? unit.maximum : null,
                 minimumAllowedValue: src.minimumAllowedValue || (unit) ? unit.minimum : null,
                 pngPath: src.pngPath || src.image || (cat) ? cat.pngUrl : null,
-                startAt: qm.timeHelper.toDate(timeAt),
+                startAt: qm.timeHelper.getDateTime(timeAt),
                 startTime: qm.measurements.getStartAt(timeAt),
                 unitAbbreviatedName: (unit) ? unit.abbreviatedName : null,
                 unitId: (unit) ? unit.id : null,
@@ -7313,10 +7314,12 @@ var qm = {
             }
             return object;
         },
-        unsetNullProperties: function(object){
+        unsetNullProperties: function(object, except){
+            except = except || []
             for(var property in object){
                 if(object.hasOwnProperty(property)){
                     if(object[property] === null){
+                        if(except && except.indexOf(property) !== -1){continue;}
                         delete object[property];
                     }
                 }
@@ -7706,22 +7709,22 @@ var qm = {
                 qm.qmService.reminders.broadcastGetTrackingReminders();
             }
         },
-        getNumberOfReminders: function(callback){
+        getNumberOfReminders: function(){
+            var deferred = Q.defer();
             var number = qm.reminderHelper.getNumberOfTrackingRemindersInLocalStorage();
-            if(!callback){
-                return number;
-            }
             if(number){
-                callback(number);
-                return number;
+                deferred.resolve(number);
+                return deferred.promise;
             }
-            qm.reminderHelper.getRemindersFromApi({}, function(){
-                number = qm.reminderHelper.getNumberOfTrackingRemindersInLocalStorage();
-                callback(number);
-            });
+            qm.reminderHelper.getRemindersFromApi({})
+                .then(function(){
+                    number = qm.reminderHelper.getNumberOfTrackingRemindersInLocalStorage();
+                    deferred.resolve(number);
+                });
+            return deferred.promise;
         },
         getNumberOfVariablesWithLocalReminders: function(callback){
-            var reminders = qm.reminderHelper.getTrackingRemindersFromLocalStorage();
+            var reminders = qm.reminderHelper.getCached();
             var number = 0;
             if(reminders){
                 var unique = qm.arrayHelper.getUnique(reminders, 'variableId');
@@ -7732,7 +7735,8 @@ var qm = {
             }
             return number;
         },
-        getRemindersFromApi: function(params, successHandler, errorHandler){
+        getRemindersFromApi: function(params){
+            var deferred = Q.defer();
             qm.api.configureClient(arguments.callee.name, null, params);
             var apiInstance = new qm.Quantimodo.RemindersApi();
             params = qm.api.addGlobalParams(params);
@@ -7751,18 +7755,23 @@ var qm = {
                     }
                     reminders = qm.reminderHelper.validateReminderArray(reminders);
                 }
-                qm.api.generalResponseHandler(error, reminders, response, successHandler, errorHandler, params,
-                    'getTrackingRemindersFromApi');
+                qm.api.generalResponseHandler(error, reminders,
+                    response, function (){
+                        deferred.resolve(reminders)
+                    }, function (err){
+                        deferred.reject(err)
+                    }, params, 'getTrackingRemindersFromApi');
             });
+            return deferred.promise;
         },
         getNumberOfTrackingRemindersInLocalStorage: function(){
-            var trackingReminders = qm.reminderHelper.getTrackingRemindersFromLocalStorage();
+            var trackingReminders = qm.reminderHelper.getCached();
             if(trackingReminders && trackingReminders.length){
                 return trackingReminders.length;
             }
             return 0;
         },
-        getTrackingRemindersFromLocalStorage: function(params){
+        getCached: function(params){
             var reminders = qm.storage.getElementsWithRequestParams(qm.items.trackingReminders, params);
             reminders = reminders || [];
             reminders = qm.arrayHelper.removeDuplicatesById(reminders);
@@ -7773,7 +7782,7 @@ var qm = {
         },
         getMostFrequentReminderIntervalInSeconds: function(trackingReminders){
             if(!trackingReminders){
-                trackingReminders = qm.reminderHelper.getTrackingRemindersFromLocalStorage();
+                trackingReminders = qm.reminderHelper.getCached();
             }
             var mostFrequentReminderIntervalInSeconds = 86400;
             if(trackingReminders){
@@ -7787,7 +7796,7 @@ var qm = {
             return mostFrequentReminderIntervalInSeconds;
         },
         saveToLocalStorage: function(trackingReminders, successHandler){
-            trackingReminders = qm.arrayHelper.unsetNullProperties(trackingReminders);
+            trackingReminders = qm.arrayHelper.unsetNullProperties(trackingReminders, ['stopTrackingDate']);
             var sizeInKb = qm.arrayHelper.getSizeInKiloBytes(trackingReminders);
             if(sizeInKb > 2000){
                 trackingReminders = qm.reminderHelper.removeArchivedReminders(trackingReminders);
@@ -7807,7 +7816,7 @@ var qm = {
         pluckFavorites: function(allReminders){
             if(allReminders && !Array.isArray(allReminders) && allReminders.data){allReminders = allReminders.data;}
             if(!allReminders){
-                allReminders = qm.reminderHelper.getTrackingRemindersFromLocalStorage();
+                allReminders = qm.reminderHelper.getCached();
             }
             if(!allReminders){
                 return [];
@@ -7823,7 +7832,7 @@ var qm = {
         },
         getActive: function(allReminders){
             if(!allReminders){
-                allReminders = qm.reminderHelper.getTrackingRemindersFromLocalStorage();
+                allReminders = qm.reminderHelper.getCached();
             }
             if(!allReminders){
                 return [];
@@ -7835,7 +7844,7 @@ var qm = {
         },
         getArchived: function(allReminders){
             if(!allReminders){
-                allReminders = qm.reminderHelper.getTrackingRemindersFromLocalStorage();
+                allReminders = qm.reminderHelper.getCached();
             }
             return allReminders.filter(function(trackingReminder){
                 return trackingReminder.reminderFrequency !== 0 &&
@@ -7894,6 +7903,11 @@ var qm = {
                 qmLog.errorAndExceptionTestingOrDevelopment("Reminders should be array but is: ", {actual: reminders});
                 return [];
             }
+            reminders.forEach(function(tr){
+                if(tr.reminderFrequency && typeof tr.stopTrackingDate === "undefined"){
+                    qmLog.warn("No stopTrackingDate", tr)
+                }
+            })
             reminders = qm.arrayHelper.removeArrayElementsWithDuplicateIds(reminders, 'reminder')
             return reminders;
         },
@@ -7909,17 +7923,34 @@ var qm = {
                     qm.reminderHelper.postReminders(queue, deferred);
                 })
             }else{
-                qm.reminderHelper.getRemindersFromApi({force: force || false}, function(reminders){
-                    deferred.resolve(reminders);
-                    qm.reminderHelper.syncPromise = null;
-                }, function(error){
-                    qmLog.error(error);
-                    deferred.reject(error);
-                    qm.reminderHelper.syncPromise = null;
-                });
+                qm.reminderHelper.getRemindersFromApi({force: force || false})
+                    .then(function(reminders){
+                        deferred.resolve(reminders);
+                        qm.reminderHelper.syncPromise = null;
+                    }, function(error){
+                        qmLog.error(error);
+                        deferred.reject(error);
+                        qm.reminderHelper.syncPromise = null;
+                    });
             }
             qm.reminderHelper.syncPromise = deferred.promise;
             setTimeout(function(){qm.reminderHelper.syncPromise = null;}, 20000);
+            return deferred.promise;
+        },
+        findReminder: function(reminderId){
+            var deferred = Q.defer();
+            var params = {id: reminderId};
+            qm.reminderHelper.getRemindersFromApi(params)
+                .then(function(reminders){
+                    if(reminders.length){
+                        deferred.resolve(reminders[0]);
+                    }else{
+                        deferred.reject("reminder " + reminderId + " not found!");
+                    }
+                }, function(error){
+                    qmLog.error(error);
+                    deferred.reject(error);
+                });
             return deferred.promise;
         },
         postReminders: function(queue, deferred){
@@ -7974,7 +8005,7 @@ var qm = {
                 }
                 qmLog.error("No response.trackingReminderNotifications returned from postTrackingRemindersDeferred")
             }else if(!notifications.length){
-                if(reminder.reminderFrequency){
+                if(reminder.reminderFrequency && !reminder.stopTrackingDate){
                     qmLog.lei("no notifications even though frequency is "+reminder.reminderFrequency, reminder)
                 }
                 qmLog.info("No trackingReminderNotifications returned in response")
@@ -8031,10 +8062,6 @@ var qm = {
         getQueue: function(){
             var queue = qm.storage.getItem(qm.items.trackingReminderSyncQueue) || [];
             return queue;
-        },
-        getCached: function(){
-            var unfiltered = qm.storage.getItem(qm.items.trackingReminders) || [];
-            return unfiltered;
         },
         populateDefaultFields: function(reminders){
             qm.api.addVariableCategoryAndUnit(reminders);
@@ -10088,22 +10115,30 @@ var qm = {
         }
     },
     timeHelper: {
-        at: function(timeAt){
-            return qm.timeHelper.iso(timeAt);
+        getYesterdayDate: function(){
+            var unixTime = qm.timeHelper.getUnixTimestampInSeconds() - 86400;
+            return qm.timeHelper.toYYYYMMDD(unixTime);
         },
-        iso: function(timeAt){
-            if(!timeAt){
-                var d = new Date();
-                timeAt = d.toISOString();
-            }
+        at: function(timeAt){
             return qm.timeHelper.yearMonthDayMilitaryTime(timeAt);
         },
-        getDateTime: function(timeAt){
-            return qm.timeHelper.toDate(timeAt);
+        iso: function(timeAt){
+            var unixTime = qm.timeHelper.toUnixTime(timeAt);
+            var d = new Date(1000 * unixTime);
+            return d.toISOString();
         },
-        toDate: function(timeAt){
+        getDateTime: function(timeAt){
             var unixTime = qm.timeHelper.universalConversionToUnixTimeSeconds(timeAt);
             return qm.timeHelper.dayMonthYearMilitaryTime(unixTime);
+        },
+        toDate: function(timeAt){
+            return qm.timeHelper.toYYYYMMDD(timeAt)
+        },
+        toYYYYMMDD: function(timeAt){
+            var unixTime = qm.timeHelper.toUnixTime(timeAt);
+            var date = new Date(1000 * unixTime)
+            var iso = qm.timeHelper.iso(timeAt)
+            return iso.split('T')[0]
         },
         toUnixTime: function(timeAt){
             return qm.timeHelper.universalConversionToUnixTimeSeconds(timeAt);
@@ -10260,7 +10295,7 @@ var qm = {
         roundTime: function(timeAt, seconds) {
             var unixTime = qm.timeHelper.toUnixTime(timeAt);
             var rounded = qm.numberHelper.roundToNearestMultiple(unixTime, seconds);
-            return qm.timeHelper.iso(rounded);
+            return qm.timeHelper.at(rounded);
         }
     },
     toast: {

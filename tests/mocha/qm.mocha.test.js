@@ -4,6 +4,11 @@ var path = require('path')
 var appDir = path.resolve(".")
 var chai = require("chai")
 var expect = chai.expect
+// Otherwise assertion failures in async tests are wrapped, which prevents mocha from
+// being able to interpret them (such as displaying a diff).
+process.on('unhandledRejection', function(err) {
+    throw err
+})
 var qmGit = require("../../ts/qm.git")
 var qmShell = require("../../ts/qm.shell")
 var fileHelper = global.fileHelper = require("../../ts/qm.file-helper")
@@ -243,7 +248,10 @@ function expectInteger(val){
     expect(val % 1).to.equal(0)
 }
 function info(str, meta){
-    qmLog.info("mocha: " + str, meta)
+    qmLog.info("MOCHA: " + str, meta)
+}
+function checking(str, meta){
+    info("Checking that " + str + "...", meta)
 }
 describe("Measurement", function () {
     function checkPostMeasurementResponse(data, variableName, value) {
@@ -468,10 +476,46 @@ describe("File Helper", function () {
             })
     })
 })
+function deleteLastMeasurement(variableName) {
+    return function () {
+        return qm.measurements.getMeasurements({variableName}).then(function (measurements) {
+            qm.measurements.logMeasurements(measurements, variableName + " Measurements Before Deleting")
+        }).then(function () {
+            return qm.measurements.deleteLastMeasurementForVariable(variableName)
+        }).then(function () {
+            return qm.measurements.getMeasurements({variableName}).then(function (measurements) {
+                qm.measurements.logMeasurements(measurements, variableName + " Measurements After Deleting")
+            })
+        })
+    }
+}
 describe("Favorites", function () {
+    function createFavorite(variableName) {
+        return function (reminders) {
+            expect(reminders).length(0)
+            expect(qm.reminderHelper.getQueue()).length(0)
+            return createReminder({variableName, reminderFrequency: 0, defaultValue: 100},
+                1, 0, 1)
+        }
+    }
+    function trackByFavorite(variableName) {
+        return function (favorites) {
+            expect(favorites).length(1)
+            expect(qm.reminderHelper.getQueue()).length(0)
+            const notifications = qm.notifications.getCached()
+            expect(notifications).length(0)
+            var f = favorites[0]
+            qm.reminderHelper.trackByFavorite(f, 100)
+            expect(f.value).to.eq(100)
+            expect(f.displayTotal).to.eq("Recorded " + f.value + " " + f.unitAbbreviatedName)
+            var timeout = f.timeout
+            timeout._onTimeout()
+            clearTimeout(timeout)
+            return qm.measurements.getLocalMeasurements({variableName})
+        }
+    }
     it("record measurement by favorite", function () {
         this.timeout(90000)
-        //expect(qm.appMode.isLocal()).to.be.true
         const variableName = "Aaa Test Treatment"
         const variableCategoryName = "Treatments"
         qmTests.setTestAccessToken()
@@ -483,52 +527,16 @@ describe("Favorites", function () {
             .then(function () {
                 return qm.reminderHelper.getReminders({variableName})
             })
-            .then(function (reminders) {
-                expect(reminders).length(0)
-                expect(qm.reminderHelper.getQueue()).length(0)
-                qm.reminderHelper.addToQueue([{variableName, reminderFrequency: 0, defaultValue: 100}])
-                expect(qm.reminderHelper.getQueue()).length(1)
-                expect(qm.reminderHelper.getCached()).length(0)
-                return qm.reminderHelper.syncReminders()
+            .then(createFavorite(variableName))
+            .then(function (){
+                var cached = qm.reminderHelper.getCached()
+                expect(cached[0].reminderFrequency).to.eq(0)
             })
-            .then(function (response) {
-                const data = (response && response.data) ? response.data : null
-                expect(data.trackingReminders).length(1)
-                expect(data.trackingReminders[0].reminderFrequency).to.eq(0)
-                expect(data.userVariables).length(1)
-                expect(data.trackingReminderNotifications).length(0)
-                expect(qm.notifications.getCached()).length(0)
-                expect(qm.reminderHelper.getCached()).length(1)
-                return qm.reminderHelper.syncReminders()
-            })
-            .then(function(){
-                return qm.measurements.getMeasurements({variableName}).then(function (measurements){
-                    qm.measurements.logMeasurements(measurements, variableName + " Measurements Before Deleting")
-                }).then(function(){
-                    return qm.measurements.deleteLastMeasurementForVariable(variableName)
-                }).then(function(){
-                    return qm.measurements.getMeasurements({variableName}).then(function (measurements){
-                        qm.measurements.logMeasurements(measurements, variableName + " Measurements After Deleting")
-                    })
-                })
-            })
+            .then(deleteLastMeasurement(variableName))
             .then(function() {
                 return qm.reminderHelper.getFavorites(variableCategoryName)
             })
-            .then(function (favorites) {
-                expect(favorites).length(1)
-                expect(qm.reminderHelper.getQueue()).length(0)
-                const notifications = qm.notifications.getCached()
-                expect(notifications).length(0)
-                var f = favorites[0]
-                qm.reminderHelper.trackByFavorite(f, 100)
-                expect(f.value).to.eq(100)
-                expect(f.displayTotal).to.eq("Recorded " + f.value + " " + f.unitAbbreviatedName)
-                var timeout = f.timeout
-                timeout._onTimeout()
-                clearTimeout(timeout)
-                return qm.measurements.getLocalMeasurements({variableName})
-            })
+            .then(trackByFavorite(variableName))
             .then(function (measurements) {
                 expect(measurements).length(1)
                 var m = measurements[0]
@@ -748,49 +756,50 @@ describe("Menu", function () {
         done()
     })
 })
+
+function createReminder(tr, expectedVariables, expectedNotifications, expectedReminders) {
+    var queueBefore = qm.reminderHelper.getQueue()
+    qm.reminderHelper.addToQueue([tr])
+    expect(qm.reminderHelper.getQueue()).length(queueBefore.length + 1)
+    return qm.reminderHelper.syncReminders()
+        .then(function (response) {
+            const data = (response && response.data) ? response.data : null
+            expect(data.trackingReminders).length(expectedReminders)
+            expect(data.userVariables).length(expectedVariables)
+            expect(data.trackingReminderNotifications).length(expectedNotifications)
+            expect(qm.notifications.getCached()).length(expectedNotifications)
+            expect(qm.reminderHelper.getCached()).length(expectedReminders)
+        }).catch(function(err){
+            throw Error(err)
+        })
+}
+
 describe("Reminders", function () {
     it("can create a reminder and track the notification", function () {
         this.timeout(90000)
         //expect(qm.appMode.isLocal()).to.be.true
         const variableName = "Hostility"
         qmTests.setTestAccessToken()
+        var yesterday = qm.timeHelper.getYesterdayDate()
         return qm.userHelper.getUserFromApi({})
             .then(function (user){
                 expect(user.accessToken, qmTests.getTestAccessToken())
+                info("Deleting reminders...")
                 return qm.reminderHelper.deleteByVariableName(variableName)
             })
             .then(function () {
                 return qm.reminderHelper.getReminders({variableName})
             })
             .then(function (reminders) {
+                checking("reminders have been deleted")
                 expect(reminders).length(0)
                 expect(qm.reminderHelper.getQueue()).length(0)
-                qm.reminderHelper.addToQueue([{variableName, frequency: 60}])
-                expect(qm.reminderHelper.getQueue()).length(1)
-                expect(qm.reminderHelper.getCached()).length(0)
-                return qm.reminderHelper.syncReminders()
+                return createReminder({variableName, frequency: 60},
+                    1, 1, 1)
             })
-            .then(function (response) {
-                const data = (response && response.data) ? response.data : null
-                expect(data.trackingReminders).length(1)
-                expect(data.userVariables).length(1)
-                expect(data.trackingReminderNotifications).length(1)
-                expect(qm.notifications.getCached()).length(1)
-                expect(qm.reminderHelper.getCached()).length(1)
-                return qm.reminderHelper.syncReminders()
-            })
+            .then(deleteLastMeasurement(variableName))
             .then(function () {
-                return qm.measurements.getMeasurements({variableName}).then(function (measurements){
-                    qm.measurements.logMeasurements(measurements, variableName + " Measurements Before Deleting")
-                }).then(function(){
-                    return qm.measurements.deleteLastMeasurementForVariable(variableName)
-                }).then(function(){
-                    return qm.measurements.getMeasurements({variableName}).then(function (measurements){
-                        qm.measurements.logMeasurements(measurements, variableName + " Measurements After Deleting")
-                    })
-                })
-            })
-            .then(function () {
+                checking("measurements have been deleted")
                 expect(qm.reminderHelper.getQueue()).length(0)
                 expect(qm.reminderHelper.getCached()).length(1)
                 const notifications = qm.notifications.getCached()
@@ -801,29 +810,76 @@ describe("Reminders", function () {
                 qm.notifications.track(notifications[0])
                 expect(qm.notifications.timeout).to.not.be.null
                 expect(qm.notifications.getQueue()).length(1)
+                checking("we get a local measurement for the notification we tracked before sync")
                 return qm.measurements.getLocalMeasurements({variableName})
             })
             .then(function (measurements) {
                 qm.measurements.logMeasurements(measurements, "Local Measurements")
                 expect(measurements).length(1)
+                info("syncing notifications...")
                 return qm.notifications.syncIfQueued()
             })
             .then(function (response) {
+                info("Checking post notifications response...")
                 expect(qm.notifications.getQueue()).length(0)
                 expect(qm.notifications.getCached()).length(0)
                 var measurements = qm.measurements.toArray(response.measurements)
                 expect(measurements).length(1)
                 expect(response.userVariables).length(1)
+                checking("we stored measurement from post notification response")
                 return qm.measurements.getLocalMeasurements({variableName})
             })
             .then(function (measurements) {
+                checking("we get a measurement for the notification we tracked")
                 expect(measurements).length(1)
+                return qm.reminderHelper.getReminders({variableName})
+            })
+            .then(function (reminders) {
+                checking("we get reminder we created")
+                expect(reminders).length(1)
+                expect(qm.reminderHelper.getQueue()).length(0)
+                var tr = reminders[0]
+                expect(tr.variableName).to.eq(variableName)
+                expect(tr.stopTrackingDate).to.be.null
+                expect(qm.reminderHelper.getActive()).length(1)
+                expect(qm.reminderHelper.getArchived()).length(0)
+                tr.stopTrackingDate = yesterday
+                expect(qm.reminderHelper.getQueue()).length(0)
+                info("setting stopTrackingDate to " + yesterday)
+                return createReminder(tr, 1, 0, 1)
+            })
+            .then(function (){
+                checking("reminder is disabled")
+                var reminders = qm.reminderHelper.getCached()
+                expect(qm.reminderHelper.getQueue()).length(0)
+                expect(reminders).length(1)
+                expect(qm.reminderHelper.getActive()).length(0)
+                expect(qm.reminderHelper.getArchived()).length(1)
+                expect(qm.notifications.getCached()).length(0)
+                var tr = reminders[0]
+                expect(tr.stopTrackingDate).to.eq(yesterday)
+                tr.stopTrackingDate = null
+                info("re-enabling reminder...")
+                return createReminder(tr, 1, 1, 1)
+            })
+            .then(function (){
+                checking("reminder is re-enabled")
+                var reminders = qm.reminderHelper.getCached()
+                expect(qm.reminderHelper.getQueue()).length(0)
+                expect(reminders).length(1)
+                expect(qm.reminderHelper.getActive()).length(1)
+                expect(qm.reminderHelper.getArchived()).length(0)
+                var tr = reminders[0]
+                expect(tr.stopTrackingDate).to.be.null
+                expect(qm.notifications.getCached()).length(1)
+            }).catch(function(err){
+                throw Error(err)
             })
     })
 })
 describe("Studies", function () {
     it('can get a study showing relationship between eggs and mood', function() {
-        this.timeout(20000)
+        this.timeout(30000)
         qmTests.setTestAccessToken()
         var causeName = "Eggs (serving)"
         var effectName = "Overall Mood"
