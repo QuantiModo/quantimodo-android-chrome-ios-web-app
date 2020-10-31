@@ -4,6 +4,11 @@ var path = require('path')
 var appDir = path.resolve(".")
 var chai = require("chai")
 var expect = chai.expect
+// Otherwise assertion failures in async tests are wrapped, which prevents mocha from
+// being able to interpret them (such as displaying a diff).
+process.on('unhandledRejection', function(err) {
+    throw err
+})
 var qmGit = require("../../ts/qm.git")
 var qmShell = require("../../ts/qm.shell")
 var fileHelper = global.fileHelper = require("../../ts/qm.file-helper")
@@ -867,12 +872,14 @@ describe("Reminders", function () {
                 var tr = reminders[0]
                 expect(tr.stopTrackingDate).to.be.null
                 expect(qm.notifications.getCached()).length(1)
+            }).catch(function(err){
+                throw Error(err)
             })
     })
 })
 describe("Studies", function () {
     it('can get a study showing relationship between eggs and mood', function() {
-        this.timeout(20000)
+        this.timeout(30000)
         qmTests.setTestAccessToken()
         var causeName = "Eggs (serving)"
         var effectName = "Overall Mood"
