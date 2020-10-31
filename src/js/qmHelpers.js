@@ -1518,7 +1518,8 @@ var qm = {
             }
             return arrayToSort;
         },
-        unsetNullProperties: function(array, except = []){
+        unsetNullProperties: function(array, except){
+            except = except || []
             if(!array){
                 qmLog.error("Nothing provided to unsetNullProperties");
                 return null;
@@ -7313,7 +7314,8 @@ var qm = {
             }
             return object;
         },
-        unsetNullProperties: function(object, except = []){
+        unsetNullProperties: function(object, except){
+            except = except || []
             for(var property in object){
                 if(object.hasOwnProperty(property)){
                     if(object[property] === null){
