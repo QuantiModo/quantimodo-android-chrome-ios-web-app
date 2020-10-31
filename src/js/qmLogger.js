@@ -464,6 +464,10 @@ var qmLog = {
         }
     },
     errorAndExceptionTestingOrDevelopment: function(name, message, metaData, stackTrace){
+        if(typeof message === "object"){
+            metaData = message;
+            message = null;
+        }
         message = message || name;
         name = name || message;
         qmLog.globalMetaData = qmLog.globalMetaData || null;
