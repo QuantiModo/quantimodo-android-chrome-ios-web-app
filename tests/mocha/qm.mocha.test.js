@@ -508,7 +508,6 @@ describe("Favorites", function () {
     }
     it("record measurement by favorite", function () {
         this.timeout(90000)
-        //expect(qm.appMode.isLocal()).to.be.true
         const variableName = "Aaa Test Treatment"
         const variableCategoryName = "Treatments"
         qmTests.setTestAccessToken()

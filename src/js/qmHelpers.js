@@ -7904,8 +7904,8 @@ var qm = {
                 return [];
             }
             reminders.forEach(function(tr){
-                if(typeof tr.stopTrackingDate === "undefined"){
-                    qmLog.errorAndExceptionTestingOrDevelopment("No stopTrackingDate")
+                if(tr.reminderFrequency && typeof tr.stopTrackingDate === "undefined"){
+                    qmLog.errorAndExceptionTestingOrDevelopment("No stopTrackingDate", tr)
                 }
             })
             reminders = qm.arrayHelper.removeArrayElementsWithDuplicateIds(reminders, 'reminder')
