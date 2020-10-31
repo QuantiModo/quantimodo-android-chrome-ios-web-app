@@ -764,6 +764,8 @@ function createReminder(tr, expectedVariables, expectedNotifications, expectedRe
             expect(data.trackingReminderNotifications).length(expectedNotifications)
             expect(qm.notifications.getCached()).length(expectedNotifications)
             expect(qm.reminderHelper.getCached()).length(expectedReminders)
+        }).catch(function(err){
+            throw Error(err)
         })
 }
 
