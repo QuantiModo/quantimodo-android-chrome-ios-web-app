@@ -634,13 +634,40 @@ var qm = {
             url = url.replace('http://', '');
             return url;
         },
+        postViaFetch: function(url, body, successHandler, errorHandler){
+            var headers = new Headers(qm.api.getDefaultHeaders())
+            fetch(url, {
+                method: 'post',
+                body: JSON.stringify(body),
+                headers: headers
+            }).then(function(response){
+                qmLog.info(response.status + " response from\n\tPOST " + url);
+                if(response.status === 204){
+                    if(successHandler){successHandler();}
+                    return;
+                }
+                response.json().then(function(data){
+                    if (qm.api.postResponseSuccessful(response, data)) {
+                        if(successHandler){successHandler(data);}
+                    } else {
+                        debugger
+                        var err = qm.api.generalErrorHandler(null, data, response)
+                        if(errorHandler){errorHandler(err);}
+                    }
+                })
+            }).catch(function(err){
+                debugger
+                qmLog.error("ERROR from POST " + url + ":\n\t" + err);
+                if(errorHandler){errorHandler(err)}
+            });
+        },
+        postResponseSuccessful: function(response, data){
+            data = data.data || data;
+            return response.status === 201 || response.status === 204 || data.success === true
+        },
         post: function(path, body, successHandler, errorHandler){
             qm.api.getRequestUrl(path, {}, function(url){
                 qmLog.info("POST " + url);
-                function responseSuccessful(response, data){
-                    data = data.data || data;
-                    return response.status === 201 || response.status === 204 || data.success === true
-                }
                 if(typeof XMLHttpRequest !== "undefined"){
                     var xhr = new XMLHttpRequest();   // new HttpRequest instance
                     xhr.open("POST", url);
@@ -649,7 +676,7 @@ var qm = {
                         if(xhr.readyState === XMLHttpRequest.DONE){
                             var fallback = xhr.responseText;
                             var response = qm.stringHelper.parseIfJsonString(xhr.responseText, fallback);
-                            if ( responseSuccessful(xhr, response)) {
+                            if ( qm.api.postResponseSuccessful(xhr, response)) {
                                 if(successHandler){successHandler(response);}
                             } else {
                                 qmLog.error("qm.api.get error from " + url + " request: " + xhr.responseText, response);
@@ -659,31 +686,12 @@ var qm = {
                     };
                     xhr.send(JSON.stringify(body));
                 }else{
-                    var headers = new Headers(qm.api.getDefaultHeaders())
-                    fetch(url, {
-                        method: 'post',
-                        body: JSON.stringify(body),
-                        headers: headers
-                    }).then(function(response){
-                        qmLog.info(response.status + " response from\n\tPOST " + url);
-                        if(response.status === 204){
-                            if(successHandler){successHandler();}
-                            return;
-                        }
-                        response.json().then(function(data){
-                            if (responseSuccessful(response, data)) {
-                                if(successHandler){successHandler(data);}
-                            } else {
-                                debugger
-                                var err = qm.api.generalErrorHandler(null, data, response)
-                                if(errorHandler){errorHandler(err);}
-                            }
-                        })
-                    }).catch(function(err){
-                        debugger
-                        qmLog.error("ERROR from POST " + url + ":\n\t" + err);
-                        if(errorHandler){errorHandler(err)}
-                    });
+                    try {
+                        qm.api.postViaFetch(url, body, successHandler, errorHandler)
+                    } catch (e) {
+                        qmLog.error("uncaught exception posting to "+url+":", e)
+                        if(errorHandler){errorHandler(e)}
+                    }
                 }
             });
         },
