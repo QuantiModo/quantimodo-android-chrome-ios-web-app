@@ -1911,6 +1911,7 @@ var qm = {
                 }
             }
             accessToken = qm.storage.getItem(qm.items.accessToken);
+            if(!accessToken){accessToken = qm.env.getAccessToken()}
             if(accessToken){
                 if(!qm.auth.accessTokenIsValid(accessToken)){
                     qmLog.error("accessTokenFromUrl is invalid: " + accessToken);
@@ -2255,6 +2256,123 @@ var qm = {
         },
         setAccessToken: function(accessToken) {
             qm.auth.saveAccessToken(accessToken)
+        }
+    },
+    aws: {
+        getSecretAccessKeyId: function (){
+            return qm.env.getEnv('AWS_SECRET_ACCESS_KEY')
+        },
+    },
+    buildInfoHelper: {
+        alreadyMinified: function(){
+            try {
+                var files = fs.readdirSync(paths.www.scripts);
+                if (!files.length) {
+                    qmLog.info("Scripts folder is empty so we need to minify");
+                    return false;
+                }
+            } catch (e) {
+                qmLog.info("No scripts folder so we need to minify");
+                return false;
+            }
+            var previousSha = qm.buildInfoHelper.getPreviousBuildSha();
+            if(!previousSha){
+                qmLog.error("Could not get previous git commit SHA!");
+                return false;
+            }
+            var currentSha = qm.gitHelper.getCurrentGitCommitSha();
+            if(!currentSha){
+                qmLog.error("Could not get current git commit SHA!");
+                return false;
+            }
+            var alreadyMinified = previousSha === currentSha;
+            if(!alreadyMinified){
+                qmLog.info("current sha " + currentSha + " and previous commit SHA " + previousSha +
+                    " don't match so we need to minify again");
+            } else {
+                qmLog.info("No need to minify again because current sha " + currentSha + " and previous commit SHA " +
+                    previousSha + " match");
+            }
+            return alreadyMinified;
+        },
+        buildInfo: {
+            iosCFBundleVersion: null,
+            builtAt: null,
+            buildServer: null,
+            buildLink: null,
+            versionNumber: null,
+            versionNumbers: {},
+            gitBranch: null,
+            gitCommitShaHash: null
+        },
+        getPreviousBuildSha: function(){
+            var previousBuildInfo = qm.buildInfoHelper.getPreviousBuildInfo();
+            if(!previousBuildInfo){return false;}
+            return previousBuildInfo.gitCommitShaHash;
+        },
+        getCurrentBuildInfo: function () {
+            qm.buildInfoHelper.currentBuildInfo = {
+                iosCFBundleVersion: qm.buildInfoHelper.buildInfo.versionNumbers.iosCFBundleVersion,
+                builtAt: timeHelper.getUnixTimestampInSeconds(),
+                builtAtString:  new Date().toISOString(),
+                buildServer: qmLog.getCurrentServerContext(),
+                buildLink: qm.buildInfoHelper.getBuildLink(),
+                versionNumber: qm.buildInfoHelper.buildInfo.versionNumbers.ionicApp,
+                versionNumbers: qm.buildInfoHelper.buildInfo.versionNumbers,
+                gitBranch: qm.gitHelper.getBranchName(),
+                gitCommitShaHash: qm.gitHelper.getCurrentGitCommitSha()
+            };
+            return qm.buildInfoHelper.currentBuildInfo;
+        },
+        getPreviousBuildInfo: function () {
+            var previousBuildInfo = readFile(paths.src.buildInfo);
+            if(!previousBuildInfo){
+                qmLog.info("No previous BuildInfo file at "+paths.src.buildInfo);
+                qm.buildInfoHelper.previousBuildInfo = false;
+            } else {
+                qm.buildInfoHelper.previousBuildInfo = previousBuildInfo;
+            }
+            return qm.buildInfoHelper.previousBuildInfo;
+        },
+        previousBuildInfo: null,
+        writeCommitSha: function () {
+            writeToFile('www/data/commits/'+qm.gitHelper.getCurrentGitCommitSha(), qm.gitHelper.getCurrentGitCommitSha());
+            writeToFile('src/data/commits/'+qm.gitHelper.getCurrentGitCommitSha(), qm.gitHelper.getCurrentGitCommitSha());
+        },
+        getBuildLink: function() {
+            if(process.env.BUDDYBUILD_APP_ID){return "https://dashboard.buddybuild.com/apps/" + process.env.BUDDYBUILD_APP_ID + "/build/" + process.env.BUDDYBUILD_APP_ID;}
+            if(process.env.CIRCLE_BUILD_NUM){return "https://circleci.com/gh/QuantiModo/quantimodo-android-chrome-ios-web-app/" + process.env.CIRCLE_BUILD_NUM;}
+            if(process.env.TRAVIS_BUILD_ID){return "https://travis-ci.org/" + process.env.TRAVIS_REPO_SLUG + "/builds/" + process.env.TRAVIS_BUILD_ID;}
+        },
+        setVersionNumbers: function(){
+            var date = new Date();
+            function getPatchVersionNumber() {
+                var monthNumber = (date.getMonth() + 1).toString();
+                var dayOfMonth = ('0' + date.getDate()).slice(-2);
+                return monthNumber + dayOfMonth;
+            }
+            function getIosMinorVersionNumber() {
+                return (getMinutesSinceMidnight()).toString();
+            }
+            function getMinutesSinceMidnight() {
+                return date.getHours() * 60 + date.getMinutes();
+            }
+            function getAndroidMinorVersionNumber() {
+                var number = getMinutesSinceMidnight() * 99 / 1440;
+                number = Math.round(number);
+                number = appendLeadingZero(number);
+                return number;
+            }
+            function appendLeadingZero(integer) {return ('0' + integer).slice(-2);}
+            function getLongDateFormat(){return date.getFullYear().toString() + appendLeadingZero(date.getMonth() + 1) + appendLeadingZero(date.getDate());}
+            qm.buildInfoHelper.buildInfo.versionNumbers = {
+                iosCFBundleVersion: majorMinorVersionNumbers + getPatchVersionNumber() + '.' + getIosMinorVersionNumber(),
+                //androidVersionCodes: {armV7: getLongDateFormat() + appendLeadingZero(date.getHours()), x86: getLongDateFormat() + appendLeadingZero(date.getHours() + 1)},
+                androidVersionCode: getLongDateFormat() + getAndroidMinorVersionNumber(),
+                ionicApp: majorMinorVersionNumbers + getPatchVersionNumber()
+            };
+            qm.buildInfoHelper.buildInfo.versionNumbers.buildVersionNumber = qm.buildInfoHelper.buildInfo.versionNumbers.androidVersionCode;
+            qmLog.info(JSON.stringify(qm.buildInfoHelper.buildInfo.versionNumbers));
         }
     },
     builder: {},
@@ -3657,6 +3775,15 @@ var qm = {
     },
     env: {
         getEnv: function(name){
+            var val = null;
+            if(Array.isArray(name)){
+                name.forEach(function(one){
+                    if(qm.env.getEnv(one) !== null){
+                        val = qm.env.getEnv(one)
+                    }
+                })
+                return val;
+            }
             if(typeof process === "undefined"){
                 return null;
             }
@@ -3667,7 +3794,22 @@ var qm = {
         },
         isLocal: function(){
             return qm.env.getEnv('APP_ENV') === "local"
-        }
+        },
+        getAccessToken: function(){
+            return qm.env.getEnv('QUANTIMODO_ACCESS_TOKEN')
+        },
+        getClientSecret: function(){
+            return qm.env.getEnv('QUANTIMODO_CLIENT_SECRET')
+        },
+        getEncryptionSecret: function(){
+            return qm.env.getEnv('ENCRYPTION_SECRET')
+        },
+        getAwsSecret: function (){
+            return qm.env.getEnv('AWS_SECRET_ACCESS_KEY')
+        },
+        getAwsId: function (){
+            return qm.env.getEnv(['QM_AWS_ACCESS_KEY_ID', 'AWS_ACCESS_KEY_ID'])
+        },
     },
     feed: {
         currentCard: null,
@@ -4315,6 +4457,16 @@ var qm = {
                 }
             };
             return options;
+        },
+        getBranchEnv: function () {
+            function getNameIfNotHead(envName) {
+                if(process.env[envName] && process.env[envName].indexOf("HEAD") === -1){return process.env[envName];}
+                return false;
+            }
+            if(getNameIfNotHead('CIRCLE_BRANCH')){return process.env.CIRCLE_BRANCH;}
+            if(getNameIfNotHead('BUDDYBUILD_BRANCH')){return process.env.BUDDYBUILD_BRANCH;}
+            if(getNameIfNotHead('TRAVIS_BRANCH')){return process.env.TRAVIS_BRANCH;}
+            if(getNameIfNotHead('GIT_BRANCH')){return process.env.GIT_BRANCH;}
         }
     },
     globalHelper: {
