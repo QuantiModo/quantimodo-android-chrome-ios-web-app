@@ -3812,6 +3812,9 @@ var qm = {
         getAwsId: function (){
             return qm.env.getEnv(['QM_AWS_ACCESS_KEY_ID', 'AWS_ACCESS_KEY_ID'])
         },
+        getReleaseStage: function(){
+            return qm.env.getEnv('RELEASE_STAGE')
+        }
     },
     feed: {
         currentCard: null,
