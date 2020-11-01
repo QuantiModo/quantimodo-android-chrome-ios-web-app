@@ -769,6 +769,78 @@ var qmLog = {
         } else {
             console.info(message)
         }
+    },
+    logErrorAndThrowException: function (message, object) {
+        qmLog.error(message, object);
+        throw message;
+    },
+    addMetaData: function(metaData){
+        metaData = metaData || {};
+        metaData.environment = qmLog.obfuscateSecrets(process.env);
+        metaData.subsystem = { name: qmLog.getCurrentServerContext() };
+        metaData.client_id = qm.getClientId();
+        metaData.build_link = qm.buildInfoHelper.getBuildLink();
+        return metaData;
+    },
+    obfuscateStringify: function(message, object, maxCharacters) {
+        if(maxCharacters !== false){maxCharacters = maxCharacters || 140;}
+        var objectString = '';
+        if(object){
+            object = qmLog.obfuscateSecrets(object);
+            objectString = ':  ' + qmLog.prettyJSONStringify(object);
+        }
+        if (maxCharacters !== false && objectString.length > maxCharacters) {objectString = objectString.substring(0, maxCharacters) + '...';}
+        message += objectString;
+        if(qm.env.getClientSecret()){message = message.replace(qm.env.getClientSecret(), 'HIDDEN');}
+        if(qm.aws.getSecretAccessKeyId()){message = message.replace(qm.aws.getSecretAccessKeyId(), 'HIDDEN');}
+        if(qm.env.getEncryptionSecret()){message = message.replace(qm.env.getEncryptionSecret(), 'HIDDEN');}
+        if(qm.env.getAccessToken()){message = message.replace(qm.env.getAccessToken(), 'HIDDEN');}
+        message = qmLog.obfuscateString(message);
+        return message;
+    },
+    isSecretWord: function(propertyName){
+        var lowerCaseProperty = propertyName.toLowerCase();
+        return lowerCaseProperty.indexOf('secret') !== -1 ||
+            lowerCaseProperty.indexOf('password') !== -1 ||
+            lowerCaseProperty.indexOf('key') !== -1 ||
+            lowerCaseProperty.indexOf('database') !== -1 ||
+            lowerCaseProperty.indexOf('token') !== -1;
+    },
+    obfuscateString: function(string){
+        var env = process.env;
+        for (var propertyName in env) {
+            if (env.hasOwnProperty(propertyName)) {
+                if(qmLog.isSecretWord(propertyName)){
+                    string = string.replace(env[propertyName], '[SECURE]');
+                }
+            }
+        }
+        return string;
+    },
+    getCurrentServerContext: function() {
+        if(!qm.appMode.isBackEnd()){
+            return "web-server"
+        }
+        if(process.env.CIRCLE_BRANCH){return "circleci";}
+        if(process.env.BUDDYBUILD_BRANCH){return "buddybuild";}
+        return process.env.HOSTNAME;
+    },
+    prettyJSONStringify: function(object) {return JSON.stringify(object, null, '\t');},
+    slugify: function(str){
+        str = str.replace(/^\s+|\s+$/g, ''); // trim
+        str = str.toLowerCase();
+        // remove accents, swap ñ for n, etc
+        var from = "àáäâèéëêìíïîòóöôùúüûñç·/_,:;";
+        var to   = "aaaaeeeeiiiioooouuuunc------";
+        for (var i=0, l=from.length ; i<l ; i++)
+        {
+            str = str.replace(new RegExp(from.charAt(i), 'g'), to.charAt(i));
+        }
+        str = str.replace('.', '-') // replace a dot by a dash
+            .replace(/[^a-z0-9 -]/g, '') // remove invalid chars
+            .replace(/\s+/g, '-') // collapse whitespace and replace by a dash
+            .replace(/-+/g, '-'); // collapse dashes
+        return str;
     }
 };
 function getCalleeFunction(){
