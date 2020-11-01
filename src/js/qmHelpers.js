@@ -689,7 +689,7 @@ var qm = {
                     try {
                         qm.api.postViaFetch(url, body, successHandler, errorHandler)
                     } catch (e) {
-                        qmLog.error("uncaught exception posting to "+url+":", e)
+                        qmLog.errorAndExceptionTestingOrDevelopment("uncaught exception posting to "+url+":", {err: e, body: body})
                         if(errorHandler){errorHandler(e)}
                     }
                 }
