@@ -117,7 +117,6 @@ var appIds = {
     'quantimodo': true,
     'medimodo': true
 };
-var paths = qm.buildInfoHelper.paths
 var argv = require('yargs').argv;
 var defaultRequestOptions = {strictSSL: false};
 var fs = require('fs');
@@ -131,6 +130,7 @@ var s3Options = {accessKeyId: AWS_ACCESS_KEY_ID, secretAccessKey: AWS_SECRET_ACC
 var bugsnag = require("bugsnag");
 var qmLog = global.qmLog = require('./src/js/qmLogger.js')
 var qm = global.qm = require('./src/js/qmHelpers.js')
+var paths = qm.buildInfoHelper.paths
 qm.staticData = require('./src/data/qmStaticData.js')
 bugsnag.register("ae7bc49d1285848342342bb5c321a2cf");
 bugsnag.releaseStage = qmLog.getCurrentServerContext();
