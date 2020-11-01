@@ -554,7 +554,9 @@ describe("Ghost Inspector", function () {
         chai.assert.isUndefined(process.env.API_URL)
         process.env.RELEASE_STAGE = "staging"
         var url = th.getApiUrl()
-        expect(url).to.contain("https://staging.quantimo.do")
+        var stagingUrl = "https://staging.quantimo.do"
+        expect(url).to.contain(stagingUrl)
+        expect(qm.api.getBaseUrl()).to.contain(stagingUrl)
         if (previouslySetApiUrl) {
             process.env.API_URL = previouslySetApiUrl
         }
