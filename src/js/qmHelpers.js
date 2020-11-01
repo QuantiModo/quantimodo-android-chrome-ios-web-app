@@ -103,6 +103,8 @@ var qm = {
             return qm.appMode.isDevelopment();
         },
         isStaging: function(){
+            var stage = qm.env.getReleaseStage();
+            if(stage === "staging"){return true;}
             if(!qm.platform.getWindow()){
                 return false;
             }
