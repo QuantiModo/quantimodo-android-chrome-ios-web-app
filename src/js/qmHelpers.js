@@ -103,6 +103,8 @@ var qm = {
             return qm.appMode.isDevelopment();
         },
         isStaging: function(){
+            var stage = qm.env.getReleaseStage();
+            if(stage === "staging"){return true;}
             if(!qm.platform.getWindow()){
                 return false;
             }
@@ -3810,6 +3812,9 @@ var qm = {
         getAwsId: function (){
             return qm.env.getEnv(['QM_AWS_ACCESS_KEY_ID', 'AWS_ACCESS_KEY_ID'])
         },
+        getReleaseStage: function(){
+            return qm.env.getEnv('RELEASE_STAGE')
+        }
     },
     feed: {
         currentCard: null,
