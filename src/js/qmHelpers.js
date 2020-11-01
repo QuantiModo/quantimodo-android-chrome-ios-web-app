@@ -7903,6 +7903,7 @@ var qm = {
     },
     qmService: null,
     reminderHelper: {
+        defaultLimit: 200, // I have over 150 reminders
         addToQueue: function(reminder){
             qm.storage.addToOrReplaceByIdAndMoveToFront(qm.items.trackingReminderSyncQueue, reminder);
             if(qm.qmService){
@@ -7940,6 +7941,7 @@ var qm = {
             qm.api.configureClient(arguments.callee.name, null, params);
             var apiInstance = new qm.Quantimodo.RemindersApi();
             params = qm.api.addGlobalParams(params);
+            params.limit = params.limit || qm.reminderHelper.defaultLimit;
             apiInstance.getTrackingReminders(params, function(error, reminders, response){
                 if(reminders){
                     qm.reminderHelper.saveToLocalStorage(reminders, function(){
