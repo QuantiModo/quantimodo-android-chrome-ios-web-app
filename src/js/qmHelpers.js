@@ -587,6 +587,12 @@ var qm = {
             if(qm.appMode.isBrowser() && window.location.host.indexOf('dev-') === 0){
                 return "https://local.quantimo.do";
             }
+            if(qm.appMode.isBackEnd()){
+                apiUrl= qm.env.getEnv('API_URL')
+                if(apiUrl){return apiUrl;}
+                var stage = qm.env.getEnv('RELEASE_STAGE')
+                if(stage === "staging"){return "https://staging.quantimo.do";}
+            }
             if(!apiUrl){
                 var appSettings = qm.appsManager.getAppSettingsFromMemory();
                 if(appSettings && appSettings.apiUrl){
