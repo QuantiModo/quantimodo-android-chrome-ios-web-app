@@ -396,7 +396,11 @@ describe("Measurement", function () {
 })
 describe("API", function (){
     it("Makes sure api url is app.quantimo.do", function (done) {
-        expect(qm.api.getApiUrl()).to.eq("https://app.quantimo.do")
+        if(qm.appMode.isStaging()){
+            expect(qm.api.getApiUrl()).to.eq("https://staging.quantimo.do")
+        } else {
+            expect(qm.api.getApiUrl()).to.eq("https://app.quantimo.do")
+        }
         done()
     })
 })
