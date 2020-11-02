@@ -7,7 +7,11 @@ var expect = chai.expect
 // Otherwise assertion failures in async tests are wrapped, which prevents mocha from
 // being able to interpret them (such as displaying a diff).
 process.on('unhandledRejection', function(err) {
-    throw err
+    if(err.indexOf("unhandledRejection: Uncaught FetchError: invalid json response body") !== -1){
+        qmLog.error(err)
+    } else {
+        throw err
+    }
 })
 var qmGit = require("../../ts/qm.git")
 var qmShell = require("../../ts/qm.shell")
@@ -482,6 +486,7 @@ describe("File Helper", function () {
 })
 function deleteLastMeasurement(variableName) {
     return function () {
+        info("deleteLastMeasurement for " + variableName)
         return qm.measurements.getMeasurements({variableName}).then(function (measurements) {
             qm.measurements.logMeasurements(measurements, variableName + " Measurements Before Deleting")
         }).then(function () {
@@ -495,6 +500,7 @@ function deleteLastMeasurement(variableName) {
 }
 describe("Favorites", function () {
     function createFavorite(variableName) {
+        info("createFavorite for " + variableName)
         return function (reminders) {
             expect(reminders).length(0)
             expect(qm.reminderHelper.getQueue()).length(0)
@@ -504,6 +510,7 @@ describe("Favorites", function () {
     }
     function trackByFavorite(variableName) {
         return function (favorites) {
+            info("trackByFavorite for " + variableName)
             expect(favorites).length(1)
             expect(qm.reminderHelper.getQueue()).length(0)
             const notifications = qm.notifications.getCached()
@@ -526,9 +533,11 @@ describe("Favorites", function () {
         return qm.userHelper.getUserFromApi({})
             .then(function (user){
                 expect(user.accessToken, qmTests.getTestAccessToken())
+                info("deleting reminders for " + variableName)
                 return qm.reminderHelper.deleteByVariableName(variableName)
             })
             .then(function () {
+                info("getting reminders for " + variableName)
                 return qm.reminderHelper.getReminders({variableName})
             })
             .then(createFavorite(variableName))
@@ -538,6 +547,7 @@ describe("Favorites", function () {
             })
             .then(deleteLastMeasurement(variableName))
             .then(function() {
+                info("qm.reminderHelper.getFavorites for " + variableCategoryName)
                 return qm.reminderHelper.getFavorites(variableCategoryName)
             })
             .then(trackByFavorite(variableName))

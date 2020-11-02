@@ -654,6 +654,9 @@ var qm = {
                         var err = qm.api.generalErrorHandler(null, data, response)
                         if(errorHandler){errorHandler(err);}
                     }
+                }).catch(function(err){
+                    qmLog.errorAndExceptionTestingOrDevelopment("Could not parse json from "+url+" because "+err)
+                    if(errorHandler){errorHandler(err);}
                 })
             }).catch(function(err){
                 debugger
