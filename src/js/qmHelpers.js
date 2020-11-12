@@ -531,7 +531,7 @@ var qm = {
             if(!qm.appMode.isBrowser()){
                 return null;
             }
-            if(window.location.hostname.indexOf('.quantimo.do') === -1){
+            if(!qm.urlHelper.isQuantiModoOrQuantiModoDotCom()){
                 return null;
             }
             if(qm.appMode.isBuilder()){
@@ -547,7 +547,8 @@ var qm = {
             }
             var clientIdFromAppConfigName = qm.appsManager.appConfigFileNames[subDomain];
             if(clientIdFromAppConfigName){
-                qmLog.debug('Using client id ' + clientIdFromAppConfigName + ' derived from appConfigFileNames using subDomain: ' + subDomain, null);
+                qmLog.debug('Using client id ' + clientIdFromAppConfigName +
+                    ' derived from appConfigFileNames using subDomain: ' + subDomain);
                 return clientIdFromAppConfigName;
             }
             qmLog.debug('Using subDomain as client id: ' + subDomain);
@@ -1088,7 +1089,7 @@ var qm = {
                         qm.appsManager.processAndSaveAppSettings(appSettings[0], successHandler);
                         return;
                     }
-                    if(qm.platform.isWeb() && qm.urlHelper.indexOfCurrentUrl('.quantimo.do') !== -1){
+                    if(qm.platform.isWeb() && qm.urlHelper.isQuantiModoOrQuantiModoDotCom()){
                         qm.appsManager.getAppSettingsFromApi(null, successHandler, errorHandler);
                         return;
                     }
@@ -2546,7 +2547,8 @@ var qm = {
                     chrome.windows.update(chromeWindow.id, {focused: focused});
                 });
             }
-            if(windowParams.url.indexOf('.quantimo.do') !== -1 || windowParams.url.indexOf('popup.html') !== -1){
+            var url = windowParams.url;
+            if(qm.urlHelper.isQuantiMoDoDomain(url) || url.indexOf('popup.html') !== -1){
                 qm.urlHelper.validateUrl(windowParams.url);
                 createPopup(windowParams);
             }else{
@@ -10964,7 +10966,7 @@ var qm = {
             if(qm.urlHelper.indexOfCurrentUrl('https://') !== 0){
                 return false;
             }
-            return qm.urlHelper.indexOfCurrentUrl('.quantimo.do') !== -1;
+            return qm.urlHelper.isQuantiModoOrQuantiModoDotCom();
         },
         redirectToHttpsIfNecessary: function(){
             if(!qm.platform.getWindow()){
@@ -11003,7 +11005,8 @@ var qm = {
                 return null;
             }
             var isHttps = urlToCheck.indexOf("https://") === 0;
-            var matchesQuantiModo = qm.urlHelper.getRootDomain(urlToCheck) === 'quantimo.do';
+            var root = qm.urlHelper.getRootDomain(urlToCheck);
+            var matchesQuantiModo = root === 'quantimo.do' || root === 'quantimodo.com';
             var result = isHttps && matchesQuantiModo;
             if(!result){
                 qmLog.authDebug('Domain ' + qm.urlHelper.getRootDomain(urlToCheck) + ' from event.url ' +
@@ -11163,6 +11166,10 @@ var qm = {
             var url = qm.urlHelper.addUrlQueryParamsToUrlString(params, host+path)
             qmLog.info(url)
             return url
+        },
+        isQuantiModoOrQuantiModoDotCom: function(){
+            var hostname = window.location.hostname;
+            return hostname.indexOf('.quantimo.do') !== -1 || hostname.indexOf('.quantimodo.com') !== -1;
         }
     },
     user: null,
