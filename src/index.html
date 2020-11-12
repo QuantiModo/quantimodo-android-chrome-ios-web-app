@@ -106,6 +106,12 @@
   </head>
   <body ng-app="starter">
   <script src="js/psychedelic-loader.js"></script>
+  <script>
+      (function() {
+          // your page initialization code here the DOM will be available here
+          psychedelicLoader.start();
+      })();
+  </script>
     <ion-nav-view></ion-nav-view>
     <!-- build:js scripts/combined-body-libraries.js -->
     <script src="lib/ng-cordova-oauth/dist/ng-cordova-oauth.min.js"></script>
