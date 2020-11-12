@@ -99,7 +99,7 @@ var psychedelicLoader = {
         document.body.removeChild(canvas);
     }
 };
-(function() {
+//(function() {
     // your page initialization code here the DOM will be available here
-    psychedelicLoader.start();
-})();
+    // Do this in the HTML if you need it psychedelicLoader.start();
+//})();
