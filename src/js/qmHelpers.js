@@ -188,7 +188,7 @@ var qm = {
             if(token){headers['Authorization'] = 'Bearer ' + token;}
             return headers;
         },
-        configureClient: function(functionName, errorHandler, params){
+        configureClient: function(functionName, params){
             params = params || {};
             var qmApiClient = qm.Quantimodo.ApiClient.instance;
             var quantimodo_oauth2 = qmApiClient.authentications.quantimodo_oauth2;
@@ -1108,7 +1108,7 @@ var qm = {
             var appSettings = qm.globalHelper.getItem(qm.items.appSettings);
             if(!appSettings){
                 if(!qm.staticData){
-                    qmLog.error("qm.staticData not set!");
+                    console.error("qm.staticData not set!");
                     return false;
                 }
                 appSettings = qm.staticData.appSettings;
@@ -2947,7 +2947,7 @@ var qm = {
                     qmLog.error("Could not get connectors from API...");
                 }
             }
-            qm.api.configureClient(arguments.callee.name, null, params);
+            qm.api.configureClient(arguments.callee.name, params);
             var apiInstance = new qm.Quantimodo.ConnectorsApi();
             function callback(error, data, response){
                 qm.api.generalResponseHandler(error, data, response, successHandler, errorHandler, params, 'getConnectorsFromApi');
@@ -3083,7 +3083,7 @@ var qm = {
                 successHandler(cachedData);
                 return;
             }
-            qm.api.configureClient(arguments.callee.name, null, params);
+            qm.api.configureClient(arguments.callee.name, params);
             var apiInstance = new qm.Quantimodo.AnalyticsApi();
             function callback(error, data, response){
                 qm.api.generalResponseHandler(error, data, response, successHandler, errorHandler, params, 'getAggregatedCorrelationsFromApi');
@@ -3097,7 +3097,7 @@ var qm = {
                 successHandler(cachedData);
                 return;
             }
-            qm.api.configureClient(arguments.callee.name, null, params);
+            qm.api.configureClient(arguments.callee.name, params);
             var apiInstance = new qm.Quantimodo.AnalyticsApi();
             function callback(error, data, response){
                 qm.api.generalResponseHandler(error, data, response, successHandler, errorHandler, params, qm.items.userCorrelations);
@@ -3849,7 +3849,7 @@ var qm = {
             }, errorHandler);
         },
         getFeedApiInstance: function(params){
-            qm.api.configureClient(arguments.callee.name, null, params);
+            qm.api.configureClient(arguments.callee.name, params);
             var apiInstance = new qm.Quantimodo.FeedApi();
             // apiInstance.cache = !params || !params.noCache; Should be done in qm.api.configureClient
             return apiInstance;
@@ -5408,7 +5408,7 @@ var qm = {
         getMeasurementsFromApi: function(params){
             var deferred = Q.defer();
             params = qm.api.addGlobalParams(params);
-            qm.api.configureClient(arguments.callee.name, null, params);
+            qm.api.configureClient(arguments.callee.name, params);
             var client = new qm.Quantimodo.MeasurementsApi();
             client.getMeasurements(params, function(error, data, response){
                 qm.measurements.addToCache(data);
@@ -7921,7 +7921,7 @@ var qm = {
         },
         getRemindersFromApi: function(params){
             var deferred = Q.defer();
-            qm.api.configureClient(arguments.callee.name, null, params);
+            qm.api.configureClient(arguments.callee.name, params);
             var apiInstance = new qm.Quantimodo.RemindersApi();
             params = qm.api.addGlobalParams(params);
             params.limit = params.limit || qm.reminderHelper.defaultLimit;
@@ -9000,7 +9000,7 @@ var qm = {
     },
     shares: {
         sendInvitation: function(body, successHandler, errorHandler){
-            qm.api.configureClient(arguments.callee.name, null, body);
+            qm.api.configureClient(arguments.callee.name, body);
             var apiInstance = new qm.Quantimodo.SharesApi();
             function callback(error, data, response){
                 if(!data){
@@ -9021,7 +9021,7 @@ var qm = {
         },
         getAuthorizedClientsFromApi: function(successHandler, errorHandler){
             var params = qm.api.addGlobalParams({});
-            qm.api.configureClient(arguments.callee.name, null, params);
+            qm.api.configureClient(arguments.callee.name, params);
             var apiInstance = new qm.Quantimodo.SharesApi();
             function callback(error, data, response){
                 var authorizedClients = data.authorizedClients || data;
@@ -10118,7 +10118,7 @@ var qm = {
             }
             return url;
         },
-        getStudyFromApi: function(params, successHandler, errorHandler){
+        getStudyFromApi: function(params){
             var deferred = Q.defer();
             params = qm.api.addGlobalParams(params);
             var cacheKey = 'getStudy';
@@ -10138,9 +10138,9 @@ var qm = {
                     var study = qm.studyHelper.processAndSaveStudy(data);
                     if(!study.causeVariable || !study.effectVariable){
                         if(error){
-                            errorHandler(error);
+                            deferred.reject(error);
                         } else {
-                            errorHandler("No study cause and effect variable properties!");
+                            deferred.reject("No study cause and effect variable properties!");
                         }
                         return;
                     }
@@ -11178,7 +11178,7 @@ var qm = {
     user: null,
     userHelper: {
         deleteUserAccount: function(reason, successHandler){
-            qm.api.configureClient(arguments.callee.name, null, {reason: reason});
+            qm.api.configureClient(arguments.callee.name, {reason: reason});
             var apiInstance = new qm.Quantimodo.UserApi();
             function callback(error, data, response){
                 qm.api.responseHandler(error, data, response, successHandler);
