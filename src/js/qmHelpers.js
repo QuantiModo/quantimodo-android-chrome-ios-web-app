@@ -4204,6 +4204,9 @@ var qm = {
             }
             return qm.gulp.src(srcArray)
                 .pipe(qm.gulp.dest(destinationPath));
+        },
+        writeToFile: function(filePath, stringContents) {
+            qm.fileHelper.writeFileSync(filePath, stringContents)
         }
     },
     functionHelper: {
