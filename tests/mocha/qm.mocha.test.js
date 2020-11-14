@@ -1000,25 +1000,25 @@ describe("Variables", function () {
                 //qm.assert.isNull(userVariables, qm.items.userVariables);
                 qm.variablesHelper.getFromLocalStorageOrApi({id: variable5.id, includePublic: true})
                     .then(function(variables){
-                    // Why? qm.assert.doesNotHaveProperty(variables, 'userId');
-                    qm.assert.variables.descendingOrder(variables, 'lastSelectedAt')
-                    qm.assert.equals(timestamp, variables[0].lastSelectedAt, 'lastSelectedAt')
-                    qm.assert.equals(variable5.name, variables[0].name, 'name')
-                    qm.variablesHelper.getFromLocalStorageOrApi(params).then(function(variables){
+                        // Why? qm.assert.doesNotHaveProperty(variables, 'userId');
                         qm.assert.variables.descendingOrder(variables, 'lastSelectedAt')
-                        var variable1 = variables[0]
-                        info("Variable 1 is " + variable1.name)
-                        //qm.assert.equals(variable1.lastSelectedAt, timestamp);
-                        //qm.assert.equals(variable1.variableId, variable5.variableId);
-                        //qm.assert.equals(1, qm.api.requestLog.length, "We should have made 1 request but have "+ JSON.stringify(qm.api.requestLog));
-                        if(done && !alreadyCalledBack){
-                            alreadyCalledBack = true
-                            done()
-                        }
+                        qm.assert.equals(timestamp, variables[0].lastSelectedAt, 'lastSelectedAt')
+                        qm.assert.equals(variable5.name, variables[0].name, 'name')
+                        qm.variablesHelper.getFromLocalStorageOrApi(params).then(function(variables){
+                            qm.assert.variables.descendingOrder(variables, 'lastSelectedAt')
+                            var variable1 = variables[0]
+                            info("Variable 1 is " + variable1.name)
+                            //qm.assert.equals(variable1.lastSelectedAt, timestamp);
+                            //qm.assert.equals(variable1.variableId, variable5.variableId);
+                            //qm.assert.equals(1, qm.api.requestLog.length, "We should have made 1 request but have "+ JSON.stringify(qm.api.requestLog));
+                            if(done && !alreadyCalledBack){
+                                alreadyCalledBack = true
+                                done()
+                            }
+                        })
+                    }, function(error){
+                        throw Error(error)
                     })
-                }, function(error){
-                    throw Error(error)
-                })
             })
         })
     })
