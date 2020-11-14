@@ -3861,7 +3861,7 @@ var qm = {
         getFeedFromApi: function(params, successHandler, errorHandler){
             params = qm.api.addGlobalParams(params);
             var cacheKey = 'getFeed';
-            qm.api.configureClient(cacheKey, errorHandler, params)
+            qm.api.configureClient(cacheKey, params)
             function callback(error, data, response){
                 var cards = qm.feed.handleFeedResponse(data);
                 qm.api.generalResponseHandler(error, cards, response, successHandler, errorHandler, params, cacheKey);
@@ -3944,7 +3944,7 @@ var qm = {
         postToFeedEndpointImmediately: function(feedQueue, successHandler, errorHandler){
             var params = qm.api.addGlobalParams({});
             var cacheKey = 'postFeed';
-            qm.api.configureClient(cacheKey, errorHandler, params)
+            qm.api.configureClient(cacheKey, params)
             function callback(error, data, response){
                 var cards = qm.feed.handleFeedResponse(data);
                 if(error){
@@ -10130,7 +10130,7 @@ var qm = {
                     return deferred.promise;
                 }
             }
-            qm.api.configureClient(cacheKey, errorHandler, params)
+            qm.api.configureClient(cacheKey, params)
             var client = qm.studyHelper.getStudiesApiInstance(params, arguments.callee.name);
             //var url = qm.urlHelper.generateUrlFromApiClient(client, params);
             client.getStudy(params, function(error, data, response){
@@ -10209,7 +10209,7 @@ var qm = {
                 successHandler(cachedData);
                 return;
             }
-            qm.api.configureClient(cacheKey, errorHandler, params)
+            qm.api.configureClient(cacheKey, params)
             function callback(error, data, response){
                 qm.api.generalResponseHandler(error, data, response, successHandler, errorHandler, params, cacheKey);
             }
