@@ -34,7 +34,7 @@ global.qmLog = require('./../../src/js/qmLogger')
 qmLog.color = require('./../../node_modules/ansi-colors')
 qm.github = require('./../../node_modules/gulp-github')
 qm.Quantimodo = require('./../../node_modules/quantimodo')
-require('./../../src/data/qmStaticData')
+require('../../src/data/qmStaticData.js')
 qm.stateNames = qm.staticData.stateNames
 qm.qmLog = qmLog
 qmLog.qm = qm
@@ -904,7 +904,7 @@ describe("Studies", function () {
             causeVariableName: causeName,
             effectVariableName: effectName,
             userId: 230,
-        }, function(study){
+        }).then(function(study){
             info("Got study " + study.causeVariableName)
             expect(qm.userVariables.cached).to.not.have.property(causeName)
             expect(qm.userVariables.cached).to.not.have.property(effectName)
