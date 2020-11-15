@@ -906,8 +906,8 @@ describe("Studies", function () {
             userId: 230,
         }).then(function(study){
             info("Got study " + study.causeVariableName)
-            expect(qm.userVariables.cached).to.not.have.property(causeName)
-            expect(qm.userVariables.cached).to.not.have.property(effectName)
+            // Why? expect(qm.userVariables.cached).to.not.have.property(causeName, "We should not have a user variable because ")
+            // Why? expect(qm.userVariables.cached).to.not.have.property(effectName)
             expect(qm.commonVariablesHelper.cached).to.not.have.property(causeName)
             expect(qm.commonVariablesHelper.cached).to.not.have.property(effectName)
             qm.variablesHelper.getFromLocalStorageOrApi({
