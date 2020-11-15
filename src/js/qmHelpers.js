@@ -10134,6 +10134,10 @@ var qm = {
             var client = qm.studyHelper.getStudiesApiInstance(params, arguments.callee.name);
             //var url = qm.urlHelper.generateUrlFromApiClient(client, params);
             client.getStudy(params, function(error, data, response){
+                if(!error && response && response.body && response.body.error){
+                    error = response.body.error;
+                    qmLog.error(error)
+                }
                 if(data){
                     var study = qm.studyHelper.processAndSaveStudy(data);
                     if(!study.causeVariable || !study.effectVariable){
