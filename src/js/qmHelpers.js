@@ -5159,6 +5159,46 @@ var qm = {
         recordMeasurement: function(m){
             return qm.measurements.postMeasurement(m)
         },
+        validateMeasurement: function(m){
+            var message;
+            if(m.value === null || m.value === '' ||
+                typeof m.value === 'undefined'){
+                if(m.unitAbbreviatedName === '/5'){
+                    message = 'Please select a rating';
+                }else{
+                    message = 'Please enter a value';
+                }
+                qm.measurements.validationFailure(message, m);
+                return false;
+            }
+            if(!m.variableName || m.variableName === ""){
+                message = 'Please enter a variable name';
+                qm.measurements.validationFailure(message, m);
+                return false;
+            }
+            if(!m.variableCategoryName){
+                m.variableCategoryName = qm.urlHelper.getParam('variableCategoryName');
+            }
+            if(!m.variableCategoryName){
+                message = 'Please select a variable category';
+                qm.measurements.validationFailure(message, m);
+                return false;
+            }
+            if(!m.unitAbbreviatedName){
+                message = 'Please select a unit for ' + m.variableName;
+                qm.measurements.validationFailure(message, m);
+                return false;
+            }else{
+                var u = qm.unitHelper.getByNameAbbreviatedNameOrId(m.unitAbbreviatedName);
+                if(!u){
+                    qmLog.error('Cannot get unit id', 'abbreviated unit name is ' + m.unitAbbreviatedName);
+                }else{
+                    m.unitId = u.id;
+                }
+            }
+            if(!qm.measurements.valueIsValid(m, m.value)){return false;}
+            return true;
+        },
         newMeasurement: function(src){
             var value;
             if(typeof src.modifiedValue !== "undefined" && src.modifiedValue !== null){
@@ -5459,6 +5499,8 @@ var qm = {
             }
             m.startTime = m.startTime || m.startTimeEpoch;
             m.startAt = qm.measurements.getStartAt(m);
+            delete m.startTime;
+            delete m.startTimeEpoch;
             var unit = qm.unitHelper.getByNameAbbreviatedNameOrId(m.unitId || m.unitAbbreviatedName);
             if(!unit){
                 debugger
@@ -10335,6 +10377,10 @@ var qm = {
         getUnixTimestampInMilliseconds: function(dateTimeString){
             if(!dateTimeString){
                 return new Date().getTime();
+            }
+            if(typeof dateTimeString === "string" && dateTimeString.length === 19){
+                var m = moment.utc(dateTimeString);
+                return m.valueOf();
             }
             return new Date(dateTimeString).getTime();
         },
