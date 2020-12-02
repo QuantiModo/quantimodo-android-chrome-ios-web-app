@@ -5499,7 +5499,7 @@ var qm = {
             }
             m.startTime = m.startTime || m.startTimeEpoch;
             m.startAt = qm.measurements.getStartAt(m);
-            delete m.startTime;
+            // TODO: uncomment this delete m.startTime;
             delete m.startTimeEpoch;
             var unit = qm.unitHelper.getByNameAbbreviatedNameOrId(m.unitId || m.unitAbbreviatedName);
             if(!unit){
