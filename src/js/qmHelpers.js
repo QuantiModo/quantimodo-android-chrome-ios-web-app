@@ -2284,7 +2284,7 @@ var qm = {
     buildInfoHelper: {
         alreadyMinified: function(){
             try {
-                var files = fs.readdirSync(paths.www.scripts);
+                var files = qm.fileHelper.fs().readdirSync(paths.www.scripts);
                 if (!files.length) {
                     qmLog.info("Scripts folder is empty so we need to minify");
                     return false;
@@ -4207,6 +4207,9 @@ var qm = {
         },
         writeToFile: function(filePath, stringContents) {
             qm.fileHelper.writeFileSync(filePath, stringContents)
+        },
+        listFilesInFolder: function(folder){
+            return qm.fileHelper.fs().readdirSync(qm.fileHelper.getAbsolutePath(folder))
         }
     },
     functionHelper: {
@@ -4492,7 +4495,13 @@ var qm = {
             if(getNameIfNotHead('BUDDYBUILD_BRANCH')){return process.env.BUDDYBUILD_BRANCH;}
             if(getNameIfNotHead('TRAVIS_BRANCH')){return process.env.TRAVIS_BRANCH;}
             if(getNameIfNotHead('GIT_BRANCH')){return process.env.GIT_BRANCH;}
-        }
+        },
+        deleteFeatureBranches: function(callback){
+            qm.gitHelper.deleteBranchesLike('feature/', callback);
+        },
+        deleteBranchesLike: function(pattern, callback){
+            qm.serverHelper.exec('git branch | grep \"'+pattern+'\" | xargs git branch -D', callback)
+        },
     },
     globalHelper: {
         setStudy: function(study){
@@ -8578,6 +8587,11 @@ var qm = {
         showRobot: false
     },
     serviceWorker: false,
+    serverHelper: {
+        exec: function (command, callback, suppressErrors, lotsOfOutput){
+            qm.nodeHelper.execute(command, callback, suppressErrors, lotsOfOutput)
+        },
+    },
     speech: {
         alreadySpeaking: function(text){
             if(!qm.platform.getWindow()){
