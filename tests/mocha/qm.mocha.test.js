@@ -696,7 +696,7 @@ describe("Notifications", function () {
             notId: "100624100625",
             soundName: "false",
             title: "↑Higher Purchases Of CauseVariableName Predicts Significantly ↑Higher EffectVariableName",
-            url: "https://web.quantimo.do/#/app/study?causeVariableId=100624&effectVariableId=100625&userId=1&clientId=quantimodo",
+            url: "https://web.quantimo.do/#/app/study?causeVariableId=100624&effectVariableId=100625&userId=1&clientId=oauth_test_client",
             user: "1",
         }
         var notificationOptions = qm.notifications.convertPushDataToWebNotificationOptions(pushData, qm.getAppSettings())
@@ -938,8 +938,8 @@ describe("Studies", function () {
             userId: 230,
         }).then(function(study){
             info("Got study " + study.causeVariableName)
-            // Why? expect(qm.userVariables.cached).to.not.have.property(causeName, "We should not have a user variable because ")
-            // Why? expect(qm.userVariables.cached).to.not.have.property(effectName)
+            expect(qm.userVariables.cached).to.not.have.property(causeName, "We should not have a user variable because ")
+            expect(qm.userVariables.cached).to.not.have.property(effectName)
             expect(qm.commonVariablesHelper.cached).to.not.have.property(causeName)
             expect(qm.commonVariablesHelper.cached).to.not.have.property(effectName)
             qm.variablesHelper.getFromLocalStorageOrApi({
