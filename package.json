@@ -235,6 +235,7 @@
     "deploy:prepare": "./scripts/create_npmrc_file.sh",
     "effective:config": "circleci config process circle.yml | sed /^#/d",
     "git:pre:commit": "npm run lint:fix && npm run types && npm run test:mocha",
+    "git:delete-feature-branches": "git branch | grep \"/feature\" | xargs git branch -D",
     "heroku-deploy": "git push git@heroku.com:medimodo.git HEAD:master -f",
     "heroku-postbuild": "npm run configure:app",
     "heroku-prebuild": "echo This runs before Heroku installs your dependencies.",
