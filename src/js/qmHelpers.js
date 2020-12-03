@@ -5807,7 +5807,15 @@ var qm = {
                 deferred.reject(error);
             });
             return deferred.promise;
-        }
+        },
+        saveMeasurement: function(measurement, successHandler, errorHandler){
+            if(!qm.measurements.validateMeasurement(measurement)){
+                return false;
+            }
+            var toastMessage = 'Recorded ' + measurement.value + ' ' + measurement.unitAbbreviatedName;
+            qm.toast.infoToast(toastMessage.replace(' /', '/'));
+            qm.measurements.postMeasurement(measurement, successHandler, errorHandler);
+        },
     },
     manualTrackingVariableCategoryNames: [
         'Emotions',
