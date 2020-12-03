@@ -127,15 +127,14 @@ angular.module('starter').controller('MeasurementAddCtrl', [
             if (!m.value && m.value !== 0) {
                 m.value = jQuery('#measurementValue').val();
             }
-            // noinspection JSJQueryEfficiency
-            return {
-                variableName: m.variableName || jQuery('#variableName').val(),
-                note: m.note || jQuery('#note').val(),
-                startAt: $scope.state.selectedDate,
-                variableCategoryName: getVariableCategoryName(),
-                value: m.value,
-                unitAbbreviatedName: m.unitAbbreviatedName,
-            };
+            m.variableName = m.variableName || jQuery('#variableName').val();
+            m.note = m.note || jQuery('#note').val();
+            m.startAt = $scope.state.selectedDate;
+            delete m.startTime;
+            delete m.startTimeEpoch;
+            delete m.startTimeString;
+            m.variableCategoryName = getVariableCategoryName();
+            return m;
         }
         function showToast() {
             var toastMessage = 'Recorded ' + $scope.state.measurement.value + ' ' + $scope.state.measurement.unitAbbreviatedName;
@@ -150,7 +149,8 @@ angular.module('starter').controller('MeasurementAddCtrl', [
             if(!qm.measurements.validateMeasurement($scope.state.measurement)){return false;}
             skipNotificationIfNecessary();
             var m = prepareMeasurement();
-            qmLog.debug($state.current.name + ': ' + 'measurementAddCtrl.done is posting this measurement: ' + JSON.stringify(m));
+            qmLog.debug($state.current.name + ': ' + 'measurementAddCtrl.done is posting this measurement: ' +
+                JSON.stringify(m));
             showToast();
             // Measurement only - post measurement. This is for adding or editing
             var backStateParams = {};
