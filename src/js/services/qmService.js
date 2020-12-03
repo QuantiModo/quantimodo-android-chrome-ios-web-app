@@ -1183,7 +1183,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                         qmLog.info("intent: ", intent);
                     },
                     "Record Symptom Intent": function(intent){
-                        qmService.measurements.saveMeasurement(intent.parameters);
+                        qm.measurements.saveMeasurement(intent.parameters);
                     },
                     "Tracking Reminder Notification Intent": function(intent){
                         qmLog.info("intent: ", intent);
@@ -1755,53 +1755,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     qmLog.info("Broadcasting updatePrimaryOutcomeHistory");
                     $rootScope.$broadcast('updatePrimaryOutcomeHistory');
                 },
-                saveMeasurement: function(measurement, successHandler, errorHandler){
-                    if(!qmService.measurements.measurementValid(measurement)){
-                        return false;
-                    }
-                    var toastMessage = 'Recorded ' + measurement.value + ' ' + measurement.unitAbbreviatedName;
-                    qmService.showInfoToast(toastMessage.replace(' /', '/'));
-                    qm.measurements.postMeasurement(measurement, successHandler, errorHandler);
-                },
-                measurementValid: function(m){
-                    var message;
-                    if(m.value === null || m.value === '' ||
-                        typeof m.value === 'undefined'){
-                        if(m.unitAbbreviatedName === '/5'){
-                            message = 'Please select a rating';
-                        }else{
-                            message = 'Please enter a value';
-                        }
-                        qm.measurements.validationFailure(message, m);
-                        return false;
-                    }
-                    if(!m.variableName || m.variableName === ""){
-                        message = 'Please enter a variable name';
-                        qm.measurements.validationFailure(message, m);
-                        return false;
-                    }
-                    if(!m.variableCategoryName){
-                        m.variableCategoryName = qm.urlHelper.getParam('variableCategoryName');
-                    }
-                    if(!m.variableCategoryName){
-                        message = 'Please select a variable category';
-                        qm.measurements.validationFailure(message, m);
-                        return false;
-                    }
-                    if(!m.unitAbbreviatedName){
-                        message = 'Please select a unit for ' + m.variableName;
-                        qm.measurements.validationFailure(message, m);
-                        return false;
-                    }else{
-                        var u = qm.unitHelper.getByNameAbbreviatedNameOrId(m.unitAbbreviatedName);
-                        if(!u){
-                            qmLog.error('Cannot get unit id', 'abbreviated unit name is ' + m.unitAbbreviatedName);
-                        }else{
-                            m.unitId = u.id;
-                        }
-                    }
-                    return true;
-                }
             },
             navBar: {
                 setFilterBarSearchIcon: function(value){

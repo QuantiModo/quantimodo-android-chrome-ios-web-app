@@ -110,40 +110,46 @@ angular.module('starter').controller('MeasurementAddCtrl', [
                 $scope.goBack({});
             }, 500);
         };
+        function skipNotificationIfNecessary() {
+            if ($stateParams.reminderNotification && $ionicHistory.backView().stateName.toLowerCase().indexOf('inbox') > -1) {
+                // If "record a different value/time was pressed", skip reminder upon save
+                var params = {trackingReminderNotificationId: $stateParams.reminderNotification.id};
+                qmService.skipTrackingReminderNotification(params, function () {
+                    qmLog.debug($state.current.name + ': skipTrackingReminderNotification');
+                }, function (error) {
+                    qmLog.error($state.current.name + ": skipTrackingReminderNotification error", error);
+                });
+            }
+        }
+        function prepareMeasurement() {
+            var m = $scope.state.measurement;
+            m.variableName = m.variableName || jQuery('#variableName').val();
+            m.note = m.note || jQuery('#note').val();
+            m.startAt = $scope.state.selectedDate;
+            delete m.startTime;
+            m.combinationOperation = $scope.state.variableObject.combinationOperation;
+            m.variableCategoryName = getVariableCategoryName();
+            // Assign measurement value if it does not exist
+            if (!m.value && m.value !== 0) {
+                m.value = jQuery('#measurementValue').val();
+            }
+            return m;
+        }
+        function showToast() {
+            var toastMessage = 'Recorded ' + $scope.state.measurement.value + ' ' + $scope.state.measurement.unitAbbreviatedName;
+            toastMessage = toastMessage.replace(' /', '/');
+            qmService.showInfoToast(toastMessage);
+        }
         $scope.done = function(){
             if($rootScope.bloodPressure.show){
                 trackBloodPressure();
                 return;
             }
-            if(!qmService.measurements.measurementValid($scope.state.measurement)){return false;}
-            if(!qm.measurements.valueIsValid($scope.state.measurement, $scope.state.measurement.value)){return false;}
-            if($stateParams.reminderNotification && $ionicHistory.backView().stateName.toLowerCase().indexOf('inbox') > -1){
-                // If "record a different value/time was pressed", skip reminder upon save
-                var params = {trackingReminderNotificationId: $stateParams.reminderNotification.id};
-                qmService.skipTrackingReminderNotification(params, function(){
-                    qmLog.debug($state.current.name + ': skipTrackingReminderNotification');
-                }, function(error){
-                    qmLog.error($state.current.name + ": skipTrackingReminderNotification error", error);
-                });
-            }
-            $scope.state.selectedDate = moment($scope.state.selectedDate);
-            var m = {
-                id: $scope.state.measurement.id,
-                variableName: $scope.state.measurement.variableName || jQuery('#variableName').val(),
-                value: $scope.state.measurement.value,
-                note: $scope.state.measurement.note || jQuery('#note').val(),
-                prevStartTimeEpoch: $scope.state.measurement.prevStartTimeEpoch,
-                startTimeEpoch: parseInt($scope.state.selectedDate.format("X")),
-                unitAbbreviatedName: $scope.state.measurement.unitAbbreviatedName,
-                variableCategoryName: getVariableCategoryName(),
-                combinationOperation: $scope.state.variableObject.combinationOperation
-            };
-            // Assign measurement value if it does not exist
-            if(!m.value && m.value !== 0){m.value = jQuery('#measurementValue').val();}
+            if(!qm.measurements.validateMeasurement($scope.state.measurement)){return false;}
+            skipNotificationIfNecessary();
+            var m = prepareMeasurement();
             qmLog.debug($state.current.name + ': ' + 'measurementAddCtrl.done is posting this measurement: ' + JSON.stringify(m));
-            var toastMessage = 'Recorded ' + $scope.state.measurement.value + ' ' + $scope.state.measurement.unitAbbreviatedName;
-            toastMessage = toastMessage.replace(' /', '/');
-            qmService.showInfoToast(toastMessage);
+            showToast();
             // Measurement only - post measurement. This is for adding or editing
             var backStateParams = {};
             qm.measurements.postMeasurement(m, function(){
