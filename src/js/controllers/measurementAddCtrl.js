@@ -123,17 +123,19 @@ angular.module('starter').controller('MeasurementAddCtrl', [
         }
         function prepareMeasurement() {
             var m = $scope.state.measurement;
-            m.variableName = m.variableName || jQuery('#variableName').val();
-            m.note = m.note || jQuery('#note').val();
-            m.startAt = $scope.state.selectedDate;
-            delete m.startTime;
-            m.combinationOperation = $scope.state.variableObject.combinationOperation;
-            m.variableCategoryName = getVariableCategoryName();
             // Assign measurement value if it does not exist
             if (!m.value && m.value !== 0) {
                 m.value = jQuery('#measurementValue').val();
             }
-            return m;
+            // noinspection JSJQueryEfficiency
+            return {
+                variableName: m.variableName || jQuery('#variableName').val(),
+                note: m.note || jQuery('#note').val(),
+                startAt: $scope.state.selectedDate,
+                variableCategoryName: getVariableCategoryName(),
+                value: m.value,
+                unitAbbreviatedName: m.unitAbbreviatedName,
+            };
         }
         function showToast() {
             var toastMessage = 'Recorded ' + $scope.state.measurement.value + ' ' + $scope.state.measurement.unitAbbreviatedName;
