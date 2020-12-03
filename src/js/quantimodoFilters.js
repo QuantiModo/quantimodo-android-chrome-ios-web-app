@@ -253,10 +253,8 @@ angular.module('starter')
     .filter('timeOfDay', function(){
         return function(time){
             if(time){
-                if(typeof time === "number"){
-                    return moment(time * 1000).format("hA");
-                }
-                return moment.utc(time).local().format("hA");
+                var mom = qm.timeHelper.toLocalMoment(time)
+                return mom.format("hA");
             }
             return "";
         };
@@ -264,10 +262,8 @@ angular.module('starter')
     .filter('timeOfDayDayOfWeek', function(){
         return function(time){
             if(time){
-                if(typeof time === "number"){
-                    return moment(time * 1000).format("h:mm a dddd").split(/,/g);
-                }
-                return moment.utc(time).local().format("h:mm a dddd").split(/,/g);
+                var mom = qm.timeHelper.toLocalMoment(time)
+                return mom.format("h:mm a dddd").split(/,/g);
             }
             return "";
         };
@@ -275,10 +271,8 @@ angular.module('starter')
     .filter('timeOfDayDayOfWeekNoArray', function(){
         return function(time){
             if(time){
-                if(typeof time === "number"){
-                    return moment(time * 1000).format("h:mm a dddd");
-                }
-                return moment.utc(time).local().format("h:mm a dddd");
+                var mom = qm.timeHelper.toLocalMoment(time)
+                return mom.format("h:mm a dddd");
             }
             return "";
         };
@@ -286,10 +280,8 @@ angular.module('starter')
     .filter('timeOfDayDayOfWeekDate', function(){
         return function(time){
             if(time){
-                if(typeof time === "number"){
-                    return moment(time * 1000).format("h:mm a dddd, MMMM Do YYYY");
-                }
-                return moment.utc(time).local().format("h:mm a dddd, MMMM Do YYYY");
+                var mom = qm.timeHelper.toLocalMoment(time)
+                return mom.format("h:mm a dddd, MMMM Do YYYY");
             }
             return "";
         };
@@ -297,10 +289,8 @@ angular.module('starter')
     .filter('justDate', function(){
         return function(time){
             if(time){
-                if(typeof time === "number"){
-                    return moment(time * 1000).format("MMMM Do YYYY").split(/,/g);
-                }
-                return moment.utc(time).local().format("MMMM Do YYYY").split(/,/g);
+                var mom = qm.timeHelper.toLocalMoment(time)
+                return mom.format("MMMM Do YYYY").split(/,/g);
             }
             return "";
         };
@@ -308,10 +298,8 @@ angular.module('starter')
     .filter('justDateNoArray', function(){
         return function(time){
             if(time){
-                if(typeof time === "number"){
-                    return moment(time * 1000).format("MMMM Do YYYY");
-                }
-                return moment.utc(time).local().format("MMMM Do YYYY");
+                var mom = qm.timeHelper.toLocalMoment(time)
+                return mom.format("MMMM Do YYYY");
             }
             return "";
         };
@@ -319,10 +307,8 @@ angular.module('starter')
     .filter('dayOfWeekAndDate', function(){
         return function(time){
             if(time){
-                if(typeof time === "number"){
-                    return moment(time * 1000).format("ddd, MMM Do, YYYY");
-                }
-                return moment.utc(time).local().format("ddd, MMM Do, YYYY");
+                var mom = qm.timeHelper.toLocalMoment(time)
+                return mom.format("ddd, MMM Do, YYYY");
             }
             return "";
         };
@@ -330,8 +316,8 @@ angular.module('starter')
     .filter('reminderTime', function(){
         return function(time){
             if(time){
-                var reminderTime = moment.utc(time).local().calendar();
-                return reminderTime;
+                var mom = qm.timeHelper.toLocalMoment(time)
+                return mom.calendar();
             }
             return "";
         };
@@ -341,8 +327,7 @@ angular.module('starter')
             if(reminderStartTime){
                 var reminderStartTimeStringUtc = reminderStartTime + " +0000";
                 var reminderStartTimeFormat = "HH:mm:ss Z";
-                var localStartTimeString = moment(reminderStartTimeStringUtc, reminderStartTimeFormat).format("h:mm a");
-                return localStartTimeString;
+                return moment(reminderStartTimeStringUtc, reminderStartTimeFormat).format("h:mm a");
             }
             return "";
         };

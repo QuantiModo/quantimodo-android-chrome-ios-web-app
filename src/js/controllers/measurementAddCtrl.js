@@ -89,7 +89,7 @@ angular.module('starter').controller('MeasurementAddCtrl', [
                 return;
             }
             $scope.state.selectedDate = moment($scope.state.selectedDate);
-            $rootScope.bloodPressure.startTimeEpoch = parseInt($scope.state.selectedDate.format("X"));
+            $rootScope.bloodPressure.startAt = $scope.state.selectedDate;
             $rootScope.bloodPressure.note = $scope.state.measurement.note;
             qm.measurements.postBloodPressureMeasurements($rootScope.bloodPressure)
                 .then(function(){
@@ -239,13 +239,13 @@ angular.module('starter').controller('MeasurementAddCtrl', [
         var setupFromUrlParameters = function(){
             var unitAbbreviatedName = qm.urlHelper.getParam('unitAbbreviatedName', location.href, true);
             var variableName = qm.urlHelper.getParam('variableName', location.href, true);
-            var startTimeEpoch = qm.urlHelper.getParam('startTimeEpoch', location.href, true);
+            var startAt = qm.urlHelper.getParam('startAt', location.href, true);
             var value = qm.urlHelper.getParam('value', location.href, true);
-            if(unitAbbreviatedName || variableName || startTimeEpoch || value){
+            if(unitAbbreviatedName || variableName || startAt || value){
                 var m = {};
                 m.unitAbbreviatedName = unitAbbreviatedName;
                 m.variableName = variableName;
-                m.startTimeEpoch = startTimeEpoch;
+                m.startAt = startAt;
                 m.value = value;
                 setupByMeasurement(m);
             }
@@ -352,10 +352,9 @@ angular.module('starter').controller('MeasurementAddCtrl', [
             }
         }
         var setupByMeasurement = function(m){
-            if(isNaN(m.startTimeEpoch)){m.startTimeEpoch = moment(m.startTimeEpoch).unix();}
-            if(!m.id){m.prevStartTimeEpoch = m.startTimeEpoch;}
+            if(!m.id){m.prevStartAt = m.startAt;}
             $scope.state.title = "Edit Measurement";
-            $scope.state.selectedDate = moment(m.startTimeEpoch * 1000);
+            $scope.state.selectedDate = qm.timeHelper.toMoment(m.startAt);
             $scope.state.measurement = m;
             qmLog.info("Setting $scope.state.measurement to ", m);
             $scope.state.measurementIsSetup = true;
@@ -370,7 +369,7 @@ angular.module('starter').controller('MeasurementAddCtrl', [
             $scope.state.hideRemindMeButton = true;
             var m = qm.measurements.fromNotification(n);
             $scope.state.measurement = m;
-            if(m.startTime){$scope.state.selectedDate = moment(m.startTime * 1000);}
+            if(m.startAt){$scope.state.selectedDate = qm.timeHelper.toMoment(m.startAt);}
             $scope.state.measurementIsSetup = true;
             setupUnit(n.unitAbbreviatedName, n.valence);
             setStateVariable();

@@ -94,8 +94,8 @@
                 </h2>
                 <p id="historyItemBody-{{$index}}"
                    ng-click="showActionSheetForMeasurement(historyItem)">
-                    <span ng-if="historyItem.id">{{historyItem.startTimeEpoch | timeOfDay}}</span>
-                    {{historyItem.startTimeEpoch | dayOfWeekAndDate}}
+                    <span ng-if="historyItem.id">{{historyItem.startAt | timeOfDay}}</span>
+                    {{historyItem.startAt | dayOfWeekAndDate}}
                     <br>
                     <span ng-if="historyItem.noteHtml"
                           ng-bind-html="historyItem.noteHtml"></span>
