@@ -5243,7 +5243,7 @@ var qm = {
                 upc: src.upc,
                 valence: src.valence,
                 value: value,
-                variableCategoryId: src.variableCategoryName,
+                variableCategoryId: (cat) ? cat.id : null,
                 variableCategoryName: src.variableCategoryName,
                 variableName: src.variableName || src.name,
             }
