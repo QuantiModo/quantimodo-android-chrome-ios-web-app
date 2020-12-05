@@ -2282,9 +2282,10 @@ var qm = {
         },
     },
     buildInfoHelper: {
+        majorMinorVersionNumbers: '2.10.',
         alreadyMinified: function(){
             try {
-                var files = qm.fileHelper.fs().readdirSync(paths.www.scripts);
+                var files = qm.fileHelper.fs().readdirSync(qm.buildInfoHelper.paths.www.scripts);
                 if (!files.length) {
                     qmLog.info("Scripts folder is empty so we need to minify");
                     return false;
@@ -2308,8 +2309,8 @@ var qm = {
                 qmLog.info("current sha " + currentSha + " and previous commit SHA " + previousSha +
                     " don't match so we need to minify again");
             } else {
-                qmLog.info("No need to minify again because current sha " + currentSha + " and previous commit SHA " +
-                    previousSha + " match");
+                qmLog.info("No need to minify again because current sha " + currentSha +
+                    " and previous commit SHA " + previousSha + " match");
             }
             return alreadyMinified;
         },
@@ -2331,7 +2332,7 @@ var qm = {
         getCurrentBuildInfo: function () {
             qm.buildInfoHelper.currentBuildInfo = {
                 iosCFBundleVersion: qm.buildInfoHelper.buildInfo.versionNumbers.iosCFBundleVersion,
-                builtAt: timeHelper.getUnixTimestampInSeconds(),
+                builtAt: qm.timeHelper.getUnixTimestampInSeconds(),
                 builtAtString:  new Date().toISOString(),
                 buildServer: qmLog.getCurrentServerContext(),
                 buildLink: qm.buildInfoHelper.getBuildLink(),
@@ -2343,9 +2344,9 @@ var qm = {
             return qm.buildInfoHelper.currentBuildInfo;
         },
         getPreviousBuildInfo: function () {
-            var previousBuildInfo = readFile(paths.src.buildInfo);
+            var previousBuildInfo = qm.fileHelper.readFile(paths.src.buildInfo);
             if(!previousBuildInfo){
-                qmLog.info("No previous BuildInfo file at "+paths.src.buildInfo);
+                qmLog.info("No previous BuildInfo file at "+qm.buildInfoHelper.paths.src.buildInfo);
                 qm.buildInfoHelper.previousBuildInfo = false;
             } else {
                 qm.buildInfoHelper.previousBuildInfo = previousBuildInfo;
@@ -2354,8 +2355,9 @@ var qm = {
         },
         previousBuildInfo: null,
         writeCommitSha: function () {
-            writeToFile('www/data/commits/'+qm.gitHelper.getCurrentGitCommitSha(), qm.gitHelper.getCurrentGitCommitSha());
-            writeToFile('src/data/commits/'+qm.gitHelper.getCurrentGitCommitSha(), qm.gitHelper.getCurrentGitCommitSha());
+            var sha = qm.gitHelper.getCurrentGitCommitSha();
+            qm.fileHelper.writeToFile('www/data/commits/'+sha, sha);
+            qm.fileHelper.writeToFile('src/data/commits/'+sha, sha);
         },
         getBuildLink: function() {
             if(process.env.BUDDYBUILD_APP_ID){return "https://dashboard.buddybuild.com/apps/" + process.env.BUDDYBUILD_APP_ID + "/build/" + process.env.BUDDYBUILD_APP_ID;}
@@ -2384,20 +2386,50 @@ var qm = {
             function appendLeadingZero(integer) {return ('0' + integer).slice(-2);}
             function getLongDateFormat(){return date.getFullYear().toString() + appendLeadingZero(date.getMonth() + 1) + appendLeadingZero(date.getDate());}
             qm.buildInfoHelper.buildInfo.versionNumbers = {
-                iosCFBundleVersion: majorMinorVersionNumbers + getPatchVersionNumber() + '.' + getIosMinorVersionNumber(),
+                iosCFBundleVersion: qm.buildInfoHelper.majorMinorVersionNumbers + getPatchVersionNumber() + '.' + getIosMinorVersionNumber(),
                 //androidVersionCodes: {armV7: getLongDateFormat() + appendLeadingZero(date.getHours()), x86: getLongDateFormat() + appendLeadingZero(date.getHours() + 1)},
                 androidVersionCode: getLongDateFormat() + getAndroidMinorVersionNumber(),
-                ionicApp: majorMinorVersionNumbers + getPatchVersionNumber()
+                ionicApp: qm.buildInfoHelper.majorMinorVersionNumbers + getPatchVersionNumber()
             };
             qm.buildInfoHelper.buildInfo.versionNumbers.buildVersionNumber = qm.buildInfoHelper.buildInfo.versionNumbers.androidVersionCode;
             qmLog.info(JSON.stringify(qm.buildInfoHelper.buildInfo.versionNumbers));
+        },
+        paths: {
+            apk: {//android\app\build\outputs\apk\release\app-release.apk
+                combinedRelease: "platforms/android/app/build/outputs/apk/release/app-release.apk",
+                combinedDebug: "platforms/android/app/build/outputs/apk/release/app-debug.apk",
+                arm7Release: "platforms/android/app/build/outputs/apk/release/app-arm7-release.apk",
+                x86Release: "platforms/android/app/build/outputs/apk/release/app-x86-release.apk",
+                outputFolder: "platforms/android/app/build/outputs/apk",
+                builtApk: null,
+            },
+            sass: ['./src/scss/**/*.scss'],
+            src:{
+                devCredentials: "src/dev-credentials.json",
+                defaultPrivateConfig: "src/default.private_config.json",
+                icons: "src/img/icons",
+                firebase: "src/lib/firebase/**/*",
+                js: "src/js/*.js",
+                serviceWorker: "src/firebase-messaging-sw.js",
+                staticData: 'src/data/qmStaticData.js',
+            },
+            www: {
+                devCredentials: "www/dev-credentials.json",
+                defaultPrivateConfig: "www/default.private_config.json",
+                icons: "www/img/icons",
+                firebase: "www/lib/firebase/",
+                js: "www/js/",
+                scripts: "www/scripts",
+                staticData: 'src/data/qmStaticData.js',
+            },
+            chcpLogin: '.chcplogin',
         }
     },
-    builder: {},
     chartHelper: {
         configureHighchart: function(highchartConfig){
             qm.chartHelper.setChartExportingOptionsOnce(highchartConfig);
             qm.chartHelper.setTooltipFormatterFunction(highchartConfig);
+            //highchartConfig.navigator = {enabled:true};
             highchartConfig.series.forEach(function(series){
                 try {
                     qm.chartHelper.setTooltipFormatterFunction(series)
