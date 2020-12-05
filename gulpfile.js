@@ -124,7 +124,7 @@ var paths = {
         arm7Release: "platforms/android/app/build/outputs/apk/release/app-arm7-release.apk",
         x86Release: "platforms/android/app/build/outputs/apk/release/app-x86-release.apk",
         outputFolder: "platforms/android/app/build/outputs/apk",
-        builtApk: null
+        builtApk: null,
     },
     sass: ['./src/scss/**/*.scss'],
     src:{
@@ -134,7 +134,7 @@ var paths = {
         firebase: "src/lib/firebase/**/*",
         js: "src/js/*.js",
         serviceWorker: "src/firebase-messaging-sw.js",
-        staticData: 'src/data/qmStaticData.js'
+        staticData: 'src/data/qmStaticData.js',
     },
     www: {
         devCredentials: "www/dev-credentials.json",
@@ -143,9 +143,9 @@ var paths = {
         firebase: "www/lib/firebase/",
         js: "www/js/",
         scripts: "www/scripts",
-        staticData: 'src/data/qmStaticData.js'
+        staticData: 'src/data/qmStaticData.js',
     },
-    chcpLogin: '.chcplogin'
+    chcpLogin: '.chcplogin',
 };
 var argv = require('yargs').argv;
 var defaultRequestOptions = {strictSSL: false};
