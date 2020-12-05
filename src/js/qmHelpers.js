@@ -2429,7 +2429,7 @@ var qm = {
         configureHighchart: function(highchartConfig){
             qm.chartHelper.setChartExportingOptionsOnce(highchartConfig);
             qm.chartHelper.setTooltipFormatterFunction(highchartConfig);
-            //highchartConfig.navigator = {enabled:true};
+            highchartConfig.navigator = {enabled:true};
             highchartConfig.series.forEach(function(series){
                 try {
                     qm.chartHelper.setTooltipFormatterFunction(series)
