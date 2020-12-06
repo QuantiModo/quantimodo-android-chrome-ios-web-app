@@ -2282,9 +2282,10 @@ var qm = {
         },
     },
     buildInfoHelper: {
+        majorMinorVersionNumbers: '2.10.',
         alreadyMinified: function(){
             try {
-                var files = qm.fileHelper.fs().readdirSync(paths.www.scripts);
+                var files = qm.fileHelper.fs().readdirSync(qm.buildInfoHelper.paths.www.scripts);
                 if (!files.length) {
                     qmLog.info("Scripts folder is empty so we need to minify");
                     return false;
@@ -2308,8 +2309,8 @@ var qm = {
                 qmLog.info("current sha " + currentSha + " and previous commit SHA " + previousSha +
                     " don't match so we need to minify again");
             } else {
-                qmLog.info("No need to minify again because current sha " + currentSha + " and previous commit SHA " +
-                    previousSha + " match");
+                qmLog.info("No need to minify again because current sha " + currentSha +
+                    " and previous commit SHA " + previousSha + " match");
             }
             return alreadyMinified;
         },
@@ -2331,7 +2332,7 @@ var qm = {
         getCurrentBuildInfo: function () {
             qm.buildInfoHelper.currentBuildInfo = {
                 iosCFBundleVersion: qm.buildInfoHelper.buildInfo.versionNumbers.iosCFBundleVersion,
-                builtAt: timeHelper.getUnixTimestampInSeconds(),
+                builtAt: qm.timeHelper.getUnixTimestampInSeconds(),
                 builtAtString:  new Date().toISOString(),
                 buildServer: qmLog.getCurrentServerContext(),
                 buildLink: qm.buildInfoHelper.getBuildLink(),
@@ -2343,9 +2344,9 @@ var qm = {
             return qm.buildInfoHelper.currentBuildInfo;
         },
         getPreviousBuildInfo: function () {
-            var previousBuildInfo = readFile(paths.src.buildInfo);
+            var previousBuildInfo = qm.fileHelper.readFile(paths.src.buildInfo);
             if(!previousBuildInfo){
-                qmLog.info("No previous BuildInfo file at "+paths.src.buildInfo);
+                qmLog.info("No previous BuildInfo file at "+qm.buildInfoHelper.paths.src.buildInfo);
                 qm.buildInfoHelper.previousBuildInfo = false;
             } else {
                 qm.buildInfoHelper.previousBuildInfo = previousBuildInfo;
@@ -2354,8 +2355,9 @@ var qm = {
         },
         previousBuildInfo: null,
         writeCommitSha: function () {
-            writeToFile('www/data/commits/'+qm.gitHelper.getCurrentGitCommitSha(), qm.gitHelper.getCurrentGitCommitSha());
-            writeToFile('src/data/commits/'+qm.gitHelper.getCurrentGitCommitSha(), qm.gitHelper.getCurrentGitCommitSha());
+            var sha = qm.gitHelper.getCurrentGitCommitSha();
+            qm.fileHelper.writeToFile('www/data/commits/'+sha, sha);
+            qm.fileHelper.writeToFile('src/data/commits/'+sha, sha);
         },
         getBuildLink: function() {
             if(process.env.BUDDYBUILD_APP_ID){return "https://dashboard.buddybuild.com/apps/" + process.env.BUDDYBUILD_APP_ID + "/build/" + process.env.BUDDYBUILD_APP_ID;}
@@ -2384,20 +2386,50 @@ var qm = {
             function appendLeadingZero(integer) {return ('0' + integer).slice(-2);}
             function getLongDateFormat(){return date.getFullYear().toString() + appendLeadingZero(date.getMonth() + 1) + appendLeadingZero(date.getDate());}
             qm.buildInfoHelper.buildInfo.versionNumbers = {
-                iosCFBundleVersion: majorMinorVersionNumbers + getPatchVersionNumber() + '.' + getIosMinorVersionNumber(),
+                iosCFBundleVersion: qm.buildInfoHelper.majorMinorVersionNumbers + getPatchVersionNumber() + '.' + getIosMinorVersionNumber(),
                 //androidVersionCodes: {armV7: getLongDateFormat() + appendLeadingZero(date.getHours()), x86: getLongDateFormat() + appendLeadingZero(date.getHours() + 1)},
                 androidVersionCode: getLongDateFormat() + getAndroidMinorVersionNumber(),
-                ionicApp: majorMinorVersionNumbers + getPatchVersionNumber()
+                ionicApp: qm.buildInfoHelper.majorMinorVersionNumbers + getPatchVersionNumber()
             };
             qm.buildInfoHelper.buildInfo.versionNumbers.buildVersionNumber = qm.buildInfoHelper.buildInfo.versionNumbers.androidVersionCode;
             qmLog.info(JSON.stringify(qm.buildInfoHelper.buildInfo.versionNumbers));
+        },
+        paths: {
+            apk: {//android\app\build\outputs\apk\release\app-release.apk
+                combinedRelease: "platforms/android/app/build/outputs/apk/release/app-release.apk",
+                combinedDebug: "platforms/android/app/build/outputs/apk/release/app-debug.apk",
+                arm7Release: "platforms/android/app/build/outputs/apk/release/app-arm7-release.apk",
+                x86Release: "platforms/android/app/build/outputs/apk/release/app-x86-release.apk",
+                outputFolder: "platforms/android/app/build/outputs/apk",
+                builtApk: null,
+            },
+            sass: ['./src/scss/**/*.scss'],
+            src:{
+                devCredentials: "src/dev-credentials.json",
+                defaultPrivateConfig: "src/default.private_config.json",
+                icons: "src/img/icons",
+                firebase: "src/lib/firebase/**/*",
+                js: "src/js/*.js",
+                serviceWorker: "src/firebase-messaging-sw.js",
+                staticData: 'src/data/qmStaticData.js',
+            },
+            www: {
+                devCredentials: "www/dev-credentials.json",
+                defaultPrivateConfig: "www/default.private_config.json",
+                icons: "www/img/icons",
+                firebase: "www/lib/firebase/",
+                js: "www/js/",
+                scripts: "www/scripts",
+                staticData: 'src/data/qmStaticData.js',
+            },
+            chcpLogin: '.chcplogin',
         }
     },
-    builder: {},
     chartHelper: {
         configureHighchart: function(highchartConfig){
             qm.chartHelper.setChartExportingOptionsOnce(highchartConfig);
             qm.chartHelper.setTooltipFormatterFunction(highchartConfig);
+            //highchartConfig.navigator = {enabled:true};
             highchartConfig.series.forEach(function(series){
                 try {
                     qm.chartHelper.setTooltipFormatterFunction(series)
@@ -5236,14 +5268,13 @@ var qm = {
                 minimumAllowedValue: src.minimumAllowedValue || (unit) ? unit.minimum : null,
                 pngPath: src.pngPath || src.image || (cat) ? cat.pngUrl : null,
                 startAt: qm.timeHelper.getDateTime(timeAt),
-                startTime: qm.measurements.getStartAt(timeAt),
                 unitAbbreviatedName: (unit) ? unit.abbreviatedName : null,
                 unitId: (unit) ? unit.id : null,
                 unitName: (unit) ? unit.name : null,
                 upc: src.upc,
                 valence: src.valence,
                 value: value,
-                variableCategoryId: src.variableCategoryName,
+                variableCategoryId: (cat) ? cat.id : null,
                 variableCategoryName: src.variableCategoryName,
                 variableName: src.variableName || src.name,
             }
@@ -5506,7 +5537,6 @@ var qm = {
             if(parsedNote && parsedNote.url && parsedNote.message){
                 m.note = '<a href="' + parsedNote.url + '" target="_blank">' + parsedNote.message + '</a>';
             }
-            m.startTime = m.startTime || m.startTimeEpoch;
             m.startAt = qm.measurements.getStartAt(m);
             // TODO: uncomment this delete m.startTime;
             delete m.startTimeEpoch;
@@ -5568,22 +5598,12 @@ var qm = {
             return filtered;
         },
         postMeasurement: function(m){
-            function isStartTimeInMilliseconds(m){
-                var oneWeekInFuture = qm.timeHelper.getUnixTimestampInSeconds() + 7 * 86400;
-                if(m.startTimeEpoch > oneWeekInFuture){
-                    m.startTimeEpoch = m.startTimeEpoch / 1000;
-                    console.warn('Assuming startTime is in milliseconds since it is more than 1 week in the future');
-                    return true;
-                }
-                return false;
-            }
-            isStartTimeInMilliseconds(m);
             qm.measurements.addLocationAndSource(m);
             var startAt = qm.measurements.getStartAt(m);
             if(!startAt){
                 m.startAt = qm.timeHelper.toMySQLTimestamp();
             }
-            if(m.prevStartTimeEpoch){ // Primary outcome variable - update through measurementsQueue
+            if(m.prevStartAt){ // Primary outcome variable - update through measurementsQueue
                 qm.measurements.addToMeasurementsQueue(m);
             }else if(m.id){
                 qm.measurements.addToMeasurementsQueue(m);
@@ -5652,22 +5672,21 @@ var qm = {
         },
         postBloodPressureMeasurements: function(parameters){
             var deferred = Q.defer();
-            /** @namespace parameters.startTimeEpochSeconds */
-            if(!parameters.startTimeEpochSeconds){
-                parameters.startTimeEpochSeconds = qm.timeHelper.getUnixTimestampInSeconds();
+            if(!parameters.startAt){
+                parameters.startAt = qm.timeHelper.toMySQLTimestamp();
             }
             qm.measurements.postMeasurements([
                 {
                     variableId: 1874,
                     sourceName: qm.getSourceName(),
-                    startTimeEpoch: qm.measurements.validateStartTime(parameters.startTimeEpochSeconds),
+                    startAt: parameters.startAt,
                     value: parameters.systolicValue,
                     note: parameters.note
                 },
                 {
                     variableId: 5554981,
                     sourceName: qm.getSourceName(),
-                    startTimeEpoch: qm.measurements.validateStartTime(parameters.startTimeEpochSeconds),
+                    startAt: parameters.startAt,
                     value: parameters.diastolicValue,
                     note: parameters.note
                 }
@@ -5677,16 +5696,6 @@ var qm = {
                 deferred.reject(err);
             });
             return deferred.promise;
-        },
-        validateStartTime:function (startTimeEpoch){
-            var result = startTimeEpoch > qm.timeHelper.getUnixTimestampInSeconds() - 365 * 86400;
-            if(!result){
-                var errorName = 'startTimeEpoch is earlier than last year';
-                var errorMessage = startTimeEpoch + ' ' + errorName;
-                qmLog.error(errorName, errorMessage, {startTimeEpoch: startTimeEpoch}, "error");
-                qmLog.error(errorMessage);
-            }
-            return startTimeEpoch;
         },
         validationFailure: function(message, object){
             qm.alert.validationFailureAlert(message);
@@ -5727,7 +5736,7 @@ var qm = {
                     unitAbbreviatedName: trackingReminder.unitAbbreviatedName,
                     measurements: [
                         {
-                            startTimeEpoch: qm.timeHelper.getUnixTimestampInSeconds(),
+                            startAt: qm.timeHelper.toMySQLTimestamp(),
                             value: value,
                             note: null
                         }
@@ -5807,7 +5816,15 @@ var qm = {
                 deferred.reject(error);
             });
             return deferred.promise;
-        }
+        },
+        saveMeasurement: function(measurement, successHandler, errorHandler){
+            if(!qm.measurements.validateMeasurement(measurement)){
+                return false;
+            }
+            var toastMessage = 'Recorded ' + measurement.value + ' ' + measurement.unitAbbreviatedName;
+            qm.toast.infoToast(toastMessage.replace(' /', '/'));
+            qm.measurements.postMeasurement(measurement, successHandler, errorHandler);
+        },
     },
     manualTrackingVariableCategoryNames: [
         'Emotions',
@@ -10360,6 +10377,12 @@ var qm = {
         }
     },
     timeHelper: {
+        toMoment: function(timeAt){
+            return moment.utc(qm.timeHelper.getUnixTimestampInMilliseconds(timeAt));
+        },
+        toLocalMoment: function(timeAt){
+            return qm.timeHelper.toMoment(timeAt).local();
+        },
         getYesterdayDate: function(){
             var unixTime = qm.timeHelper.getUnixTimestampInSeconds() - 86400;
             return qm.timeHelper.toYYYYMMDD(unixTime);
@@ -10397,6 +10420,9 @@ var qm = {
                 return m.valueOf();
             }
             return new Date(dateTimeString).getTime();
+        },
+        toMillis: function(timeAt){
+            return qm.timeHelper.getUnixTimestampInMilliseconds(timeAt);
         },
         universalConversionToUnixTimeSeconds: function(unixTimeOrString){
             if(isNaN(unixTimeOrString)){

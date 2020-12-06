@@ -89,7 +89,7 @@ angular.module('starter').controller('MeasurementAddCtrl', [
                 return;
             }
             $scope.state.selectedDate = moment($scope.state.selectedDate);
-            $rootScope.bloodPressure.startTimeEpoch = parseInt($scope.state.selectedDate.format("X"));
+            $rootScope.bloodPressure.startAt = $scope.state.selectedDate;
             $rootScope.bloodPressure.note = $scope.state.measurement.note;
             qm.measurements.postBloodPressureMeasurements($rootScope.bloodPressure)
                 .then(function(){
@@ -110,40 +110,48 @@ angular.module('starter').controller('MeasurementAddCtrl', [
                 $scope.goBack({});
             }, 500);
         };
+        function skipNotificationIfNecessary() {
+            if ($stateParams.reminderNotification && $ionicHistory.backView().stateName.toLowerCase().indexOf('inbox') > -1) {
+                // If "record a different value/time was pressed", skip reminder upon save
+                var params = {trackingReminderNotificationId: $stateParams.reminderNotification.id};
+                qmService.skipTrackingReminderNotification(params, function () {
+                    qmLog.debug($state.current.name + ': skipTrackingReminderNotification');
+                }, function (error) {
+                    qmLog.error($state.current.name + ": skipTrackingReminderNotification error", error);
+                });
+            }
+        }
+        function prepareMeasurement() {
+            var m = $scope.state.measurement;
+            // Assign measurement value if it does not exist
+            if (!m.value && m.value !== 0) {
+                m.value = jQuery('#measurementValue').val();
+            }
+            m.variableName = m.variableName || jQuery('#variableName').val();
+            m.note = m.note || jQuery('#note').val();
+            m.startAt = $scope.state.selectedDate;
+            delete m.startTime;
+            delete m.startTimeEpoch;
+            delete m.startTimeString;
+            m.variableCategoryName = getVariableCategoryName();
+            return m;
+        }
+        function showToast() {
+            var toastMessage = 'Recorded ' + $scope.state.measurement.value + ' ' + $scope.state.measurement.unitAbbreviatedName;
+            toastMessage = toastMessage.replace(' /', '/');
+            qmService.showInfoToast(toastMessage);
+        }
         $scope.done = function(){
             if($rootScope.bloodPressure.show){
                 trackBloodPressure();
                 return;
             }
-            if(!qmService.measurements.measurementValid($scope.state.measurement)){return false;}
-            if(!qm.measurements.valueIsValid($scope.state.measurement, $scope.state.measurement.value)){return false;}
-            if($stateParams.reminderNotification && $ionicHistory.backView().stateName.toLowerCase().indexOf('inbox') > -1){
-                // If "record a different value/time was pressed", skip reminder upon save
-                var params = {trackingReminderNotificationId: $stateParams.reminderNotification.id};
-                qmService.skipTrackingReminderNotification(params, function(){
-                    qmLog.debug($state.current.name + ': skipTrackingReminderNotification');
-                }, function(error){
-                    qmLog.error($state.current.name + ": skipTrackingReminderNotification error", error);
-                });
-            }
-            $scope.state.selectedDate = moment($scope.state.selectedDate);
-            var m = {
-                id: $scope.state.measurement.id,
-                variableName: $scope.state.measurement.variableName || jQuery('#variableName').val(),
-                value: $scope.state.measurement.value,
-                note: $scope.state.measurement.note || jQuery('#note').val(),
-                prevStartTimeEpoch: $scope.state.measurement.prevStartTimeEpoch,
-                startTimeEpoch: parseInt($scope.state.selectedDate.format("X")),
-                unitAbbreviatedName: $scope.state.measurement.unitAbbreviatedName,
-                variableCategoryName: getVariableCategoryName(),
-                combinationOperation: $scope.state.variableObject.combinationOperation
-            };
-            // Assign measurement value if it does not exist
-            if(!m.value && m.value !== 0){m.value = jQuery('#measurementValue').val();}
-            qmLog.debug($state.current.name + ': ' + 'measurementAddCtrl.done is posting this measurement: ' + JSON.stringify(m));
-            var toastMessage = 'Recorded ' + $scope.state.measurement.value + ' ' + $scope.state.measurement.unitAbbreviatedName;
-            toastMessage = toastMessage.replace(' /', '/');
-            qmService.showInfoToast(toastMessage);
+            if(!qm.measurements.validateMeasurement($scope.state.measurement)){return false;}
+            skipNotificationIfNecessary();
+            var m = prepareMeasurement();
+            qmLog.debug($state.current.name + ': ' + 'measurementAddCtrl.done is posting this measurement: ' +
+                JSON.stringify(m));
+            showToast();
             // Measurement only - post measurement. This is for adding or editing
             var backStateParams = {};
             qm.measurements.postMeasurement(m, function(){
@@ -231,13 +239,13 @@ angular.module('starter').controller('MeasurementAddCtrl', [
         var setupFromUrlParameters = function(){
             var unitAbbreviatedName = qm.urlHelper.getParam('unitAbbreviatedName', location.href, true);
             var variableName = qm.urlHelper.getParam('variableName', location.href, true);
-            var startTimeEpoch = qm.urlHelper.getParam('startTimeEpoch', location.href, true);
+            var startAt = qm.urlHelper.getParam('startAt', location.href, true);
             var value = qm.urlHelper.getParam('value', location.href, true);
-            if(unitAbbreviatedName || variableName || startTimeEpoch || value){
+            if(unitAbbreviatedName || variableName || startAt || value){
                 var m = {};
                 m.unitAbbreviatedName = unitAbbreviatedName;
                 m.variableName = variableName;
-                m.startTimeEpoch = startTimeEpoch;
+                m.startAt = startAt;
                 m.value = value;
                 setupByMeasurement(m);
             }
@@ -344,10 +352,9 @@ angular.module('starter').controller('MeasurementAddCtrl', [
             }
         }
         var setupByMeasurement = function(m){
-            if(isNaN(m.startTimeEpoch)){m.startTimeEpoch = moment(m.startTimeEpoch).unix();}
-            if(!m.id){m.prevStartTimeEpoch = m.startTimeEpoch;}
+            if(!m.id){m.prevStartAt = m.startAt;}
             $scope.state.title = "Edit Measurement";
-            $scope.state.selectedDate = moment(m.startTimeEpoch * 1000);
+            $scope.state.selectedDate = qm.timeHelper.toMoment(m.startAt);
             $scope.state.measurement = m;
             qmLog.info("Setting $scope.state.measurement to ", m);
             $scope.state.measurementIsSetup = true;
@@ -362,7 +369,7 @@ angular.module('starter').controller('MeasurementAddCtrl', [
             $scope.state.hideRemindMeButton = true;
             var m = qm.measurements.fromNotification(n);
             $scope.state.measurement = m;
-            if(m.startTime){$scope.state.selectedDate = moment(m.startTime * 1000);}
+            if(m.startAt){$scope.state.selectedDate = qm.timeHelper.toMoment(m.startAt);}
             $scope.state.measurementIsSetup = true;
             setupUnit(n.unitAbbreviatedName, n.valence);
             setStateVariable();
