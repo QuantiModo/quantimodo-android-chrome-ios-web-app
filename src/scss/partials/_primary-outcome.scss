@@ -8,17 +8,19 @@
 }
 
 .primary-outcome-variable-rating-buttons > img {
-  width: 18%;
-  padding:5px;
-  max-width: 100px;
-  cursor:pointer;
+    width: 18%;
+    padding:5px;
+    max-width: 100px;
+    cursor:pointer;
+    display: inline-block;
 }
 
 .primary-outcome-variable-rating-buttons-small > img {
-  width: 18%;
-  padding:5px;
-  max-width: 56px;
-  cursor:pointer;
+    width: 18%;
+    padding:5px;
+    max-width: 56px;
+    cursor:pointer;
+    display: inline-block;
 }
 
 .primary-outcome-variable-rating-buttons > img:hover {
