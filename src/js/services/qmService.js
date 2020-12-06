@@ -226,12 +226,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     });
                 }
             },
-            alerts: {
-                errorAlert: function(message){
-                    qmLog.error(message);
-                    qmService.showMaterialAlert(message, "Please create a ticket at https://help.quantimo.do");
-                }
-            },
             api: {
                 checkRequiredProperties: function(bodyToCheck, modelName, successHandler){
                     qm.apiHelper.checkRequiredProperties(bodyToCheck, modelName, function(requiredExplanation){
