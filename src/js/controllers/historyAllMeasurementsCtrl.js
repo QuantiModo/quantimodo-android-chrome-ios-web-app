@@ -10,7 +10,7 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
             moreDataCanBeLoaded: true,
             noHistory: false,
             showLocationToggle: false,
-            sort: "-startTime",
+            sort: "-startAt",
             title: "History",
             units: [],
         };
@@ -79,10 +79,10 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
                                 changeSortAndGetHistory('value');
                             }
                             if(button.text === allButtons.sortDescendingTime.text){
-                                changeSortAndGetHistory('-startTime');
+                                changeSortAndGetHistory('-startAt');
                             }
                             if(button.text === allButtons.sortAscendingTime.text){
-                                changeSortAndGetHistory('startTime');
+                                changeSortAndGetHistory('startAt');
                             }
                             return true;
                         }

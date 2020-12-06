@@ -1183,7 +1183,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                         qmLog.info("intent: ", intent);
                     },
                     "Record Symptom Intent": function(intent){
-                        qmService.measurements.saveMeasurement(intent.parameters);
+                        qm.measurements.saveMeasurement(intent.parameters);
                     },
                     "Tracking Reminder Notification Intent": function(intent){
                         qmLog.info("intent: ", intent);
@@ -1755,53 +1755,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     qmLog.info("Broadcasting updatePrimaryOutcomeHistory");
                     $rootScope.$broadcast('updatePrimaryOutcomeHistory');
                 },
-                saveMeasurement: function(measurement, successHandler, errorHandler){
-                    if(!qmService.measurements.measurementValid(measurement)){
-                        return false;
-                    }
-                    var toastMessage = 'Recorded ' + measurement.value + ' ' + measurement.unitAbbreviatedName;
-                    qmService.showInfoToast(toastMessage.replace(' /', '/'));
-                    qm.measurements.postMeasurement(measurement, successHandler, errorHandler);
-                },
-                measurementValid: function(m){
-                    var message;
-                    if(m.value === null || m.value === '' ||
-                        typeof m.value === 'undefined'){
-                        if(m.unitAbbreviatedName === '/5'){
-                            message = 'Please select a rating';
-                        }else{
-                            message = 'Please enter a value';
-                        }
-                        qm.measurements.validationFailure(message, m);
-                        return false;
-                    }
-                    if(!m.variableName || m.variableName === ""){
-                        message = 'Please enter a variable name';
-                        qm.measurements.validationFailure(message, m);
-                        return false;
-                    }
-                    if(!m.variableCategoryName){
-                        m.variableCategoryName = qm.urlHelper.getParam('variableCategoryName');
-                    }
-                    if(!m.variableCategoryName){
-                        message = 'Please select a variable category';
-                        qm.measurements.validationFailure(message, m);
-                        return false;
-                    }
-                    if(!m.unitAbbreviatedName){
-                        message = 'Please select a unit for ' + m.variableName;
-                        qm.measurements.validationFailure(message, m);
-                        return false;
-                    }else{
-                        var u = qm.unitHelper.getByNameAbbreviatedNameOrId(m.unitAbbreviatedName);
-                        if(!u){
-                            qmLog.error('Cannot get unit id', 'abbreviated unit name is ' + m.unitAbbreviatedName);
-                        }else{
-                            m.unitId = u.id;
-                        }
-                    }
-                    return true;
-                }
             },
             navBar: {
                 setFilterBarSearchIcon: function(value){
@@ -3684,7 +3637,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 variableName: v.name,
                 variableCategoryName: v.variableCategoryName,
                 valence: v.valence,
-                startTimeEpoch: qm.timeHelper.getUnixTimestampInSeconds(),
+                startAt: qm.timeHelper.toMySQLTimestamp(),
                 unitAbbreviatedName: v.unitAbbreviatedName,
                 value: numericRatingValue,
                 note: null
@@ -3896,7 +3849,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 var newMeasurement = {
                     variableName: getLastLocationNameFromLocalStorage(),
                     unitAbbreviatedName: 'h',
-                    startTimeEpoch: qm.measurements.validateStartTime(qm.storage.getItem(qm.items.lastLocationUpdateTimeEpochSeconds)),
+                    startAt: qm.timeHelper.toMySQLTimestamp(qm.storage.getItem(qm.items.lastLocationUpdateTimeEpochSeconds)),
                     sourceName: getGeoLocationSourceName(isBackground),
                     value: getHoursAtLocation(),
                     variableCategoryName: 'Location',
@@ -4346,13 +4299,14 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 return false;
             }
             var weekdayMeasurementArrays = [];
-            var startTimeMilliseconds = null;
+            var millis = null;
             for(var i = 0; i < allMeasurements.length; i++){
-                startTimeMilliseconds = allMeasurements[i].startTimeEpoch * 1000;
-                if(typeof weekdayMeasurementArrays[moment(startTimeMilliseconds).day()] === "undefined"){
-                    weekdayMeasurementArrays[moment(startTimeMilliseconds).day()] = [];
+                var m = allMeasurements[i];
+                var day = qm.timeHelper.toMoment(m.startAt).day();
+                if(typeof weekdayMeasurementArrays[day] === "undefined"){
+                    weekdayMeasurementArrays[day] = [];
                 }
-                weekdayMeasurementArrays[moment(startTimeMilliseconds).day()].push(allMeasurements[i]);
+                weekdayMeasurementArrays[day].push(m);
             }
             return weekdayMeasurementArrays;
         };
@@ -4362,24 +4316,25 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 return false;
             }
             var monthlyMeasurementArrays = [];
-            var startTimeMilliseconds = null;
             for(var i = 0; i < allMeasurements.length; i++){
-                startTimeMilliseconds = allMeasurements[i].startTimeEpoch * 1000;
-                if(typeof monthlyMeasurementArrays[moment(startTimeMilliseconds).month()] === "undefined"){
-                    monthlyMeasurementArrays[moment(startTimeMilliseconds).month()] = [];
+                var m = allMeasurements[i];
+                var month = qm.timeHelper.toMoment(m.startAt).month();
+                if(typeof monthlyMeasurementArrays[month] === "undefined"){
+                    monthlyMeasurementArrays[month] = [];
                 }
-                monthlyMeasurementArrays[moment(startTimeMilliseconds).month()].push(allMeasurements[i]);
+                monthlyMeasurementArrays[month].push(m);
             }
             return monthlyMeasurementArrays;
         };
         qmService.generateHourlyMeasurementArray = function(allMeasurements){
             var hourlyMeasurementArrays = [];
             for(var i = 0; i < allMeasurements.length; i++){
-                var startTimeMilliseconds = allMeasurements[i].startTimeEpoch * 1000;
-                if(typeof hourlyMeasurementArrays[moment(startTimeMilliseconds).hour()] === "undefined"){
-                    hourlyMeasurementArrays[moment(startTimeMilliseconds).hour()] = [];
+                var m = allMeasurements[i];
+                var hour = qm.timeHelper.toMoment(m.startAt).hour();
+                if(typeof hourlyMeasurementArrays[hour] === "undefined"){
+                    hourlyMeasurementArrays[hour] = [];
                 }
-                hourlyMeasurementArrays[moment(startTimeMilliseconds).hour()].push(allMeasurements[i]);
+                hourlyMeasurementArrays[hour].push(m);
             }
             return hourlyMeasurementArrays;
         };
@@ -4800,14 +4755,16 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 console.warn('Highstock cannot show tooltips because we have more than 100 measurements');
             }
             for(var i = 0; i < numberOfMeasurements; i++){
+                var m = measurements[i];
+                var millis = qm.timeHelper.toMillis(m.startAt);
                 if(numberOfMeasurements < 1000){
-                    name = (measurements[i].sourceName) ? "(" + measurements[i].sourceName + ")" : '';
-                    if(measurements[i].note){
-                        name = measurements[i].note + " " + name;
+                    name = (m.sourceName) ? "(" + m.sourceName + ")" : '';
+                    if(m.note){
+                        name = m.note + " " + name;
                     }
-                    lineChartItem = {x: measurements[i].startTimeEpoch * 1000, y: measurements[i].value, name: name};
+                    lineChartItem = {x: millis, y: m.value, name: name};
                 }else{
-                    lineChartItem = [measurements[i].startTimeEpoch * 1000, measurements[i].value];
+                    lineChartItem = [millis, m.value];
                 }
                 lineChartData.push(lineChartItem);
             }
@@ -5214,7 +5171,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 fillingValue: 0,
                 measurements: [{
                     value: 1,
-                    startTimeEpoch: qm.measurements.validateStartTime(getYesterdayNoonTimestamp()),
+                    startAt: yesterdayNoonAt(),
                     //note: data.daily.data[0].icon // We shouldn't add icon as note because it messes up the note analysis
                 }]
             };
@@ -5228,16 +5185,16 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 unitAbbreviatedName: "F",
                 measurements: [{
                     value: (data.daily.data[0].temperatureMax + data.daily.data[0].temperatureMin) / 2,
-                    startTimeEpoch: qm.measurements.validateStartTime(getYesterdayNoonTimestamp())
+                    startAt: yesterdayNoonAt(),
                     //note: data.daily.data[0].icon // We shouldn't add icon as note because it messes up the note analysis
                 }]
             };
         }
-        function getYesterdayNoonTimestamp(){
+        function yesterdayNoonAt(){
             var localMidnightMoment = moment(0, "HH");
             var localMidnightTimestamp = localMidnightMoment.unix();
             var yesterdayNoonTimestamp = localMidnightTimestamp - 86400 / 2;
-            return yesterdayNoonTimestamp;
+            return qm.timeHelper.toMySQLTimestamp(yesterdayNoonTimestamp);
         }
         function createBarometricPressureMeasurement(data){
             return {
@@ -5248,7 +5205,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 unitAbbreviatedName: "Pa",
                 measurements: [{
                     value: data.daily.data[0].pressure * 100,
-                    startTimeEpoch: qm.measurements.validateStartTime(getYesterdayNoonTimestamp())
+                    startAt: yesterdayNoonAt()
                     //note: data.daily.data[0].icon // We shouldn't add icon as note because it messes up the note analysis
                 }]
             };
@@ -5262,7 +5219,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 unitAbbreviatedName: "%",
                 measurements: [{
                     value: data.daily.data[0].humidity * 100,
-                    startTimeEpoch: qm.measurements.validateStartTime(getYesterdayNoonTimestamp())
+                    startAt: yesterdayNoonAt()
                     //note: data.daily.data[0].icon // We shouldn't add icon as note because it messes up the note analysis
                 }]
             };
@@ -5276,7 +5233,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 unitAbbreviatedName: "miles",
                 measurements: [{
                     value: data.daily.data[0].visibility,
-                    startTimeEpoch: qm.measurements.validateStartTime(getYesterdayNoonTimestamp())
+                    startAt: yesterdayNoonAt()
                     //note: data.daily.data[0].icon // We shouldn't add icon as note because it messes up the note analysis
                 }]
             };
@@ -5291,7 +5248,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 unitAbbreviatedName: "%",
                 measurements: [{
                     value: data.daily.data[0].cloudCover * 100,
-                    startTimeEpoch: qm.measurements.validateStartTime(getYesterdayNoonTimestamp())
+                    startAt: yesterdayNoonAt()
                     //note: data.daily.data[0].icon  // We shouldn't add icon as note because it messes up the note analysis
                 }]
             };
@@ -5300,11 +5257,12 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             return Number(qm.storage.getItem('lastPostedWeatherAt'));
         }
         function alreadyPostedWeatherSinceNoonYesterday(){
-            var lastPostedWeatherAt = getLastPostedWeatherAtTimeUnixTime();
-            if(!lastPostedWeatherAt){
+            var time = getLastPostedWeatherAtTimeUnixTime();
+            if(!time){
                 return false;
             }
-            if(lastPostedWeatherAt && lastPostedWeatherAt > getYesterdayNoonTimestamp()){
+            var lastPostedWeatherAt = qm.timeHelper.toMySQLTimestamp(time);
+            if(lastPostedWeatherAt && lastPostedWeatherAt > yesterdayNoonAt()){
                 qmLog.debug('recently posted weather already', null);
                 return true;
             }
@@ -5333,7 +5291,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             }
             var FORECASTIO_KEY = '81b54a0d1bd6e3ccdd52e777be2b14cb';
             var url = 'https://api.forecast.io/forecast/' + FORECASTIO_KEY + '/';
-            url = url + coordinates.latitude + ',' + coordinates.longitude + ',' + getYesterdayNoonTimestamp() + '?callback=JSON_CALLBACK';
+            var time = qm.timeHelper.toUnixTime(yesterdayNoonAt());
+            url = url + coordinates.latitude + ',' + coordinates.longitude + ',' + time + '?callback=JSON_CALLBACK';
             qmLog.debug('Checking weather forecast at ' + url);
             $http.jsonp(url).success(function(data){
                 var measurementSets = getWeatherMeasurementSets(data);

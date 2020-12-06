@@ -35,7 +35,7 @@ function checkChartsPage (variableName) {
     cy.url().should('contain', 'charts')
     cy.url().should('contain', variableName)
     cy.log('Chart is present and titled')
-    cy.contains(`${variableName} Over Time`)
+    cy.contains(`${variableName} Over Time`, {timeout: 30000})
     cy.get('#menu-more-button').click({ force: true })
     cy.clickActionSheetButtonContaining('Settings')
 }
@@ -196,7 +196,7 @@ describe('Measurements', function () {
             cy.get('#variable-name').contains(variableName)
             recordRatingCheckHistory(newMoodValue, variableName, valence)
             cy.loginWithAccessTokenIfNecessary('/#/app/measurement-add?id=' + measurementId)
-            cy.get('#variable-name').contains(variableName)
+            cy.get('#variable-name', {timeout: 5000}).contains(variableName)
             cy.wait(1000)
             goToHistoryForVariable(variableName)
             cy.get("#hidden-measurement-id-0").then(($el) => {

@@ -5268,14 +5268,13 @@ var qm = {
                 minimumAllowedValue: src.minimumAllowedValue || (unit) ? unit.minimum : null,
                 pngPath: src.pngPath || src.image || (cat) ? cat.pngUrl : null,
                 startAt: qm.timeHelper.getDateTime(timeAt),
-                startTime: qm.measurements.getStartAt(timeAt),
                 unitAbbreviatedName: (unit) ? unit.abbreviatedName : null,
                 unitId: (unit) ? unit.id : null,
                 unitName: (unit) ? unit.name : null,
                 upc: src.upc,
                 valence: src.valence,
                 value: value,
-                variableCategoryId: src.variableCategoryName,
+                variableCategoryId: (cat) ? cat.id : null,
                 variableCategoryName: src.variableCategoryName,
                 variableName: src.variableName || src.name,
             }
@@ -5538,7 +5537,6 @@ var qm = {
             if(parsedNote && parsedNote.url && parsedNote.message){
                 m.note = '<a href="' + parsedNote.url + '" target="_blank">' + parsedNote.message + '</a>';
             }
-            m.startTime = m.startTime || m.startTimeEpoch;
             m.startAt = qm.measurements.getStartAt(m);
             // TODO: uncomment this delete m.startTime;
             delete m.startTimeEpoch;
@@ -5600,22 +5598,12 @@ var qm = {
             return filtered;
         },
         postMeasurement: function(m){
-            function isStartTimeInMilliseconds(m){
-                var oneWeekInFuture = qm.timeHelper.getUnixTimestampInSeconds() + 7 * 86400;
-                if(m.startTimeEpoch > oneWeekInFuture){
-                    m.startTimeEpoch = m.startTimeEpoch / 1000;
-                    console.warn('Assuming startTime is in milliseconds since it is more than 1 week in the future');
-                    return true;
-                }
-                return false;
-            }
-            isStartTimeInMilliseconds(m);
             qm.measurements.addLocationAndSource(m);
             var startAt = qm.measurements.getStartAt(m);
             if(!startAt){
                 m.startAt = qm.timeHelper.toMySQLTimestamp();
             }
-            if(m.prevStartTimeEpoch){ // Primary outcome variable - update through measurementsQueue
+            if(m.prevStartAt){ // Primary outcome variable - update through measurementsQueue
                 qm.measurements.addToMeasurementsQueue(m);
             }else if(m.id){
                 qm.measurements.addToMeasurementsQueue(m);
@@ -5684,22 +5672,21 @@ var qm = {
         },
         postBloodPressureMeasurements: function(parameters){
             var deferred = Q.defer();
-            /** @namespace parameters.startTimeEpochSeconds */
-            if(!parameters.startTimeEpochSeconds){
-                parameters.startTimeEpochSeconds = qm.timeHelper.getUnixTimestampInSeconds();
+            if(!parameters.startAt){
+                parameters.startAt = qm.timeHelper.toMySQLTimestamp();
             }
             qm.measurements.postMeasurements([
                 {
                     variableId: 1874,
                     sourceName: qm.getSourceName(),
-                    startTimeEpoch: qm.measurements.validateStartTime(parameters.startTimeEpochSeconds),
+                    startAt: parameters.startAt,
                     value: parameters.systolicValue,
                     note: parameters.note
                 },
                 {
                     variableId: 5554981,
                     sourceName: qm.getSourceName(),
-                    startTimeEpoch: qm.measurements.validateStartTime(parameters.startTimeEpochSeconds),
+                    startAt: parameters.startAt,
                     value: parameters.diastolicValue,
                     note: parameters.note
                 }
@@ -5709,16 +5696,6 @@ var qm = {
                 deferred.reject(err);
             });
             return deferred.promise;
-        },
-        validateStartTime:function (startTimeEpoch){
-            var result = startTimeEpoch > qm.timeHelper.getUnixTimestampInSeconds() - 365 * 86400;
-            if(!result){
-                var errorName = 'startTimeEpoch is earlier than last year';
-                var errorMessage = startTimeEpoch + ' ' + errorName;
-                qmLog.error(errorName, errorMessage, {startTimeEpoch: startTimeEpoch}, "error");
-                qmLog.error(errorMessage);
-            }
-            return startTimeEpoch;
         },
         validationFailure: function(message, object){
             qm.alert.validationFailureAlert(message);
@@ -5759,7 +5736,7 @@ var qm = {
                     unitAbbreviatedName: trackingReminder.unitAbbreviatedName,
                     measurements: [
                         {
-                            startTimeEpoch: qm.timeHelper.getUnixTimestampInSeconds(),
+                            startAt: qm.timeHelper.toMySQLTimestamp(),
                             value: value,
                             note: null
                         }
@@ -5839,7 +5816,15 @@ var qm = {
                 deferred.reject(error);
             });
             return deferred.promise;
-        }
+        },
+        saveMeasurement: function(measurement, successHandler, errorHandler){
+            if(!qm.measurements.validateMeasurement(measurement)){
+                return false;
+            }
+            var toastMessage = 'Recorded ' + measurement.value + ' ' + measurement.unitAbbreviatedName;
+            qm.toast.infoToast(toastMessage.replace(' /', '/'));
+            qm.measurements.postMeasurement(measurement, successHandler, errorHandler);
+        },
     },
     manualTrackingVariableCategoryNames: [
         'Emotions',
@@ -10392,6 +10377,12 @@ var qm = {
         }
     },
     timeHelper: {
+        toMoment: function(timeAt){
+            return moment.utc(qm.timeHelper.getUnixTimestampInMilliseconds(timeAt));
+        },
+        toLocalMoment: function(timeAt){
+            return qm.timeHelper.toMoment(timeAt).local();
+        },
         getYesterdayDate: function(){
             var unixTime = qm.timeHelper.getUnixTimestampInSeconds() - 86400;
             return qm.timeHelper.toYYYYMMDD(unixTime);
@@ -10429,6 +10420,9 @@ var qm = {
                 return m.valueOf();
             }
             return new Date(dateTimeString).getTime();
+        },
+        toMillis: function(timeAt){
+            return qm.timeHelper.getUnixTimestampInMilliseconds(timeAt);
         },
         universalConversionToUnixTimeSeconds: function(unixTimeOrString){
             if(isNaN(unixTimeOrString)){
