@@ -4775,45 +4775,45 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             }
             return weightedArray;
         }
-        qmService.configureLineChart = function(data, variableObject){
-            if(!variableObject.name){
-                if(variableObject.variableName){
-                    variableObject.name = variableObject.variableName;
+        qmService.configureLineChart = function(measurements, variable){
+            if(!variable.name){
+                if(variable.variableName){
+                    variable.name = variable.variableName;
                 }else{
                     qmLog.error("ERROR: No variable name provided to configureLineChart");
                     return;
                 }
             }
-            if(data.length < 1){
+            if(measurements.length < 1){
                 qmLog.error("ERROR: No data provided to configureLineChart");
                 return;
             }
             var date = new Date();
             var timezoneOffsetHours = (date.getTimezoneOffset()) / 60;
-            var timezoneOffsetMilliseconds = timezoneOffsetHours * 60 * 60 * 1000; // minutes, seconds, milliseconds
-            var minimumTimeEpochMilliseconds, maximumTimeEpochMilliseconds, i;
-            var numberOfMeasurements = data.length;
+            var offset = timezoneOffsetHours * 60 * 60 * 1000; // minutes, seconds, milliseconds
+            var min, max, i;
+            var numberOfMeasurements = measurements.length;
             if(numberOfMeasurements < 1000){
-                data = data.sort(function(a, b){
+                measurements = measurements.sort(function(a, b){
                     return a.x - b.x;
                 });
                 for(i = 0; i < numberOfMeasurements; i++){
-                    data[i].x = data[i].x - timezoneOffsetMilliseconds;
+                    measurements[i].x = measurements[i].x - offset;
                 }
-                minimumTimeEpochMilliseconds = data[0].x - timezoneOffsetMilliseconds;
-                maximumTimeEpochMilliseconds = data[data.length - 1].x - timezoneOffsetMilliseconds;
+                min = measurements[0].x - offset;
+                max = measurements[measurements.length - 1].x - offset;
             }else{
-                data = data.sort(function(a, b){
+                measurements = measurements.sort(function(a, b){
                     return a[0] - b[0];
                 });
                 for(i = 0; i < numberOfMeasurements; i++){
-                    data[i][0] = data[i][0] - timezoneOffsetMilliseconds;
+                    measurements[i][0] = measurements[i][0] - offset;
                 }
-                minimumTimeEpochMilliseconds = data[0][0] - timezoneOffsetMilliseconds;
-                maximumTimeEpochMilliseconds = data[data.length - 1][0] - timezoneOffsetMilliseconds;
+                min = measurements[0][0] - offset;
+                max = measurements[measurements.length - 1][0] - offset;
             }
-            var millisecondsBetweenLatestAndEarliest = maximumTimeEpochMilliseconds - minimumTimeEpochMilliseconds;
-            if(millisecondsBetweenLatestAndEarliest < 86400 * 1000){
+            var spread = max - min;
+            if(spread < 86400 * 1000){
                 console.warn('Need at least a day worth of data for line chart');
                 //return;
             }
@@ -4832,7 +4832,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                         }
                         angular.forEach(value.points, function(point){
                             //string += '<span>' + point.series.name + ':</span> ';
-                            string += '<span>' + (point.point.y + variableObject.unitAbbreviatedName).replace(' /', '/') + '</span>';
+                            string += '<span>' + (point.point.y + variable.unitAbbreviatedName).replace(' /', '/') + '</span>';
                             string += '<br/>';
                             if(value.points["0"].point.name){
                                 string += '<span>' + value.points["0"].point.name + '</span>';
@@ -4856,8 +4856,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                         month: '%b \'%y',
                         year: '%Y'
                     },
-                    min: minimumTimeEpochMilliseconds,
-                    max: maximumTimeEpochMilliseconds
+                    min: min,
+                    max: max
                 },
                 credits: {enabled: false},
                 rangeSelector: {enabled: true},
@@ -4877,14 +4877,14 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                         }
                     }
                 },
-                title: {text: variableObject.name + ' Over Time (' + variableObject.unitAbbreviatedName + ')'},
+                title: {text: variable.name + ' Over Time (' + variable.unitAbbreviatedName + ')'},
                 series: [{
-                    name: variableObject.name + ' Over Time',
-                    data: data,
+                    name: variable.name + ' Over Time',
+                    data: measurements,
                     tooltip: {valueDecimals: 2}
                 }]
             };
-            var doNotConnectPoints = variableObject.unitCategoryName !== 'Rating';
+            var doNotConnectPoints = variable.unitCategoryName !== 'Rating';
             if(doNotConnectPoints){
                 chartConfig.series.marker = {enabled: true, radius: 2};
                 chartConfig.series.lineWidth = 0;
