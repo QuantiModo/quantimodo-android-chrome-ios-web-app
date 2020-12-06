@@ -10,11 +10,14 @@ String.prototype.toCamelCase = function(){
 };
 var qm = {
     alert: {
-        validationFailureAlert: function(errorMessage, callback){
-            qm.toast.errorAlert(errorMessage, callback)
-        },
-        errorAlert: function(errorMessage, callback){
-            qm.toast.errorAlert(errorMessage, callback)
+        errorAlert: function(title, text){
+            debugger
+            Swal.fire({
+                icon: 'error',
+                title: title,
+                text: text,
+                footer: '<a href="https://help.quantimo.do">Get help</a>'
+            })
         },
     },
     analytics: {
@@ -5698,7 +5701,7 @@ var qm = {
             return deferred.promise;
         },
         validationFailure: function(message, object){
-            qm.alert.validationFailureAlert(message);
+            qm.alert.errorAlert('Hmm...', message);
             qmLog.error(message, null, {measurement: object});
         },
         getStartAt: function(m){
@@ -10574,7 +10577,8 @@ var qm = {
         }
     },
     toast: {
-        errorAlert: function(errorMessage, callback){
+        errorToast: function(errorMessage, callback){
+            debugger
             if(qm.appMode.isBackEnd()){
                 qmLog.info("toast.errorAlert: "+errorMessage)
                 return;
