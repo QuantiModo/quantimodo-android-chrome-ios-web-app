@@ -107,7 +107,7 @@ angular.module('starter').controller('StudiesCtrl',
             qmLog.info('Getting studies with params ' + JSON.stringify(params));
             qm.studyHelper.getStudiesFromApi(params, function(studiesResponse){
                 if(!studiesResponse){
-                    qmService.alerts.errorAlert("Could not get studies!");
+                    qm.toast.errorToast("Could not get studies!");
                     $scope.goBack();
                     return;
                 }
