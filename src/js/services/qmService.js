@@ -2207,6 +2207,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 var SelectVariableDialogController = function($scope, $state, $rootScope, $stateParams, $filter, qmService,
                                                               $q, $log, dialogParams, $timeout){
                     var self = this;
+                    //debugger
                     if(!dialogParams.placeholder){
                         dialogParams.placeholder = "Enter a variable";
                     }
