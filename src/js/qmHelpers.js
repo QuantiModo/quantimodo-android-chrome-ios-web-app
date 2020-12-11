@@ -1653,10 +1653,22 @@ var qm = {
                 'variableId',
                 'variableName',
             ];
-            var excludedFilterParams = ['includePublic', 'excludeLocal', 'minimumNumberOfResultsRequiredToAvoidAPIRequest',
-                'sort', 'limit', 'appName', 'appVersion', 'accessToken', 'clientId', 'barcodeFormat', 'searchPhrase',
+            var excludedFilterParams = [
+                'includePublic',
+                'excludeLocal',
+                'minimumNumberOfResultsRequiredToAvoidAPIRequest',
+                'sort',
+                'limit',
+                'appName',
+                'appVersion',
+                'accessToken',
+                'clientId',
+                'barcodeFormat',
+                'searchPhrase',
                 'fallbackToAggregatedCorrelations',
-                'platform', 'reason'];
+                'platform',
+                'reason'
+            ];
             var greaterThanPropertyName = null;
             var greaterThanPropertyValue = null;
             var lessThanPropertyName = null;
