@@ -117,7 +117,7 @@ context('Actions', () => {
 
     // Our app has a listener on 'dblclick' event in our 'scripts.js'
     // that hides the div and shows an input on double click
-    cy.get('.action-div').dblclick().should('not.be.visible')
+    cy.get('.action-div').dblclick().should('not.exist')
     cy.get('.action-input-hidden').should('be.visible')
   })
 
@@ -126,7 +126,7 @@ context('Actions', () => {
 
     // Our app has a listener on 'contextmenu' event in our 'scripts.js'
     // that hides the div and shows an input on right click
-    cy.get('.rightclick-action-div').rightclick().should('not.be.visible')
+    cy.get('.rightclick-action-div').rightclick().should('not.exist')
     cy.get('.rightclick-action-input-hidden').should('be.visible')
   })
 
@@ -223,21 +223,21 @@ context('Actions', () => {
     // the viewable area of their parent
     // (we need to scroll to see them)
     cy.get('#scroll-horizontal button')
-      .should('not.be.visible')
+      .should('not.exist')
 
     // scroll the button into view, as if the user had scrolled
     cy.get('#scroll-horizontal button').scrollIntoView()
       .should('be.visible')
 
     cy.get('#scroll-vertical button')
-      .should('not.be.visible')
+      .should('not.exist')
 
     // Cypress handles the scroll direction needed
     cy.get('#scroll-vertical button').scrollIntoView()
       .should('be.visible')
 
     cy.get('#scroll-both button')
-      .should('not.be.visible')
+      .should('not.exist')
 
     // Cypress knows to scroll to the right and down
     cy.get('#scroll-both button').scrollIntoView()
