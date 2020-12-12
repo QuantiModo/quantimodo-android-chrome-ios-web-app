@@ -59,8 +59,9 @@ describe('Authentication', function () {
     cy.get(selectors.pw).type(testUserName)
     cy.get(selectors.pwConfirm).type(testUserPassword)
     cy.get(selectors.registerButton).click({ force: true })
-    cy.contains('#error-messages > li', 'The user login has already been taken.')
-    cy.contains('#error-messages > li', 'The user email has already been taken.')
+    cy.contains('#error-messages', 'The user login has already been taken.')
+      //cy.contains('#error-messages', 'The email has already been taken.')
+      //cy.contains('#error-messages', 'must match')
   })
   it('Logs in and redirects to authorization page', function () {
     let redirectUrl = `https://${API_HOST}${authorizePath}client_id=${clientId}&client_secret=${clientSecret}`
