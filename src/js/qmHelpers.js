@@ -11815,6 +11815,8 @@ var qm = {
             function sortUpdateSubtitlesAndReturnVariables(variables, params){
                 if(!params.sort){
                     variables = qm.variablesHelper.defaultVariableSort(variables);
+                } else {
+                    variables = qm.arrayHelper.sortByProperty(variables, params.sort);
                 }
                 variables = qm.variablesHelper.updateSubtitles(variables, params);
                 if(params && params.limit){
