@@ -29,7 +29,8 @@ describe('WordPress', function(){
     })
     it('Clicks the Drift chat button', function(){
         cy.visit('https://quantimo.do')
-        cy.get('#drift-widget', {timeout: 20000}).click({force: true, multiple: true})
+        cy.get('.template-page > .wrap-content > #post-18196 > .article-content > .container-wrap:nth-child(3)',
+            {timeout: 20000}).click({force: true, multiple: true})
     })
     it('Clicks to email mike', function(){
         cy.visit('https://quantimo.do')
