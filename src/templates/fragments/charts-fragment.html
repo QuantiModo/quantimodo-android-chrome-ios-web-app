@@ -8,45 +8,13 @@
         </div>
     </div>
 </div>
-<div ng-if="state.variableObject.charts.lineChartWithoutSmoothing.highchartConfig"
-     class="card primary-outcome-variable-reporting-chart" style="border-radius: 15px;">
-    <div class="item item-text-wrap">
-        <highchart id="{{state.variableObject.charts.lineChartWithoutSmoothing.chartId}}"
-                   config="state.variableObject.charts.lineChartWithoutSmoothing.highchartConfig"></highchart>
-    </div>
-</div>
-<div ng-if="state.variableObject.charts.lineChartWithSmoothing.highchartConfig"
-     class="card primary-outcome-variable-reporting-chart">
-    <div class="item item-text-wrap">
-        <highchart id="{{state.variableObject.charts.lineChartWithSmoothing.chartId}}"
-                   config="state.variableObject.charts.lineChartWithSmoothing.highchartConfig"></highchart>
-    </div>
-</div>
-<div ng-if="state.variableObject.charts.hourlyColumnChart.highchartConfig"
-     class="card primary-outcome-variable-reporting-chart">
-    <div class="item item-text-wrap">
-        <highchart id="{{state.variableObject.charts.hourlyColumnChart.chartId}}"
-                   config="state.variableObject.charts.hourlyColumnChart.highchartConfig"></highchart>
-    </div>
-</div>
-<div ng-if="state.variableObject.charts.weekdayColumnChart.highchartConfig"
-     class="card primary-outcome-variable-reporting-chart">
-    <div class="item item-text-wrap">
-        <highchart id="{{state.variableObject.charts.weekdayColumnChart.chartId}}"
-                   config="state.variableObject.charts.weekdayColumnChart.highchartConfig"></highchart>
-    </div>
-</div>
-<div ng-if="state.variableObject.charts.monthlyColumnChart.highchartConfig"
-     class="card primary-outcome-variable-reporting-chart">
-    <div class="item item-text-wrap">
-        <highchart id="{{state.variableObject.charts.monthlyColumnChart.chartId}}"
-                   config="state.variableObject.charts.monthlyColumnChart.highchartConfig"></highchart>
-    </div>
-</div>
-<div ng-if="state.variableObject.charts.distributionColumnChart.highchartConfig"
-     class="card primary-outcome-variable-reporting-chart">
-    <div class="item item-text-wrap">
-        <highchart id="{{state.variableObject.charts.distributionColumnChart.chartId}}"
-                   config="state.variableObject.charts.distributionColumnChart.highchartConfig"></highchart>
+<div ng-repeat="(key, qmChart) in state.variableObject.charts">
+    <div ng-if="qmChart && qmChart.highchartConfig"
+         class="card primary-outcome-variable-reporting-chart" style="border-radius: 15px;">
+        <div class="item item-text-wrap">
+            <highchart id="{{qmChart.chartId}}"
+                       config="qmChart.highchartConfig">
+            </highchart>
+        </div>
     </div>
 </div>
