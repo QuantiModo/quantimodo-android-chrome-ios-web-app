@@ -12,7 +12,7 @@
   "devDependencies": {
     "@angular/core": "latest",
     "@bahmutov/print-env": "1.2.1",
-    "@capacitor/cli": "2.4.4",
+    "@capacitor/cli": "2.4.5",
     "@commitlint/cli": "8.3.5",
     "@commitlint/config-conventional": "8.3.4",
     "@ionic/v1-toolkit": "3.2.15",
@@ -31,7 +31,7 @@
     "@types/rimraf": "2.0.4",
     "@types/underscore.string": "0.0.38",
     "angular": "latest",
-    "aws-sdk": "2.809.0",
+    "aws-sdk": "2.810.0",
     "aws-sdk-mock": "4.5.0",
     "beautify": "0.0.8",
     "chai": "4.2.0",
@@ -99,7 +99,7 @@
   "dependencies": {
     "@bugsnag/js": "6.5.2",
     "@bugsnag/plugin-express": "6.5.1",
-    "@capacitor/core": "2.4.4",
+    "@capacitor/core": "2.4.5",
     "@octokit/rest": "16.35.2",
     "@types/q": "1.5.4",
     "ansi-colors": "4.1.1",
