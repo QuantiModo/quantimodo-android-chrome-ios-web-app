@@ -211,7 +211,7 @@ angular.module('starter',
                 closeOnSelect: false
             };
             ionicDatePickerProvider.configDatePicker(datePickerObj);
-            qm.staticData.states.forEach(function(state){
+            qmStates.forEach(function(state){
                     if(state.name === ''){
                         return;
                     }
@@ -231,62 +231,6 @@ angular.module('starter',
                     }
                     $stateProvider.state(state.name, state);
                 });
-            $stateProvider.state('searchPage', {
-                "url": "/search-page",
-                "cache": false,
-                "params": {
-                    "showAds": true,
-                    "variableCategoryName": null,
-                    "fromState": null,
-                    "fromUrl": null,
-                    "measurement": null,
-                    "nextState": "app.charts",
-                    "doNotShowAddVariableButton": true,
-                    "excludeSingularBloodPressure": true,
-                    "variableSearchParameters": {
-                        "limit": 100,
-                        "includePublic": false
-                    },
-                    "hideNavigationMenu": null,
-                    "title": "Select a Variable",
-                    "ionIcon": "ion-search"
-                },
-                "views": {
-                    "menuContent": {
-                        "templateUrl": "templates/search-page.html",
-                        "controller": "SearchPageCtrl"
-                    }
-                },
-                "name": "app.searchPage"
-            });
-            $stateProvider.state('searchBar', {
-                "url": "/search-bar",
-                "cache": false,
-                "params": {
-                    "showAds": true,
-                    "variableCategoryName": null,
-                    "fromState": null,
-                    "fromUrl": null,
-                    "measurement": null,
-                    "nextState": "app.charts",
-                    "doNotShowAddVariableButton": true,
-                    "excludeSingularBloodPressure": true,
-                    "variableSearchParameters": {
-                        "limit": 100,
-                        "includePublic": false
-                    },
-                    "hideNavigationMenu": null,
-                    "title": "Select a Variable",
-                    "ionIcon": "ion-search"
-                },
-                "views": {
-                    "menuContent": {
-                        "templateUrl": "templates/search-bar.html",
-                        "controller": "SearchBarCtrl"
-                    }
-                },
-                "name": "app.searchBar"
-            });
             function setFallbackRoute(){
                 if(qm.appMode.isPhysician()){
                     $urlRouterProvider.otherwise('/app/physician');
