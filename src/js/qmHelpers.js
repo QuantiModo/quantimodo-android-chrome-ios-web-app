@@ -442,18 +442,6 @@ var qm = {
             if(!qm.clientId && appSettings){
                 qm.clientId = appSettings.clientId;
             }
-            // DON'T DO THIS
-            // if(!clientId && qm.platform.isMobile()){
-            //     qmLog.debug('Using ' + qm.urlHelper.getDefaultConfigUrl() + ' because we\'re on mobile');
-            //     clientId = "default"; // On mobile
-            // }
-            if(!qm.clientId){ // Not sure why but this always returns quantimodo
-                //clientId = qm.storage.getItem(qm.items.clientId);
-            }
-            // DON'T DO THIS
-            // if(!clientId && qm.urlHelper.indexOfCurrentUrl('quantimo.do') === -1){
-            //     clientId = "default"; // On mobile
-            // }
             if(!qm.clientId){
                 qm.clientId = qm.api.getClientIdFromAwsPath();
             }
@@ -463,6 +451,9 @@ var qm = {
             }
             if(qm.clientId && qm.clientId.indexOf('.') !== -1){
                 throw "Client id should not have a dot!"
+            }
+            if(qm.urlHelper.urlContains('crowdsourcingcures')){
+                qm.clientId =  'crowdsourcingcures';
             }
             if(!successHandler){
                 return qm.clientId;
@@ -2481,6 +2472,7 @@ var qm = {
                 var exp = highchartConfig.tooltip.formatter._expression;
                 var def = exp.substring(exp.indexOf("{") + 1, exp.lastIndexOf("}"));
                 // eslint-disable-next-line no-new-func
+                def = def.replace('//debugger', 'debugger')
                 highchartConfig.tooltip.formatter = new Function(def);
             }
         }
