@@ -453,7 +453,7 @@ var qm = {
                 throw "Client id should not have a dot!"
             }
             if(qm.urlHelper.urlContains('crowdsourcingcures')){
-                qm.clientId =  'crowdsourcingcures';
+                qm.clientId =  'crowdsourcing-cures';
             }
             if(!successHandler){
                 return qm.clientId;
