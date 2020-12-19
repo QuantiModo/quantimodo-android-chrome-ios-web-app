@@ -80,7 +80,8 @@ angular.module('starter').controller('VariableSearchCtrl',
             var s = $state.current;
             var next = s.params.nextState;
             if(!next){
-                qmLog.errorAndExceptionTestingOrDevelopment("No next state!")
+                console.info("No next state!")
+                return null;
             }
             return next;
         }
@@ -111,6 +112,10 @@ angular.module('starter').controller('VariableSearchCtrl',
         $scope.selectVariable = function(selected){
             selected = qmService.barcodeScanner.addUpcToVariableObject(selected);
             var next = getNextState();
+            if(!next){
+                $scope.showVariableActionSheet(selected, [], $scope.state);
+                return;
+            }
             var s = $state.current;
             qmLog.info(s.name + ': ' + '$scope.selectVariable: ' + JSON.stringify(selected).substring(0, 140) + '...', null);
             qm.variablesHelper.setLastSelectedAtAndSave(selected);
