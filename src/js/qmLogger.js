@@ -27,16 +27,14 @@ var qmLog = {
     },
     message: null,
     setMessage: function(name, message){
+        message = message || name;
         if(message && typeof message === 'object'){
-            qmLog.message = message.message || JSON.stringify(message);
-        }else{
-            qmLog.message = message || name;
+            message = message.message || JSON.stringify(message);
         }
         if(qm.platform.isMobile() && qmLog.isDebugMode()){
-            qmLog.message = addCallerFunctionToMessage(qmLog.message || "");
+            message = addCallerFunctionToMessage(message || "");
         }
-        qmLog.message = qmLog.replaceSecretValuesInString(qmLog.message);
-        return qmLog.message;
+        return qmLog.message = qmLog.replaceSecretValuesInString(message);
     },
     globalMetaData: {
         context: null,
