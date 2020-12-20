@@ -2487,7 +2487,10 @@ var qm = {
             }, 15000)
         },
         getDriftButtonElement: function(){
-            var x = document.querySelector('#root');
+            var x = document.querySelector('body > div.drift-conductor-item.drift-frame-controller.drift-frame-controller-align-right');
+            if(!x){
+                console.error("Could not get drift widget");
+            }
             return x;
         },
         hideDriftButton: function(){
@@ -11352,6 +11355,14 @@ var qm = {
                     email: user.email,
                     name: user.displayName,
                 })
+                drift.config({
+                    verticalOffset: 80,
+                })
+                setTimeout(function(){
+                    //debugger
+                    var el = qm.chatButton.getDriftButtonElement();  // Doesn't work for some reason
+                    // This doesn't work for some reason if(el){ el.style.zIndex = '10'; }
+                }, 10000)
             }
             if(typeof LogRocket !== "undefined"){
                 var record = qm.appMode.isProduction() || qm.urlHelper.getParam('logrocket');
