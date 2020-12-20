@@ -223,22 +223,6 @@ angular.module('starter').controller('ChatCtrl', ["$state", "$scope", "$rootScop
                 });
             }
         };
-        var clickHandlers = {
-            skipAll: function(card, ev){
-                qm.ui.preventDragAfterAlert(ev);
-                qmService.showBasicLoader();
-                qm.feed.postCardImmediately(card, function(cardsFromResponse){
-                    cardHandlers.getCards(cardsFromResponse);
-                });
-                cardHandlers.removeCard(card);
-                return true;
-            },
-            track: function(card){
-                cardHandlers.removeCard(card);
-                qm.feed.addToFeedQueueAndRemoveFromFeed(card);
-                return true;
-            }
-        };
         function hideLoader(){
             qmService.hideLoader();
             //Stop the ion-refresher from spinning

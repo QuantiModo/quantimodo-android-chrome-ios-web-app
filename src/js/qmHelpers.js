@@ -4986,14 +4986,14 @@ var qm = {
             qmLog.info("deleting " + key + " by id " + id);
             qm.localForage.getItem(key)
                 .then(function(existingData){
-                if(!existingData){
-                    existingData = [];
-                }
-                existingData = existingData.filter(function(obj){
-                    return obj.id !== id;
+                    if(!existingData){
+                        existingData = [];
+                    }
+                    existingData = existingData.filter(function(obj){
+                        return obj.id !== id;
+                    });
+                    qm.localForage.setItem(key, existingData).then(successHandler, errorHandler);
                 });
-                qm.localForage.setItem(key, existingData, successHandler, errorHandler);
-            });
         },
         searchByProperty: function(key, propertyName, searchTerm){
             var deferred = Q.defer();
@@ -6253,6 +6253,7 @@ var qm = {
             }
             var commands = {};
             commands[phrase] = function(){
+                //debugger
                 qmLog.info("Ignoring robot phrase: " + phrase);
             };
             qm.mic.addCommands(commands);
@@ -6359,6 +6360,7 @@ var qm = {
             ];
             var match = qm.mic.aPhraseContains(ignoreThese, possiblePhrases);
             if(match){
+                //debugger
                 qmLog.info("Ignoring robot phrase: " + match);
                 return match;
             }
@@ -6382,6 +6384,7 @@ var qm = {
         },
         listenForCardResponse: function(card, successHandler, errorHandler){
             qm.mic.wildCardHandler = function(possiblePhrases){
+                //debugger
                 if(qm.mic.weShouldIgnore(possiblePhrases)){
                     return false;
                 }
