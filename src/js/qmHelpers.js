@@ -6655,7 +6655,7 @@ var qm = {
         }
     },
     notifications: {
-        limit: 50, // Need a large number or we have to press refresh
+        limit: 20, // Need a large number or we have to press refresh
         actions: {
             trackYesAction: function(data){
                 var body = {trackingReminderNotificationId: data.trackingReminderNotificationId, modifiedValue: 1};
@@ -8283,7 +8283,10 @@ var qm = {
                         break;
                     }
                 }
-                if(!notificationExists && reminder.reminderFrequency && !reminder.stopTrackingDate){
+                if(!notificationExists &&
+                    reminder.reminderFrequency &&
+                    !reminder.stopTrackingDate &&
+                    notifications.length < qm.notifications.limit){
                     qmLog.error("Notification not found for reminder we just created!",
                         {'reminder': reminder});
                 }
@@ -10693,7 +10696,6 @@ var qm = {
             }
         },
     },
-    trackingReminderNotifications: [],
     ui: {
         preventDragAfterAlert: function(ev){
             if(!ev){
