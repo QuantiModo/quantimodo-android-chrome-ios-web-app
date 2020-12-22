@@ -5506,9 +5506,9 @@ var qm = {
         },
         getMeasurementsFromApi: function(params){
             var deferred = Q.defer();
-            qm.api.get('api/v4/measurements', [], params,function(response){
-                qm.measurements.addToCache(response.measurements)
-                deferred.resolve(response.measurements);
+            qm.api.get('api/v3/measurements', [], params,function(measurements){
+                qm.measurements.addToCache(measurements)
+                deferred.resolve(measurements);
             }, function(err){
                 qmLog.error(err);
                 deferred.reject(err);
