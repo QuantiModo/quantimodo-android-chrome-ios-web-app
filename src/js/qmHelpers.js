@@ -991,13 +991,9 @@ var qm = {
             if(!params){params = {};}
             if(!successHandler){ throw "Please provide successHandler function as fourth parameter in qm.api.get";}
             if(!options){options = {};}
-            var cache = false;
             options.stackTrace = (params.stackTrace) ? params.stackTrace : 'No stacktrace provided with params';
             delete params.stackTrace;
-            if(params && params.cache){
-                cache = params.cache;
-                params.cache = null;
-            }
+            if(params.cache){params.cache = null;}
             if(qm.urlHelper.urlContains('app/intro') && !params.force && !qm.auth.getAccessTokenFromCurrentUrl()){
                 var message = 'Not making request to ' + route + ' user because we are in the intro state';
                 qmLog.debug(message, null, options.stackTrace);
@@ -1347,7 +1343,11 @@ var qm = {
         },
         filterByProperty: function(filterPropertyName, filterPropertyValue, unfilteredElementArray){
             return unfilteredElementArray.filter(function(obj){
-                if(typeof obj[filterPropertyName] === "string" && typeof filterPropertyValue === "string"){
+                if(filterPropertyName === "sourceName"){
+                    filterPropertyValue = qm.stringHelper.removeDashesSpacesAndLowerCase(filterPropertyValue);
+                    var thisVal =  qm.stringHelper.removeDashesSpacesAndLowerCase(obj[filterPropertyName]);
+                    return filterPropertyValue === thisVal;
+                }else if(typeof obj[filterPropertyName] === "string" && typeof filterPropertyValue === "string"){
                     return filterPropertyValue.toLowerCase() === obj[filterPropertyName].toLowerCase();
                 }else{
                     return filterPropertyValue === obj[filterPropertyName];
@@ -1634,7 +1634,7 @@ var qm = {
                 return provided;
             }
             var allowedFilterParams = [
-                'connectorName',
+                'connectorId',
                 'id',
                 'manualTracking',
                 'name',
@@ -2124,6 +2124,8 @@ var qm = {
             qm.auth.deleteAllAccessTokens(reason);
             qm.auth.deleteAllCookies();
             qm.auth.logOutOfWebsite();
+            qm.userHelper.setUser(null)
+            qm.measurements.cache = null;
         },
         logOutOfWebsite: function(){
             if(!qm.platform.getWindow()){
@@ -2350,7 +2352,7 @@ var qm = {
             return qm.buildInfoHelper.currentBuildInfo;
         },
         getPreviousBuildInfo: function () {
-            var previousBuildInfo = qm.fileHelper.readFile(paths.src.buildInfo);
+            var previousBuildInfo = qm.fileHelper.readFile(qm.buildInfoHelper.paths.src.buildInfo);
             if(!previousBuildInfo){
                 qmLog.info("No previous BuildInfo file at "+qm.buildInfoHelper.paths.src.buildInfo);
                 qm.buildInfoHelper.previousBuildInfo = false;
@@ -5380,11 +5382,18 @@ var qm = {
             return filtered;
         },
         addLocalMeasurements: function(fromController, params, cb){
+            if(params.connectorName){
+                params.sourceName = params.connectorName;
+                delete params.connectorName;
+            }
             qm.measurements.getLocalMeasurements(params).then(function(fromCache){
-                var fromController = qm.measurements.indexByVariableStartAt(fromController);
-                var combined = qm.measurements.indexByVariableStartAt(fromCache, fromController);
+                var indexedFromController = qm.measurements.indexByVariableStartAt(fromController);
+                var combined = qm.measurements.indexByVariableStartAt(fromCache, indexedFromController);
                 var filtered = qm.measurements.filterAndSort(combined, params);
                 cb(filtered)
+            }, function (err){
+                qmLog.error(err)
+                throw new Error(err)
             })
         },
         toArray: function(byVariableName){
@@ -5497,13 +5506,13 @@ var qm = {
         },
         getMeasurementsFromApi: function(params){
             var deferred = Q.defer();
-            params = qm.api.addGlobalParams(params);
-            qm.api.configureClient(arguments.callee.name, params);
-            var client = new qm.Quantimodo.MeasurementsApi();
-            client.getMeasurements(params, function(error, data, response){
-                qm.measurements.addToCache(data);
-                qm.api.promiseHandler(error, data, response, deferred, params, 'getMeasurementsFromApi');
-            });
+            qm.api.get('api/v3/measurements', [], params,function(measurements){
+                qm.measurements.addToCache(measurements)
+                deferred.resolve(measurements);
+            }, function(err){
+                qmLog.error(err);
+                deferred.reject(err);
+            })
             return deferred.promise;
         },
         addLocationDataToMeasurement: function(m){
@@ -5565,7 +5574,11 @@ var qm = {
                 m.valence = v.valence;
             }
             m.displayValueAndUnitString = m.displayValueAndUnitString || m.value + " " + unit.abbreviatedName;
-            m.displayValueAndUnitString = qm.stringHelper.formatValueUnitDisplayText(m.displayValueAndUnitString)
+            try {
+                m.displayValueAndUnitString = qm.stringHelper.formatValueUnitDisplayText(m.displayValueAndUnitString)
+            }catch(e){
+                qmLog.error("could not formatValueUnitDisplayText for: ", m)
+            }
             m.valueUnitVariableName = m.displayValueAndUnitString + " " + m.variableName;
             if(!m.variableCategoryName){
                 var cat = qm.variableCategoryHelper.findByNameIdObjOrUrl(m);
@@ -9856,6 +9869,10 @@ var qm = {
             return value && value !== "false";
         },
         formatValueUnitDisplayText: function(valueUnitText, abbreviatedUnitName){
+            if(!valueUnitText || typeof valueUnitText.replace !== "function"){
+                qmLog.error("valueUnitText not valid: ", valueUnitText)
+                debugger
+            }
             valueUnitText = valueUnitText.replace(' /', '/');
             valueUnitText = valueUnitText.replace('1 yes/no', 'YES');
             valueUnitText = valueUnitText.replace('0 yes/no', 'NO');
@@ -9947,6 +9964,11 @@ var qm = {
             }
             return object;
         },
+        removeDashesSpacesAndLowerCase: function(str) {
+            str = qm.stringHelper.replaceAll(str, "-", "");
+            str = qm.stringHelper.replaceAll(str, " ", "");
+            return str.toLowerCase();
+        }
     },
     studyHelper: {
         cached: {},
