@@ -152,6 +152,15 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
             }
             qmLog.debug("Could not get connectorName")
         }
+        function getConnector(){
+            if(getConnectorId()){
+                return qm.connectorHelper.getConnectorById(getConnectorId())
+            }
+            if(getConnectorName()){
+                return qm.connectorHelper.getConnectorById(getConnectorId())
+            }
+            return null;
+        }
         function getConnectorId(){
             if($stateParams.connectorId){
                 return $stateParams.connectorId;
@@ -177,8 +186,8 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
             if(getVariableName()){
                 params.variableName = getVariableName();
             }
-            if(getConnectorName()){
-                params.connectorName = getConnectorName();
+            if(getConnector()){
+                params.connectorId = getConnector().id;
             }
             if(getVariableCategoryName()){
                 params.variableCategoryName = getVariableCategoryName();
