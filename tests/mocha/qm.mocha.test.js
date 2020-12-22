@@ -56,6 +56,9 @@ var qmTests = {
     setTestAccessToken(){
         qm.storage.setItem(qm.items.accessToken, qmTests.getTestAccessToken())
     },
+    setDemoAccessToken(){
+        qm.storage.setItem(qm.items.accessToken, "demo")
+    },
     testParams: {},
     setTestParams(params){
         qmTests.testParams = params
@@ -430,6 +433,63 @@ describe("Measurement", function () {
         // .catch(function (error) {
         //     throw Error(error)
         // })
+    })
+    it('can get connector measurements', function (done) {
+        this.timeout(60000)
+        var measurements = [{
+            "sourceName": "Fitbit",
+            "startTimeString": "2020-12-10 00:00:00",
+            "unitAbbreviatedName": "min",
+            "value": 81,
+            "variableName": "Duration of Awakenings During Sleep",
+            "clientId": "fitbit",
+            "connectorId": 7,
+            "createdAt": "2020-12-11 00:18:52",
+            "displayValueAndUnitString": "81 minutes",
+            "id": 1092806496,
+            "note": null,
+            "noteHtml": null,
+            "originalUnitId": 2,
+            "originalValue": 81,
+            "pngPath": "https://i.imgur.com/WE8KUx7.png",
+            "productUrl": null,
+            "startDate": null,
+            "unitId": 2,
+            "unitName": "Minutes",
+            "updatedAt": "2020-12-11 00:18:52",
+            "url": null,
+            "valence": "negative",
+            "variableCategoryId": 6,
+            "variableCategoryName": "Sleep",
+            "variableDescription": null,
+            "variableId": 6054544,
+            "startAt": "2020-12-10 00:00:00",
+            "valueUnitVariableName": "81 minutes Duration of Awakenings During Sleep",
+            "icon": "ion-ios-cloudy-night-outline",
+        }]
+        qm.userHelper.getUserFromApi()
+            .then(function () {
+                qm.connectorHelper.getConnectorsFromLocalStorageOrApi(function(){
+                    var connector = qm.connectorHelper.getConnectorByName("fitbit")
+                    var filtered = qm.arrayHelper.filterByRequestParams(measurements, {connectorId: connector.id})
+                    expect(filtered.length).to.eq(1)
+                    var params = {connectorId: connector.id, sort: "-startAt"}
+                    qm.measurements.addLocalMeasurements(measurements, params, function (combined) {
+                        expect(combined.length).to.eq(1)
+                        qm.measurements.getMeasurementsFromApi(params).then(function(apiMeasurements){
+                            expect(apiMeasurements.length).to.be.greaterThan(1)
+                            apiMeasurements.forEach(function(m){
+                                expect(m.connectorId).to.eq(connector.id)
+                            })
+                            qmLog.info(apiMeasurements.length + " measurements from API with params: ", params)
+                            qm.measurements.processMeasurements(apiMeasurements)
+                            done()
+                        })
+                    })
+                })
+            }).catch(function(err){
+                throw Error(err)
+            })
     })
 })
 describe("API", function (){

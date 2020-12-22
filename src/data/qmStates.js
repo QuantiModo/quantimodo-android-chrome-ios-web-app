@@ -1000,7 +1000,7 @@ var qmStates = [
             "variableObject": null,
             "refresh": null,
             "variableCategoryName": null,
-            "connectorName": null,
+            "connectorId": null,
             "sourceName": null,
             "title": "History",
             "ionIcon": "ion-ios-list-outline"
@@ -1019,7 +1019,7 @@ var qmStates = [
         "params": {
             "showAds": true,
             "variableCategoryName": null,
-            "connectorName": null,
+            "connectorId": null,
             "sourceName": null,
             "updatedMeasurementHistory": null,
             "refresh": null,
