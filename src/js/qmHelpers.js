@@ -991,13 +991,9 @@ var qm = {
             if(!params){params = {};}
             if(!successHandler){ throw "Please provide successHandler function as fourth parameter in qm.api.get";}
             if(!options){options = {};}
-            var cache = false;
             options.stackTrace = (params.stackTrace) ? params.stackTrace : 'No stacktrace provided with params';
             delete params.stackTrace;
-            if(params && params.cache){
-                cache = params.cache;
-                params.cache = null;
-            }
+            if(params.cache){params.cache = null;}
             if(qm.urlHelper.urlContains('app/intro') && !params.force && !qm.auth.getAccessTokenFromCurrentUrl()){
                 var message = 'Not making request to ' + route + ' user because we are in the intro state';
                 qmLog.debug(message, null, options.stackTrace);
@@ -2128,6 +2124,8 @@ var qm = {
             qm.auth.deleteAllAccessTokens(reason);
             qm.auth.deleteAllCookies();
             qm.auth.logOutOfWebsite();
+            qm.userHelper.setUser(null)
+            qm.measurements.cache = null;
         },
         logOutOfWebsite: function(){
             if(!qm.platform.getWindow()){
@@ -5393,6 +5391,9 @@ var qm = {
                 var combined = qm.measurements.indexByVariableStartAt(fromCache, indexedFromController);
                 var filtered = qm.measurements.filterAndSort(combined, params);
                 cb(filtered)
+            }, function (err){
+                qmLog.error(err)
+                throw new Error(err)
             })
         },
         toArray: function(byVariableName){
@@ -5508,6 +5509,9 @@ var qm = {
             qm.api.get('api/v4/measurements', [], params,function(response){
                 qm.measurements.addToCache(response.measurements)
                 deferred.resolve(response.measurements);
+            }, function(err){
+                qmLog.error(err);
+                deferred.reject(err);
             })
             return deferred.promise;
         },
