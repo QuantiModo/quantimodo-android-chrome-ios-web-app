@@ -105,23 +105,23 @@ angular.module('starter').controller('StudiesCtrl',
         });
         function populateStudyList(params){
             qmLog.info('Getting studies with params ' + JSON.stringify(params));
-            qm.studyHelper.getStudiesFromApi(params, function(studiesResponse){
-                if(!studiesResponse){
+            qm.studyHelper.getStudiesFromApi(params, function(r){
+                if(!r){
                     qm.toast.errorToast("Could not get studies!");
                     $scope.goBack();
                     return;
                 }
-                qmLog.info('Got ' + studiesResponse.studies.length + ' studies with params ' + JSON.stringify(params));
-                if(studiesResponse && !$scope.state.studiesResponse.studies.length){
-                    $scope.state.studiesResponse = studiesResponse;
-                } else if(studiesResponse.studies.length){
-                    qmLog.info('First correlation is ' + studiesResponse.studies[0].causeVariableName + " vs " +
-                        studiesResponse.studies[0].effectVariableName);
-                    if($scope.state.studiesResponse.studies){
+                qmLog.info('Got ' + r.studies.length + ' studies with params ' + JSON.stringify(params));
+                if(r && !$scope.state.studiesResponse.studies.length){
+                    $scope.state.studiesResponse = r;
+                } else if(r.studies.length){
+                    qmLog.info('First correlation is ' + r.studies[0].causeVariableName + " vs " +
+                        r.studies[0].effectVariableName);
+                    if(!params.refresh && $scope.state.studiesResponse.studies){
                         $scope.state.studiesResponse.studies =
-                            $scope.state.studiesResponse.studies.concat(studiesResponse.studies);
+                            $scope.state.studiesResponse.studies.concat(r.studies);
                     }else{
-                        $scope.state.studiesResponse.studies = studiesResponse.studies;
+                        $scope.state.studiesResponse.studies = r.studies;
                     }
                 }else{
                     qmLog.info('Did not get any studies with params ' + JSON.stringify(params));
@@ -143,9 +143,7 @@ angular.module('starter').controller('StudiesCtrl',
             $scope.searching = true;
             var params = $scope.state.requestParams;
             params.open = getOpenParam();
-            if(refresh){
-                params.refresh = refresh;
-            }
+            if(refresh){params.refresh = refresh;}
             params.created = getCreatedParam();
             params.limit = 10;
             populateStudyList(params);
