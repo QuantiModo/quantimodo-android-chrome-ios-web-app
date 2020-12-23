@@ -4,10 +4,7 @@
         <div style="max-width: 600px; display:block; margin:auto;"
              ng-include="'templates/loaders/blue-robot-loader.html'"></div>
     </div>
-    <div ng-show="loadingCharts" style="text-align: center; margin: auto;"><br>
-        <ion-spinner icon="android"></ion-spinner>
-        <br> <br> <br>
-    </div>
+    <div ng-show="loadingCharts" ng-include="'templates/spinner.html'"></div>
 </div>
 <div ng-if="state.variableObject">
     <div id="variablePropertiesCard" class="card variable-settings">

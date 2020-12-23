@@ -40,12 +40,7 @@
                 </div>
             </div>
         </div>
-        <div ng-show="loadingCharts"
-             style="text-align: center; margin: auto;">
-            <br>
-            <ion-spinner icon="android"></ion-spinner>
-            <br>
-        </div>
+        <div ng-show="loadingCharts" ng-include="'templates/spinner.html'"></div>
         <div class="card"
              ng-if="state.distributionChartConfig">
             <highchart id="distributionChart"

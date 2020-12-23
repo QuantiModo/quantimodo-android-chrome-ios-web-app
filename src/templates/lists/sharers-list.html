@@ -3,11 +3,7 @@
     <div ng-if="state.loading" ng-cloak>
         <br> <br>
         <h1 style="text-align: center;">Loading your {{appSettings.appDesign.aliases.active.patientAlias}}s... </h1><br>
-        <div style="text-align: center; margin: auto;">
-            <br>
-            <ion-spinner icon="android"></ion-spinner>
-            <br>
-        </div>
+        <div ng-include="'templates/spinner.html'"></div>
     </div>
     <div ng-if="state.card && !state.card.hide" ng-include="'templates/cards/blue-card.html'" ng-model="state.card"></div>
     <md-list class="md-dense" flex>
