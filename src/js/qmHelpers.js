@@ -839,12 +839,18 @@ var qm = {
                 url = addQueryParameter(url, 'platform', qm.platform.getCurrentPlatform());
                 return url;
             }
-            var url = addGlobalQueryParameters(qm.api.getBaseUrl() + "/api/" + path);
+            var url = path;
+            if(url.indexOf("http") !== 0){
+                url = addGlobalQueryParameters(qm.api.getBaseUrl() + "/api/" + path);
+            }
             if(params){
                 url = qm.urlHelper.addUrlQueryParamsToUrlString(params, url);
             }
             url = url.replace('/api/api/', '/api/');
-            qmLog.debug("Making API request to " + url);
+            qmLog.info("Making API request to " + url);
+            if(url.indexOf("api/https") !== -1){
+                qmLog.errorAndExceptionTestingOrDevelopment("url is "+url);
+            }
             successHandler(url);
         },
         getQuantiModoUrl: function(path){
