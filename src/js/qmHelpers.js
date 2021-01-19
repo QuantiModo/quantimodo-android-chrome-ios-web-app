@@ -4162,20 +4162,20 @@ var qm = {
                 var tag = possiblePhrases[i];
                 tag = nlp(tag).normalize().out();
                 var buttons = qm.feed.getAvailableButtons(true);
-                var selectedButton = buttons.find(function(button){
-                    if(button.text && button.text.toLowerCase() === tag){
+                var selectedButton = buttons.find(function(b){
+                    if(b.text && b.text.toLowerCase() === tag){
                         return true;
                     }
-                    if(button.title && button.title.toLowerCase() === tag){
+                    if(b.title && b.title.toLowerCase() === tag){
                         return true;
                     }
-                    if(button.accessibilityText && button.accessibilityText.toLowerCase() === tag){
+                    if(b.accessibilityText && b.accessibilityText.toLowerCase() === tag){
                         return true;
                     }
-                    if(button.action && button.action.toLowerCase() === tag){
+                    if(b.action && b.action.toLowerCase() === tag){
                         return true;
                     }
-                    var propertyWithMatchingValue = qm.objectHelper.getKeyWhereValueEqualsProvidedString(tag, button.parameters);
+                    var propertyWithMatchingValue = qm.objectHelper.getKeyWhereValueEqualsProvidedString(tag, b.parameters);
                     return !!propertyWithMatchingValue;
                 });
                 if(selectedButton){
@@ -5255,8 +5255,7 @@ var qm = {
                     m.unitId = u.id;
                 }
             }
-            if(!qm.measurements.valueIsValid(m, m.value)){return false;}
-            return true;
+            return qm.measurements.valueIsValid(m, m.value);
         },
         newMeasurement: function(src){
             var value;
@@ -12220,7 +12219,7 @@ var qm = {
             return element;
         },
         toggle: function(){
-            if(qm.visualizer.showVisualizering){
+            if(qm.visualizer.showing){
                 qm.visualizer.hideVisualizer();
             }else{
                 qm.visualizer.showVisualizer();
