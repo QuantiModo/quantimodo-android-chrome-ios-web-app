@@ -374,43 +374,43 @@ angular.module('starter').controller('VariableSettingsCtrl', ["$scope", "$state"
                 //qmService.addWikipediaExtractAndThumbnail($scope.state.variableObject);
             });
         };
-        $scope.saveVariableSettings = function(variableObject){
-            qmService.showInfoToast('Saving ' + variableObject.name + ' settings (this could take a minute)', 30);
+        $scope.saveVariableSettings = function(uv){
+            qmService.showInfoToast('Saving ' + uv.name + ' settings (this could take a minute)', 30);
             $scope.state.saveButtonText = "Saving...";
             var experimentEndTimeString, experimentStartTimeString = null;
-            if(variableObject.experimentStartTimeString){
+            if(uv.experimentStartTimeString){
                 try{
-                    experimentStartTimeString = variableObject.experimentStartTimeString.toISOString();
+                    experimentStartTimeString = uv.experimentStartTimeString.toISOString();
                 }catch (error){
                     qmLog.error('Could not convert experimentStartTimeString to ISO format', {
-                        experimentStartTimeString: variableObject.experimentStartTimeString,
+                        experimentStartTimeString: uv.experimentStartTimeString,
                         errorMessage: error
                     });
                 }
             }
-            if(variableObject.experimentEndTimeString){
+            if(uv.experimentEndTimeString){
                 try{
-                    experimentEndTimeString = variableObject.experimentEndTimeString.toISOString();
+                    experimentEndTimeString = uv.experimentEndTimeString.toISOString();
                 }catch (error){
                     qmLog.error('Could not convert experimentEndTimeString to ISO format', {
-                        experimentEndTimeString: variableObject.experimentEndTimeString,
+                        experimentEndTimeString: uv.experimentEndTimeString,
                         errorMessage: error
                     });
                 }
             }
             var body = {
-                variableId: variableObject.variableId,
-                durationOfAction: variableObject.durationOfActionInHours * 60 * 60,
-                fillingValue: variableObject.fillingValue,
+                variableId: uv.variableId,
+                durationOfAction: uv.durationOfActionInHours * 60 * 60,
+                fillingValue: uv.fillingValue,
                 //joinWith
-                maximumAllowedValue: variableObject.maximumAllowedValue,
-                minimumAllowedValue: variableObject.minimumAllowedValue,
-                onsetDelay: variableObject.onsetDelayInHours * 60 * 60,
-                combinationOperation: variableObject.combinationOperation,
-                shareUserMeasurements: variableObject.shareUserMeasurements,
-                defaultUnitId: variableObject.userUnitId,
-                userVariableVariableCategoryName: variableObject.variableCategoryName,
-                alias: variableObject.alias,
+                maximumAllowedValue: uv.maximumAllowedValue,
+                minimumAllowedValue: uv.minimumAllowedValue,
+                onsetDelay: uv.onsetDelayInHours * 60 * 60,
+                combinationOperation: uv.combinationOperation,
+                shareUserMeasurements: uv.shareUserMeasurements,
+                defaultUnitId: uv.userUnitId,
+                userVariableVariableCategoryName: uv.variableCategoryName,
+                alias: uv.alias,
                 experimentStartTimeString: experimentStartTimeString,
                 experimentEndTimeString: experimentEndTimeString
             };
