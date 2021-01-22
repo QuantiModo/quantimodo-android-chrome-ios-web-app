@@ -2718,13 +2718,13 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                         qmService.openSharingUrl(sharingUrl);
                     }
                 },
-                showUnShareStudyConfirmation: function(correlationObject, ev){
+                showUnShareStudyConfirmation: function(correlation, ev){
                     var title = 'Share Study';
                     var textContent = 'Are you absolutely sure you want to make your ' + qm.studyHelper.getCauseVariableName() +
                         ' and ' + qm.studyHelper.getEffectVariableName() + ' measurements private? Links to studies your ' +
                         'previously shared with these variables will no longer work.';
                     function yesCallback(){
-                        correlationObject.shareUserMeasurements = false;
+                        correlation.shareUserMeasurements = false;
                         var body = {
                             causeVariableId: qm.studyHelper.getCauseVariableId(),
                             effectVariableId: qm.studyHelper.getEffectVariableId(), shareUserMeasurements: false
@@ -2732,7 +2732,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                         qm.studyHelper.postStudy(body);
                     }
                     function noCallback(){
-                        correlationObject.shareUserMeasurements = true;
+                        correlation.shareUserMeasurements = true;
                     }
                     qmService.showMaterialConfirmationDialog(title, textContent, yesCallback, noCallback, ev);
                 },
@@ -6712,13 +6712,13 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 qmService.notifications.showEnablePopupsConfirmation(ev);
             }
         };
-        qmService.showShareVariableConfirmation = function(variableObject, sharingUrl, ev){
+        qmService.showShareVariableConfirmation = function(variable, sharingUrl, ev){
             var title = 'Share Variable';
-            var textContent = 'Are you absolutely sure you want to make your ' + variableObject.name +
+            var textContent = 'Are you absolutely sure you want to make your ' + variable.name +
                 ' measurements publicly visible? You can make them private again at any time on this page.';
             function yesCallback(){
-                variableObject.shareUserMeasurements = true;
-                var body = {variableId: variableObject.variableId, shareUserMeasurements: true};
+                variable.shareUserMeasurements = true;
+                var body = {variableId: variable.variableId, shareUserMeasurements: true};
                 qmService.showBlackRingLoader();
                 qm.userVariables.postUserVariable(body).then(function(){
                     qmService.hideLoader();
@@ -6729,25 +6729,25 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 });
             }
             function noCallback(){
-                variableObject.shareUserMeasurements = false;
+                variable.shareUserMeasurements = false;
             }
             qmService.showMaterialConfirmationDialog(title, textContent, yesCallback, noCallback, ev);
         };
-        qmService.showUnShareVariableConfirmation = function(variableObject, ev){
+        qmService.showUnShareVariableConfirmation = function(variable, ev){
             var title = 'Share Variable';
-            var textContent = 'Are you absolutely sure you want to make your ' + variableObject.name +
-                ' and ' + variableObject.name + ' measurements private? Links to studies you ' +
+            var textContent = 'Are you absolutely sure you want to make your ' + variable.name +
+                ' and ' + variable.name + ' measurements private? Links to studies you ' +
                 'previously shared with this variable will no longer work.';
             function yesCallback(){
-                variableObject.shareUserMeasurements = false;
-                var body = {variableId: variableObject.variableId, shareUserMeasurements: false};
+                variable.shareUserMeasurements = false;
+                var body = {variableId: variable.variableId, shareUserMeasurements: false};
                 qm.userVariables.postUserVariable(body).then(function(){
                 }, function(error){
                     qmLog.error(error);
                 });
             }
             function noCallback(){
-                variableObject.shareUserMeasurements = true;
+                variable.shareUserMeasurements = true;
             }
             qmService.showMaterialConfirmationDialog(title, textContent, yesCallback, noCallback, ev);
         };
