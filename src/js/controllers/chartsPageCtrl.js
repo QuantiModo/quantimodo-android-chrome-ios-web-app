@@ -126,9 +126,9 @@ angular.module('starter').controller('ChartsPageCtrl', ["$scope", "$q", "$state"
         $scope.editSettingsButtonClick = function(){
             qmService.goToVariableSettingsByObject($scope.state.variableObject);
         };
-        $scope.shareCharts = function(variableObject, sharingUrl, ev){
-            if(!variableObject.shareUserMeasurements){
-                qmService.showShareVariableConfirmation(variableObject, sharingUrl, ev);
+        $scope.shareCharts = function(variable, sharingUrl, ev){
+            if(!variable.shareUserMeasurements){
+                qmService.showShareVariableConfirmation(variable, sharingUrl, ev);
             }else{
                 qmService.openSharingUrl(sharingUrl);
             }

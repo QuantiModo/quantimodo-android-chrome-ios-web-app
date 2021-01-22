@@ -588,7 +588,11 @@ var qm = {
                 apiUrl= qm.env.getEnv('API_URL')
                 if(apiUrl){return apiUrl;}
                 var stage = qm.env.getEnv('RELEASE_STAGE')
-                if(stage === "staging"){return "https://staging.quantimo.do";}
+                if(stage === "staging"){
+                    apiUrl = "https://staging.quantimo.do";
+                    qmLog.info("Using apiUrl "+apiUrl+" because release stage is staging")
+                    return apiUrl;
+                }
             }
             if(!apiUrl){
                 var appSettings = qm.appsManager.getAppSettingsFromMemory();
