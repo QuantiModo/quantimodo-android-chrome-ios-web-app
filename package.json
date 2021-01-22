@@ -17,7 +17,7 @@
     "@commitlint/config-conventional": "8.3.4",
     "@ionic/v1-toolkit": "3.2.15",
     "@slack/types": "1.9.0",
-    "@slack/webhook": "5.0.3",
+    "@slack/webhook": "5.0.4",
     "@types/angular": "latest",
     "@types/app-root-path": "1.2.4",
     "@types/bluebird": "3.5.33",
