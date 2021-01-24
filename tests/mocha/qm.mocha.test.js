@@ -1144,6 +1144,7 @@ describe("Variables", function () {
         })
     })
     it('can search manual tracking variables', function(done) {
+        this.timeout(30000) // Default 2000 is too fast for Github API
         qmTests.setTestAccessToken()
         qm.userHelper.getUserFromLocalStorageOrApi().then(function (user) {
             info("Got user " + user.loginName)
