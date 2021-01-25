@@ -11882,8 +11882,11 @@ var qm = {
                 });
             }
             if(params.excludeLocal){
+                // Don't return this promise from getFromApi or variables never populate
+                // noinspection JSIgnoredPromiseFromCall,JSIgnoredPromiseFromCall
                 getFromApi(null, "excludeLocal is " + params.excludeLocal +
                     " (excludeLocal is necessary for complex filtering like tag searches)");
+                return deferred.promise;
             }
             if(params.includePublic){
                 qm.variablesHelper.getUserAndCommonVariablesFromLocalStorage(params)
