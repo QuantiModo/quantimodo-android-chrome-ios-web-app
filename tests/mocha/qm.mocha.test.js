@@ -677,6 +677,7 @@ describe("Ghost Inspector", function () {
         }
         delete process.env.API_URL
         chai.assert.isUndefined(process.env.API_URL)
+        var originalReleaseStage = process.env.RELEASE_STAGE
         process.env.RELEASE_STAGE = "staging"
         var url = th.getApiUrl()
         var stagingUrl = "https://staging.quantimo.do"
@@ -685,6 +686,7 @@ describe("Ghost Inspector", function () {
         if (previouslySetApiUrl) {
             process.env.API_URL = previouslySetApiUrl
         }
+        process.env.RELEASE_STAGE = originalReleaseStage
         done()
     })
 })
