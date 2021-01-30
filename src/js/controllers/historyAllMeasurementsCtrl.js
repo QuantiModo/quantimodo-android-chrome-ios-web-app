@@ -23,6 +23,8 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
                     icon: "ion-calendar"
                 };
             }
+        });
+        $scope.$on('$ionicView.enter', function(e){
             var params = getRequestParams();
             qm.measurements.getLocalMeasurements(params).then(function(combined){
                 setHistory(combined)
@@ -31,8 +33,6 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
             // Need to use rootScope here for some reason
             qmService.rootScope.setProperty('hideHistoryPageInstructionsCard',
                 qm.storage.getItem('hideHistoryPageInstructionsCard'));
-        });
-        $scope.$on('$ionicView.enter', function(e){
             qmService.navBar.showNavigationMenuIfHideUrlParamNotSet();
             var cat = getVariableCategoryName();
             if(cat && cat !== 'Anything'){

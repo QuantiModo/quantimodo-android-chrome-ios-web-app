@@ -179,7 +179,7 @@ angular.module('starter').controller('ReminderAddCtrl', ["$scope", "$state", "$s
             setupVariableCategory(v.variableCategoryName);
             if(v.unitAbbreviatedName){
                 r.unitAbbreviatedName = v.unitAbbreviatedName;
-            }else{
+            }else if(v.id){
                 qmLog.error("selectedVariable does not have unitAbbreviatedName", v)
             }
             if(v.combinationOperation){r.combinationOperation = v.combinationOperation;}
