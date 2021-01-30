@@ -866,42 +866,6 @@ var qm = {
             }
             return qm.api.getBaseUrl() + "/" + path;
         },
-        rateLimit: function(func, rate, async){
-            var queue = [];
-            var timeOutRef = false;
-            var currentlyEmptyingQueue = false;
-            var emptyQueue = function(){
-                if(queue.length){
-                    currentlyEmptyingQueue = true;
-                    _.delay(function(){
-                        if(async){
-                            _.defer(function(){
-                                queue.shift().call();
-                            });
-                        }else{
-                            queue.shift().call();
-                        }
-                        emptyQueue();
-                    }, rate);
-                }else{
-                    currentlyEmptyingQueue = false;
-                }
-            };
-            return function(){
-                var args = _.map(arguments, function(e){
-                    return e;
-                }); // get arguments into an array
-                queue.push(_.bind.apply(this, [func, this].concat(args))); // call apply so that we can pass in arguments as parameters as opposed to an array
-                if(!currentlyEmptyingQueue){
-                    emptyQueue();
-                }
-            };
-        },
-        executeWithRateLimit: function(functionToLimit, milliseconds){
-            milliseconds = milliseconds || 15000;
-            var rateLimited = qm.api.rateLimit(functionToLimit, milliseconds);
-            rateLimited();
-        },
         getLocalStorageNameForRequest: function(type, route){
             return 'last_' + type + '_' + route.replace('/', '_') + '_request_at';
         },
@@ -11380,10 +11344,7 @@ var qm = {
             if(user.email && user.email.toLowerCase().indexOf('test') !== -1){
                 return true;
             }
-            if(user.displayName && user.displayName.toLowerCase().indexOf('test') !== -1){
-                return true;
-            }
-            return false;
+            return user.displayName && user.displayName.toLowerCase().indexOf('test') !== -1;
         },
         setDriftIdentity: function(user){
             if(typeof drift !== "undefined"){
