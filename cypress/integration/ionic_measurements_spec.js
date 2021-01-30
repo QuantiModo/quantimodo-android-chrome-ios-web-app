@@ -213,7 +213,7 @@ describe('Measurements', function () {
     })
     // Skipping because it fails randomly and can't reproduce failure locally
     it('Record, edit, and delete a treatment measurement', function () {
-        let dosageValue = 100
+        let dosageValue = Math.floor(Math.random() * 100) + 10
         let variableName = 'Aaa Test Treatment'
         let variableCategoryName = 'Treatments'
         recordTreatmentMeasurementAndCheckHistoryPage(dosageValue, variableName)
@@ -222,7 +222,6 @@ describe('Measurements', function () {
         cy.get('#defaultValue').type(newDosageValue.toString(), {force: true})
         saveMeasurement()
         cy.visitIonicAndSetApiUrl('/#/app/history-all-category/' + variableCategoryName)
-        let treatmentStringEditedNoQuotes = `${newDosageValue} mg ` + variableName
         editHistoryPageMeasurement(newDosageValue.toString())
         cy.get('button.button.icon-left.ion-trash-a').click({force: true})
         cy.wait(1000)
@@ -230,7 +229,7 @@ describe('Measurements', function () {
         cy.log('Check that deleted measurement is gone (must use does not equal instead of does not contain because a ' +
             'measurement of 0mg will be true if the value is 50mg)')
         cy.get('#historyItemTitle-0', {timeout: 40000})
-            .should('not.contain', treatmentStringEditedNoQuotes)
+            .should('not.contain', `${newDosageValue} mg ` + variableName)
     })
     // Seeing if skip fixes timeout problem
     it.skip('Looks at primary outcome charts', function () {

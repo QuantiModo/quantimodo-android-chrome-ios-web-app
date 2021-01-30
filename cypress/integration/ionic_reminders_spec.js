@@ -30,7 +30,7 @@ describe('Reminders', function () {
    */
   function setFrequency (frequency) {
     cy.log(`Setting frequency to ${frequency}`)
-    cy.get('#frequencySelectorMaterial').click()
+    cy.get('#frequencySelectorMaterial').click({force: true})
       cy.get('md-option').contains(frequency).click({force: true})
   }
   /**
