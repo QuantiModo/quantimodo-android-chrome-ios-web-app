@@ -60,6 +60,12 @@ angular.module('starter').controller('ChatCtrl', ["$state", "$scope", "$rootScop
             //refresh();
             qmService.rootScope.setProperty('showRobot', true);
             $scope.showRobot = true;  // Not sure why scope doesn't work
+            $scope.showInput = window.screen.height > 1000;
+            if($scope.showInput){
+                $scope.robotStyle = "margin-bottom: 80px; left: calc(50% - 80px);";
+            } else {
+                $scope.robotStyle = "left: calc(50% - 80px);";
+            }
         });
         $scope.$on('$ionicView.afterEnter', function(e){
             if(!qm.getUser()){
@@ -83,6 +89,7 @@ angular.module('starter').controller('ChatCtrl', ["$state", "$scope", "$rootScop
             //qm.dialogFlow.apiAiPrepare();
         });
         $scope.$on('$ionicView.beforeLeave', function(e){
+            //debugger
             $rootScope.setMicAndSpeechEnabled(false);
         });
         function handleSwipe($event, $target){
