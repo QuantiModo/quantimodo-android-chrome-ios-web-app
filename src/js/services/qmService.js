@@ -3657,6 +3657,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             platform.isWebOrChrome = platform.isChromeExtension || platform.isWeb;
             platform.isIframe = qm.windowHelper.isIframe();
             platform.isWebView = qm.platform.isWebView();
+            platform.screen = window.screen;
             if(platform.isMobile){qmLog.error("isWebView is  " + platform.isWebView);}
             qmService.localNotificationsEnabled = platform.isChromeExtension;
             qmService.rootScope.setProperty('platform', platform, qmService.configurePushNotifications);
