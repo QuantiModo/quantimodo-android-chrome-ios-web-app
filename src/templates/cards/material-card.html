@@ -8,7 +8,10 @@
             <span class="md-subhead">{{card.subTitle}}</span>
         </md-card-header-text>
     </md-card-header>
-    <img ng-src="{{card.image}}" class="md-card-image" alt="{{card.image}}" ng-if="card.image">
+    <img ng-src="{{card.image}}"
+         class="md-card-image"
+         alt="{{card.image}}"
+         ng-if="card.image && platform.screen.height > 1000">
     <md-card-content>
         <div ng-bind-html="trustAsHtml(card.htmlContent)"></div>
     </md-card-content>
