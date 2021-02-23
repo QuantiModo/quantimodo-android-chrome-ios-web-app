@@ -91,9 +91,8 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
             }, 1);
         }
         function changeSortAndGetHistory(sort){
-            var sorted = qm.arrayHelper.sortByProperty($scope.state.history, sort)
-            setHistory(sorted);
             $scope.state.sort = sort;
+            setHistory($scope.state.history);
             $scope.getHistory();
         }
         function setHistory(measurements){
