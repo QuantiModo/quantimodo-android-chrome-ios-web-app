@@ -2419,6 +2419,7 @@ var qm = {
                     qmLog.error(e)
                 }
             })
+            if(!highchartConfig.plotOptions){highchartConfig.plotOptions = {};} // Need for sankey and network graphs
         },
         setChartExportingOptionsOnce: function(highchartConfig){
             if(!highchartConfig){
