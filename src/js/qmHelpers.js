@@ -10215,9 +10215,7 @@ var qm = {
                     return deferred.promise;
                 }
             }
-            debugger
             qm.api.get('api/v3/study', {}, params, function(data){
-                debugger
                 var study = qm.studyHelper.processAndSaveStudy(data);
                 deferred.resolve(study);
             }, function(error){
