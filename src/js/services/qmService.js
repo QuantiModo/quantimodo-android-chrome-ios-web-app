@@ -6003,16 +6003,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 //}, function() {if(noCallbackFunction){noCallbackFunction(ev);}}); TODO: What was the point of this? It causes popups to be disabled inadvertently
             });
         };
-        qmService.showDeleteAllMeasurementsForVariablePopup = function(variableName, ev){
-            var title = 'Delete all ' + variableName + " measurements?";
-            var textContent = 'This cannot be undone!';
-            function yesCallback(){
-                deleteAllMeasurementsForVariable(variableName);
-            }
-            function noCallback(){
-            }
-            qmService.showMaterialConfirmationDialog(title, textContent, yesCallback, noCallback, ev);
-        };
         // Doesn't work yet
         function generateMovingAverageTimeSeries(rawMeasurements){
             var smoothedMeasurements = [];
