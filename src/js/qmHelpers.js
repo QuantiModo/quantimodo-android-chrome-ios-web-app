@@ -10215,26 +10215,13 @@ var qm = {
                     return deferred.promise;
                 }
             }
-            qm.api.configureClient(cacheKey, params)
-            var client = qm.studyHelper.getStudiesApiInstance(params, arguments.callee.name);
-            //var url = qm.urlHelper.generateUrlFromApiClient(client, params);
-            client.getStudy(params, function(error, data, response){
-                if(!error && response && response.body && response.body.error){
-                    error = response.body.error;
-                    qmLog.error(error)
-                }
-                if(data){
-                    var study = qm.studyHelper.processAndSaveStudy(data);
-                    if(!study.causeVariable || !study.effectVariable){
-                        if(error){
-                            deferred.reject(error);
-                        } else {
-                            deferred.reject("No study cause and effect variable properties!");
-                        }
-                        return;
-                    }
-                }
-                qm.api.promiseHandler(error, study, response, deferred, params, cacheKey);
+            debugger
+            qm.api.get('api/v3/study', {}, params, function(data){
+                debugger
+                var study = qm.studyHelper.processAndSaveStudy(data);
+                deferred.resolve(study);
+            }, function(error){
+                deferred.reject(error);
             });
             return deferred.promise;
         },
