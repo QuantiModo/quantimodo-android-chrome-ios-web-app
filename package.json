@@ -85,7 +85,7 @@
     "prettier": "1.19.1",
     "rewire": "5.0.0",
     "rimraf": "3.0.0",
-    "semantic-release": "17.3.0",
+    "semantic-release": "17.4.2",
     "shx": "0.3.3",
     "sinon-chrome": "3.0.1",
     "stop-only": "3.1.0",
