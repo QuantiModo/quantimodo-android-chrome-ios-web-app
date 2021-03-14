@@ -5547,7 +5547,7 @@ var qm = {
             if(v){
                 m.valence = v.valence;
             }
-            m.displayValueAndUnitString = m.displayValueAndUnitString || m.value + " " + unit.abbreviatedName;
+            m.displayValueAndUnitString = m.value + " " + unit.abbreviatedName;
             try {
                 m.displayValueAndUnitString = qm.stringHelper.formatValueUnitDisplayText(m.displayValueAndUnitString)
             }catch(e){
