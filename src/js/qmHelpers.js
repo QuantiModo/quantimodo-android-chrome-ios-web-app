@@ -5600,13 +5600,7 @@ var qm = {
             if(!startAt){
                 m.startAt = qm.timeHelper.toMySQLTimestamp();
             }
-            if(m.prevStartAt){ // Primary outcome variable - update through measurementsQueue
-                qm.measurements.addToMeasurementsQueue(m);
-            }else if(m.id){
-                qm.measurements.addToMeasurementsQueue(m);
-            }else{
-                qm.measurements.addToMeasurementsQueue(m);
-            }
+            qm.measurements.addToMeasurementsQueue(m);
             qm.userVariables.updateLatestMeasurementTime(m.variableName, m.value);
             return qm.measurements.postMeasurementQueue();
         },
