@@ -79,7 +79,7 @@ var qm = {
                 return true;
             }
             return qm.urlHelper.indexOfCurrentUrl("medimodo.heroku") !== -1 ||
-                qm.urlHelper.indexOfCurrentUrl("staging.quantimo.do");
+                qm.urlHelper.indexOfCurrentUrl("staging.quantimo.do") !== -1;
         },
         isTestingOrDevelopment: function(){
             return qm.appMode.isTesting() || qm.appMode.isDevelopment();
@@ -8150,11 +8150,6 @@ var qm = {
                 qmLog.errorAndExceptionTestingOrDevelopment("Reminders should be array but is: ", {actual: reminders});
                 return [];
             }
-            reminders.forEach(function(tr){
-                if(tr.reminderFrequency && typeof tr.stopTrackingDate === "undefined"){
-                    qmLog.warn("No stopTrackingDate", tr)
-                }
-            })
             reminders = qm.arrayHelper.removeArrayElementsWithDuplicateIds(reminders, 'reminder')
             return reminders;
         },
