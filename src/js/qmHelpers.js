@@ -79,7 +79,7 @@ var qm = {
                 return true;
             }
             return qm.urlHelper.indexOfCurrentUrl("medimodo.heroku") !== -1 ||
-                qm.urlHelper.indexOfCurrentUrl("staging.quantimo.do");
+                qm.urlHelper.indexOfCurrentUrl("staging.quantimo.do") !== -1;
         },
         isTestingOrDevelopment: function(){
             return qm.appMode.isTesting() || qm.appMode.isDevelopment();
@@ -5547,7 +5547,7 @@ var qm = {
             if(v){
                 m.valence = v.valence;
             }
-            m.displayValueAndUnitString = m.displayValueAndUnitString || m.value + " " + unit.abbreviatedName;
+            m.displayValueAndUnitString = m.value + " " + unit.abbreviatedName;
             try {
                 m.displayValueAndUnitString = qm.stringHelper.formatValueUnitDisplayText(m.displayValueAndUnitString)
             }catch(e){
@@ -5600,13 +5600,7 @@ var qm = {
             if(!startAt){
                 m.startAt = qm.timeHelper.toMySQLTimestamp();
             }
-            if(m.prevStartAt){ // Primary outcome variable - update through measurementsQueue
-                qm.measurements.addToMeasurementsQueue(m);
-            }else if(m.id){
-                qm.measurements.addToMeasurementsQueue(m);
-            }else{
-                qm.measurements.addToMeasurementsQueue(m);
-            }
+            qm.measurements.addToMeasurementsQueue(m);
             qm.userVariables.updateLatestMeasurementTime(m.variableName, m.value);
             return qm.measurements.postMeasurementQueue();
         },
@@ -8156,11 +8150,6 @@ var qm = {
                 qmLog.errorAndExceptionTestingOrDevelopment("Reminders should be array but is: ", {actual: reminders});
                 return [];
             }
-            reminders.forEach(function(tr){
-                if(tr.reminderFrequency && typeof tr.stopTrackingDate === "undefined"){
-                    qmLog.warn("No stopTrackingDate", tr)
-                }
-            })
             reminders = qm.arrayHelper.removeArrayElementsWithDuplicateIds(reminders, 'reminder')
             return reminders;
         },
