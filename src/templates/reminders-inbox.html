@@ -28,9 +28,10 @@
             </div>
         </div>
         <div id="notifications-container"
-            class="list card"
+             class="list card"
              ng-if="notificationDividers.length && state.numberOfDisplayedNotifications">
-            <div ng-repeat="divider in notificationDividers" ng-init="dividerIndex = $index"
+            <div ng-repeat="divider in notificationDividers"
+                 ng-init="dividerIndex = $index"
                  id="{{divider.name}}Reminders">
                 <div ng-hide="hideNavigationMenu"
                      class="item item-divider">
