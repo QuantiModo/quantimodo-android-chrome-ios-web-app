@@ -11323,7 +11323,7 @@ var qm = {
         },
         setDriftIdentity: function(user){
             if(typeof drift !== "undefined"){
-                drift.identify(user.id, { // assuming your DB identifier could be something like a GUID or other unique ID.
+                drift.identify(user.id.toString(), { // assuming your DB identifier could be something like a GUID or other unique ID.
                     email: user.email,
                     name: user.displayName,
                 })
