@@ -20,7 +20,7 @@ var qmLog = {
         if(qm.platform.isMobile()){
             qmLog.name = "QM: " + name;
         } // Use for filtering in LogCat
-        if(typeof qmLog.name !== "string" && qmLog.name.message){
+        if(qmLog.name && typeof qmLog.name !== "string" && qmLog.name.message){
             qmLog.name = qmLog.name.message
         }
         qmLog.name = qmLog.replaceSecretValuesInString(qmLog.name);
