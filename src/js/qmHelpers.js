@@ -11340,7 +11340,7 @@ var qm = {
                 var record = qm.appMode.isProduction() || qm.urlHelper.getParam('logrocket');
                 if(record){
                     LogRocket.init('zi2x4l/quantimodo');
-                    LogRocket.identify(user.id, {
+                    LogRocket.identify(user.id.toString(), {
                         name: user.displayName,
                         email: user.email,
                         upgraded: user.stripeActive,
