@@ -29,7 +29,7 @@ describe('Applications', function(){
         cy.enterNewUserCredentials(false)
         createNewApplication()
     })
-    it.only('Creates an client app as an existing user', function(){
+    it('Creates an client app as an existing user', function(){
         cy.visitApi(`/api/v2/apps?access_token=test-token`)
         cy.visitApi(`/api/v2/apps?access_token=test-token`)
         createNewApplication()
