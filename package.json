@@ -80,7 +80,7 @@
     "mochawesome": "4.1.0",
     "mochawesome-merge": "2.1.0",
     "mochawesome-report-generator": "4.0.1",
-    "pkg-fetch": "2.6.9",
+    "pkg-fetch": "2.6.10",
     "power-assert": "1.6.1",
     "prettier": "1.19.1",
     "rewire": "5.0.0",
