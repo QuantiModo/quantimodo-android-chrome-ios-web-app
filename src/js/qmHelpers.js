@@ -2413,7 +2413,7 @@ var qm = {
             qm.chartHelper.setTooltipFormatterFunction(highchartConfig);
             //highchartConfig.navigator = {enabled:true};  // This is done in the API
             if(!highchartConfig.series){
-                qmLog.error("No highchartConfig.series on: ", highchartConfig)
+                qmLog.errorAndExceptionTestingOrDevelopment("No highchartConfig.series on: ", highchartConfig)
                 return;
             }
             highchartConfig.series.forEach(function(series){
