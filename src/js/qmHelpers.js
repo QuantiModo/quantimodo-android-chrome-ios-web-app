@@ -7303,7 +7303,7 @@ var qm = {
                 if(!(queue instanceof Array)){queue = [queue];}
                 body = queue.map(function (n){
                     return {
-                        'value': (typeof n.modifiedValue !== "undefined") ? n.modifiedValue : n.value,
+                        'value': (typeof n.modifiedValue !== "undefined" && n.modifiedValue !== null) ? n.modifiedValue : n.value,
                         'trackingReminderNotificationId': n.trackingReminderNotificationId,
                         'variableId': n.variableId,
                         'trackingReminderId': n.trackingReminderId,
