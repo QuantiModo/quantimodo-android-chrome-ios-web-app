@@ -10367,11 +10367,11 @@ var qm = {
         }
     },
     timeHelper: {
-        toMoment: function(timeAt){
+        toUtcMoment: function(timeAt){
             return moment.utc(qm.timeHelper.getUnixTimestampInMilliseconds(timeAt));
         },
         toLocalMoment: function(timeAt){
-            return qm.timeHelper.toMoment(timeAt).local();
+            return qm.timeHelper.toUtcMoment(timeAt).local();
         },
         getYesterdayDate: function(){
             var unixTime = qm.timeHelper.getUnixTimestampInSeconds() - 86400;
