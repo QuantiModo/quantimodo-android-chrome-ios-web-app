@@ -178,6 +178,7 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
             });
         };
         $scope.refreshHistory = function(){
+            $scope.state.moreDataCanBeLoaded = true;
             setHistory([])
             $scope.getHistory();
         };
@@ -227,7 +228,7 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
                 }
             }
             function successHandler(measurements){
-                if(!measurements || measurements.length < params.limit){
+                if(!measurements || measurements.length < (params.limit -1)){ // For some reason we're returning 49 instead of 50 sometimes
                     $scope.state.moreDataCanBeLoaded = false;
                 }
                 if(measurements.length < $scope.state.limit){
