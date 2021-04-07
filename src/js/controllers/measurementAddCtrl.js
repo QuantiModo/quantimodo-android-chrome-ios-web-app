@@ -154,13 +154,17 @@ angular.module('starter').controller('MeasurementAddCtrl', [
             showToast();
             // Measurement only - post measurement. This is for adding or editing
             var backStateParams = {};
-            qm.measurements.postMeasurement(m, function(){
-                if(unitChanged){
-                    qmLog.error("Syncing reminders because unit changed");
-                    qm.storage.removeItem(qm.items.trackingReminders);
-                    qm.reminderHelper.syncReminders();
-                    $scope.goBack(backStateParams);
-                }
+            function handleUnitChange(){
+                qmLog.error("Syncing reminders because unit changed");
+                qm.storage.removeItem(qm.items.trackingReminders);
+                qm.reminderHelper.syncReminders();
+                $scope.goBack(backStateParams);
+            }
+            qm.measurements.postMeasurement(m).then(function(){
+                if(unitChanged){handleUnitChange();}
+            }, function (err){
+                qmLog.error(err, m)
+                if(unitChanged){handleUnitChange();}
             });
             if(!unitChanged){
                 $scope.goBack(backStateParams);  // We can go back immediately if no unit change
