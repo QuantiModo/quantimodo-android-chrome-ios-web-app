@@ -418,7 +418,7 @@ describe("Measurement", function () {
                     unitAbbreviatedName: "/5",
                 }
                 info("qm.measurements.recordMeasurement: ", body)
-                return qm.measurements.recordMeasurement(body)
+                return qm.measurements.postMeasurement(body)
             })
             .then(function (data) {
                 info("Checking post measurement response...")
@@ -482,7 +482,7 @@ describe("Measurement", function () {
                 var m = measurements[0]
                 expect(m.id).to.eq(measurementId)
                 m.value = editedValue
-                return qm.measurements.recordMeasurement(m)
+                return qm.measurements.postMeasurement(m)
             })
             .then(function (data) {
                 var editedId = checkPostMeasurementResponse(data, variableName, editedValue)
