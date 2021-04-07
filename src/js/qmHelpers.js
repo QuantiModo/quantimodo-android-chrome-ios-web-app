@@ -2412,6 +2412,10 @@ var qm = {
             qm.chartHelper.setChartExportingOptionsOnce(highchartConfig);
             qm.chartHelper.setTooltipFormatterFunction(highchartConfig);
             //highchartConfig.navigator = {enabled:true};  // This is done in the API
+            if(!highchartConfig.series){
+                qmLog.errorAndExceptionTestingOrDevelopment("No highchartConfig.series on: ", highchartConfig)
+                return;
+            }
             highchartConfig.series.forEach(function(series){
                 try {
                     qm.chartHelper.setTooltipFormatterFunction(series)
@@ -7299,7 +7303,7 @@ var qm = {
                 if(!(queue instanceof Array)){queue = [queue];}
                 body = queue.map(function (n){
                     return {
-                        'value': n.modifiedValue || n.value,
+                        'value': (typeof n.modifiedValue !== "undefined" && n.modifiedValue !== null) ? n.modifiedValue : n.value,
                         'trackingReminderNotificationId': n.trackingReminderNotificationId,
                         'variableId': n.variableId,
                         'trackingReminderId': n.trackingReminderId,
@@ -10363,11 +10367,11 @@ var qm = {
         }
     },
     timeHelper: {
-        toMoment: function(timeAt){
+        toUtcMoment: function(timeAt){
             return moment.utc(qm.timeHelper.getUnixTimestampInMilliseconds(timeAt));
         },
         toLocalMoment: function(timeAt){
-            return qm.timeHelper.toMoment(timeAt).local();
+            return qm.timeHelper.toUtcMoment(timeAt).local();
         },
         getYesterdayDate: function(){
             var unixTime = qm.timeHelper.getUnixTimestampInSeconds() - 86400;
@@ -11323,7 +11327,7 @@ var qm = {
         },
         setDriftIdentity: function(user){
             if(typeof drift !== "undefined"){
-                drift.identify(user.id, { // assuming your DB identifier could be something like a GUID or other unique ID.
+                drift.identify(user.id.toString(), { // assuming your DB identifier could be something like a GUID or other unique ID.
                     email: user.email,
                     name: user.displayName,
                 })
@@ -11340,7 +11344,7 @@ var qm = {
                 var record = qm.appMode.isProduction() || qm.urlHelper.getParam('logrocket');
                 if(record){
                     LogRocket.init('zi2x4l/quantimodo');
-                    LogRocket.identify(user.id, {
+                    LogRocket.identify(user.id.toString(), {
                         name: user.displayName,
                         email: user.email,
                         upgraded: user.stripeActive,
