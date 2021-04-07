@@ -357,7 +357,7 @@ angular.module('starter').controller('MeasurementAddCtrl', [
         var setupByMeasurement = function(m){
             if(!m.id){m.prevStartAt = m.startAt;}
             $scope.state.title = "Edit Measurement";
-            $scope.state.selectedDate = qm.timeHelper.toMoment(m.startAt);
+            $scope.state.selectedDate = qm.timeHelper.toLocalMoment(m.startAt);
             $scope.state.measurement = m;
             qmLog.info("Setting $scope.state.measurement to ", m);
             $scope.state.measurementIsSetup = true;
@@ -372,7 +372,7 @@ angular.module('starter').controller('MeasurementAddCtrl', [
             $scope.state.hideRemindMeButton = true;
             var m = qm.measurements.fromNotification(n);
             $scope.state.measurement = m;
-            if(m.startAt){$scope.state.selectedDate = qm.timeHelper.toMoment(m.startAt);}
+            if(m.startAt){$scope.state.selectedDate = qm.timeHelper.toLocalMoment(m.startAt);}
             $scope.state.measurementIsSetup = true;
             setupUnit(n.unitAbbreviatedName, n.valence);
             setStateVariable();

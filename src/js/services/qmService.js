@@ -4298,7 +4298,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             var millis = null;
             for(var i = 0; i < allMeasurements.length; i++){
                 var m = allMeasurements[i];
-                var day = qm.timeHelper.toMoment(m.startAt).day();
+                var day = qm.timeHelper.toUtcMoment(m.startAt).day();
                 if(typeof weekdayMeasurementArrays[day] === "undefined"){
                     weekdayMeasurementArrays[day] = [];
                 }
@@ -4314,7 +4314,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             var monthlyMeasurementArrays = [];
             for(var i = 0; i < allMeasurements.length; i++){
                 var m = allMeasurements[i];
-                var month = qm.timeHelper.toMoment(m.startAt).month();
+                var month = qm.timeHelper.toUtcMoment(m.startAt).month();
                 if(typeof monthlyMeasurementArrays[month] === "undefined"){
                     monthlyMeasurementArrays[month] = [];
                 }
@@ -4326,7 +4326,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             var hourlyMeasurementArrays = [];
             for(var i = 0; i < allMeasurements.length; i++){
                 var m = allMeasurements[i];
-                var hour = qm.timeHelper.toMoment(m.startAt).hour();
+                var hour = qm.timeHelper.toUtcMoment(m.startAt).hour();
                 if(typeof hourlyMeasurementArrays[hour] === "undefined"){
                     hourlyMeasurementArrays[hour] = [];
                 }
