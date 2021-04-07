@@ -5188,9 +5188,6 @@ var qm = {
         }
     },
     measurements: {
-        recordMeasurement: function(m){
-            return qm.measurements.postMeasurement(m)
-        },
         validateMeasurement: function(m){
             var message;
             if(m.value === null || m.value === '' ||
@@ -5818,7 +5815,8 @@ var qm = {
             }
             var toastMessage = 'Recorded ' + measurement.value + ' ' + measurement.unitAbbreviatedName;
             qm.toast.infoToast(toastMessage.replace(' /', '/'));
-            qm.measurements.postMeasurement(measurement, successHandler, errorHandler);
+            qm.measurements.postMeasurement(measurement)
+                .then(successHandler, errorHandler);
         },
     },
     manualTrackingVariableCategoryNames: [
@@ -8355,7 +8353,7 @@ var qm = {
                 delete tr.timeout
                 if(tr.value !== null){
                     var m = qm.measurements.newMeasurement(tr)
-                    qm.measurements.recordMeasurement(m)
+                    qm.measurements.postMeasurement(m)
                         .then(function(){
                             qmLog.debug('Successfully posted MeasurementByReminder: ', tr);
                         }, function(error){

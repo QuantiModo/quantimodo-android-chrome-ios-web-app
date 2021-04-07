@@ -25,7 +25,7 @@ angular.module('starter').controller('TrackPrimaryOutcomeCtrl',
         $scope.timeRemaining = true;
         $scope.showRatingFaces = false;
         var measurement = qmService.createPrimaryOutcomeMeasurement(numericRatingValue);
-        qm.measurements.recordMeasurement(measurement).then(function (){
+        qm.measurements.postMeasurement(measurement).then(function (){
             updateCharts();
         });
     };
