@@ -9987,8 +9987,12 @@ var qm = {
             if($scope && $scope.state && $scope.state.causeVariable){
                 return $scope.state.causeVariable.name;
             }
-            if($scope && $scope.state && $scope.state.study && $scope.state.study.causeVariable){
-                return $scope.state.study.causeVariable.name;
+            var study = ($scope && $scope.state && $scope.state.study) ? $scope.state.study : $stateParams.study;
+            if(study){
+                var name = study.causeVariableName || study.causeVariable.name || null;
+                if(name){
+                    return name;
+                }
             }
             if(qm.studyHelper.lastStudy){
                 var lastStudyOrCorrelation = qm.studyHelper.lastStudy;
@@ -10001,15 +10005,15 @@ var qm = {
             }
         },
         getStudyId: function($stateParams, $scope, $rootScope){
-            if(qm.parameterHelper.getStateUrlRootScopeOrRequestParam('studyId', $stateParams, $scope, $rootScope)){
-                return qm.parameterHelper.getStateUrlRootScopeOrRequestParam('studyId', $stateParams, $scope, $rootScope);
+            var id = qm.parameterHelper.getStateUrlRootScopeOrRequestParam('studyId', $stateParams, $scope, $rootScope);
+            if(id){return id;}
+            var study = ($scope && $scope.state && $scope.state.study) ? $scope.state.study : $stateParams.study;
+            if(!study){study = qm.studyHelper.lastStudy;}
+            if(study){
+                id = study.studyId || study.id;
+                if(id){return id;}
             }
-            if(qm.studyHelper.lastStudy){
-                var lastStudyOrCorrelation = qm.studyHelper.lastStudy;
-                if(lastStudyOrCorrelation.studyId){
-                    return lastStudyOrCorrelation.studyId;
-                }
-            }
+            return null;
         },
         getEffectVariableName: function($stateParams, $scope, $rootScope){
             if($stateParams && $stateParams.effectVariable){
@@ -10022,8 +10026,12 @@ var qm = {
             if($scope && $scope.state && $scope.state.effectVariable){
                 return $scope.state.effectVariable.name;
             }
-            if($scope && $scope.state && $scope.state.study && $scope.state.study.effectVariable){
-                return $scope.state.study.effectVariable.name;
+            var study = ($scope && $scope.state && $scope.state.study) ? $scope.state.study : $stateParams.study;
+            if(study){
+                var name = study.effectVariableName || study.effectVariable.name || null;
+                if(name){
+                    return name;
+                }
             }
             if(qm.studyHelper.lastStudy){
                 var lastStudyOrCorrelation = qm.studyHelper.lastStudy;
