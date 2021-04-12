@@ -23,14 +23,16 @@ angular.module('starter').controller('StudyJoinCtrl', ["$scope", "$state", "qmSe
                 qmService.navBar.hideNavigationMenu();
             }
             initializeScope();
-            var params = getRequestParams();
-            qm.studyHelper.getStudyFromLocalStorageOrApi(params, function(study){
-                $scope.state.study = study;
-                initializeScope();
-            }, function(error){
-                qmLog.error(error);
-                //$scope.goBack();
-            });
+            if(!$scope.state.study){
+                var params = getRequestParams();
+                qm.studyHelper.getStudyFromLocalStorageOrApi(params, function(study){
+                    $scope.state.study = study;
+                    initializeScope();
+                }, function(error){
+                    qmLog.error(error);
+                    //$scope.goBack();
+                });
+            }
         });
         $scope.$on('$ionicView.enter', function(e){
             qmLog.debug($scope.controller_name + ' $ionicView.enter in state: ' + $state.current.name, null);
