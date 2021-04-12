@@ -106,4 +106,20 @@ describe('Studies', function () {
     // cy.get('#hideHelpInfoCardButton').click({ force: true })
     //   cy.logOutViaSettingsPage(false)
   })
+    it('Joins study from predictors page', function () {
+        cy.loginWithAccessTokenIfNecessary('/#/app/predictors/Energy', true)
+        cy.get('#join-cause-1486-effect-1306-population-study', { timeout: 15000 })
+            .click({ force: true })
+        cy.wait(5000) // Leftover redirect from previous test
+        cy.get('#app-container > ion-side-menu-content > ion-nav-view > ion-view:nth-child(3) > div > div > div > p', { timeout: 60000 })
+            .should('contain', 'Body Weight')
+
+        cy.loginWithAccessTokenIfNecessary('/#/app/predictors/Energy', true)
+        cy.wait(5000) // Leftover redirect from previous test
+        cy.debug()
+        cy.get('#join-cause-1444-effect-1306-population-study', { timeout: 15000 })
+            .click({ force: true })
+        cy.get('#app-container > ion-side-menu-content > ion-nav-view > ion-view:nth-child(3) > div > div > div > p', { timeout: 60000 })
+            .should('contain', 'Sickness')
+    })
 })
