@@ -2156,16 +2156,6 @@ var qm = {
             qm.storage.setItem(qm.items.afterLoginGoToUrl, afterLoginGoToUrl);
         },
         sendToLogin: function(reason){
-            qmLog.info("Sending to login because " + reason);
-            var urlToken = qm.urlHelper.getParam('access_token');
-            if(urlToken){
-                if(!qm.auth.getAccessTokenFromCurrentUrl()){
-                    qmLog.error("Not detecting snake case access_token", {}, qmLog.getStackTrace());
-                }
-                qmLog.error("Sending to login even though we have an url access token (" + urlToken + ") because " + reason,
-                    {}, qmLog.getStackTrace());
-                return;
-            }
             qm.urlHelper.goToUrl('#/app/login', reason);
         },
         setAfterLoginGoToUrlAndSendToLogin: function(reason){
