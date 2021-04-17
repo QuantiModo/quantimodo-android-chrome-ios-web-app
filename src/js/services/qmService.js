@@ -188,6 +188,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             adSense: {
                 showOrHide: function(){
                     function showAdSense(){
+                        return false; // Remove this line if you need to show ads
                         var u = $rootScope.user;
                         if(!u){
                             return false;
