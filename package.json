@@ -280,7 +280,7 @@
     }
   ],
   "resolutions": {
-    "set-value": "2.0.1",
+    "set-value": "4.0.0",
     "braces": "2.3.2",
     "handlebars": "4.3.5"
   },
