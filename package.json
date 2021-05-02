@@ -126,7 +126,7 @@
     "gulp-download-stream": "0.0.19",
     "gulp-endpoint": "mikepsinn/gulp-endpoint",
     "gulp-eslint": "6.0.0",
-    "gulp-filter": "6.0.0",
+    "gulp-filter": "7.0.0",
     "gulp-gh-pages-will": "0.5.5",
     "gulp-git": "2.10.1",
     "gulp-github": "https://github.com/mikepsinn/gulp-github.git#5d5ec40d17056e0ab86209197ba3e2b79ee2e9d3",
