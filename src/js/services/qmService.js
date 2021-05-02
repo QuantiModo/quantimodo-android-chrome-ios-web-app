@@ -307,8 +307,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 showErrorAlertMessageOrSendToLogin: function(title, errorMessage){
                     if(errorMessage){
                         if(typeof errorMessage !== "string"){
-                            qmLog.error('errorMessage is not a string and is type '+typeof errorMessage+": "+JSON.stringify(errorMessage));
-                            return;
+                            errorMessage = JSON.stringify(errorMessage);
                         }
                         if(errorMessage.toLowerCase().indexOf('unauthorized') !== -1){
                             qm.auth.setAfterLoginGoToUrlAndSendToLogin(title + ": " + errorMessage);
