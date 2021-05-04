@@ -5,7 +5,7 @@
                     ng-if="card.headerTitle || card.subHeader || card.avatar || card.avatarCircular">
         <md-card-avatar ng-if="card.avatar && !card.avatarCircular"
                         id="card-avatar">
-            <img ng-src="{{card.avatar}}"/>
+            <img ng-src="{{card.avatar}}" style="max-height: 100%"/>
         </md-card-avatar>
         <md-card-avatar ng-if="card.avatarCircular"
                         id="card-avatar">
@@ -38,13 +38,16 @@
     <img id="image"
          ng-src="{{card.image}}"
          class="md-card-image"
+         style="max-height: 300px; object-fit: cover;"
          alt="{{card.title}}"
-         ng-if="card.image">
+         ng-if="card.image && platform.screen.height > 1000">
     <md-card-title id="card"
+                   style="padding-top: 0; padding-bottom: 2px;"
                    ng-if="card.title || card.subTitle">
         <md-card-title-text id="title-text">
             <span id="title"
                   class="md-headline"
+                  style="font-size: 18px; line-height: 18px;"
                   ng-if="card.title">{{card.title}}</span>
             <span id="subTitle"
                   class="md-subhead"
@@ -52,24 +55,24 @@
         </md-card-title-text>
     </md-card-title>
     <md-card-content id="content"
-                     ng-if="card.content">
+                     ng-if="card.content && card.content !== ''">
         <p> {{card.content}}</p>
     </md-card-content>
-    <md-card-content id="html-content"
-                     ng-if="card.htmlContent"
+<!--    <md-card-content id="html-content"
+                     ng-if="card.htmlContent && card.htmlContent !== ''"
                      style="top:5px; right: 0; position: relative; max-width: 98%;">
         <div ng-if="!card.content" ng-bind-html="trustAsHtml(card.htmlContent)"
              ng-click="state.openActionSheetForCard(card)"></div>
-    </md-card-content>
+    </md-card-content>-->
     <md-card-actions id="actions"
                      layout-align="center center"
-                     style="text-align: center;"
+                     style="text-align: center; padding-top: 0;"
                      ng-if="card.buttons">
         <md-button id="{{button.id+'-text-button'}}"
                    ng-if="!button.image || button.ionIcon"
                    ng-repeat="button in card.buttons"
                    aria-label="{{button.text || button.title || button.id}}"
-                   style="min-width: 0;"
+                   style="min-width: 0; padding-top: 0; padding-bottom: 0;"
                    ng-click="state.cardButtonClick(card, button, $event)">
             <md-tooltip ng-if="button.tooltip">{{button.tooltip}}</md-tooltip>
             <span style="color: {{button.color}}">
@@ -97,7 +100,7 @@
                    ng-if="!button.image || button.ionIcon"
                    ng-repeat="button in card.buttonsSecondary"
                    aria-label="{{button.text || button.title || button.id}}"
-                   style="min-width: 0;"
+                   style="min-width: 0; padding-top: 0; padding-bottom: 0;"
                    ng-click="state.cardButtonClick(card, button, $event)">
             <md-tooltip ng-if="button.tooltip">{{button.tooltip}}</md-tooltip>
             <span style="color: {{button.color}}">
@@ -123,8 +126,7 @@
               ng-submit="state.cardButtonClick(card, inputField.submitButton, $event)"
               ng-if="inputField.show"
               layout
-              layout-align="center"
-              layout-padding>
+              layout-align="center">
             <div layout="row"
                  flex>
                 <span flex="15"

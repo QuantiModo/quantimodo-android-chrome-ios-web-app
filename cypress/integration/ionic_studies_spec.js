@@ -28,9 +28,9 @@ describe('Studies', function () {
   })
   it('Tries to joins a study and is sent to login', function () {
     cy.visitIonicAndSetApiUrl(
-      '/#/app/study-join?causeVariableName=Flaxseed%20Oil&'+
-        'effectVariableName=Overall%20Mood&'+
-        'studyId=cause-53530-effect-1398-population-study&'+
+      '/#/app/study-join?causeVariableName=Flaxseed%20Oil&' +
+        'effectVariableName=Overall%20Mood&' +
+        'studyId=cause-53530-effect-1398-population-study&' +
         'logout=1')
     cy.get('#joinStudyButton').click({ force: true })
     cy.get('#signInButton > span').click({ force: true })
@@ -63,10 +63,10 @@ describe('Studies', function () {
       // Very flakey!
     let effect = 'Overall Mood'
     let cause = 'Sleep Duration'
-    cy.visitIonicAndSetApiUrl(`/#/app/study?causeVariableName=${cause}&`+
-        `effectVariableName=${effect}&`+
+    cy.visitIonicAndSetApiUrl(`/#/app/study?causeVariableName=${cause}&` +
+        `effectVariableName=${effect}&` +
       'logout=1')
-      cy.wait(1000);
+      cy.wait(1000)
     checkStudyPage(effect, cause)
   })
   it('Goes to study from positive predictors page', function () {
@@ -106,4 +106,20 @@ describe('Studies', function () {
     // cy.get('#hideHelpInfoCardButton').click({ force: true })
     //   cy.logOutViaSettingsPage(false)
   })
+    it('Joins study from predictors page', function () {
+        cy.loginWithAccessTokenIfNecessary('/#/app/predictors/Energy', true)
+        cy.get('#join-cause-1486-effect-1306-population-study', { timeout: 15000 })
+            .click({ force: true })
+        cy.wait(5000) // Leftover redirect from previous test
+        cy.get('#app-container > ion-side-menu-content > ion-nav-view > ion-view:nth-child(3) > div > div > div > p', { timeout: 60000 })
+            .should('contain', 'Body Weight')
+
+        cy.loginWithAccessTokenIfNecessary('/#/app/predictors/Energy', true)
+        cy.wait(5000) // Leftover redirect from previous test
+        cy.debug()
+        cy.get('#join-cause-1444-effect-1306-population-study', { timeout: 15000 })
+            .click({ force: true })
+        cy.get('#app-container > ion-side-menu-content > ion-nav-view > ion-view:nth-child(3) > div > div > div > p', { timeout: 60000 })
+            .should('contain', 'Sickness')
+    })
 })

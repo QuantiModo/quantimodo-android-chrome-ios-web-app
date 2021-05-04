@@ -179,7 +179,7 @@ angular.module('starter').controller('OnboardingCtrl',
             };
             $scope.postMeasurement = function(circlePage, value){
                 circlePage.measurements = {value: value};
-                qmService.postMeasurementsToApi(circlePage);
+                qm.measurements.postMeasurements(circlePage);
                 $scope.hideOnboardingPage();
             };
         }]);

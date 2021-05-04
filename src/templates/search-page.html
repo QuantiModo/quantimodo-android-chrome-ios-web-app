@@ -1,0 +1,67 @@
+<div ng-controller="SearchPageCtrl as ctrl" ng-cloak>
+    <style>
+        .container {
+            height: 200px;
+            position: relative;
+            border: 3px solid green;
+        }
+
+        .vertical-center {
+            margin: 0;
+            position: absolute;
+            padding: 20px;
+            top: 50%;
+            -ms-transform: translateY(-50%);
+            transform: translateY(-50%);
+        }
+    </style>
+    <md-content class="md-padding vertical-center">
+        <md-dialog-content ng-cloak>
+            <div class="md-dialog-content">
+                <form ng-submit="$event.preventDefault()">
+                    <p id="variable-search-help-text" ng-if="ctrl.showHelp">{{ctrl.helpText}}</p>
+                    <!--Why disable cache? It causes lots of pointless searches? md-no-cache="true"-->
+                    <!--We have to disable cache so that "Not seeing.." is replaced with "Create new variable" if not found in API-->
+                    <md-autocomplete id="variable-search-box"
+                                     md-no-cache="true"
+                                     md-selected-item="ctrl.selectedItem"
+                                     md-search-text-change="ctrl.searchTextChange(ctrl.searchText)"
+                                     md-search-text="ctrl.searchText"
+                                     md-selected-item-change="ctrl.selectedItemChange(item)"
+                                     md-items="item in ctrl.querySearch(ctrl.searchText)"
+                                     ng-model-options="{debounce: 500}"
+                                     md-item-text="item.name"
+                                     md-min-length="ctrl.minLength"
+                                     placeholder="{{ctrl.placeholder}}"
+                                     md-menu-class="autocomplete-custom-template"
+                                     md-autofocus="true">
+                        <md-item-template id="variable-item">
+                        <span class="item-title" id="variable-item-title">
+                            <!--<md-icon md-svg-icon="img/icons/octicon-repo.svg"></md-icon>-->
+                            <i ng-if="item.ionIcon" class="icon {{item.ionIcon}}"></i>
+                            <span> {{item.displayName || item.name}} </span>
+                        </span>
+                            <span class="item-metadata" id="variable-item-sub-title">
+                            <span><small>{{item.subtitle}}</small></span>
+                        </span>
+                        </md-item-template>
+                        <md-not-found id="variable-not-found">
+                            <span ng-if="ctrl.dialogParameters.doNotCreateNewVariables">{{ctrl.notFoundText}}</span>
+                            <a ng-if="!ctrl.dialogParameters.doNotCreateNewVariables && !ctrl.doNotCreateNewVariables"
+                               ng-click="ctrl.createNewVariable(ctrl.searchText)">
+                                Create new "{{ctrl.searchText}}" variable
+                            </a>
+                        </md-not-found>
+                    </md-autocomplete>
+                </form>
+            </div>
+        </md-dialog-content>
+        <md-dialog-actions ng-if="ctrl.selectedItem">
+            <md-button id="select-variable-button" ng-if="ctrl.buttonText" aria-label="Finished"
+                       ng-click="ctrl.finish($event, item)">
+                <i ng-if="ctrl.selectedItem.ionIcon" class="icon {{ctrl.selectedItem.ionIcon}}"></i> &nbsp;
+                {{ctrl.buttonText}}
+            </md-button>
+        </md-dialog-actions>
+    </md-content>
+</div>

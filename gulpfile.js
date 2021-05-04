@@ -117,6 +117,36 @@ var appIds = {
     'quantimodo': true,
     'medimodo': true
 };
+var paths = {
+    apk: {//android\app\build\outputs\apk\release\app-release.apk
+        combinedRelease: "platforms/android/app/build/outputs/apk/release/app-release.apk",
+        combinedDebug: "platforms/android/app/build/outputs/apk/release/app-debug.apk",
+        arm7Release: "platforms/android/app/build/outputs/apk/release/app-arm7-release.apk",
+        x86Release: "platforms/android/app/build/outputs/apk/release/app-x86-release.apk",
+        outputFolder: "platforms/android/app/build/outputs/apk",
+        builtApk: null,
+    },
+    sass: ['./src/scss/**/*.scss'],
+    src:{
+        devCredentials: "src/dev-credentials.json",
+        defaultPrivateConfig: "src/default.private_config.json",
+        icons: "src/img/icons",
+        firebase: "src/lib/firebase/**/*",
+        js: "src/js/*.js",
+        serviceWorker: "src/firebase-messaging-sw.js",
+        staticData: 'src/data/qmStaticData.js',
+    },
+    www: {
+        devCredentials: "www/dev-credentials.json",
+        defaultPrivateConfig: "www/default.private_config.json",
+        icons: "www/img/icons",
+        firebase: "www/lib/firebase/",
+        js: "www/js/",
+        scripts: "www/scripts",
+        staticData: 'src/data/qmStaticData.js',
+    },
+    chcpLogin: '.chcplogin',
+};
 var argv = require('yargs').argv;
 var defaultRequestOptions = {strictSSL: false};
 var fs = require('fs');

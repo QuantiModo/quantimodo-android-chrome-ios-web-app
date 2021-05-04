@@ -30,7 +30,7 @@ describe('Reminders', function () {
    */
   function setFrequency (frequency) {
     cy.log(`Setting frequency to ${frequency}`)
-    cy.get('#frequencySelectorMaterial').click()
+    cy.get('#frequencySelectorMaterial').click({force: true})
       cy.get('md-option').contains(frequency).click({force: true})
   }
   /**
@@ -159,7 +159,7 @@ describe('Reminders', function () {
 
     deleteRemindersAddOneAndGoToCategoryInbox(variableName, frequency, variableCategoryName)
     cy.get('#notification-skip').click({ force: true })
-    cy.get('#notification-skip').should('not.be.visible')
+    cy.get('#notification-skip').should('not.exist')
     deleteReminders(variableCategoryName)
   })
   it('Creates a sleep reminder and changes unit', function () {
@@ -207,7 +207,7 @@ describe('Reminders', function () {
 
     deleteRemindersAddOneAndGoToCategoryInbox(variableName, frequency, variableCategoryName)
     cy.get('#notification-snooze').click({ force: true })
-    cy.get('#notification-snooze').should('not.be.visible')
+    cy.get('#notification-snooze').should('not.exist')
     deleteReminders(variableCategoryName)
   })
   it.skip('Creates a symptoms reminder and tracks it', function () {
@@ -288,7 +288,7 @@ describe('Reminders', function () {
         //cy.log('Since there are no favorites, the explanation card is showing')
         //cy.get("#noFavoritesExplanation").should('exist');
         //cy.log('There is no favorites list since there are no favorites')
-        //cy.get("#favoritesList").should('not.be.visible')
+        //cy.get("#favoritesList").should('not.exist')
         cy.log('Posted value from second click')
         cy.visitIonicAndSetApiUrl('/#/app/history-all?variableCategoryName=Treatments')
         //TODO: cy.get('#historyItemTitle-0', { timeout: 30000 }).should('contain', '100 mg '+variableName)

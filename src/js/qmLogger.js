@@ -20,20 +20,21 @@ var qmLog = {
         if(qm.platform.isMobile()){
             qmLog.name = "QM: " + name;
         } // Use for filtering in LogCat
+        if(qmLog.name && typeof qmLog.name !== "string" && qmLog.name.message){
+            qmLog.name = qmLog.name.message
+        }
         qmLog.name = qmLog.replaceSecretValuesInString(qmLog.name);
     },
     message: null,
     setMessage: function(name, message){
+        message = message || name;
         if(message && typeof message === 'object'){
-            qmLog.message = message.message || JSON.stringify(message);
-        }else{
-            qmLog.message = message || name;
+            message = message.message || JSON.stringify(message);
         }
         if(qm.platform.isMobile() && qmLog.isDebugMode()){
-            qmLog.message = addCallerFunctionToMessage(qmLog.message || "");
+            message = addCallerFunctionToMessage(message || "");
         }
-        qmLog.message = qmLog.replaceSecretValuesInString(qmLog.message);
-        return qmLog.message;
+        return qmLog.message = qmLog.replaceSecretValuesInString(message);
     },
     globalMetaData: {
         context: null,
@@ -300,7 +301,7 @@ var qmLog = {
             consoleMessage = qmLog.color.red(consoleMessage);
         }
         if(qm.appMode.isTestingOrDevelopment()){
-            qm.toast.errorAlert(consoleMessage);
+            qm.toast.errorToast(consoleMessage);
         }
         console.error(consoleMessage, errorSpecificMetaData);
         qmLog.globalMetaData = qmLog.addGlobalMetaDataAndLog(qmLog.name, qmLog.message, errorSpecificMetaData, qmLog.stackTrace);

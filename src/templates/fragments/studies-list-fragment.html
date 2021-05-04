@@ -47,10 +47,7 @@
         Results in order of ascending predictive correlation. (So you'll probably just see negative correlations.)
     </div>
 </div>
-<div ng-show="searching" style="text-align: center"><br><br><br><br><br>
-    <ion-spinner icon="android"></ion-spinner>
-    <br>
-</div>
+<div ng-show="searching" ng-include="'templates/spinner.html'"></div>
 <ion-list>
     <div id="correlationList" class="list card correlationResultList" style="text-align: center"
          ng-repeat="study in state.studiesResponse.studies">

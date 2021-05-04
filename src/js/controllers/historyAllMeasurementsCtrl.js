@@ -10,7 +10,7 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
             moreDataCanBeLoaded: true,
             noHistory: false,
             showLocationToggle: false,
-            sort: "-startTime",
+            sort: "-startAt",
             title: "History",
             units: [],
         };
@@ -23,6 +23,8 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
                     icon: "ion-calendar"
                 };
             }
+        });
+        $scope.$on('$ionicView.enter', function(e){
             var params = getRequestParams();
             qm.measurements.getLocalMeasurements(params).then(function(combined){
                 setHistory(combined)
@@ -31,8 +33,6 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
             // Need to use rootScope here for some reason
             qmService.rootScope.setProperty('hideHistoryPageInstructionsCard',
                 qm.storage.getItem('hideHistoryPageInstructionsCard'));
-        });
-        $scope.$on('$ionicView.enter', function(e){
             qmService.navBar.showNavigationMenuIfHideUrlParamNotSet();
             var cat = getVariableCategoryName();
             if(cat && cat !== 'Anything'){
@@ -79,10 +79,10 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
                                 changeSortAndGetHistory('value');
                             }
                             if(button.text === allButtons.sortDescendingTime.text){
-                                changeSortAndGetHistory('-startTime');
+                                changeSortAndGetHistory('-startAt');
                             }
                             if(button.text === allButtons.sortAscendingTime.text){
-                                changeSortAndGetHistory('startTime');
+                                changeSortAndGetHistory('startAt');
                             }
                             return true;
                         }
@@ -91,15 +91,15 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
             }, 1);
         }
         function changeSortAndGetHistory(sort){
-            var sorted = qm.arrayHelper.sortByProperty($scope.state.history, sort)
-            setHistory(sorted);
             $scope.state.sort = sort;
+            setHistory($scope.state.history);
             $scope.getHistory();
         }
         function setHistory(measurements){
+            var sorted = qm.arrayHelper.sortByProperty(measurements, $scope.state.sort)
             $scope.safeApply(function () {
                 //debugger
-                $scope.state.history = measurements;
+                $scope.state.history = sorted;
             })
         }
         function hideLoader(){
@@ -152,6 +152,15 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
             }
             qmLog.debug("Could not get connectorName")
         }
+        function getConnector(){
+            if(getConnectorId()){
+                return qm.connectorHelper.getConnectorById(getConnectorId())
+            }
+            if(getConnectorName()){
+                return qm.connectorHelper.getConnectorById(getConnectorId())
+            }
+            return null;
+        }
         function getConnectorId(){
             if($stateParams.connectorId){
                 return $stateParams.connectorId;
@@ -169,6 +178,7 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
             });
         };
         $scope.refreshHistory = function(){
+            $scope.state.moreDataCanBeLoaded = true;
             setHistory([])
             $scope.getHistory();
         };
@@ -177,8 +187,8 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
             if(getVariableName()){
                 params.variableName = getVariableName();
             }
-            if(getConnectorName()){
-                params.connectorName = getConnectorName();
+            if(getConnector()){
+                params.connectorId = getConnector().id;
             }
             if(getVariableCategoryName()){
                 params.variableCategoryName = getVariableCategoryName();
@@ -218,7 +228,7 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
                 }
             }
             function successHandler(measurements){
-                if(!measurements || measurements.length < params.limit){
+                if(!measurements || measurements.length < (params.limit -1)){ // For some reason we're returning 49 instead of 50 sometimes
                     $scope.state.moreDataCanBeLoaded = false;
                 }
                 if(measurements.length < $scope.state.limit){

@@ -1,7 +1,9 @@
 <ion-view hide-nav-bar="hideNavigationMenu">
     <ion-nav-title>{{state.title}}</ion-nav-title>
     <ion-content ng-class="{ isBrowserView : platform.isWeb == true }">
-        <ion-refresher on-refresh="refreshHistory()"></ion-refresher>
+        <ion-refresher on-refresh="refreshHistory()"
+                       style="text-align: center; margin: auto;">
+        </ion-refresher>
         <div id="no-history-section"
              class="list card"
              ng-show="state.noHistory && (!state.history || !state.history.length)">
@@ -94,8 +96,8 @@
                 </h2>
                 <p id="historyItemBody-{{$index}}"
                    ng-click="showActionSheetForMeasurement(historyItem)">
-                    <span ng-if="historyItem.id">{{historyItem.startTimeEpoch | timeOfDay}}</span>
-                    {{historyItem.startTimeEpoch | dayOfWeekAndDate}}
+                    <span ng-if="historyItem.id">{{historyItem.startAt | timeOfDay}}</span>
+                    {{historyItem.startAt | dayOfWeekAndDate}}
                     <br>
                     <span ng-if="historyItem.noteHtml"
                           ng-bind-html="historyItem.noteHtml"></span>
@@ -125,7 +127,7 @@
              ng-show="state.loading"
              style="border-radius: 15px;">
             <div class="item">
-                <div class="row">
+                <div class="row" style="text-align: center; margin: auto;">
                     <ion-spinner></ion-spinner>
                     <p style=" text-align: center; line-height: normal; font-size: 18px;">&nbsp &nbsp
                         {{state.loadingText}}

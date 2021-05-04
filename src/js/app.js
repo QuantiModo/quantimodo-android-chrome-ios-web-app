@@ -211,7 +211,7 @@ angular.module('starter',
                 closeOnSelect: false
             };
             ionicDatePickerProvider.configDatePicker(datePickerObj);
-            qm.staticData.states.forEach(function(state){
+            qmStates.forEach(function(state){
                     if(state.name === ''){
                         return;
                     }

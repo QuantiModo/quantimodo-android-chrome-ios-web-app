@@ -188,6 +188,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             adSense: {
                 showOrHide: function(){
                     function showAdSense(){
+                        return false; // Remove this line if you need to show ads
                         var u = $rootScope.user;
                         if(!u){
                             return false;
@@ -224,12 +225,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                             }, 3000)
                         }
                     });
-                }
-            },
-            alerts: {
-                errorAlert: function(message){
-                    qmLog.error(message);
-                    qmService.showMaterialAlert(message, "Please create a ticket at https://help.quantimo.do");
                 }
             },
             api: {
@@ -312,8 +307,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 showErrorAlertMessageOrSendToLogin: function(title, errorMessage){
                     if(errorMessage){
                         if(typeof errorMessage !== "string"){
-                            qmLog.error('errorMessage is not a string and is type '+typeof errorMessage+": "+JSON.stringify(errorMessage));
-                            return;
+                            errorMessage = JSON.stringify(errorMessage);
                         }
                         if(errorMessage.toLowerCase().indexOf('unauthorized') !== -1){
                             qm.auth.setAfterLoginGoToUrlAndSendToLogin(title + ": " + errorMessage);
@@ -1183,7 +1177,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                         qmLog.info("intent: ", intent);
                     },
                     "Record Symptom Intent": function(intent){
-                        qmService.measurements.saveMeasurement(intent.parameters);
+                        qm.measurements.saveMeasurement(intent.parameters);
                     },
                     "Tracking Reminder Notification Intent": function(intent){
                         qmLog.info("intent: ", intent);
@@ -1755,53 +1749,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     qmLog.info("Broadcasting updatePrimaryOutcomeHistory");
                     $rootScope.$broadcast('updatePrimaryOutcomeHistory');
                 },
-                saveMeasurement: function(measurement, successHandler, errorHandler){
-                    if(!qmService.measurements.measurementValid(measurement)){
-                        return false;
-                    }
-                    var toastMessage = 'Recorded ' + measurement.value + ' ' + measurement.unitAbbreviatedName;
-                    qmService.showInfoToast(toastMessage.replace(' /', '/'));
-                    qm.measurements.postMeasurement(measurement, successHandler, errorHandler);
-                },
-                measurementValid: function(m){
-                    var message;
-                    if(m.value === null || m.value === '' ||
-                        typeof m.value === 'undefined'){
-                        if(m.unitAbbreviatedName === '/5'){
-                            message = 'Please select a rating';
-                        }else{
-                            message = 'Please enter a value';
-                        }
-                        qm.measurements.validationFailure(message, m);
-                        return false;
-                    }
-                    if(!m.variableName || m.variableName === ""){
-                        message = 'Please enter a variable name';
-                        qm.measurements.validationFailure(message, m);
-                        return false;
-                    }
-                    if(!m.variableCategoryName){
-                        m.variableCategoryName = qm.urlHelper.getParam('variableCategoryName');
-                    }
-                    if(!m.variableCategoryName){
-                        message = 'Please select a variable category';
-                        qm.measurements.validationFailure(message, m);
-                        return false;
-                    }
-                    if(!m.unitAbbreviatedName){
-                        message = 'Please select a unit for ' + m.variableName;
-                        qm.measurements.validationFailure(message, m);
-                        return false;
-                    }else{
-                        var u = qm.unitHelper.getByNameAbbreviatedNameOrId(m.unitAbbreviatedName);
-                        if(!u){
-                            qmLog.error('Cannot get unit id', 'abbreviated unit name is ' + m.unitAbbreviatedName);
-                        }else{
-                            m.unitId = u.id;
-                        }
-                    }
-                    return true;
-                }
             },
             navBar: {
                 setFilterBarSearchIcon: function(value){
@@ -2260,6 +2207,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 var SelectVariableDialogController = function($scope, $state, $rootScope, $stateParams, $filter, qmService,
                                                               $q, $log, dialogParams, $timeout){
                     var self = this;
+                    //debugger
                     if(!dialogParams.placeholder){
                         dialogParams.placeholder = "Enter a variable";
                     }
@@ -2770,13 +2718,13 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                         qmService.openSharingUrl(sharingUrl);
                     }
                 },
-                showUnShareStudyConfirmation: function(correlationObject, ev){
+                showUnShareStudyConfirmation: function(correlation, ev){
                     var title = 'Share Study';
                     var textContent = 'Are you absolutely sure you want to make your ' + qm.studyHelper.getCauseVariableName() +
                         ' and ' + qm.studyHelper.getEffectVariableName() + ' measurements private? Links to studies your ' +
                         'previously shared with these variables will no longer work.';
                     function yesCallback(){
-                        correlationObject.shareUserMeasurements = false;
+                        correlation.shareUserMeasurements = false;
                         var body = {
                             causeVariableId: qm.studyHelper.getCauseVariableId(),
                             effectVariableId: qm.studyHelper.getEffectVariableId(), shareUserMeasurements: false
@@ -2784,7 +2732,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                         qm.studyHelper.postStudy(body);
                     }
                     function noCallback(){
-                        correlationObject.shareUserMeasurements = true;
+                        correlation.shareUserMeasurements = true;
                     }
                     qmService.showMaterialConfirmationDialog(title, textContent, yesCallback, noCallback, ev);
                 },
@@ -3684,7 +3632,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 variableName: v.name,
                 variableCategoryName: v.variableCategoryName,
                 valence: v.valence,
-                startTimeEpoch: qm.timeHelper.getUnixTimestampInSeconds(),
+                startAt: qm.timeHelper.toMySQLTimestamp(),
                 unitAbbreviatedName: v.unitAbbreviatedName,
                 value: numericRatingValue,
                 note: null
@@ -3709,6 +3657,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             platform.isWebOrChrome = platform.isChromeExtension || platform.isWeb;
             platform.isIframe = qm.windowHelper.isIframe();
             platform.isWebView = qm.platform.isWebView();
+            platform.screen = window.screen;
             if(platform.isMobile){qmLog.error("isWebView is  " + platform.isWebView);}
             qmService.localNotificationsEnabled = platform.isChromeExtension;
             qmService.rootScope.setProperty('platform', platform, qmService.configurePushNotifications);
@@ -3896,7 +3845,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 var newMeasurement = {
                     variableName: getLastLocationNameFromLocalStorage(),
                     unitAbbreviatedName: 'h',
-                    startTimeEpoch: qm.measurements.validateStartTime(qm.storage.getItem(qm.items.lastLocationUpdateTimeEpochSeconds)),
+                    startAt: qm.timeHelper.toMySQLTimestamp(qm.storage.getItem(qm.items.lastLocationUpdateTimeEpochSeconds)),
                     sourceName: getGeoLocationSourceName(isBackground),
                     value: getHoursAtLocation(),
                     variableCategoryName: 'Location',
@@ -4346,13 +4295,14 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 return false;
             }
             var weekdayMeasurementArrays = [];
-            var startTimeMilliseconds = null;
+            var millis = null;
             for(var i = 0; i < allMeasurements.length; i++){
-                startTimeMilliseconds = allMeasurements[i].startTimeEpoch * 1000;
-                if(typeof weekdayMeasurementArrays[moment(startTimeMilliseconds).day()] === "undefined"){
-                    weekdayMeasurementArrays[moment(startTimeMilliseconds).day()] = [];
+                var m = allMeasurements[i];
+                var day = qm.timeHelper.toUtcMoment(m.startAt).day();
+                if(typeof weekdayMeasurementArrays[day] === "undefined"){
+                    weekdayMeasurementArrays[day] = [];
                 }
-                weekdayMeasurementArrays[moment(startTimeMilliseconds).day()].push(allMeasurements[i]);
+                weekdayMeasurementArrays[day].push(m);
             }
             return weekdayMeasurementArrays;
         };
@@ -4362,24 +4312,25 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 return false;
             }
             var monthlyMeasurementArrays = [];
-            var startTimeMilliseconds = null;
             for(var i = 0; i < allMeasurements.length; i++){
-                startTimeMilliseconds = allMeasurements[i].startTimeEpoch * 1000;
-                if(typeof monthlyMeasurementArrays[moment(startTimeMilliseconds).month()] === "undefined"){
-                    monthlyMeasurementArrays[moment(startTimeMilliseconds).month()] = [];
+                var m = allMeasurements[i];
+                var month = qm.timeHelper.toUtcMoment(m.startAt).month();
+                if(typeof monthlyMeasurementArrays[month] === "undefined"){
+                    monthlyMeasurementArrays[month] = [];
                 }
-                monthlyMeasurementArrays[moment(startTimeMilliseconds).month()].push(allMeasurements[i]);
+                monthlyMeasurementArrays[month].push(m);
             }
             return monthlyMeasurementArrays;
         };
         qmService.generateHourlyMeasurementArray = function(allMeasurements){
             var hourlyMeasurementArrays = [];
             for(var i = 0; i < allMeasurements.length; i++){
-                var startTimeMilliseconds = allMeasurements[i].startTimeEpoch * 1000;
-                if(typeof hourlyMeasurementArrays[moment(startTimeMilliseconds).hour()] === "undefined"){
-                    hourlyMeasurementArrays[moment(startTimeMilliseconds).hour()] = [];
+                var m = allMeasurements[i];
+                var hour = qm.timeHelper.toUtcMoment(m.startAt).hour();
+                if(typeof hourlyMeasurementArrays[hour] === "undefined"){
+                    hourlyMeasurementArrays[hour] = [];
                 }
-                hourlyMeasurementArrays[moment(startTimeMilliseconds).hour()].push(allMeasurements[i]);
+                hourlyMeasurementArrays[hour].push(m);
             }
             return hourlyMeasurementArrays;
         };
@@ -4800,14 +4751,16 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 console.warn('Highstock cannot show tooltips because we have more than 100 measurements');
             }
             for(var i = 0; i < numberOfMeasurements; i++){
+                var m = measurements[i];
+                var millis = qm.timeHelper.toMillis(m.startAt);
                 if(numberOfMeasurements < 1000){
-                    name = (measurements[i].sourceName) ? "(" + measurements[i].sourceName + ")" : '';
-                    if(measurements[i].note){
-                        name = measurements[i].note + " " + name;
+                    name = (m.sourceName) ? "(" + m.sourceName + ")" : '';
+                    if(m.note){
+                        name = m.note + " " + name;
                     }
-                    lineChartItem = {x: measurements[i].startTimeEpoch * 1000, y: measurements[i].value, name: name};
+                    lineChartItem = {x: millis, y: m.value, name: name};
                 }else{
-                    lineChartItem = [measurements[i].startTimeEpoch * 1000, measurements[i].value];
+                    lineChartItem = [millis, m.value];
                 }
                 lineChartData.push(lineChartItem);
             }
@@ -4824,45 +4777,45 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             }
             return weightedArray;
         }
-        qmService.configureLineChart = function(data, variableObject){
-            if(!variableObject.name){
-                if(variableObject.variableName){
-                    variableObject.name = variableObject.variableName;
+        qmService.configureLineChart = function(measurements, variable){
+            if(!variable.name){
+                if(variable.variableName){
+                    variable.name = variable.variableName;
                 }else{
                     qmLog.error("ERROR: No variable name provided to configureLineChart");
                     return;
                 }
             }
-            if(data.length < 1){
+            if(measurements.length < 1){
                 qmLog.error("ERROR: No data provided to configureLineChart");
                 return;
             }
             var date = new Date();
             var timezoneOffsetHours = (date.getTimezoneOffset()) / 60;
-            var timezoneOffsetMilliseconds = timezoneOffsetHours * 60 * 60 * 1000; // minutes, seconds, milliseconds
-            var minimumTimeEpochMilliseconds, maximumTimeEpochMilliseconds, i;
-            var numberOfMeasurements = data.length;
+            var offset = timezoneOffsetHours * 60 * 60 * 1000; // minutes, seconds, milliseconds
+            var min, max, i;
+            var numberOfMeasurements = measurements.length;
             if(numberOfMeasurements < 1000){
-                data = data.sort(function(a, b){
+                measurements = measurements.sort(function(a, b){
                     return a.x - b.x;
                 });
                 for(i = 0; i < numberOfMeasurements; i++){
-                    data[i].x = data[i].x - timezoneOffsetMilliseconds;
+                    measurements[i].x = measurements[i].x - offset;
                 }
-                minimumTimeEpochMilliseconds = data[0].x - timezoneOffsetMilliseconds;
-                maximumTimeEpochMilliseconds = data[data.length - 1].x - timezoneOffsetMilliseconds;
+                min = measurements[0].x - offset;
+                max = measurements[measurements.length - 1].x - offset;
             }else{
-                data = data.sort(function(a, b){
+                measurements = measurements.sort(function(a, b){
                     return a[0] - b[0];
                 });
                 for(i = 0; i < numberOfMeasurements; i++){
-                    data[i][0] = data[i][0] - timezoneOffsetMilliseconds;
+                    measurements[i][0] = measurements[i][0] - offset;
                 }
-                minimumTimeEpochMilliseconds = data[0][0] - timezoneOffsetMilliseconds;
-                maximumTimeEpochMilliseconds = data[data.length - 1][0] - timezoneOffsetMilliseconds;
+                min = measurements[0][0] - offset;
+                max = measurements[measurements.length - 1][0] - offset;
             }
-            var millisecondsBetweenLatestAndEarliest = maximumTimeEpochMilliseconds - minimumTimeEpochMilliseconds;
-            if(millisecondsBetweenLatestAndEarliest < 86400 * 1000){
+            var spread = max - min;
+            if(spread < 86400 * 1000){
                 console.warn('Need at least a day worth of data for line chart');
                 //return;
             }
@@ -4881,7 +4834,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                         }
                         angular.forEach(value.points, function(point){
                             //string += '<span>' + point.series.name + ':</span> ';
-                            string += '<span>' + (point.point.y + variableObject.unitAbbreviatedName).replace(' /', '/') + '</span>';
+                            string += '<span>' + (point.point.y + variable.unitAbbreviatedName).replace(' /', '/') + '</span>';
                             string += '<br/>';
                             if(value.points["0"].point.name){
                                 string += '<span>' + value.points["0"].point.name + '</span>';
@@ -4905,8 +4858,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                         month: '%b \'%y',
                         year: '%Y'
                     },
-                    min: minimumTimeEpochMilliseconds,
-                    max: maximumTimeEpochMilliseconds
+                    min: min,
+                    max: max
                 },
                 credits: {enabled: false},
                 rangeSelector: {enabled: true},
@@ -4926,14 +4879,14 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                         }
                     }
                 },
-                title: {text: variableObject.name + ' Over Time (' + variableObject.unitAbbreviatedName + ')'},
+                title: {text: variable.name + ' Over Time (' + variable.unitAbbreviatedName + ')'},
                 series: [{
-                    name: variableObject.name + ' Over Time',
-                    data: data,
+                    name: variable.name + ' Over Time',
+                    data: measurements,
                     tooltip: {valueDecimals: 2}
                 }]
             };
-            var doNotConnectPoints = variableObject.unitCategoryName !== 'Rating';
+            var doNotConnectPoints = variable.unitCategoryName !== 'Rating';
             if(doNotConnectPoints){
                 chartConfig.series.marker = {enabled: true, radius: 2};
                 chartConfig.series.lineWidth = 0;
@@ -5214,7 +5167,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 fillingValue: 0,
                 measurements: [{
                     value: 1,
-                    startTimeEpoch: qm.measurements.validateStartTime(getYesterdayNoonTimestamp()),
+                    startAt: yesterdayNoonAt(),
                     //note: data.daily.data[0].icon // We shouldn't add icon as note because it messes up the note analysis
                 }]
             };
@@ -5228,16 +5181,16 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 unitAbbreviatedName: "F",
                 measurements: [{
                     value: (data.daily.data[0].temperatureMax + data.daily.data[0].temperatureMin) / 2,
-                    startTimeEpoch: qm.measurements.validateStartTime(getYesterdayNoonTimestamp())
+                    startAt: yesterdayNoonAt(),
                     //note: data.daily.data[0].icon // We shouldn't add icon as note because it messes up the note analysis
                 }]
             };
         }
-        function getYesterdayNoonTimestamp(){
+        function yesterdayNoonAt(){
             var localMidnightMoment = moment(0, "HH");
             var localMidnightTimestamp = localMidnightMoment.unix();
             var yesterdayNoonTimestamp = localMidnightTimestamp - 86400 / 2;
-            return yesterdayNoonTimestamp;
+            return qm.timeHelper.toMySQLTimestamp(yesterdayNoonTimestamp);
         }
         function createBarometricPressureMeasurement(data){
             return {
@@ -5248,7 +5201,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 unitAbbreviatedName: "Pa",
                 measurements: [{
                     value: data.daily.data[0].pressure * 100,
-                    startTimeEpoch: qm.measurements.validateStartTime(getYesterdayNoonTimestamp())
+                    startAt: yesterdayNoonAt()
                     //note: data.daily.data[0].icon // We shouldn't add icon as note because it messes up the note analysis
                 }]
             };
@@ -5262,7 +5215,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 unitAbbreviatedName: "%",
                 measurements: [{
                     value: data.daily.data[0].humidity * 100,
-                    startTimeEpoch: qm.measurements.validateStartTime(getYesterdayNoonTimestamp())
+                    startAt: yesterdayNoonAt()
                     //note: data.daily.data[0].icon // We shouldn't add icon as note because it messes up the note analysis
                 }]
             };
@@ -5276,7 +5229,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 unitAbbreviatedName: "miles",
                 measurements: [{
                     value: data.daily.data[0].visibility,
-                    startTimeEpoch: qm.measurements.validateStartTime(getYesterdayNoonTimestamp())
+                    startAt: yesterdayNoonAt()
                     //note: data.daily.data[0].icon // We shouldn't add icon as note because it messes up the note analysis
                 }]
             };
@@ -5291,7 +5244,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 unitAbbreviatedName: "%",
                 measurements: [{
                     value: data.daily.data[0].cloudCover * 100,
-                    startTimeEpoch: qm.measurements.validateStartTime(getYesterdayNoonTimestamp())
+                    startAt: yesterdayNoonAt()
                     //note: data.daily.data[0].icon  // We shouldn't add icon as note because it messes up the note analysis
                 }]
             };
@@ -5300,11 +5253,12 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             return Number(qm.storage.getItem('lastPostedWeatherAt'));
         }
         function alreadyPostedWeatherSinceNoonYesterday(){
-            var lastPostedWeatherAt = getLastPostedWeatherAtTimeUnixTime();
-            if(!lastPostedWeatherAt){
+            var time = getLastPostedWeatherAtTimeUnixTime();
+            if(!time){
                 return false;
             }
-            if(lastPostedWeatherAt && lastPostedWeatherAt > getYesterdayNoonTimestamp()){
+            var lastPostedWeatherAt = qm.timeHelper.toMySQLTimestamp(time);
+            if(lastPostedWeatherAt && lastPostedWeatherAt > yesterdayNoonAt()){
                 qmLog.debug('recently posted weather already', null);
                 return true;
             }
@@ -5333,7 +5287,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             }
             var FORECASTIO_KEY = '81b54a0d1bd6e3ccdd52e777be2b14cb';
             var url = 'https://api.forecast.io/forecast/' + FORECASTIO_KEY + '/';
-            url = url + coordinates.latitude + ',' + coordinates.longitude + ',' + getYesterdayNoonTimestamp() + '?callback=JSON_CALLBACK';
+            var time = qm.timeHelper.toUnixTime(yesterdayNoonAt());
+            url = url + coordinates.latitude + ',' + coordinates.longitude + ',' + time + '?callback=JSON_CALLBACK';
             qmLog.debug('Checking weather forecast at ' + url);
             $http.jsonp(url).success(function(data){
                 var measurementSets = getWeatherMeasurementSets(data);
@@ -6048,16 +6003,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 //}, function() {if(noCallbackFunction){noCallbackFunction(ev);}}); TODO: What was the point of this? It causes popups to be disabled inadvertently
             });
         };
-        qmService.showDeleteAllMeasurementsForVariablePopup = function(variableName, ev){
-            var title = 'Delete all ' + variableName + " measurements?";
-            var textContent = 'This cannot be undone!';
-            function yesCallback(){
-                deleteAllMeasurementsForVariable(variableName);
-            }
-            function noCallback(){
-            }
-            qmService.showMaterialConfirmationDialog(title, textContent, yesCallback, noCallback, ev);
-        };
         // Doesn't work yet
         function generateMovingAverageTimeSeries(rawMeasurements){
             var smoothedMeasurements = [];
@@ -6758,13 +6703,13 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 qmService.notifications.showEnablePopupsConfirmation(ev);
             }
         };
-        qmService.showShareVariableConfirmation = function(variableObject, sharingUrl, ev){
+        qmService.showShareVariableConfirmation = function(variable, sharingUrl, ev){
             var title = 'Share Variable';
-            var textContent = 'Are you absolutely sure you want to make your ' + variableObject.name +
+            var textContent = 'Are you absolutely sure you want to make your ' + variable.name +
                 ' measurements publicly visible? You can make them private again at any time on this page.';
             function yesCallback(){
-                variableObject.shareUserMeasurements = true;
-                var body = {variableId: variableObject.variableId, shareUserMeasurements: true};
+                variable.shareUserMeasurements = true;
+                var body = {variableId: variable.variableId, shareUserMeasurements: true};
                 qmService.showBlackRingLoader();
                 qm.userVariables.postUserVariable(body).then(function(){
                     qmService.hideLoader();
@@ -6775,25 +6720,25 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 });
             }
             function noCallback(){
-                variableObject.shareUserMeasurements = false;
+                variable.shareUserMeasurements = false;
             }
             qmService.showMaterialConfirmationDialog(title, textContent, yesCallback, noCallback, ev);
         };
-        qmService.showUnShareVariableConfirmation = function(variableObject, ev){
+        qmService.showUnShareVariableConfirmation = function(variable, ev){
             var title = 'Share Variable';
-            var textContent = 'Are you absolutely sure you want to make your ' + variableObject.name +
-                ' and ' + variableObject.name + ' measurements private? Links to studies you ' +
+            var textContent = 'Are you absolutely sure you want to make your ' + variable.name +
+                ' and ' + variable.name + ' measurements private? Links to studies you ' +
                 'previously shared with this variable will no longer work.';
             function yesCallback(){
-                variableObject.shareUserMeasurements = false;
-                var body = {variableId: variableObject.variableId, shareUserMeasurements: false};
+                variable.shareUserMeasurements = false;
+                var body = {variableId: variable.variableId, shareUserMeasurements: false};
                 qm.userVariables.postUserVariable(body).then(function(){
                 }, function(error){
                     qmLog.error(error);
                 });
             }
             function noCallback(){
-                variableObject.shareUserMeasurements = true;
+                variable.shareUserMeasurements = true;
             }
             qmService.showMaterialConfirmationDialog(title, textContent, yesCallback, noCallback, ev);
         };

@@ -9,21 +9,15 @@
     <meta content="frame-src * gap://ready; default-src * blob:; script-src 'self' 'unsafe-inline' 'unsafe-eval' * blob:; style-src 'self' 'unsafe-inline' * https://cdn.logrocket.io https://cdn.lr-ingest.io; font-src 'self' *.quantimo.do *.cloudfront.net qm-cordova-hot-code-push.s3.amazonaws.com fonts.zohostatic.com css.zohostatic.com data: https://fonts.zohostatic.com https://fonts.gstatic.com https://fonts.googleapis.com/; img-src * data:;"
           http-equiv="Content-Security-Policy">
     <title></title>
-    <link href="css/app.css"
-          rel="stylesheet">
+      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss/dist/tailwind.min.css" >
+    <link href="css/app.css" rel="stylesheet">
     <!-- Delete me sometime <link href="lib/Ionicons/css/ionicons.min.css" rel="stylesheet">-->
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
-          rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css?family=Orbitron:400,700,900"
-          rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css?family=Yellowtail"
-          rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css?family=Yellowtail"
-          rel="stylesheet">
-    <link href="css/study.css"
-          rel="stylesheet">
-      <link rel="manifest"
-            href="manifest.json">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Orbitron:400,700,900" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Yellowtail" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Yellowtail" rel="stylesheet">
+    <link href="css/study.css" rel="stylesheet">
+      <link rel="manifest" href="manifest.json">
       <!-- build:css css/combined.css -->
       <!-- endbuild -->
       <!-- inject:css -->
@@ -47,6 +41,7 @@
     <script src="js/qmLogger.js"></script>
     <script src="js/qmHelpers.js"></script>
     <script src="data/qmStaticData.js"></script> <!-- Must come after qmHelpers because we assign to qm.staticData -->
+      <script src="data/qmStates.js"></script>
     <script src="js/app.js"></script>
     <script src="js/services/qmService.js"></script>
     <!-- Here we inject app builder files not needed in the normal end-user app -->
@@ -86,6 +81,8 @@
     <script src="js/controllers/chatCtrl.js"></script>
     <script src="js/controllers/feedCtrl.js"></script>
     <script src="js/controllers/votesCtrl.js"></script>
+      <script src="js/controllers/searchBarCtrl.js"></script>
+      <script src="js/controllers/searchPageCtrl.js"></script>
     <script src="js/directives.js"></script>
       <!-- endbuild -->
 <!--    <script>
@@ -106,6 +103,12 @@
   </head>
   <body ng-app="starter">
   <script src="js/psychedelic-loader.js"></script>
+  <script>
+      (function() {
+          // your page initialization code here the DOM will be available here
+          psychedelicLoader.start();
+      })();
+  </script>
     <ion-nav-view></ion-nav-view>
     <!-- build:js scripts/combined-body-libraries.js -->
     <script src="lib/ng-cordova-oauth/dist/ng-cordova-oauth.min.js"></script>
@@ -116,8 +119,14 @@
     <script src="lib/moment/min/moment.min.js"></script>
     <script src="lib/moment-timezone/builds/moment-timezone-with-data.min.js"></script>
     <script src="lib/angular-moment/angular-moment.js"></script>
-    <script src="lib/highcharts/highstock.src.js"></script>
-    <script src="lib/highcharts/modules/exporting.js"></script>
+  <script type="text/javascript" src="https://code.highcharts.com/stock/highstock.js"></script>
+  <script type="text/javascript" src="https://code.highcharts.com/modules/sankey.js"></script>
+  <script type="text/javascript" src="https://code.highcharts.com/modules/networkgraph.js"></script>
+  <script type="text/javascript" src="https://code.highcharts.com/stock/modules/data.js"></script>
+  <script type="text/javascript" src="https://code.highcharts.com/stock/modules/exporting.js"></script>
+  <script type="text/javascript" src="https://code.highcharts.com/stock/modules/export-data.js"></script>
+  <script type="text/javascript" src="https://code.highcharts.com/modules/annotations.js"></script>
+  <script type="text/javascript" src="https://qm-public.sfo2.digitaloceanspaces.com/js/highcharts-themes/highcharts-themes.js"></script>
     <script src="lib/highcharts-ng/dist/highcharts-ng.js"></script>
     <script src="lib/ionic-datepicker/dist/ionic-datepicker.bundle.min.js"></script>
     <script src="lib/ionic-timepicker/dist/ionic-timepicker.bundle.min.js"></script>

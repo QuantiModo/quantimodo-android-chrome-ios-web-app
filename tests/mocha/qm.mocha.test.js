@@ -7,7 +7,11 @@ var expect = chai.expect
 // Otherwise assertion failures in async tests are wrapped, which prevents mocha from
 // being able to interpret them (such as displaying a diff).
 process.on('unhandledRejection', function(err) {
-    throw err
+    if(err.indexOf("unhandledRejection: Uncaught FetchError: invalid json response body") !== -1){
+        qmLog.error(err)
+    } else {
+        throw err
+    }
 })
 var qmGit = require("../../ts/qm.git")
 var qmShell = require("../../ts/qm.shell")
@@ -30,7 +34,7 @@ global.qmLog = require('./../../src/js/qmLogger')
 qmLog.color = require('./../../node_modules/ansi-colors')
 qm.github = require('./../../node_modules/gulp-github')
 qm.Quantimodo = require('./../../node_modules/quantimodo')
-require('./../../src/data/qmStaticData')
+require('../../src/data/qmStaticData.js')
 qm.stateNames = qm.staticData.stateNames
 qm.qmLog = qmLog
 qmLog.qm = qm
@@ -50,7 +54,12 @@ var qmTests = {
         return t
     },
     setTestAccessToken(){
-        qm.storage.setItem(qm.items.accessToken, qmTests.getTestAccessToken())
+        qm.auth.logout()
+        qm.auth.setAccessToken(qmTests.getTestAccessToken())
+    },
+    setDemoAccessToken(){
+        qm.auth.logout()
+        qm.auth.setAccessToken("demo")
     },
     testParams: {},
     setTestParams(params){
@@ -269,6 +278,112 @@ describe("Measurement", function () {
         expect(queue).length(0)
         return id
     }
+    function getBupropionMeasurement(startAt){
+        return {
+            "combinationOperation": "SUM",
+            "inputType": "value",
+            "pngPath": "https://static.quantimo.do/img/variable_categories/treatments.png",
+            startAt,
+            "startTime": "2020-12-02 03:52:57",
+            "unitAbbreviatedName": "mg",
+            "unitId": 7,
+            "unitName": "Milligrams",
+            "upc": null,
+            "valence": null,
+            "value": 150,
+            "variableCategoryId": "Treatments",
+            "variableCategoryName": "Treatments",
+            "variableName": "Bupropion Sr",
+            "note": "",
+        }
+    }
+    it('can add to measurement queue and round startAt', function () {
+        var startAt = "2020-12-01 15:00:00"
+        var m = getBupropionMeasurement(startAt)
+        expect(qm.measurements.getStartAt(m)).to.eq(startAt)
+        qm.measurements.addToMeasurementsQueue(m)
+        qm.lei(!qm.measurements.queue[m.variableName][m.startAt])
+        var queue = qm.measurements.getMeasurementsFromQueue()
+        queue.forEach(function(m){
+            expect(m.startAt).to.eq(startAt)
+            // TODO: Uncomment this qm.lei(m.startTime)
+            qm.lei(m.startTimeEpoch)
+            qm.lei(m.startTimeEpochSeconds)
+        })
+        qm.measurements.queue = {}
+    })
+    it('can get connector measurements', function (done) {
+        this.timeout(60000)
+        var measurements = [{
+            "sourceName": "Fitbit",
+            "startTimeString": "2020-12-10 00:00:00",
+            "unitAbbreviatedName": "min",
+            "value": 81,
+            "variableName": "Duration of Awakenings During Sleep",
+            "clientId": "fitbit",
+            "connectorId": 7,
+            "createdAt": "2020-12-11 00:18:52",
+            "displayValueAndUnitString": "81 minutes",
+            "id": 1092806496,
+            "note": null,
+            "noteHtml": null,
+            "originalUnitId": 2,
+            "originalValue": 81,
+            "pngPath": "https://i.imgur.com/WE8KUx7.png",
+            "productUrl": null,
+            "startDate": null,
+            "unitId": 2,
+            "unitName": "Minutes",
+            "updatedAt": "2020-12-11 00:18:52",
+            "url": null,
+            "valence": "negative",
+            "variableCategoryId": 6,
+            "variableCategoryName": "Sleep",
+            "variableDescription": null,
+            "variableId": 6054544,
+            "startAt": "2020-12-10 00:00:00",
+            "valueUnitVariableName": "81 minutes Duration of Awakenings During Sleep",
+            "icon": "ion-ios-cloudy-night-outline",
+        }]
+        qmTests.setDemoAccessToken()
+        qm.userHelper.getUserFromApi()
+            .then(function () {
+                qm.connectorHelper.getConnectorsFromLocalStorageOrApi(function(){
+                    info('getConnectorsFromLocalStorageOrApi')
+                    var connector = qm.connectorHelper.getConnectorByName("fitbit")
+                    var filtered = qm.arrayHelper.filterByRequestParams(measurements, {connectorId: connector.id})
+                    expect(filtered.length).to.eq(1)
+                    var params = {connectorId: connector.id, sort: "-startAt"}
+                    info('getMeasurementsFromApi')
+                    qm.measurements.getMeasurementsFromApi(params).then(function(apiMeasurements){
+                        expect(apiMeasurements.length).to.be.greaterThan(1)
+                        apiMeasurements.forEach(function(m){
+                            expect(m.connectorId).to.eq(connector.id)
+                        })
+                        qmLog.info(apiMeasurements.length + " measurements from API with params: ", params)
+                        info('processMeasurements')
+                        qm.measurements.processMeasurements(apiMeasurements)
+                        done()
+                    }, function (err){
+                        qmLog.error(err)
+                        done(err)
+                        throw new Error(err)
+                    }).catch(function(err){
+                        qmLog.error(err)
+                        done(err)
+                        throw new Error(err)
+                    })
+                })
+            }, function (err){
+                qmLog.error(err)
+                done(err)
+                throw new Error(err)
+            }).catch(function(err){
+                qmLog.error(err)
+                done(err)
+                throw new Error(err)
+            })
+    })
     it('can record, edit, and delete a rating measurement', function () {
         this.timeout(60000)
         let d = new Date()
@@ -303,7 +418,7 @@ describe("Measurement", function () {
                     unitAbbreviatedName: "/5",
                 }
                 info("qm.measurements.recordMeasurement: ", body)
-                return qm.measurements.recordMeasurement(body)
+                return qm.measurements.postMeasurement(body)
             })
             .then(function (data) {
                 info("Checking post measurement response...")
@@ -367,7 +482,7 @@ describe("Measurement", function () {
                 var m = measurements[0]
                 expect(m.id).to.eq(measurementId)
                 m.value = editedValue
-                return qm.measurements.recordMeasurement(m)
+                return qm.measurements.postMeasurement(m)
             })
             .then(function (data) {
                 var editedId = checkPostMeasurementResponse(data, variableName, editedValue)
@@ -482,6 +597,7 @@ describe("File Helper", function () {
 })
 function deleteLastMeasurement(variableName) {
     return function () {
+        info("deleteLastMeasurement for " + variableName)
         return qm.measurements.getMeasurements({variableName}).then(function (measurements) {
             qm.measurements.logMeasurements(measurements, variableName + " Measurements Before Deleting")
         }).then(function () {
@@ -495,6 +611,7 @@ function deleteLastMeasurement(variableName) {
 }
 describe("Favorites", function () {
     function createFavorite(variableName) {
+        info("createFavorite for " + variableName)
         return function (reminders) {
             expect(reminders).length(0)
             expect(qm.reminderHelper.getQueue()).length(0)
@@ -504,6 +621,7 @@ describe("Favorites", function () {
     }
     function trackByFavorite(variableName) {
         return function (favorites) {
+            info("trackByFavorite for " + variableName)
             expect(favorites).length(1)
             expect(qm.reminderHelper.getQueue()).length(0)
             const notifications = qm.notifications.getCached()
@@ -526,9 +644,11 @@ describe("Favorites", function () {
         return qm.userHelper.getUserFromApi({})
             .then(function (user){
                 expect(user.accessToken, qmTests.getTestAccessToken())
+                info("deleting reminders for " + variableName)
                 return qm.reminderHelper.deleteByVariableName(variableName)
             })
             .then(function () {
+                info("getting reminders for " + variableName)
                 return qm.reminderHelper.getReminders({variableName})
             })
             .then(createFavorite(variableName))
@@ -538,6 +658,7 @@ describe("Favorites", function () {
             })
             .then(deleteLastMeasurement(variableName))
             .then(function() {
+                info("qm.reminderHelper.getFavorites for " + variableCategoryName)
                 return qm.reminderHelper.getFavorites(variableCategoryName)
             })
             .then(trackByFavorite(variableName))
@@ -556,6 +677,7 @@ describe("Ghost Inspector", function () {
         }
         delete process.env.API_URL
         chai.assert.isUndefined(process.env.API_URL)
+        var originalReleaseStage = process.env.RELEASE_STAGE
         process.env.RELEASE_STAGE = "staging"
         var url = th.getApiUrl()
         var stagingUrl = "https://staging.quantimo.do"
@@ -564,6 +686,7 @@ describe("Ghost Inspector", function () {
         if (previouslySetApiUrl) {
             process.env.API_URL = previouslySetApiUrl
         }
+        process.env.RELEASE_STAGE = originalReleaseStage
         done()
     })
 })
@@ -652,7 +775,7 @@ describe("Notifications", function () {
             notId: "100624100625",
             soundName: "false",
             title: "↑Higher Purchases Of CauseVariableName Predicts Significantly ↑Higher EffectVariableName",
-            url: "https://web.quantimo.do/#/app/study?causeVariableId=100624&effectVariableId=100625&userId=1&clientId=quantimodo",
+            url: "https://web.quantimo.do/#/app/study?causeVariableId=100624&effectVariableId=100625&userId=1&clientId=oauth_test_client",
             user: "1",
         }
         var notificationOptions = qm.notifications.convertPushDataToWebNotificationOptions(pushData, qm.getAppSettings())
@@ -762,7 +885,6 @@ describe("Menu", function () {
         done()
     })
 })
-
 function createReminder(tr, expectedVariables, expectedNotifications, expectedReminders) {
     var queueBefore = qm.reminderHelper.getQueue()
     qm.reminderHelper.addToQueue([tr])
@@ -779,7 +901,6 @@ function createReminder(tr, expectedVariables, expectedNotifications, expectedRe
             throw Error(err)
         })
 }
-
 describe("Reminders", function () {
     it("can create a reminder and track the notification", function () {
         this.timeout(90000)
@@ -894,9 +1015,9 @@ describe("Studies", function () {
             causeVariableName: causeName,
             effectVariableName: effectName,
             userId: 230,
-        }, function(study){
+        }).then(function(study){
             info("Got study " + study.causeVariableName)
-            expect(qm.userVariables.cached).to.not.have.property(causeName)
+            expect(qm.userVariables.cached).to.not.have.property(causeName, "We should not have a user variable because ")
             expect(qm.userVariables.cached).to.not.have.property(effectName)
             expect(qm.commonVariablesHelper.cached).to.not.have.property(causeName)
             expect(qm.commonVariablesHelper.cached).to.not.have.property(effectName)
@@ -930,6 +1051,18 @@ describe("Test Helper", function () {
                 var gotten = qm.tests.getFixtureData(method, url)
                 expect(gotten).to.deep.eq(data)
             })
+    })
+})
+describe("Time", function () {
+    it('can convert to unix time', function () {
+        var startAt = "2020-12-01 15:00:00"
+        var millis = qm.timeHelper.getUnixTimestampInMilliseconds(startAt)
+        expect(millis).to.eq(1606834800000)
+        var unixTime = qm.timeHelper.getUnixTimestampInSeconds(startAt)
+        expect(unixTime).to.eq(1606834800)
+        unixTime = qm.timeHelper.universalConversionToUnixTimeSeconds(startAt)
+        expect(unixTime).to.eq(1606834800)
+        expect(qm.timeHelper.toMySQLTimestamp(startAt)).to.eq(startAt)
     })
 })
 describe("Units", function () {
@@ -990,29 +1123,30 @@ describe("Variables", function () {
                 //qm.assert.isNull(userVariables, qm.items.userVariables);
                 qm.variablesHelper.getFromLocalStorageOrApi({id: variable5.id, includePublic: true})
                     .then(function(variables){
-                    // Why? qm.assert.doesNotHaveProperty(variables, 'userId');
-                    qm.assert.variables.descendingOrder(variables, 'lastSelectedAt')
-                    qm.assert.equals(timestamp, variables[0].lastSelectedAt, 'lastSelectedAt')
-                    qm.assert.equals(variable5.name, variables[0].name, 'name')
-                    qm.variablesHelper.getFromLocalStorageOrApi(params).then(function(variables){
+                        // Why? qm.assert.doesNotHaveProperty(variables, 'userId');
                         qm.assert.variables.descendingOrder(variables, 'lastSelectedAt')
-                        var variable1 = variables[0]
-                        info("Variable 1 is " + variable1.name)
-                        //qm.assert.equals(variable1.lastSelectedAt, timestamp);
-                        //qm.assert.equals(variable1.variableId, variable5.variableId);
-                        //qm.assert.equals(1, qm.api.requestLog.length, "We should have made 1 request but have "+ JSON.stringify(qm.api.requestLog));
-                        if(done && !alreadyCalledBack){
-                            alreadyCalledBack = true
-                            done()
-                        }
+                        qm.assert.equals(timestamp, variables[0].lastSelectedAt, 'lastSelectedAt')
+                        qm.assert.equals(variable5.name, variables[0].name, 'name')
+                        qm.variablesHelper.getFromLocalStorageOrApi(params).then(function(variables){
+                            qm.assert.variables.descendingOrder(variables, 'lastSelectedAt')
+                            var variable1 = variables[0]
+                            info("Variable 1 is " + variable1.name)
+                            //qm.assert.equals(variable1.lastSelectedAt, timestamp);
+                            //qm.assert.equals(variable1.variableId, variable5.variableId);
+                            //qm.assert.equals(1, qm.api.requestLog.length, "We should have made 1 request but have "+ JSON.stringify(qm.api.requestLog));
+                            if(done && !alreadyCalledBack){
+                                alreadyCalledBack = true
+                                done()
+                            }
+                        })
+                    }, function(error){
+                        throw Error(error)
                     })
-                }, function(error){
-                    throw Error(error)
-                })
             })
         })
     })
     it('can search manual tracking variables', function(done) {
+        this.timeout(30000) // Default 2000 is too fast for Github API
         qmTests.setTestAccessToken()
         qm.userHelper.getUserFromLocalStorageOrApi().then(function (user) {
             info("Got user " + user.loginName)
