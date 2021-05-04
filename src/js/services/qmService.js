@@ -5,11 +5,11 @@
 /* global chcp $ionicDeploy qm.stateNames chcp qm.stateNames */
 angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$ionicPopup", "$state", "$timeout",
     "$ionicPlatform", "$mdDialog", "$mdToast", "$cordovaGeolocation", "CacheFactory", "$ionicLoading",
-    //"Analytics",
+    //"Analytics", // Analytics + uBlock origin extension breaks app
     "wikipediaFactory", "$ionicHistory", "$ionicActionSheet", "clipboard",
     function($http, $q, $rootScope, $ionicPopup, $state, $timeout, $ionicPlatform, $mdDialog, $mdToast,
              $cordovaGeolocation, CacheFactory, $ionicLoading,
-             //Analytics,
+             //Analytics, // Analytics + uBlock origin extension breaks app
              wikipediaFactory, $ionicHistory,
              $ionicActionSheet, clipboard){
         var allStates = $state.get();

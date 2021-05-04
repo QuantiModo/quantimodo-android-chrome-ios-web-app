@@ -7,7 +7,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
         function($scope, $timeout, $ionicPopover, $ionicLoading, $state, $ionicHistory, $rootScope,
                  $ionicPopup, $ionicSideMenuDelegate, $ionicPlatform, $injector, qmService,
                  $cordovaOauth, clipboard, $ionicActionSheet,
-                 //Analytics, //$ionicDeploy,
+                 //Analytics, //$ionicDeploy, // Analytics + uBlock origin extension breaks app
                  $locale, $mdDialog, $mdToast, $sce, wikipediaFactory, appSettingsResponse, $stateParams){
             $scope.controller_name = "AppCtrl";
             qmService.initializeApplication(appSettingsResponse);
