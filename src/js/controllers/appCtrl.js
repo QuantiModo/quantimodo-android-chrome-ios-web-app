@@ -1,11 +1,13 @@
 angular.module('starter')// Parent Controller - This controller runs before every one else
     .controller('AppCtrl', ["$scope", "$timeout", "$ionicPopover", "$ionicLoading", "$state", "$ionicHistory", "$rootScope",
         "$ionicPopup", "$ionicSideMenuDelegate", "$ionicPlatform", "$injector", "qmService",
-        "$cordovaOauth", "clipboard", "$ionicActionSheet", "Analytics", "$locale", "$mdDialog", "$mdToast", "$sce",
+        "$cordovaOauth", "clipboard", "$ionicActionSheet", //"Analytics",
+        "$locale", "$mdDialog", "$mdToast", "$sce",
         "wikipediaFactory", "appSettingsResponse", "$stateParams",
         function($scope, $timeout, $ionicPopover, $ionicLoading, $state, $ionicHistory, $rootScope,
                  $ionicPopup, $ionicSideMenuDelegate, $ionicPlatform, $injector, qmService,
-                 $cordovaOauth, clipboard, $ionicActionSheet, Analytics, //$ionicDeploy,
+                 $cordovaOauth, clipboard, $ionicActionSheet,
+                 //Analytics, //$ionicDeploy,
                  $locale, $mdDialog, $mdToast, $sce, wikipediaFactory, appSettingsResponse, $stateParams){
             $scope.controller_name = "AppCtrl";
             qmService.initializeApplication(appSettingsResponse);
