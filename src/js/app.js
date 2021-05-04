@@ -19,7 +19,7 @@ angular.module('starter',
         'ngCordovaOauth',
         'jtt_wikipedia',
         'angular-clipboard',
-        'angular-google-analytics',
+        //'angular-google-analytics',
         'angular-google-adsense',
         'ngMaterialDatePicker',
         'ngMaterial',
@@ -130,11 +130,15 @@ angular.module('starter',
                 qm.storage.setItem(qm.items.onboarded, true);
             }
         }])
-    .config(["$stateProvider", "$urlRouterProvider", "$compileProvider", "ionicTimePickerProvider", "ionicDatePickerProvider",
-        "$ionicConfigProvider", "AnalyticsProvider", "ngMdIconServiceProvider",
+    .config(["$stateProvider", "$urlRouterProvider", "$compileProvider", "ionicTimePickerProvider",
+        "ionicDatePickerProvider",
+        "$ionicConfigProvider",
+        //"AnalyticsProvider",
+        "ngMdIconServiceProvider",
         //"$opbeatProvider",
         function($stateProvider, $urlRouterProvider, $compileProvider, ionicTimePickerProvider, ionicDatePickerProvider,
-                 $ionicConfigProvider, AnalyticsProvider
+                 $ionicConfigProvider
+                 //, AnalyticsProvider
                  //, $opbeatProvider
         ){
             //$opbeatProvider.config({orgId: '10d58117acb546c08a2cae66d650480d', appId: 'fc62a74505'});
@@ -152,17 +156,19 @@ angular.module('starter',
                     }
                     analyticsOptions.fields = {storage: 'none', fields: clientId};
                 }
-                AnalyticsProvider.setAccount(analyticsOptions);
-                AnalyticsProvider.delayScriptTag(true);  // Needed to set user id later
-                // Track all routes (default is true).
-                AnalyticsProvider.trackPages(true); // Track all URL query params (default is false).
-                AnalyticsProvider.trackUrlParams(true);  // Ignore first page view (default is false).
-                AnalyticsProvider.ignoreFirstPageLoad(true);  // Helpful when using hashes and whenever your bounce rate looks obscenely low.
-                //AnalyticsProvider.trackPrefix('my-application'); // Helpful when the app doesn't run in the root directory. URL prefix (default is empty).
-                AnalyticsProvider.setPageEvent('$stateChangeSuccess'); // Change the default page event name. Helpful when using ui-router, which fires $stateChangeSuccess instead of $routeChangeSuccess.
-                AnalyticsProvider.setHybridMobileSupport(true);  // Set hybrid mobile application support
-                //AnalyticsProvider.enterDebugMode(true);
-                AnalyticsProvider.useECommerce(true, true); // Enable e-commerce module (ecommerce.js)
+                if(typeof AnalyticsProvider !== "undefined"){
+                    AnalyticsProvider.setAccount(analyticsOptions);
+                    AnalyticsProvider.delayScriptTag(true);  // Needed to set user id later
+                    // Track all routes (default is true).
+                    AnalyticsProvider.trackPages(true); // Track all URL query params (default is false).
+                    AnalyticsProvider.trackUrlParams(true);  // Ignore first page view (default is false).
+                    AnalyticsProvider.ignoreFirstPageLoad(true);  // Helpful when using hashes and whenever your bounce rate looks obscenely low.
+                    //AnalyticsProvider.trackPrefix('my-application'); // Helpful when the app doesn't run in the root directory. URL prefix (default is empty).
+                    AnalyticsProvider.setPageEvent('$stateChangeSuccess'); // Change the default page event name. Helpful when using ui-router, which fires $stateChangeSuccess instead of $routeChangeSuccess.
+                    AnalyticsProvider.setHybridMobileSupport(true);  // Set hybrid mobile application support
+                    //AnalyticsProvider.enterDebugMode(true);
+                    AnalyticsProvider.useECommerce(true, true); // Enable e-commerce module (ecommerce.js)
+                }
             }
             setupGoogleAnalytics();
             //$ionicCloudProvider.init({"core": {"app_id": "42fe48d4"}}); Trying to move to appCtrl
