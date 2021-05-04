@@ -12,6 +12,8 @@ var qm = {
     alert: {
         errorAlert: function(title, text){
             debugger
+            title = qm.stringHelper.truncateIfGreaterThan(title, 30)
+            text = qm.stringHelper.truncateIfGreaterThan(text, 140)
             Swal.fire({
                 icon: 'error',
                 title: title,
