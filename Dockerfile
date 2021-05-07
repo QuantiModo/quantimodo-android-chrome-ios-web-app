@@ -1,5 +1,5 @@
 
-FROM ubuntu:16.10
+FROM ubuntu:20.04
 MAINTAINER Juergen Schackmann
 
 # -----------------------------------------------------------------------------
