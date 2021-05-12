@@ -1487,30 +1487,43 @@ var qm = {
             }
             return array;
         },
-        sortByProperty: function(arrayToSort, propertyName, direction){
+        sortByProperty: function(arr, propertyName, direction){
             qmLog.debug("Sorting by " + propertyName + "...");
-            if(!qm.arrayHelper.variableIsArray(arrayToSort)){
+            if(!qm.arrayHelper.variableIsArray(arr)){
                 qmLog.info("Cannot sort by " + propertyName + " because it's not an array!");
-                return arrayToSort;
+                return arr;
             }
-            if(arrayToSort.length < 2){
-                return arrayToSort;
+            if(arr.length < 2){
+                return arr;
             }
             if(propertyName.indexOf('-') > -1 || direction === 'desc'){
                 propertyName = propertyName.replace('-', '');
-                arrayToSort.sort(function(a, b){
+                arr.sort(function(a, b){
                     var aVal = a[propertyName];
                     var bVal = b[propertyName];
+                    if(typeof aVal === "string"){
+                        var la = aVal.toLowerCase(), lb = bVal.toLowerCase();
+                        if (la > lb) return -1;
+                        if (la < lb) return 1;
+                        return 0;
+                    }
                     return bVal - aVal;
                 });
             }else{
-                arrayToSort.sort(function(a, b){
+                arr.sort(function(a, b){
                     var aVal = a[propertyName];
                     var bVal = b[propertyName];
+                    if(typeof aVal === "string"){
+                        var la = aVal.toLowerCase(), lb = bVal.toLowerCase();
+                        if (la < lb) return -1;
+                        if (la > lb) return 1;
+                        return 0;
+                    }
                     return aVal - bVal;
                 });
             }
-            return arrayToSort;
+            //var sorted = arr.map(function(a){return a[propertyName];})
+            return arr;
         },
         unsetNullProperties: function(array, except){
             except = except || []
