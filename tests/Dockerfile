@@ -1,5 +1,5 @@
 # FROM cypress/browsers:node10.2.1-chrome74 # Chrome has lots of timeouts for some reason
-FROM cypress/base:10
+FROM cypress/base:14
 
 # Optionally pass proxy information to get internet connectivity within npm ci 
 # postinstall hooks when running behind corporate proxies.
