@@ -1369,13 +1369,14 @@ gulp.task('scripts', function () {
     }
 });
 var chromeScripts = [
+    'lib/q/q.js',
     'lib/localforage/dist/localforage.js',
     'lib/bugsnag/dist/bugsnag.js',
     'lib/quantimodo/quantimodo-web.js',
     'js/qmLogger.js',
     'js/qmHelpers.js',
     'data/qmStaticData.js', // Must come after qmHelpers because we assign to qm.staticData
-    'lib/underscore/underscore-min.js'
+    'lib/underscore/underscore-min.js',
 ];
 //if(qmGit.accessToken){chromeScripts.push('qm-amazon/qmUrlUpdater.js');}
 // noinspection JSUnusedLocalSymbols
@@ -1401,7 +1402,7 @@ function chromeManifest(outputPath, backgroundScriptArray) {
             'alarms',
             'notifications',
             'storage',
-            'tabs',
+            //'tabs',
             'https://*.google.com/*',
             'https://*.facebook.com/*',
             'https://*.quantimo.do/*',
