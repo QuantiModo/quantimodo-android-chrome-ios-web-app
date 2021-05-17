@@ -11646,14 +11646,15 @@ var qm = {
         },
         getFromLocalStorage: function(params){
             var deferred = Q.defer();
-            if(!params){params = {};}
-            var cached = qm.userVariables.getCached();
-            var variables = qm.arrayHelper.filterByRequestParams(cached, params);
-            if(variables && variables.length){
-                if(!params.sort){variables = qm.variablesHelper.defaultVariableSort(variables);}
-                deferred.resolve(variables);
-                return deferred.promise;
-            }
+            // Not sure what all this was for
+            //if(!params){params = {};}
+            // var cached = qm.userVariables.getCached();
+            // var variables = qm.arrayHelper.filterByRequestParams(cached, params);
+            // if(variables && variables.length){
+            //     if(!params.sort){variables = qm.variablesHelper.defaultVariableSort(variables);}
+            //     deferred.resolve(variables);
+            //     return deferred.promise;
+            // }
             qm.localForage.getElementsWithRequestParams(qm.items.userVariables, params, function(variables){
                 variables = variables || []
                 if(!params.sort){variables = qm.variablesHelper.defaultVariableSort(variables);}
