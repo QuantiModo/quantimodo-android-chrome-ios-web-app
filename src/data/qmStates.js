@@ -131,6 +131,7 @@ var qmStates = [
     },
     {
         "url": "/measurement-add-search",
+        "cache": false,
         "params": {
             "showAds": true,
             "reminder": null,
@@ -160,6 +161,7 @@ var qmStates = [
     },
     {
         "url": "/reminder-search",
+        "cache": false,
         "params": {
             "showAds": true,
             "variableCategoryName": null,
@@ -190,6 +192,7 @@ var qmStates = [
     },
     {
         "url": "/favorite-search",
+        "cache": false,
         "params": {
             "showAds": true,
             "variableCategoryName": null,
@@ -220,7 +223,7 @@ var qmStates = [
     },
     {
         "url": "/measurement-add",
-        "cache": true,
+        "cache": false,
         "params": {
             "showAds": true,
             "trackingReminder": null,
