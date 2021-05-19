@@ -687,7 +687,7 @@ var qm = {
                             if ( qm.api.postResponseSuccessful(xhr, response)) {
                                 if(successHandler){successHandler(response);}
                             } else {
-                                qmLog.error("qm.api.get error from " + url + " request: " + xhr.responseText, response);
+                                qmLog.error("POST " + url + " response: " + xhr.responseText, response);
                                 if(errorHandler){errorHandler(response);}
                             }
                         }
@@ -754,7 +754,7 @@ var qm = {
                     qmLog.error("qm.api.get error from " + url + " request: " + err + ".  If we couldn't parse json, " +
                         url + " probably doesn't exist", err);
                 }else{
-                    qmLog.error("qm.api.get error from " + url + " request: " + err, null, err);
+                    qmLog.error("GET " + url + " error: " + err, null, err);
                 }
                 if(errorHandler){
                     errorHandler(err);
@@ -773,9 +773,9 @@ var qm = {
                         successHandler(responseObject);
                     } else {
                         if ( xhr.status === 401 ) {
-                            qmLog.info("qm.api.get error from " + url + " request: " + xhr.responseText, null, responseObject);
+                            qmLog.info("401 from GET " + url + " response: " + xhr.responseText, null, responseObject);
                         } else {
-                            qmLog.error("qm.api.get error from " + url + " request: " + xhr.responseText, null, responseObject);
+                            qmLog.error("GET " + url + " response: " + xhr.responseText, null, responseObject);
                         }
                         if(errorHandler){errorHandler(responseObject);}
                     }
