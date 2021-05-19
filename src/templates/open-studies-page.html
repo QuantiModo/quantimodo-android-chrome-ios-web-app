@@ -11,7 +11,7 @@
                     <md-list-item ng-repeat="app in user.authorizedClients.apps | orderBy : 'appDisplayName'"
                                   class="noright">
                         <img alt="{{ app.appDisplayName }}"
-                             ng-src="{{ (app.iconUrl) ? app.iconUrl : 'https://placehold.it/512x512'  }}"
+                             ng-src="{{ (app.iconUrl) ? app.iconUrl : 'https://via.placeholder.com/512x512'  }}"
                              class="md-avatar"/>
                         <div class="md-list-item-text">
                             <h4>{{ app.appDisplayName }}</h4>
