@@ -10603,7 +10603,7 @@ var qm = {
             try{
                 Toast.fire({
                     icon: 'error',
-                    title: errorMessage
+                    title: qm.stringHelper.truncateIfGreaterThan(errorMessage, 140)
                 }).then(function(result){
                     if (result.value) {
                         if(callback){
