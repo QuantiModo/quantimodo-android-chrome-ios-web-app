@@ -20,7 +20,7 @@
     "@slack/webhook": "5.0.3",
     "@types/angular": "latest",
     "@types/app-root-path": "1.2.4",
-    "@types/bluebird": "3.5.33",
+    "@types/bluebird": "3.5.35",
     "@types/chai": "4.2.16",
     "@types/dotenv": "6.1.1",
     "@types/gulp": "4.0.7",
