@@ -67,8 +67,12 @@ var qmLog = {
             return;
         }
         qmLog.logLevel = value;
-        if(typeof localStorage !== "undefined" && localStorage){
-            localStorage.setItem(qm.items.logLevel, value); // Can't use qm.storage because of recursion issue
+        try {
+            if(typeof localStorage !== "undefined" && localStorage){
+                localStorage.setItem(qm.items.logLevel, value); // Can't use qm.storage because of recursion issue
+            }
+        } catch (e) {
+            console.error(e);
         }
     },
     getLogLevelName: function(){
@@ -81,8 +85,12 @@ var qmLog = {
         if(qmLog.logLevel){
             return qmLog.logLevel;
         }
-        if(typeof localStorage !== "undefined" && localStorage){ // Sometimes localStorage is null apparently?
-            qmLog.logLevel = localStorage.getItem(qm.items.logLevel);  // Can't use qm.storage because of recursion issue
+        try {
+            if(typeof localStorage !== "undefined" && localStorage){ // Sometimes localStorage is null apparently?
+                qmLog.logLevel = localStorage.getItem(qm.items.logLevel);  // Can't use qm.storage because of recursion issue
+            }
+        } catch (e) {
+            console.error(e);
         }
         if(qmLog.logLevel){
             return qmLog.logLevel;
