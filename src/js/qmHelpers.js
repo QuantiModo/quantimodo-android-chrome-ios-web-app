@@ -12,6 +12,8 @@ var qm = {
     alert: {
         errorAlert: function(title, text){
             debugger
+            title = qm.stringHelper.truncateIfGreaterThan(title, 30)
+            text = qm.stringHelper.truncateIfGreaterThan(text, 140)
             Swal.fire({
                 icon: 'error',
                 title: title,
@@ -685,7 +687,7 @@ var qm = {
                             if ( qm.api.postResponseSuccessful(xhr, response)) {
                                 if(successHandler){successHandler(response);}
                             } else {
-                                qmLog.error("qm.api.get error from " + url + " request: " + xhr.responseText, response);
+                                qmLog.error("POST " + url + " response: " + xhr.responseText, response);
                                 if(errorHandler){errorHandler(response);}
                             }
                         }
@@ -752,7 +754,7 @@ var qm = {
                     qmLog.error("qm.api.get error from " + url + " request: " + err + ".  If we couldn't parse json, " +
                         url + " probably doesn't exist", err);
                 }else{
-                    qmLog.error("qm.api.get error from " + url + " request: " + err, null, err);
+                    qmLog.error("GET " + url + " error: " + err, null, err);
                 }
                 if(errorHandler){
                     errorHandler(err);
@@ -771,9 +773,9 @@ var qm = {
                         successHandler(responseObject);
                     } else {
                         if ( xhr.status === 401 ) {
-                            qmLog.info("qm.api.get error from " + url + " request: " + xhr.responseText, null, responseObject);
+                            qmLog.info("401 from GET " + url + " response: " + xhr.responseText, null, responseObject);
                         } else {
-                            qmLog.error("qm.api.get error from " + url + " request: " + xhr.responseText, null, responseObject);
+                            qmLog.error("GET " + url + " response: " + xhr.responseText, null, responseObject);
                         }
                         if(errorHandler){errorHandler(responseObject);}
                     }
@@ -1485,30 +1487,43 @@ var qm = {
             }
             return array;
         },
-        sortByProperty: function(arrayToSort, propertyName, direction){
+        sortByProperty: function(arr, propertyName, direction){
             qmLog.debug("Sorting by " + propertyName + "...");
-            if(!qm.arrayHelper.variableIsArray(arrayToSort)){
+            if(!qm.arrayHelper.variableIsArray(arr)){
                 qmLog.info("Cannot sort by " + propertyName + " because it's not an array!");
-                return arrayToSort;
+                return arr;
             }
-            if(arrayToSort.length < 2){
-                return arrayToSort;
+            if(arr.length < 2){
+                return arr;
             }
             if(propertyName.indexOf('-') > -1 || direction === 'desc'){
                 propertyName = propertyName.replace('-', '');
-                arrayToSort.sort(function(a, b){
+                arr.sort(function(a, b){
                     var aVal = a[propertyName];
                     var bVal = b[propertyName];
+                    if(typeof aVal === "string"){
+                        var la = aVal.toLowerCase(), lb = bVal.toLowerCase();
+                        if (la > lb) return -1;
+                        if (la < lb) return 1;
+                        return 0;
+                    }
                     return bVal - aVal;
                 });
             }else{
-                arrayToSort.sort(function(a, b){
+                arr.sort(function(a, b){
                     var aVal = a[propertyName];
                     var bVal = b[propertyName];
+                    if(typeof aVal === "string"){
+                        var la = aVal.toLowerCase(), lb = bVal.toLowerCase();
+                        if (la < lb) return -1;
+                        if (la > lb) return 1;
+                        return 0;
+                    }
                     return aVal - bVal;
                 });
             }
-            return arrayToSort;
+            //var sorted = arr.map(function(a){return a[propertyName];})
+            return arr;
         },
         unsetNullProperties: function(array, except){
             except = except || []
@@ -10588,7 +10603,7 @@ var qm = {
             try{
                 Toast.fire({
                     icon: 'error',
-                    title: errorMessage
+                    title: qm.stringHelper.truncateIfGreaterThan(errorMessage, 140)
                 }).then(function(result){
                     if (result.value) {
                         if(callback){
@@ -11631,14 +11646,15 @@ var qm = {
         },
         getFromLocalStorage: function(params){
             var deferred = Q.defer();
-            if(!params){params = {};}
-            var cached = qm.userVariables.getCached();
-            var variables = qm.arrayHelper.filterByRequestParams(cached, params);
-            if(variables && variables.length){
-                if(!params.sort){variables = qm.variablesHelper.defaultVariableSort(variables);}
-                deferred.resolve(variables);
-                return deferred.promise;
-            }
+            // Not sure what all this was for
+            //if(!params){params = {};}
+            // var cached = qm.userVariables.getCached();
+            // var variables = qm.arrayHelper.filterByRequestParams(cached, params);
+            // if(variables && variables.length){
+            //     if(!params.sort){variables = qm.variablesHelper.defaultVariableSort(variables);}
+            //     deferred.resolve(variables);
+            //     return deferred.promise;
+            // }
             qm.localForage.getElementsWithRequestParams(qm.items.userVariables, params, function(variables){
                 variables = variables || []
                 if(!params.sort){variables = qm.variablesHelper.defaultVariableSort(variables);}
