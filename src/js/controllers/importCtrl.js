@@ -63,6 +63,7 @@ angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "
             updateNavigationMenuButton();
         });
         function userCanConnect(connector){
+            return true; // Don't require upgrade anymore
             if(!$rootScope.user){
                 qmService.refreshUser();
                 return true;

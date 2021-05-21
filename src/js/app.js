@@ -142,9 +142,10 @@ angular.module('starter',
                  //, $opbeatProvider
         ){
             //$opbeatProvider.config({orgId: '10d58117acb546c08a2cae66d650480d', appId: 'fc62a74505'});
-            if(qm.urlHelper.getParam(qm.items.apiUrl)){
-                qm.storage.setItem(qm.items.apiUrl, "https://" + qm.urlHelper.getParam(qm.items.apiUrl));
-            }
+            var apiUrl = qm.urlHelper.getParam(qm.items.apiUrl);
+            if(apiUrl){qm.storage.setItem(qm.items.apiUrl, "https://" + apiUrl);}
+            var clientId = qm.urlHelper.getParam(qm.items.clientId);
+            if(clientId){qm.storage.setItem(qm.items.clientId, clientId);}
             function setupGoogleAnalytics(){
                 var analyticsOptions = {tracker: 'UA-39222734-25', trackEvent: true};  // Note:  This will be replaced by qm.getAppSettings().additionalSettings.googleAnalyticsTrackingIds.endUserApps in qmService.getUserAndSetupGoogleAnalytics
                 if(ionic.Platform.isAndroid()){

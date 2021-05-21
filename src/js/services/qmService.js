@@ -1690,7 +1690,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                         return false;
                     }
                     qmLog.debug('Setting afterLoginGoToState to ' + afterLoginGoToState + ' and going to login. ');
-                    qmService.storage.setItem(qm.items.afterLoginGoToState, afterLoginGoToState);
+                    qm.storage.setItem(qm.items.afterLoginGoToState, afterLoginGoToState);
                 },
                 getAfterLoginState: function(){
                     return qm.storage.getItem(qm.items.afterLoginGoToState);
@@ -1878,7 +1878,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 },
                 enableDrawOverAppsPopups: function(){
                     qm.notifications.setLastPopupTime(null);
-                    qmService.storage.setItem(qm.items.drawOverAppsPopupEnabled, true);
+                    qm.storage.setItem(qm.items.drawOverAppsPopupEnabled, true);
                     $ionicPlatform.ready(function(){
                         qmService.scheduleSingleMostFrequentLocalNotification();
                         if(typeof window.overApps !== "undefined"){
@@ -1909,7 +1909,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 },
                 disablePopups: function(){
                     qmService.showInfoToast("Rating popups disabled");
-                    qmService.storage.setItem(qm.items.drawOverAppsPopupEnabled, false);
+                    qm.storage.setItem(qm.items.drawOverAppsPopupEnabled, false);
                     if(qmService.localNotifications.localNotificationsPluginInstalled()){
                         cordova.plugins.notification.local.cancelAll();
                     }
@@ -3397,7 +3397,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             function storeTokenFromUrlIfDoNotRememberNotSet(){
                 if(tokenFromUrl && !qm.urlHelper.getParam('doNotRemember')){
                     qmLog.authDebug("refreshUserUsingAccessTokenInUrlIfNecessary: Setting access token in local storage because doNotRemember is not set");
-                    qmService.storage.setItem(qm.items.accessToken, tokenFromUrl);
+                    qm.storage.setItem(qm.items.accessToken, tokenFromUrl);
                 }
             }
             function refreshUserDoesNotExistOrIfTokenFromUrlDoesNotMatch(){
@@ -5152,12 +5152,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             deferred.resolve(window.qm.storage.deleteById(localStorageItemName, elementId));
             return deferred.promise;
         };
-        qmService.storage.setItem = function(key, value){
-            var deferred = $q.defer();
-            window.qm.storage.setItem(key, value);
-            deferred.resolve();
-            return deferred.promise;
-        };
         qmService.storage.getAsStringWithCallback = function(key, callback){
             var val = qm.storage.getItem(key);
             callback(val);
@@ -5302,7 +5296,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     if(response && response.data && response.data.userVariables){
                         qm.variablesHelper.saveToLocalStorage(response.data.userVariables);
                     }
-                    qmService.storage.setItem('lastPostedWeatherAt', window.qm.timeHelper.getUnixTimestampInSeconds());
+                    qm.storage.setItem('lastPostedWeatherAt', window.qm.timeHelper.getUnixTimestampInSeconds());
                 }, function(error){
                     qmLog.error('could not post weather measurements: ', error);
                 });
@@ -6124,7 +6118,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             qmLog.debug('getUserFromLocalStorageOrRefreshIfNecessary', null);
             if(qm.urlHelper.getParam('refreshUser')){
                 qm.storage.clearStorageExceptForUnitsAndCommonVariables();
-                qmService.storage.setItem('onboarded', true);
+                qm.storage.setItem('onboarded', true);
                 qmService.intro.setIntroSeen(true, "url has param refreshUser");
                 qmService.rootScope.setUser(null);
             }
@@ -6388,7 +6382,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                         qmLog.pushDebug('Got device token for push notifications: ', registerResponse.registrationId, registerResponse);
                         var deviceTokenOnServer = qm.storage.getItem(qm.items.deviceTokenOnServer);
                         if(!deviceTokenOnServer || registerResponse.registrationId !== deviceTokenOnServer){
-                            qmService.storage.setItem(qm.items.deviceTokenToSync, registerResponse.registrationId);
+                            qm.storage.setItem(qm.items.deviceTokenToSync, registerResponse.registrationId);
                         }
                     });
                     var finishPushes = true;  // Setting to false didn't solve notification dismissal problem
