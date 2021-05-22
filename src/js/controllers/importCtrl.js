@@ -67,21 +67,13 @@ angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "
                 qmService.refreshUser();
                 return true;
             }
-            if(qmService.premiumModeDisabledForTesting){
-                return false;
-            }
-            if($rootScope.user.stripeActive){
-                return true;
-            }
-            if(qm.platform.isChromeExtension()){
-                return true;
-            }
-            if(connector && !connector.premium){
-                return true;
-            }
-            //if(qm.platform.isAndroid()){return true;}
-            //if(qm.platform.isWeb()){return true;}
-            return !qm.getAppSettings().additionalSettings.monetizationSettings.subscriptionsEnabled;
+            if(qmService.premiumModeDisabledForTesting){return false;}
+            if($rootScope.user.stripeActive){return true;}
+            if(qm.platform.isChromeExtension()){return true;}
+            if(connector && !connector.premium){return true;}
+            var needSubscription = qm.getAppSettings().additionalSettings.monetizationSettings.subscriptionsEnabled.value;
+            var canConnect = !needSubscription;
+            return canConnect;
         }
         $scope.hideImportHelpCard = function(){
             $scope.showImportHelpCard = false;
