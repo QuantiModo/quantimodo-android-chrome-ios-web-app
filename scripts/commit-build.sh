@@ -15,7 +15,7 @@ git config user.email "m@quantimodo.com"
 git config user.name "mikepsinn"
 
 set +x
-git clone https://${GITHUB_TOKEN}@github.com/mikepsinn/qm-web-build.git $BUILD_REPO || true
+git clone https://${GITHUB_ACCESS_TOKEN}@github.com/mikepsinn/qm-web-build.git $BUILD_REPO || true
 set -x
 rm -rf $BUILD_REPO/docs/* &> /dev/null
 cp -R $IONIC_PATH/src/* $BUILD_REPO/docs
