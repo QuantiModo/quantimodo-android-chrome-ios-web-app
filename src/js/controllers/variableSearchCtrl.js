@@ -267,7 +267,7 @@ angular.module('starter').controller('VariableSearchCtrl',
                 qmLog.info("Got "+variables.length+" matching params: ", params)
                 if(variables && variables.length > 0){
                     if(q.length < 3){
-                        if(previous){variables = previous.concat(variables);}
+                        // Not sure what this is for but it breaks the category filter: if(previous){variables = previous.concat(variables);}
                         addVariablesToScope(variables);
                     }
                 }else{
