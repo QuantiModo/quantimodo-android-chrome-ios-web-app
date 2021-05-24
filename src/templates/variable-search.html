@@ -6,13 +6,15 @@
             <label id="variable-category-selector-label"
                 class="item item-input item-select">
                 <div class="input-label"
-                     style="white-space:normal; width: 60%">Category
+                     style="white-space:normal; width: 50px;">Category
                 </div>
                 <select id="variable-category-selector"
+                        style="width: 100%;"
                         ng-model="state.variableSearchParameters.variableCategoryName">
                     <option ng-repeat="variableCategoryName in variableCategoryNames"
                             value="{{variableCategoryName}}">{{variableCategoryName}}
                     </option>
+                    <option value="" disabled selected>Anything</option>
                 </select>
             </label>
             <div ng-show="state.helpText" class="item item-text-wrap"> {{state.helpText}}</div>
