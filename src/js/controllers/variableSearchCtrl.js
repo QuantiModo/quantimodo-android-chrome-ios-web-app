@@ -11,7 +11,7 @@ angular.module('starter').controller('VariableSearchCtrl',
             $scope.state.searching = true;
             $scope.state.variableSearchResults = [];
             if(!$scope.state.variableSearchParameters){$scope.state.variableSearchParameters = {};}
-            $scope.state.variableSearchQuery = {name: ''};
+            $scope.state.variableSearchParameters.searchPhrase = "";
             if(!$scope.state.noVariablesFoundCard){
                 $scope.state.noVariablesFoundCard = {
                     show: false,
@@ -39,7 +39,7 @@ angular.module('starter').controller('VariableSearchCtrl',
             qmService.hideLoader();
             var upcTest = false;
             if(upcTest){
-                $scope.state.variableSearchQuery.barcode = $scope.state.variableSearchQuery.name = "028400064057";
+                $scope.state.variableSearchParameters.barcode = $scope.state.variableSearchParameters.searchPhrase = "028400064057";
                 $scope.onVariableSearch(function(){
                 });
             }
@@ -119,7 +119,7 @@ angular.module('starter').controller('VariableSearchCtrl',
             var s = $state.current;
             qmLog.info(s.name + ': ' + '$scope.selectVariable: ' + JSON.stringify(selected).substring(0, 140) + '...', null);
             qm.variablesHelper.setLastSelectedAtAndSave(selected);
-            $scope.state.variableSearchQuery.name = '';
+            $scope.state.variableSearchParameters.searchPhrase = '';
             if(s.name === 'app.favoriteSearch'){
                 qmService.addToFavoritesUsingVariableObject(selected);
             }else if(window.location.href.indexOf('reminder-search') !== -1){
@@ -147,8 +147,8 @@ angular.module('starter').controller('VariableSearchCtrl',
         };
         // when a query is searched in the search box
         function showAddVariableButtonIfNecessary(variables){
-            var barcode = $scope.state.variableSearchQuery.barcode;
-            if(barcode && barcode === $scope.state.variableSearchQuery.name){
+            var barcode = $scope.state.variableSearchParameters.barcode;
+            if(barcode && barcode === $scope.state.variableSearchParameters.searchPhrase){
                 $scope.state.showAddVariableButton = false;
                 return;
             }
@@ -160,7 +160,7 @@ angular.module('starter').controller('VariableSearchCtrl',
             var found = false;
             while(!found && resultIndex < $scope.state.variableSearchResults.length){
                 if($scope.state.variableSearchResults[resultIndex].name.toLowerCase() ===
-                    $scope.state.variableSearchQuery.name.toLowerCase()){
+                    $scope.state.variableSearchParameters.searchPhrase.toLowerCase()){
                     found = true;
                 }else{
                     resultIndex++;
@@ -175,7 +175,7 @@ angular.module('starter').controller('VariableSearchCtrl',
                 var s = $state.current;
                 var next = s.params.nextState;
                 var text;
-                var q = $scope.state.variableSearchQuery.name;
+                var q = $scope.state.variableSearchParameters.searchPhrase;
                 if(next === qm.staticData.stateNames.reminderAdd){
                     text = '+ Add ' + q + ' reminder';
                 }else if(next === qm.staticData.stateNames.measurementAdd){
@@ -193,11 +193,13 @@ angular.module('starter').controller('VariableSearchCtrl',
                 $scope.state.noVariablesFoundCard.show = false;
                 return;
             }
-            $scope.state.noVariablesFoundCard.title = $scope.state.variableSearchQuery.name + ' Not Found';
+            $scope.state.noVariablesFoundCard.title = $scope.state.variableSearchParameters.searchPhrase + ' Not Found';
             if($scope.state.noVariablesFoundCard && $scope.state.noVariablesFoundCard.body){
-                $scope.state.noVariablesFoundCard.body = $scope.state.noVariablesFoundCard.body.replace('__VARIABLE_NAME__', $scope.state.variableSearchQuery.name.toUpperCase());
+                $scope.state.noVariablesFoundCard.body = $scope.state.noVariablesFoundCard.body.replace(
+                    '__VARIABLE_NAME__', $scope.state.variableSearchParameters.searchPhrase.toUpperCase());
             }else{
-                $scope.state.noVariablesFoundCard.body = "You don't have any data for " + $scope.state.variableSearchQuery.name.toUpperCase() + ", yet.  Start tracking!";
+                $scope.state.noVariablesFoundCard.body = "You don't have any data for " +
+                    $scope.state.variableSearchParameters.searchPhrase.toUpperCase() + ", yet.  Start tracking!";
             }
             if(errorHandler){
                 errorHandler();
@@ -226,15 +228,13 @@ angular.module('starter').controller('VariableSearchCtrl',
                 $scope.state.showAddVariableButton = false;
                 $scope.state.variableSearchResults = variables;
                 var count = (variables) ? variables.length : 0;
-                qmLog.info(count + ' variable search results from ' + $scope.state.variableSearchQuery.name + " search");
+                qmLog.info(count + ' variable search results from ' + $scope.state.variableSearchParameters.searchPhrase + " search");
                 $scope.state.searching = false;
             });
         }
         function getVariableSearchParameters(){
             // $stateParams.variableSearchParameters.searchPhrase is getting populated somehow and is not being updated
-            if($scope.state.variableSearchQuery.name){
-                delete $stateParams.variableSearchParameters.searchPhrase;
-            }
+            delete $stateParams.variableSearchParameters.searchPhrase;
             return qm.objectHelper.copyPropertiesFromOneObjectToAnother($scope.state.variableSearchParameters,
                 $stateParams.variableSearchParameters, false);
         }
@@ -242,7 +242,7 @@ angular.module('starter').controller('VariableSearchCtrl',
             $scope.state.noVariablesFoundCard.show = false;
             $scope.state.showAddVariableButton = false;
             var params = getVariableSearchParameters();
-            var q = $scope.state.variableSearchQuery.name;
+            var q = $scope.state.variableSearchParameters.searchPhrase;
             qmLog.info($state.current.name + ': ' + 'Search term: ' + q + " with params: ", params);
             if(q.length > 2){
                 $scope.state.searching = true;
@@ -255,7 +255,7 @@ angular.module('starter').controller('VariableSearchCtrl',
             }
         };
         var populateSearchResults = function(){
-            var q = $scope.state.variableSearchQuery.name;
+            var q = $scope.state.variableSearchParameters.searchPhrase;
             if(q.length > 2){
                 return;
             }
@@ -279,7 +279,7 @@ angular.module('starter').controller('VariableSearchCtrl',
         $scope.addNewVariable = function(){
             var variableObject = {};
             variableObject = qmService.barcodeScanner.addUpcToVariableObject(variableObject);
-            variableObject.name = $scope.state.variableSearchQuery.name;
+            variableObject.name = $scope.state.variableSearchParameters.searchPhrase;
             if(getVariableCategoryName()){
                 variableObject.variableCategoryName = getVariableCategoryName();
             }
@@ -355,14 +355,14 @@ angular.module('starter').controller('VariableSearchCtrl',
         };
         $scope.matchEveryWord = function(){
             return function(item){
-                if($scope.state.variableSearchQuery.barcode){
+                if($scope.state.variableSearchParameters.barcode){
                     return true;
                 } // Name's not going to match the number
                 if(!checkNameExists(item)){
                     return false;
                 }
                 if(item.variableCategoryName){
-                    if($scope.state.variableSearchParameters.manualTracking && $scope.state.variableSearchQuery.name.length < 5){
+                    if($scope.state.variableSearchParameters.manualTracking && $scope.state.variableSearchParameters.searchPhrase.length < 5){
                         if(item.variableCategoryName.indexOf('Location') !== -1 ||
                             item.variableCategoryName.indexOf('Software') !== -1 ||
                             item.variableCategoryName.indexOf('Environment') !== -1){
@@ -379,7 +379,7 @@ angular.module('starter').controller('VariableSearchCtrl',
                     return false;
                 }
                 var variableObjectAsString = JSON.stringify(item).toLowerCase();
-                var lowercaseVariableSearchQuery = $scope.state.variableSearchQuery.name.toLowerCase();
+                var lowercaseVariableSearchQuery = $scope.state.variableSearchParameters.searchPhrase.toLowerCase();
                 var filterBy = lowercaseVariableSearchQuery.split(/\s+/);
                 if(lowercaseVariableSearchQuery){
                     if(!filterBy.length){
