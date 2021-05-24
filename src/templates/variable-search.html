@@ -9,7 +9,9 @@
                      style="white-space:normal; width: 60%">Category
                 </div>
                 <select id="variable-category-selector"
-                        ng-model="state.variableSearchParameters.variableCategoryName">
+                        ng-model="state.variableSearchParameters.variableCategoryName"
+                        ng-change="onVariableSearch()"
+                >
                     <option ng-repeat="variableCategoryName in variableCategoryNames"
                             value="{{variableCategoryName}}">{{variableCategoryName}}
                     </option>
