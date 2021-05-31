@@ -158,7 +158,7 @@
     "gulp-zip": "5.1.0",
     "inquirer": "7.3.3",
     "ionic": "2.2.3",
-    "jshint": "2.12.0",
+    "jshint": "2.13.0",
     "lazypipe": "1.0.2",
     "mime": "2.4.6",
     "morgan": "1.10.0",
