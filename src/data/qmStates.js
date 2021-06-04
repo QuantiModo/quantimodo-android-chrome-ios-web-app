@@ -144,7 +144,7 @@ var qmStates = [
             "variableSearchParameters": {
                 "limit": 100,
                 "includePublic": true,
-                "manualTracking": true
+                // Don't do this or blood pressure doesn't show up "manualTracking": true
             },
             "hideNavigationMenu": null,
             "doneState": null,
@@ -174,7 +174,7 @@ var qmStates = [
             "variableSearchParameters": {
                 "limit": 100,
                 "includePublic": true,
-                "manualTracking": true
+                // Don't do this or blood pressure doesn't show up "manualTracking": true
             },
             "hideNavigationMenu": null,
             "skipReminderSettingsIfPossible": null,
@@ -206,7 +206,7 @@ var qmStates = [
             "variableSearchParameters": {
                 "limit": 100,
                 "includePublic": true,
-                "manualTracking": true
+                // Don't do this or blood pressure doesn't show up "manualTracking": true
             },
             "hideNavigationMenu": null,
             "doneState": null,
