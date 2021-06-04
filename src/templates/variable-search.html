@@ -47,7 +47,7 @@
             <ion-list ng-show="state.variableSearchResults.length" class>
                 <!--<ion-item ng-click="selectVariable(item)" ng-repeat="item in state.variableSearchResults | orderBy:'-latestMeasurementTime' | limitTo:5 | unique:'id'  ">-->
                 <ion-item id="variable-search-result" ng-click="selectVariable(item)"
-                          ng-repeat="item in state.variableSearchResults | filter:matchEveryWord() | unique:'name' track by $index">
+                          ng-repeat="item in state.variableSearchResults | unique:'name' track by $index">
                     <div>
                         <!-- For some reason, putting displayName on new line in HTML code also produces new line in rendered HTML even though there's no <br> -->
                         <p style="font-size:18px; white-space: pre;"><i ng-if="item.ionIcon" class="icon {{item.ionIcon}}"></i>&nbsp {{item.displayName}}</p>
