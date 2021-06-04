@@ -11880,6 +11880,19 @@ var qm = {
             });
             return manualTracking.concat(nonManual);
         },
+        putExactMatchFirst: function(variables, q){ // Don't think we need to do this anymore since we sort by number of reminders maybe?
+            if(!variables){
+                qmLog.error("no variables provided to putManualTrackingFirst");
+                return;
+            }
+            var exact = variables.filter(function(variableToCheck){
+                return variableToCheck.name.toLowerCase() === q.toLowerCase();
+            });
+            var inexact = variables.filter(function(variableToCheck){
+                return variableToCheck.name.toLowerCase() !== q.toLowerCase();
+            });
+            return exact.concat(inexact);
+        },
         defaultVariableSort: function(variables){
             if(!variables){
                 qmLog.debug("no variables provided to defaultVariableSort");
@@ -11902,6 +11915,7 @@ var qm = {
                 if(aValue > bValue) return -1;
                 return 0;
             });
+            variables = qm.variablesHelper.putExactMatchFirst(variables);
             return variables;
         },
         getUserAndCommonVariablesFromLocalStorage: function(params){
