@@ -721,7 +721,7 @@ var qm = {
                 if(!qm.platform.getWindow()){
                     return false;
                 }
-                if(window.designMode){
+                if(qm.appMode.isBuilder()){
                     settingsUrl += '&designMode=true';
                 }
                 qmLog.debug('Getting app settings from ' + settingsUrl);
