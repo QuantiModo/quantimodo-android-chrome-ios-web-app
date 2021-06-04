@@ -492,7 +492,7 @@ var qmStates = [
             "variableSearchParameters": {
                 "includePublic": true,
                 "fallbackToAggregatedCorrelations": true,
-                "numberOfCorrelationsAsCause": "(gt)1",
+                //"numberOfCorrelationsAsCause": "(gt)1",  Don't require this or we can't search for variables that haven't been correlated yet and trigger correlation
                 "sort": "-numberOfCorrelationsAsCause"
             },
             "hideNavigationMenu": null,
