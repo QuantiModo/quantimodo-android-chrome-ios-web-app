@@ -11527,7 +11527,7 @@ var qm = {
             var combined = cached.concat(fromStatic);
             if(!params){params = {};}
             var processed = qm.arrayHelper.filterByRequestParams(combined, params);
-            if(!params.sort){processed = qm.variablesHelper.defaultVariableSort(processed);}
+            if(!params.sort){processed = qm.variablesHelper.defaultVariableSort(processed, params);}
             return processed;
         },
         getFromLocalStorage: function(params){
@@ -11656,7 +11656,7 @@ var qm = {
             // }
             qm.localForage.getElementsWithRequestParams(qm.items.userVariables, params, function(variables){
                 variables = variables || []
-                if(!params.sort){variables = qm.variablesHelper.defaultVariableSort(variables);}
+                if(!params.sort){variables = qm.variablesHelper.defaultVariableSort(variables, params);}
                 deferred.resolve(variables);
             }, function(error){
                 qmLog.error(error);
@@ -11804,7 +11804,7 @@ var qm = {
             if(params.id || params.name){min = 1;}
             function sortUpdateSubtitlesAndReturnVariables(variables, params){
                 if(!params.sort){
-                    variables = qm.variablesHelper.defaultVariableSort(variables);
+                    variables = qm.variablesHelper.defaultVariableSort(variables, params);
                 } else {
                     variables = qm.arrayHelper.sortByProperty(variables, params.sort);
                 }
@@ -11812,8 +11812,6 @@ var qm = {
                 if(params && params.limit){
                     variables = variables.slice(0, params.limit)
                 }
-                var q = params.name || params.searchPhrase || null;
-                if(q){variables = qm.variablesHelper.putExactMatchFirst(variables, q);}
                 deferred.resolve(variables)
             }
             function getFromApi(localVariables, reason){
@@ -11894,7 +11892,7 @@ var qm = {
             });
             return exact.concat(inexact);
         },
-        defaultVariableSort: function(variables){
+        defaultVariableSort: function(variables, params){
             if(!variables){
                 qmLog.debug("no variables provided to defaultVariableSort");
                 return null;
@@ -11916,6 +11914,10 @@ var qm = {
                 if(aValue > bValue) return -1;
                 return 0;
             });
+            if(params){
+                var q = params.name || params.searchPhrase || null;
+                if(q){variables = qm.variablesHelper.putExactMatchFirst(variables, q);}
+            }
             return variables;
         },
         getUserAndCommonVariablesFromLocalStorage: function(params){
