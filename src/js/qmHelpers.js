@@ -11532,7 +11532,6 @@ var qm = {
         },
         getFromLocalStorage: function(params){
             if(!params){params = {};}
-            var cached = qm.commonVariablesHelper.getCached(params);
             var commonVariables = qm.arrayHelper.filterByRequestParams(qm.staticData.commonVariables, params);
             if(!params.sort){commonVariables = qm.variablesHelper.defaultVariableSort(commonVariables);}
             return commonVariables;
@@ -11813,6 +11812,8 @@ var qm = {
                 if(params && params.limit){
                     variables = variables.slice(0, params.limit)
                 }
+                var q = params.name || params.searchPhrase || null;
+                if(q){variables = qm.variablesHelper.putExactMatchFirst(variables, q);}
                 deferred.resolve(variables)
             }
             function getFromApi(localVariables, reason){
@@ -11915,7 +11916,6 @@ var qm = {
                 if(aValue > bValue) return -1;
                 return 0;
             });
-            variables = qm.variablesHelper.putExactMatchFirst(variables);
             return variables;
         },
         getUserAndCommonVariablesFromLocalStorage: function(params){
