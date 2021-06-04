@@ -344,58 +344,6 @@ angular.module('starter').controller('VariableSearchCtrl',
         function getPluralVariableCategoryName(){
             return $filter('wordAliases')(pluralize(getVariableCategoryName(), 1));
         }
-        var checkNameExists = function(item){
-            if(!item.name){
-                var message = "variable doesn't have a name! variable: " + JSON.stringify(item);
-                qmLog.error(message);
-                qmLog.error(message);
-                return false;
-            }
-            return true;
-        };
-        $scope.matchEveryWord = function(){
-            return function(item){
-                if($scope.state.variableSearchParameters.barcode){
-                    return true;
-                } // Name's not going to match the number
-                if(!checkNameExists(item)){
-                    return false;
-                }
-                if(item.variableCategoryName){
-                    if($scope.state.variableSearchParameters.manualTracking && $scope.state.variableSearchParameters.searchPhrase.length < 5){
-                        if(item.variableCategoryName.indexOf('Location') !== -1 ||
-                            item.variableCategoryName.indexOf('Software') !== -1 ||
-                            item.variableCategoryName.indexOf('Environment') !== -1){
-                            return false;
-                        }
-                    }
-                }
-                if($scope.state.excludeDuplicateBloodPressure){
-                    if(item.name.toLowerCase().indexOf('diastolic') !== -1 || item.name.toLowerCase().indexOf('systolic') !== -1){
-                        return false;
-                    }
-                }
-                if($scope.state.excludeSingularBloodPressure && item.name.toLowerCase() === 'blood pressure'){
-                    return false;
-                }
-                var variableObjectAsString = JSON.stringify(item).toLowerCase();
-                var lowercaseVariableSearchQuery = $scope.state.variableSearchParameters.searchPhrase.toLowerCase();
-                var filterBy = lowercaseVariableSearchQuery.split(/\s+/);
-                if(lowercaseVariableSearchQuery){
-                    if(!filterBy.length){
-                        return true;
-                    }
-                }else{
-                    return true;
-                }
-                return filterBy.every(function(word){
-                    var exists = variableObjectAsString.indexOf(word);
-                    if(exists !== -1){
-                        return true;
-                    }
-                });
-            };
-        };
         // https://open.fda.gov/api/reference/ API Key https://open.fda.gov/api/reference/
         $scope.scanBarcode = function(){
             var params = getVariableSearchParameters();
