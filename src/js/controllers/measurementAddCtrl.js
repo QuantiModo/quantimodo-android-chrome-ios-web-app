@@ -286,7 +286,9 @@ angular.module('starter').controller('MeasurementAddCtrl', [
                 setupUnit(category.defaultUnitAbbreviatedName, v.valence);
             }
             var m = qm.measurements.newMeasurement(v);
-            if(m.variableName.toLowerCase().indexOf('blood pressure') > -1){$rootScope.bloodPressure.show = true;}
+            if(m.variableName.toLowerCase().indexOf('blood pressure') > -1){
+                qmService.rootScope.setProperty('bloodPressure', {systolicValue: null, diastolicValue: null, show: true});
+            }
             if(m.variableCategoryName){
                 setupVariableCategory(m.variableCategoryName);
             }else{
