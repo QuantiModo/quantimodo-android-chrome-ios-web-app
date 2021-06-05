@@ -388,7 +388,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
                 qmService.updateEmailAndExecuteCallback(callback);
             };
             $scope.goToStudyPageViaStudy = qm.studyHelper.goToStudyPageViaStudy;
-            $scope.goToJoinStudyPageViaStudy = qm.studyHelper.goToStudyPageJoinPageViaStudy;
+            $scope.goToJoinStudy = qm.studyHelper.goToJoinStudy;
             $scope.showGeneralVariableSearchDialog = function(ev){
                 function selectVariable(variable){
                     $scope.variableObject = variable;
