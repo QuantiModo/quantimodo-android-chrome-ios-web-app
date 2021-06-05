@@ -6,16 +6,19 @@
         <div ng-show="loadingCharts || !state.study">
             <md-progress-linear md-mode="indeterminate"></md-progress-linear>
         </div>
-        <div ng-if="state.study.studyHtml.studyHeaderHtml" class="item-text-wrap card-item"
+        <div ng-if="state.study" class="item-text-wrap card-item"
              style="border-style:hidden; padding: 20px;">
-            <div id="studyHeaderHtml" ng-bind-html="trustAsHtml(state.study.studyHtml.studyHeaderHtml)"
+            <div id="studyHeaderHtml"
+                 ng-if="state.study.studyHtml.studyHeaderHtml"
+                 ng-bind-html="trustAsHtml(state.study.studyHtml.studyHeaderHtml)"
                  style="text-align: center;"></div>
             <div ng-include="'templates/fragments/correlation-buttons-fragment.html'" style="text-align: center;"></div>
             <br>
-            <div ng-hide="user && (state.study.userId === user.id || state.study.statistics.userId === user.id)"
+            <div
+                ng-hide="state.study.studyCharts && user && (state.study.userId === user.id || state.study.statistics.userId === user.id)"
                  class="row">
                 <div class="col">
-                    <button id="joinStudyButton" ng-if="!state.study.joined"
+                    <button id="joinStudyButton"
                             class="button button-outline button-block icon-left ion-ios-people button-positive"
                             ng-click="goToJoinStudy(state.study)">
                         Join this Study
