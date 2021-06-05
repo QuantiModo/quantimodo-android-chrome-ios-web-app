@@ -356,6 +356,8 @@ angular.module('starter').controller('ReminderAddCtrl', ["$scope", "$state", "$s
             qmService.showInfoToast(toastMessage);
             qmService.hideLoader();
             if($stateParams.doneState){
+                delete $stateParams.variableCategoryName; // Don't redirect to category inbox
+                delete $stateParams.variableCategoryId; // Don't redirect to category inbox
                 qmService.goToState($stateParams.doneState, $stateParams);
             } else {
                 $scope.goBack(); // We can't go back until we get new notifications
