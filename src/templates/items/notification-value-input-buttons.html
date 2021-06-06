@@ -66,10 +66,10 @@
              style="margin: auto;">
             <button class="button button-calm"
                     style="text-overflow: clip; font-size: 16px;"
-                    on-hold="trackAllWithConfirmation(trackingReminderNotification, trackingReminderNotification.total, $event)"
+                    on-hold="trackAllWithConfirmation(trackingReminderNotification, trackingReminderNotification.modifiedValue, $event)"
                     ng-click="trackByValueField(trackingReminderNotification, $event)">
                 <i class="ion-android-done">&nbsp; Record
-                                            {{trackingReminderNotification.total}}{{trackingReminderNotification.unitAbbreviatedName}} &nbsp
+                                            {{trackingReminderNotification.modifiedValue}}{{trackingReminderNotification.unitAbbreviatedName}} &nbsp
                 </i>
             </button>
         </div>
@@ -79,12 +79,12 @@
         <div style="width: 100%"
              class="range range-positive">
             {{trackingReminderNotification.minimumAllowedValue}}
-            <input ng-model="trackingReminderNotification.total"
+            <input ng-model="trackingReminderNotification.modifiedValue"
                    type="range"
                    name="valueSlider"
                    min="{{trackingReminderNotification.minimumAllowedValue}}"
                    max="{{trackingReminderNotification.maximumAllowedValue}}"
-                   value="{{trackingReminderNotification.total}}">
+                   value="{{trackingReminderNotification.modifiedValue}}">
             {{trackingReminderNotification.maximumAllowedValue}}
         </div>
     </div>
