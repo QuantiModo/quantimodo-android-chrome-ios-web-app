@@ -402,8 +402,13 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
             })
         }
         $rootScope.$on('broadcastGetTrackingReminderNotifications', function(){
-            qmLog.info('getTrackingReminderNotifications broadcast received..');
-            getLocalNotifications();
+            qmLog.info('getTrackingReminderNotifications broadcast received...');
+            var num = getNumberOfDisplayedNotifications();
+            if(num < 3){
+                getLocalNotifications();
+            } else {
+                qmLog.info('We already have '+num+' displayed notifications so ignoring broadcast...');
+            }
         });
         function shouldWeShowZeroButton(trackingReminderNotification){
             return trackingReminderNotification.inputType === 'defaultValue' ||
