@@ -10293,7 +10293,7 @@ var qm = {
             }
             qm.studyHelper.getStudiesApiInstance({}, arguments.callee.name).getStudies(params, callback);
         },
-        goToStudyPageJoinPageViaStudy: function(study){
+        goToJoinStudy: function(study){
             qm.urlHelper.goToUrl(qm.studyHelper.getStudyJoinUrl(study));
         },
         goToStudyPageViaStudy: function(study){
