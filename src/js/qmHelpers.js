@@ -7414,6 +7414,8 @@ var qm = {
                 if(ids.indexOf(id) !== -1) {
                     qmLog.errorAndExceptionTestingOrDevelopment("Duplicate notification id: "+id, null, n);
                 }
+                var count = notifications.filter(function(n2){return n2.variableId === n.variableId;}).length;
+                if(count < 2){n.trackAllActions = [];}
                 toKeep.push(n);
                 ids.push(id);
             });
