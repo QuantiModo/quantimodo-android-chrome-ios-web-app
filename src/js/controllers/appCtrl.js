@@ -324,10 +324,12 @@ angular.module('starter')// Parent Controller - This controller runs before ever
                     $scope.favoriteValidationFailure('Please enter both values for blood pressure.');
                     return;
                 }
-                $rootScope.bloodPressure.displayTotal = "Recorded " + $rootScope.bloodPressure.systolicValue + "/" + $rootScope.bloodPressure.diastolicValue + ' Blood Pressure';
+                $rootScope.bloodPressure.displayTotal = "Recorded " + $rootScope.bloodPressure.systolicValue + "/" +
+                    $rootScope.bloodPressure.diastolicValue + ' Blood Pressure';
                 qm.measurements.postBloodPressureMeasurements($rootScope.bloodPressure)
                     .then(function(){
-                        qmLog.debug('Successfully qmService.postMeasurementByReminder: ' + JSON.stringify($rootScope.bloodPressure), null);
+                        qmLog.debug('Successfully qmService.postMeasurementByReminder: ' +
+                            JSON.stringify($rootScope.bloodPressure), null);
                     }, function(error){
                         qmLog.error('Failed to Track by favorite! ', $rootScope.bloodPressure);
                     });
