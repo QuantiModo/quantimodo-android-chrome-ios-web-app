@@ -154,7 +154,6 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
         $scope.trackByValueField = function(n, $event){
             if(isGhostClick($event)){return;}
             if(!qm.measurements.valueIsValid(n, n.modifiedValue)){return false;}
-            n.modifiedValue = n.total;
             var lastAction = 'Recorded ' + n.modifiedValue + ' ' + n.unitAbbreviatedName;
             qm.notifications.lastAction = qm.stringHelper.formatValueUnitDisplayText(lastAction) + ' for '+n.variableName;
             qm.notifications.track(n);
