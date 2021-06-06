@@ -111,7 +111,7 @@
     </div>
 </div>
 <div id="track-all-button-section"
-     ng-if="state.showTrackAllButtons">
+     ng-if="state.showTrackAllButtons && trackingReminderNotification.trackAllActions.length > 1">
     <p style="text-align: center; padding: 2px;">Record same value for all remaining past notifications</p>
     <span id="track-all-buttons"
           style="display: flex; justify-content: center;">
