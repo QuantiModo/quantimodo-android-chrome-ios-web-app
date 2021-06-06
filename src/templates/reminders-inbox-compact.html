@@ -58,7 +58,7 @@
         <label ng-if="trackingReminderNotifications[0].inputType === 'value' && trackingReminderNotifications[0].defaultValue === null"
                class="item item-input">
             <input type="number"
-                   ng-model="trackingReminderNotifications[0].total"
+                   ng-model="trackingReminderNotifications[0].modifiedValue"
                    id="emptyValueField"
                    ng-click="onTextClick($event)"
                    placeholder="Enter value"
@@ -147,10 +147,10 @@
                 <div class="button-bar">
                     <button class="button button-clear button-calm"
                             style="text-overflow: clip; font-size: 16px;"
-                            on-hold="trackAllWithConfirmation(trackingReminderNotifications[0], trackingReminderNotifications[0].total, $event)"
+                            on-hold="trackAllWithConfirmation(trackingReminderNotifications[0], trackingReminderNotifications[0].modifiedValue, $event)"
                             ng-click="trackByValueField(trackingReminderNotifications[0], $event)">
                         <i class="ion-android-done">&nbsp; Record
-                            {{trackingReminderNotifications[0].total}}{{trackingReminderNotifications[0].unitAbbreviatedName}}
+                            {{trackingReminderNotifications[0].modifiedValue}}{{trackingReminderNotifications[0].unitAbbreviatedName}}
                             &nbsp
                         </i>
                     </button>
@@ -160,12 +160,12 @@
                 <div style="width: 100%"
                      class="range range-positive">
                     {{trackingReminderNotifications[0].minimumAllowedValue}}
-                    <input ng-model="trackingReminderNotifications[0].total"
+                    <input ng-model="trackingReminderNotifications[0].modifiedValue"
                            type="range"
                            name="valueSlider"
                            min="{{trackingReminderNotifications[0].minimumAllowedValue}}"
                            max="{{trackingReminderNotifications[0].maximumAllowedValue}}"
-                           value="{{trackingReminderNotifications[0].total}}">
+                           value="{{trackingReminderNotifications[0].modifiedValue}}">
                     {{trackingReminderNotifications[0].maximumAllowedValue}}
                 </div>
             </div>
