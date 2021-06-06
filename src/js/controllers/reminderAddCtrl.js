@@ -541,6 +541,7 @@ angular.module('starter').controller('ReminderAddCtrl', ["$scope", "$state", "$s
             var v = scope.state.variableObject;
             if(v && v.name){return v.name;}
             qmLog.errorAndExceptionTestingOrDevelopment("Could not get variable name!");
+            return null;
         }
         function getUnitAbbreviatedName(scope){
             scope = scope || $scope; // Not sure why this is necessary but $scope is undefined sometimes

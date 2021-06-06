@@ -7957,6 +7957,10 @@ var qm = {
     reminderHelper: {
         defaultLimit: 200, // I have over 150 reminders
         addToQueue: function(reminder){
+            if(!reminder.variableName){
+                qmLog.errorAndExceptionTestingOrDevelopment("Please provide variableName with reminder!")
+                return;
+            }
             qm.storage.addToOrReplaceByIdAndMoveToFront(qm.items.trackingReminderSyncQueue, reminder);
             if(qm.qmService){
                 qm.qmService.reminders.broadcastGetTrackingReminders();
