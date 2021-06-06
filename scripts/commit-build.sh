@@ -14,12 +14,12 @@ set -e
 git config user.email "m@quantimodo.com"
 git config user.name "mikepsinn"
 
-rm -rf $BUILD_REPO
+rm -rf $BUILD_REPO || true
 set +x && git clone https://${GITHUB_ACCESS_TOKEN}@github.com/mikepsinn/qm-web-build.git $BUILD_REPO || true && set -x
 rm -rf $BUILD_REPO/docs/* &> /dev/null
 cp -R $IONIC_PATH/src/* $BUILD_REPO/docs
 cd $BUILD_REPO
 git add -A  &> /dev/null
-git commit -m "updated by travis build #$TRAVIS_BUILD_NUMBER"
+git commit -m "$BUILD_URL $CHANGE_URL"
 git push
 
