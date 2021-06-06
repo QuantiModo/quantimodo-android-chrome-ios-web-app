@@ -101,7 +101,12 @@
                 class="button button-clear button-calm"
                 style="text-overflow: clip; font-size: 14px;"
                 ng-click="editMeasurement(trackingReminderNotification)">
-            <i class="ion-edit"> &nbsp; Other Value/Time/Note</i>
+            <i class="ion-edit" ng-if="trackingReminderNotification.inputType !== 'value'">
+                &nbsp; Other Value/Time/Note
+            </i>
+            <i class="ion-edit" ng-if="trackingReminderNotification.inputType === 'value'">
+                &nbsp; Edit Time or Note
+            </i>
         </button>
     </div>
 </div>
