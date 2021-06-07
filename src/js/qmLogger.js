@@ -296,6 +296,7 @@ var qmLog = {
         }
     },
     error: function(name, message, errorSpecificMetaData, stackTrace){
+        debugger
         if(typeof message === 'object' && message !== null){
             errorSpecificMetaData = message;
             message = null;
@@ -483,6 +484,7 @@ var qmLog = {
         qmLog.error(name, message, metaData, stackTrace);
         var dev = qm.appMode.isDevelopment();
         if(qm.appMode.isTesting() || dev){
+            debugger
             throw name;
         }
     },
