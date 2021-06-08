@@ -35,7 +35,7 @@
     "aws-sdk-mock": "4.5.0",
     "beautify": "0.0.8",
     "chai": "4.3.4",
-    "cheerio": "1.0.0-rc.5",
+    "cheerio": "1.0.0-rc.10",
     "compromise": "12.3.0",
     "cordova-ios-plugin-no-export-compliance": "0.0.6",
     "cordova-plugin-appsettings": "1.0.2",
