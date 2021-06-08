@@ -137,7 +137,8 @@ angular.module('starter').controller('MeasurementAddCtrl', [
             return m;
         }
         function showToast() {
-            var toastMessage = 'Recorded ' + $scope.state.measurement.value + ' ' + $scope.state.measurement.unitAbbreviatedName;
+            var toastMessage = 'Recorded ' + $scope.state.measurement.value + ' ' +
+                $scope.state.measurement.unitAbbreviatedName;
             toastMessage = toastMessage.replace(' /', '/');
             qmService.showInfoToast(toastMessage);
         }
@@ -207,7 +208,7 @@ angular.module('starter').controller('MeasurementAddCtrl', [
             $scope.state.measurement.unitName = null;
             $scope.state.measurement.unitId = null;
         }
-        function setupUnit(unitAbbreviatedName, valence){
+        function setupUnit(unitAbbreviatedName){
             if(!unitAbbreviatedName){
                 qmLog.info("No unitAbbreviatedName provided to setupUnit! Maybe a new variable?");
                 return;
@@ -225,10 +226,12 @@ angular.module('starter').controller('MeasurementAddCtrl', [
         }
         $scope.selectPrimaryOutcomeVariableValue = function($event, newValue){
             // remove any previous primary outcome variables if present
-            jQuery('.primary-outcome-variable-rating-buttons .active-primary-outcome-variable-rating-button').removeClass('active-primary-outcome-variable-rating-button');
+            jQuery('.primary-outcome-variable-rating-buttons .active-primary-outcome-variable-rating-button')
+                .removeClass('active-primary-outcome-variable-rating-button');
             // make this primary outcome variable glow visually
             jQuery($event.target).addClass('active-primary-outcome-variable-rating-button');
-            jQuery($event.target).parent().removeClass('primary-outcome-variable-history').addClass('primary-outcome-variable-history');
+            jQuery($event.target).parent().removeClass('primary-outcome-variable-history')
+                .addClass('primary-outcome-variable-history');
             if($scope.state.measurement.displayValueAndUnitString){
                 $scope.state.measurement.displayValueAndUnitString =
                     $scope.state.measurement.displayValueAndUnitString.replace($scope.state.measurement.value, newValue);
@@ -283,7 +286,7 @@ angular.module('starter').controller('MeasurementAddCtrl', [
                 setupUnit(v.unitAbbreviatedName, v.valence);
             }else if(v.variableCategoryName){
                 var category = qm.variableCategoryHelper.findByNameIdObjOrUrl(v);
-                setupUnit(category.defaultUnitAbbreviatedName, v.valence);
+                setupUnit(category.defaultUnitAbbreviatedName);
             }
             var m = qm.measurements.newMeasurement(v);
             if(m.variableName.toLowerCase().indexOf('blood pressure') > -1){
