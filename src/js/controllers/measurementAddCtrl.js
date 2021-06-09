@@ -25,7 +25,7 @@ angular.module('starter').controller('MeasurementAddCtrl', [
             unitChanged = false;
             qmLog.debug($state.current.name + ': beforeEnter', null);
             qmService.navBar.showNavigationMenuIfHideUrlParamNotSet();
-            qmService.rootScope.setProperty('bloodPressure', {systolicValue: null, diastolicValue: null, show: false});
+            qmService.rootScope.setProperty('bloodPressure', {show: false});
             $scope.state.title = 'Record a Measurement';
             setupMeasurement();
             var cat = getVariableCategory();
@@ -84,20 +84,10 @@ angular.module('starter').controller('MeasurementAddCtrl', [
             }
         }
         var trackBloodPressure = function(){
-            if(!$rootScope.bloodPressure.diastolicValue || !$rootScope.bloodPressure.systolicValue){
-                qm.measurements.validationFailure('Please enter both values for blood pressure.', $scope.state.measurement);
-                return;
-            }
-            $scope.state.selectedDate = moment($scope.state.selectedDate);
-            $rootScope.bloodPressure.startAt = $scope.state.selectedDate;
-            $rootScope.bloodPressure.note = $scope.state.measurement.note;
-            qm.measurements.postBloodPressureMeasurements($rootScope.bloodPressure)
-                .then(function(){
-                    qmLog.debug('Successfully qmService.postMeasurementByReminder: ' +
-                        JSON.stringify($rootScope.bloodPressure), null);
-                }, function(error){
-                    qmLog.error('Failed to Track by favorite! ', error);
-                });
+            var m = $rootScope.bloodPressure;
+            m.startAt = $scope.state.selectedDate = moment($scope.state.selectedDate);
+            m.note = $scope.state.measurement.note;
+            qm.measurements.postBloodPressureMeasurements(m);
             $scope.goBack();
         };
         $scope.cancel = function(){
@@ -290,7 +280,7 @@ angular.module('starter').controller('MeasurementAddCtrl', [
             }
             var m = qm.measurements.newMeasurement(v);
             if(m.variableName.toLowerCase().indexOf('blood pressure') > -1){
-                qmService.rootScope.setProperty('bloodPressure', {systolicValue: null, diastolicValue: null, show: true});
+                qmService.rootScope.setProperty('bloodPressure', {show: true});
             }
             if(m.variableCategoryName){
                 setupVariableCategory(m.variableCategoryName);
