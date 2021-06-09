@@ -5,7 +5,7 @@
     <div ng-repeat="type in ['Systolic', 'Diastolic']">
         <label class="item item-input">
             <input type="number"
-                   style="max-width: 180px; padding-right: 0; text-align: left;"
+                   style="padding-right: 0; text-align: left;"
                    ng-model="bloodPressure.values[position+' '+type+' Blood Pressure']"
                    id="{{position+type}}systolicValueField"
                    ng-click="onTextClick($event)"
