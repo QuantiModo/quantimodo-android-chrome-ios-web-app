@@ -20,11 +20,7 @@ angular.module('starter').controller('FavoritesCtrl', ["$scope", "$state", "$ion
         if (document.title !== $scope.state.title) {document.title = $scope.state.title;}
         qmLog.debug('Entering state ' + $state.current.name, null);
         qmService.navBar.showNavigationMenuIfHideUrlParamNotSet();
-        qmService.rootScope.setProperty('bloodPressure', {
-            systolicValue: null,
-            diastolicValue: null,
-            displayTotal: "Blood Pressure"
-        });
+        qmService.rootScope.setProperty('bloodPressure', {displayTotal: "Blood Pressure"});
         var categoryName = qm.variableCategoryHelper.getNameFromStateParamsOrUrl($stateParams);
         if(categoryName){
             $scope.variableCategoryName = categoryName;
