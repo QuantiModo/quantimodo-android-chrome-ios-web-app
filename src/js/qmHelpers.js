@@ -5671,7 +5671,7 @@ var qm = {
             var deferred = Q.defer();
             if(!data.startAt){data.startAt = qm.timeHelper.toMySQLTimestamp();}
             var measurements = [];
-            for (const name in data.values){
+            for (var name in data.values){
                 if (data.values.hasOwnProperty(name)) {
                     measurements.push({
                         variableName: name,
