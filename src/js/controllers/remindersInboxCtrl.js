@@ -53,11 +53,7 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
             readHelpCards();
             getLocalNotifications();
             //getFavorites();  Not sure why we need to do this here?
-            qmService.rootScope.setProperty('bloodPressure', {
-                systolicValue: null,
-                diastolicValue: null,
-                displayTotal: "Blood Pressure"
-            });
+            qmService.rootScope.setProperty('bloodPressure', {displayTotal: "Blood Pressure"});
             $scope.stateParams = $stateParams;
             qmService.actionSheet.setDefaultActionSheet(function(){
                     $scope.syncNotifications();
