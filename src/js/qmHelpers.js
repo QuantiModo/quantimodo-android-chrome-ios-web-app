@@ -5667,27 +5667,22 @@ var qm = {
             }
             return deferred.promise;
         },
-        postBloodPressureMeasurements: function(parameters){
+        postBloodPressureMeasurements: function(data){
             var deferred = Q.defer();
-            if(!parameters.startAt){
-                parameters.startAt = qm.timeHelper.toMySQLTimestamp();
-            }
-            qm.measurements.postMeasurements([
-                {
-                    variableId: 1874,
-                    sourceName: qm.getSourceName(),
-                    startAt: parameters.startAt,
-                    value: parameters.systolicValue,
-                    note: parameters.note
-                },
-                {
-                    variableId: 5554981,
-                    sourceName: qm.getSourceName(),
-                    startAt: parameters.startAt,
-                    value: parameters.diastolicValue,
-                    note: parameters.note
+            if(!data.startAt){data.startAt = qm.timeHelper.toMySQLTimestamp();}
+            var measurements = [];
+            for (var name in data.values){
+                if (data.values.hasOwnProperty(name)) {
+                    measurements.push({
+                        variableName: name,
+                        sourceName: qm.getSourceName(),
+                        startAt: data.startAt,
+                        value: data.values[name],
+                        note: data.note
+                    })
                 }
-            ]).then(function(response){
+            }
+            qm.measurements.postMeasurements(measurements).then(function(response){
                 deferred.resolve(response);
             }, function (err){
                 deferred.reject(err);
@@ -10709,7 +10704,7 @@ var qm = {
         },
         getInputType: function(unitAbbreviatedName, valence, variableName) {
             var inputType = 'value';
-            if (variableName === 'Blood Pressure') {inputType = 'bloodPressure';}
+            if (variableName && variableName.indexOf('Blood Pressure') !== -1) {inputType = 'bloodPressure';}
             if (unitAbbreviatedName === '/5') {
                 inputType = 'oneToFiveNumbers';
                 if (valence === 'positive') {inputType = 'happiestFaceIsFive';}
