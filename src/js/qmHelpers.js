@@ -3090,6 +3090,16 @@ var qm = {
             connectors = hideUnavailableConnectors(connectors);
             qm.storage.setItem(qm.items.connectors, connectors);
             return connectors;
+        },
+        update: function (name, successHandler) {
+            qm.api.get('api/v3/connectors/' + name + '/update', [], {}, function(r){
+                debugger
+                if(successHandler){
+                    successHandler(r);
+                }
+            }, function(err){
+                qmLog.error(err)
+            });
         }
     },
     cookieHelper: {
