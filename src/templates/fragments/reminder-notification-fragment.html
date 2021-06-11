@@ -70,7 +70,7 @@
         <i class="ion-settings"> &nbsp; Settings</i>
     </button>
 </div>
-<label ng-if="inputType === 'value'"
+<label ng-if="trackingReminderNotification.inputType === 'value'"
        class="item item-input">
     <input id="defaultValueField"
            type="number"
@@ -111,9 +111,7 @@
                 class="button button-clear button-calm"
                 style="text-overflow: clip; font-size: 14px;"
                 ng-click="editMeasurement(trackingReminderNotification)">
-            <i class="ion-edit"> &nbsp; Other
-                Value/Time/Note
-            </i>
+            <i class="ion-edit"> &nbsp; Other Value/Time/Note </i>
         </button>
     </div>
 </div>

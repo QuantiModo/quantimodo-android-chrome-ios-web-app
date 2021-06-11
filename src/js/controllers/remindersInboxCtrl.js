@@ -1,9 +1,7 @@
 angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", "$stateParams", "$rootScope", "$filter",
     "$ionicPlatform", "$ionicActionSheet", "$timeout", "qmService",
     function($scope, $state, $stateParams, $rootScope, $filter, $ionicPlatform, $ionicActionSheet, $timeout, qmService){
-        if(!$rootScope.appSettings){
-            qmService.rootScope.setProperty('appSettings', window.qm.getAppSettings());
-        }
+        if(!$rootScope.appSettings){qmService.rootScope.setProperty('appSettings', window.qm.getAppSettings());}
         $scope.controller_name = "RemindersInboxCtrl";
         qmLog.debug('Loading ' + $scope.controller_name);
         qmService.navBar.setFilterBarSearchIcon(false);
@@ -429,13 +427,6 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
         };
         function hideNotification(n){
             n.hide = true;
-            var number = getNumberOfDisplayedNotifications();
-            if(number !== $scope.state.numberOfDisplayedNotifications){
-                $scope.state.numberOfDisplayedNotifications = getNumberOfDisplayedNotifications();
-            }
-        }
-        function unhideNotification(n){
-            n.hide = false;
             var number = getNumberOfDisplayedNotifications();
             if(number !== $scope.state.numberOfDisplayedNotifications){
                 $scope.state.numberOfDisplayedNotifications = getNumberOfDisplayedNotifications();
