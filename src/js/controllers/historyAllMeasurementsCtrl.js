@@ -29,10 +29,17 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
             }
         });
         $scope.$on('$ionicView.enter', function(e){
-            var params = getRequestParams();
-            qm.measurements.getLocalMeasurements(params).then(function(combined){
-                setHistory(combined)
-            })
+            var measurements = $stateParams.updatedMeasurementHistory;
+            if(measurements && measurements.length){
+                measurements = qm.measurements.processMeasurements(measurements)
+                var sorted = qm.arrayHelper.sortByProperty(measurements, $scope.state.sort)
+                setHistory(sorted.slice(0, $scope.state.limit));
+            } else {
+                var params = getRequestParams();
+                qm.measurements.getLocalMeasurements(params).then(function(combined){
+                    setHistory(combined)
+                })
+            }
             $scope.state.moreDataCanBeLoaded = true;
             // Need to use rootScope here for some reason
             qmService.rootScope.setProperty('hideHistoryPageInstructionsCard',
@@ -248,8 +255,19 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
                 $scope.state.noHistory = true;
                 hideLoader();
             }
-            //qmService.showBasicLoader();
-            qm.measurements.getMeasurementsFromApi(params).then(successHandler, errorHandler);
+            if(getConnector()){
+                qm.connectorHelper.update(getConnector().name, function (r){
+                    debugger
+                    if(r.measurements){
+                        setHistory(r.measurements);
+                    } else {
+                        qm.measurements.getMeasurementsFromApi(params).then(successHandler, errorHandler);
+                    }
+                })
+            } else {
+                //qmService.showBasicLoader();
+                qm.measurements.getMeasurementsFromApi(params).then(successHandler, errorHandler);
+            }
         };
         // noinspection DuplicatedCode
         function setupVariableCategoryActionSheet(){
