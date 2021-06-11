@@ -13,6 +13,10 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
             sort: "-startAt",
             title: "History",
             units: [],
+            setNote:function (m, note){
+                m.note = note;
+                qm.measurements.saveMeasurement(m)
+            }
         };
         $scope.$on('$ionicView.beforeEnter', function(e){
             if (document.title !== $scope.state.title) {document.title = $scope.state.title;}
