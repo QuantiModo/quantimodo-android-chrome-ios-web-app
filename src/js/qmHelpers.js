@@ -1040,15 +1040,15 @@ var qm = {
         },
         getAppSettingsLocallyOrFromApi: function(successHandler, errorHandler){
             var appSettings = qm.getAppSettings();
+            var builderClientId = qm.appsManager.getBuilderClientId();
             if(appSettings && appSettings.clientId){
-                successHandler(appSettings);
-                return;
+                if(!builderClientId || appSettings.clientId === builderClientId){
+                    successHandler(appSettings);
+                    return;
+                }
             }
             var localStorageKey = qm.items.appSettings;
-            var builderClientId = qm.appsManager.getBuilderClientId();
-            if(builderClientId){
-                localStorageKey = qm.items.appSettingsRevisions;
-            }
+            if(builderClientId){localStorageKey = qm.items.appSettingsRevisions;}
             qm.localForage.getItem(localStorageKey)
                 .then(function(appSettings){
                     if(builderClientId && appSettings && appSettings.length && builderClientId === appSettings[0].clientId){
@@ -1056,7 +1056,7 @@ var qm = {
                         return;
                     }
                     if(qm.platform.isWeb() && qm.urlHelper.isQuantiModoOrQuantiModoDotCom()){
-                        qm.appsManager.getAppSettingsFromApi(null, successHandler, errorHandler);
+                        qm.appsManager.getAppSettingsFromApi(builderClientId, successHandler, errorHandler);
                         return;
                     }
                     var clientIdFromUrl = qm.api.getClientIdFromBuilderQueryOrSubDomain();
@@ -1066,7 +1066,7 @@ var qm = {
                             return;
                         }
                     }
-                    qm.appsManager.getAppSettingsFromApi(null, successHandler, errorHandler);
+                    qm.appsManager.getAppSettingsFromApi(builderClientId, successHandler, errorHandler);
                 });
         },
         getAppSettingsFromMemory: function(){
