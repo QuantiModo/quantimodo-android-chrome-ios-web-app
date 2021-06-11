@@ -1,7 +1,5 @@
 <div ng-repeat="position in ['Sitting', 'Immediate Standing', '1-Minute Standing']">
-    <div ng-if="bloodPressure.show"
-         class="item item-divider">{{position}} Blood Pressure
-    </div>
+    <div class="item item-divider">{{position}} Blood Pressure </div>
     <div ng-repeat="type in ['Systolic', 'Diastolic']">
         <label class="item item-input">
             <input type="number"
