@@ -6,7 +6,7 @@
              ng-show="state.measurement.variableName"
              id="measurementAddCard">
             <div id="variable-name"
-                ng-if="!bloodPressure.show"
+                 ng-if="state.measurement.inputType !== 'bloodPressure'"
                  class="item item-divider">{{state.measurement.variableName}}
             </div>
             <div class="list margin-bottom-0">
