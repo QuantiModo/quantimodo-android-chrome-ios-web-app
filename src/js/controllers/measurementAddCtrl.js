@@ -81,6 +81,15 @@ angular.module('starter').controller('MeasurementAddCtrl', [
             } else if ($stateParams.variableName) {
                 setupFromVariableName($stateParams.variableName);
                 fallback();
+            } else {
+                var state = qmService.getCurrentState();
+                qmService.setCurrentState(null)
+                if(state && state.name === $state.current.name){
+                    $stateParams = state.params;
+                    setupMeasurement();
+                } else {
+                    qmService.goToLastState()
+                }
             }
         }
         var trackBloodPressure = function(){
