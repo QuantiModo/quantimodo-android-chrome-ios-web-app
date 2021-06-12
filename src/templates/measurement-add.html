@@ -90,7 +90,7 @@
                         <md-radio-button value="No"> No</md-radio-button>
                     </md-radio-group>
                 </div>
-                <label ng-if="!bloodPressure.show"
+                <label ng-if="state.measurement.inputType !== 'bloodPressure'"
                        class="item item-input item-select">
                     <div class="input-label">Unit</div>
                     <select id="unitSelector"
