@@ -211,6 +211,9 @@ angular.module('starter').controller('MeasurementAddCtrl', [
                 $scope.state.measurement = qm.unitHelper.updateAllUnitPropertiesOnObject(unitAbbreviatedName, $scope.state.measurement);
                 qmLog.info("Setting $scope.state.measurement to ", $scope.state.measurement);
                 qm.unitHelper.setInputType($scope.state.measurement);
+                if($scope.state.measurement.inputType === "bloodPressure" && $scope.state.measurement.value){
+                    $scope.state.measurement.inputType = "value"; // For editing a single value
+                }
                 $scope.state.units = qm.unitHelper.getUnitArrayContaining(unitAbbreviatedName);
             }
         }
