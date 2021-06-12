@@ -4783,7 +4783,9 @@ var qm = {
         userCorrelations: 'userCorrelations',
         userVariables: 'userVariables',
         variableCategories: 'variableCategories',
-        lastUrl: 'lastUrl'
+        lastState: 'lastState',
+        lastUrl: 'lastUrl',
+        currentState: 'currentState'
     },
     loaders: {
         robots: function(){
@@ -11278,7 +11280,17 @@ var qm = {
         isQuantiModoOrQuantiModoDotCom: function(){
             var hostname = window.location.hostname;
             return hostname.indexOf('.quantimo.do') !== -1 || hostname.indexOf('.quantimodo.com') !== -1;
-        }
+        },
+        goToLastUrl: function(){
+            var url = qm.urlHelper.getLastUrl();
+            window.location.hef = url;
+        },
+        setLastUrl: function(){
+            qm.storage.setItem(qm.items.lastUrl, window.location.href);
+        },
+        getLastUrl: function(){
+            return qm.storage.getItem(qm.items.lastUrl)
+        },
     },
     user: null,
     userHelper: {
