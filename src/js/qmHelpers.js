@@ -681,7 +681,8 @@ var qm = {
                     xhr.open("POST", url);
                     xhr = qm.api.addXhrHeaders(xhr);
                     xhr.onreadystatechange = function(){//Call a function when the state changes.
-                        if(xhr.readyState === XMLHttpRequest.DONE){
+                        var done = XMLHttpRequest.DONE;
+                        if(xhr.readyState === 4){
                             var fallback = xhr.responseText;
                             var response = qm.stringHelper.parseIfJsonString(xhr.responseText, fallback);
                             if ( qm.api.postResponseSuccessful(xhr, response)) {
@@ -766,7 +767,8 @@ var qm = {
             xhr.open('GET', url, true);
             xhr = qm.api.addXhrHeaders(xhr);
             xhr.onreadystatechange = function(){
-                if(xhr.readyState === XMLHttpRequest.DONE){
+                var done = XMLHttpRequest.DONE;
+                if(xhr.readyState === 4){
                     var fallback = null; // Just return null instead of 500 page HTML
                     var responseObject = qm.stringHelper.parseIfJsonString(xhr.responseText, fallback);
                     if ( xhr.status === 200 ) {
@@ -11218,9 +11220,8 @@ var qm = {
             return window.location.origin + window.location.pathname;
         },
         goToUrl: function(url, reason, newTab){
-            if(!qm.platform.getWindow()){
-                return false;
-            }
+            qm.urlHelper.setLastUrl();
+            if(!qm.platform.getWindow()){return false;}
             if(url.indexOf('mailto') !== -1){ newTab = true; }
             qmLog.info("Going to " + url + " because " + reason);
             if(newTab){
