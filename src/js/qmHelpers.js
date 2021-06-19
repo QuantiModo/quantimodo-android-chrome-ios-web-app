@@ -10941,7 +10941,17 @@ var qm = {
             state = qm.objectHelper.copyPropertiesFromOneObjectToAnother(params, state, false);
             return state;
         },
-        addUrlParamsToCurrentUrl: function insertParam(key, value){
+        addParamsToCurrentUrl: function(source){
+            for(var prop in source){
+                if(source.hasOwnProperty(prop)){
+                    if(source[prop] === null || typeof source[prop] === "object" || Array.isArray(source[prop])){
+                        continue;
+                    }
+                    qm.urlHelper.addParamToCurrentUrl(prop, source[prop]);
+                }
+            }
+        },
+        addParamToCurrentUrl: function(key, value){
             qmLog.error("This adds params before hash"); // TODO: Fix me
             key = encodeURI(key);
             value = encodeURI(value);
