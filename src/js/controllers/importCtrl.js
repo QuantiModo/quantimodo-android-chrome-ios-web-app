@@ -280,29 +280,36 @@ angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "
             qmLog.info("getItHere connector " + JSON.stringify(connector), null, connector);
             $scope.openUrl(connector.getItUrl, 'yes', '_system');
         };
-        $scope.connectorAction = function(c, button, ev){
-            qmLog.info("connectorAction button " + JSON.stringify(button), null, button);
+        $scope.connectorAction = function(c, b, ev){
+            qmLog.info("connectorAction button " + JSON.stringify(b), null, b);
             qmLog.info("connectorAction connector " + JSON.stringify(c), null, c);
             c.message = null;
-            if(button.text.toLowerCase().indexOf('disconnect') !== -1){
-                disconnectConnector(c, button);
-            }else if(button.text.toLowerCase().indexOf('connect') !== -1){
-                connectConnector(c, button, ev);
-            }else if(button.text.toLowerCase().indexOf('settings') !== -1){
-                amazonSettings(c, button, ev);
-            }else if(button.text.toLowerCase().indexOf('get it') !== -1){
-                getItHere(c, button);
-            }else if(button.text.toLowerCase().indexOf('updat') !== -1){
-                updateConnector(c, button);
-            }else if(button.text.toLowerCase().indexOf('upgrade') !== -1){
+            //debugger
+            if(b.text.toLowerCase().indexOf('disconnect') !== -1){
+                disconnectConnector(c, b);
+            }else if(b.text.toLowerCase().indexOf('connect') !== -1){
+                connectConnector(c, b, ev);
+            }else if(b.text.toLowerCase().indexOf('settings') !== -1){
+                amazonSettings(c, b, ev);
+            }else if(b.text.toLowerCase().indexOf('get it') !== -1){
+                getItHere(c, b);
+            }else if(b.text.toLowerCase().indexOf('update') !== -1){
+                updateConnector(c, b);
+            }else if(b.text.toLowerCase().indexOf('upgrade') !== -1){
                 qmService.goToState('app.upgrade');
+            }else if(b.stateName){
+                qmService.goToState(b.stateName, b.stateParams);
+            }else if(b.link){
+                qmService.setLastStateAndUrl();
+                qm.urlHelper.goToUrl(b.link);
+            }else {
+                qmLog.error("No action for this button: ", b)
             }
         };
         $rootScope.$on('broadcastRefreshConnectors', function(){
             qmLog.info('broadcastRefreshConnectors broadcast received..');
             $scope.refreshConnectors();
         });
-
         function setConnectors(connectors) {
             $scope.state.connectors = connectors;
             //Stop the ion-refresher from spinning
@@ -310,7 +317,6 @@ angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "
             qmService.hideLoader();
             $scope.state.text = '';
         }
-
         $scope.refreshConnectors = function(){
             qmService.refreshConnectors()
                 .then(function(connectors){
