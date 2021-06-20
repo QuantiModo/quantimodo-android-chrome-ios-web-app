@@ -3345,6 +3345,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             if(to !== "false"){
                 params = params || {};
                 params.fromUrl = window.location.href;
+                params = qm.objectHelper.snakeToCamelCaseProperties(params);
                 qmService.setCurrentState({name: to, params: params})
                 $state.go(to, params, options);
             }
@@ -3367,7 +3368,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             qm.storage.setItem(qm.items.lastUrl, window.location.href);
         }
         qmService.setCurrentState = function(state){
-            debugger
+            //debugger
             qm.storage.setItem(qm.items.currentState, state);
         }
         qmService.getCurrentState = function(){
