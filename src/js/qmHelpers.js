@@ -7600,6 +7600,7 @@ var qm = {
             for(var prop in object){
                 if(object.hasOwnProperty(prop)){
                     var camel = prop.toCamelCase();
+                    if(camel === prop){continue;}
                     object[camel] = object[prop];
                     delete object[prop];
                 }
