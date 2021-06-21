@@ -82,15 +82,9 @@ angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "
         var loadNativeConnectorPage = function(){
             $scope.showImportHelpCard = !qm.storage.getItem(qm.items.hideImportHelpCard);
             qmService.showBlackRingLoader();
-            qmService.getConnectorsDeferred()
-                .then(function(connectors){
-                    $scope.state.connectors = connectors;
-                    if(connectors){
-                        $scope.$broadcast('scroll.refreshComplete');
-                        qmService.hideLoader();
-                    }
-                    $scope.refreshConnectors();
-                });
+            var connectors = qm.connectorHelper.getConnectorsFromLocalStorage();
+            if(connectors){setConnectors(connectors);}
+            $scope.refreshConnectors();
         };
         $scope.showActionSheetForConnector = function(connector){
             var connectorButtons = JSON.parse(JSON.stringify(connector.buttons));
@@ -311,7 +305,9 @@ angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "
             $scope.refreshConnectors();
         });
         function setConnectors(connectors) {
-            $scope.state.connectors = connectors;
+            //debugger
+            qmLog.info("Setting connectors: ", connectors)
+            $scope.safeApply(function (){$scope.state.connectors = connectors;})
             //Stop the ion-refresher from spinning
             $scope.$broadcast('scroll.refreshComplete');
             qmService.hideLoader();
