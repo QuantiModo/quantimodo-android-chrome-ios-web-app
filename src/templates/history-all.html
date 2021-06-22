@@ -103,7 +103,8 @@
                           ng-bind-html="historyItem.noteHtml"></span>
                     <span ng-if="!historyItem.noteHtml">{{historyItem.note}}</span>
                     </span>
-                    <span ng-if="!historyItem.noteHtml && !historyItem.note && historyItem.variableName.indexOf('Blood Pressure') === 0"
+                    <span
+                        ng-if="!historyItem.note && historyItem.variableName.indexOf('Blood Pressure') !== -1"
                           ng-repeat="position in ['Sitting', 'Immediate Standing', '1-Minute Standing']" >
                         <button
                             style="display: inline-block;"
