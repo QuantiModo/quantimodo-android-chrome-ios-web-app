@@ -7751,10 +7751,7 @@ var qm = {
             if(qm.platform.isAndroid() || qm.platform.isIOS()){
                 return false;
             }
-            if(typeof ionic !== "undefined" && ionic.Platform.isWebView()){
-                return true;
-            }
-            return false;
+            return typeof ionic !== "undefined" && ionic.Platform.isWebView();
         },
         isWebOrChrome: function(){
             return qm.platform.isWeb() || qm.platform.isChromeExtension();
