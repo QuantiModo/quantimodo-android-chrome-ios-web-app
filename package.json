@@ -211,7 +211,7 @@
     "cy:heroku-test-setup": "whoami && node -e 'console.log(process.geteuid())' && npx cypress install && npx cypress cache path && npx cypress cache list && npx cypress verify",
     "cy:open": "cypress open --config-file cypress.json",
     "cy:open:production": "cypress open --config-file cypress/config/cypress.production.json",
-    "cy:open:staging": "cypress open --config-file cypress/config/cypress.staging.json",
+    "cy:open:staging": "cypress install && cypress open --config-file cypress/config/cypress.staging.json",
     "cy:record": "cypress run --record",
     "cy:record:measurements:ionic": "cypress run --record --key 64dd30de-4365-4699-85fe-e3be5e95da65 --config-file cypress/config/cypress.ionic.json --spec cypress/integration/ionic_measurements_spec.js",
     "cy:record:measurements:production": "cypress run --record --key 64dd30de-4365-4699-85fe-e3be5e95da65 --config-file cypress/config/cypress.production.json --spec cypress/integration/ionic_measurements_spec.js",
