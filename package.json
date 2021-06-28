@@ -144,7 +144,7 @@
     "gulp-rimraf": "1.0.0",
     "gulp-run": "1.7.1",
     "gulp-s3-upload": "1.7.3",
-    "gulp-sass": "3.2.1",
+    "gulp-sass": "5.0.0",
     "gulp-shell": "0.8.0",
     "gulp-sourcemaps": "3.0.0",
     "gulp-streamify": "1.0.2",
