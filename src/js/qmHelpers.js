@@ -9957,6 +9957,10 @@ var qm = {
         }
     },
     studyHelper: {
+        isOwner: function(study){
+            var user = qm.getUser();
+            return study.isOwner = study.userId && user && study.userId === user.id;
+        },
         cached: {},
         getStudiesApiInstance: function(params, functionName){
             qm.api.configureClient(functionName, null, params);
