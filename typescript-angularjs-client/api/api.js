@@ -1,0 +1,43 @@
+"use strict";
+function __export(m) {
+    for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
+}
+Object.defineProperty(exports, "__esModule", { value: true });
+__export(require("./ActivitiesApi"));
+var ActivitiesApi_1 = require("./ActivitiesApi");
+__export(require("./AnalyticsApi"));
+var AnalyticsApi_1 = require("./AnalyticsApi");
+__export(require("./AppSettingsApi"));
+var AppSettingsApi_1 = require("./AppSettingsApi");
+__export(require("./AuthenticationApi"));
+var AuthenticationApi_1 = require("./AuthenticationApi");
+__export(require("./ConnectorsApi"));
+var ConnectorsApi_1 = require("./ConnectorsApi");
+__export(require("./FeedApi"));
+var FeedApi_1 = require("./FeedApi");
+__export(require("./FriendsApi"));
+var FriendsApi_1 = require("./FriendsApi");
+__export(require("./GroupsApi"));
+var GroupsApi_1 = require("./GroupsApi");
+__export(require("./MeasurementsApi"));
+var MeasurementsApi_1 = require("./MeasurementsApi");
+__export(require("./MessagesApi"));
+var MessagesApi_1 = require("./MessagesApi");
+__export(require("./NotificationsApi"));
+var NotificationsApi_1 = require("./NotificationsApi");
+__export(require("./RemindersApi"));
+var RemindersApi_1 = require("./RemindersApi");
+__export(require("./SharesApi"));
+var SharesApi_1 = require("./SharesApi");
+__export(require("./StudiesApi"));
+var StudiesApi_1 = require("./StudiesApi");
+__export(require("./UnitsApi"));
+var UnitsApi_1 = require("./UnitsApi");
+__export(require("./UserApi"));
+var UserApi_1 = require("./UserApi");
+__export(require("./VariablesApi"));
+var VariablesApi_1 = require("./VariablesApi");
+__export(require("./XprofileApi"));
+var XprofileApi_1 = require("./XprofileApi");
+exports.APIS = [ActivitiesApi_1.ActivitiesApi, AnalyticsApi_1.AnalyticsApi, AppSettingsApi_1.AppSettingsApi, AuthenticationApi_1.AuthenticationApi, ConnectorsApi_1.ConnectorsApi, FeedApi_1.FeedApi, FriendsApi_1.FriendsApi, GroupsApi_1.GroupsApi, MeasurementsApi_1.MeasurementsApi, MessagesApi_1.MessagesApi, NotificationsApi_1.NotificationsApi, RemindersApi_1.RemindersApi, SharesApi_1.SharesApi, StudiesApi_1.StudiesApi, UnitsApi_1.UnitsApi, UserApi_1.UserApi, VariablesApi_1.VariablesApi, XprofileApi_1.XprofileApi];
+//# sourceMappingURL=api.js.map
