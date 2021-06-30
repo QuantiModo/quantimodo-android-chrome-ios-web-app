@@ -83,6 +83,7 @@ angular.module('starter').controller('StudyJoinCtrl', ["$scope", "$state", "qmSe
                 $scope.state.study.joined = true;
             }
             qm.studiesJoined.joinStudy(getRequestParams(), function(study){
+                //debugger
                 study.joined = true;
                 $scope.state.study = study;
                 qmService.hideLoader();
