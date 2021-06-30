@@ -1,5 +1,6 @@
 import * as env from "./env-helper"
 import * as api from "./qm.api"
+import * as fileHelper from "./qm.file-helper"
 import * as qmLog from "./qm.log"
 import * as timeHelper from "./qm.time-helper"
 env.loadEnv("local")
@@ -42,10 +43,11 @@ api.makeApiRequest(getRequestOptions("/api/v1/appSettings"), function(response: 
     addBuildInfoToAppSettings()
     qmLog.info("Got app settings for " + qm.getAppDisplayName() + ". You can change your app settings at " +
         getAppEditUrl())
-    // qm.staticData.appSettings = removeCustomPropertiesFromAppSettings(qm.staticData.appSettings);
-    if(process.env.APP_HOST_NAME) {
-        qm.getAppSettings().apiUrl = process.env.APP_HOST_NAME.replace("https://", "")
+    const url = env.getAppHostName()
+    if(url) {
+        qm.getAppSettings().apiUrl = url.replace("https://", "")
     }
+    return writeStaticDataFile()
 })
 function getAppEditUrl() {
     return getAppsListUrl() + "?clientId=" + qm.getClientId()
@@ -55,4 +57,23 @@ function getAppsListUrl() {
 }
 function getAppDesignerUrl() {
     return "https://builder.quantimo.do/#/app/configuration?clientId=" + qm.getClientId()
+}
+
+function writeStaticDataFile() {
+    qm.staticData.buildInfo = qm.buildInfoHelper.getCurrentBuildInfo()
+    const content = "var staticData = "+ qmLog.prettyJSONStringify(qm.staticData)+
+        '; if(typeof window !== "undefined"){window.qm.staticData = staticData;} ' +
+        ' else if(typeof qm !== "undefined"){qm.staticData = staticData;} else {module.exports = staticData;} ' +
+        'if(typeof qm !== "undefined"){qm.stateNames = staticData.stateNames;}'
+    try {
+        fileHelper.writeToFile(env.paths.www.staticData, content)
+    } catch(e) {
+        qmLog.error(e.message + ".  Maybe www/data doesn't exist but it might be resolved when we copy from src")
+    }
+    try {
+        fileHelper.writeToFile("build/chrome_extension/data/qmStaticData.js", content)
+    } catch(e) {
+        qmLog.error(e.message + ".  Maybe build/chrome_extension/data doesn't exist but it might be resolved when we copy from src")
+    }
+    return fileHelper.writeToFile(env.paths.src.staticData, content)
 }
