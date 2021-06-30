@@ -21,6 +21,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var env = __importStar(require("./env-helper"));
 var api = __importStar(require("./qm.api"));
+var fileHelper = __importStar(require("./qm.file-helper"));
 var qmLog = __importStar(require("./qm.log"));
 var timeHelper = __importStar(require("./qm.time-helper"));
 env.loadEnv("local");
@@ -63,10 +64,11 @@ api.makeApiRequest(getRequestOptions("/api/v1/appSettings"), function (response)
     addBuildInfoToAppSettings();
     qmLog.info("Got app settings for " + qm.getAppDisplayName() + ". You can change your app settings at " +
         getAppEditUrl());
-    // qm.staticData.appSettings = removeCustomPropertiesFromAppSettings(qm.staticData.appSettings);
-    if (process.env.APP_HOST_NAME) {
-        qm.getAppSettings().apiUrl = process.env.APP_HOST_NAME.replace("https://", "");
+    var url = env.getAppHostName();
+    if (url) {
+        qm.getAppSettings().apiUrl = url.replace("https://", "");
     }
+    return writeStaticDataFile();
 });
 function getAppEditUrl() {
     return getAppsListUrl() + "?clientId=" + qm.getClientId();
@@ -76,5 +78,25 @@ function getAppsListUrl() {
 }
 function getAppDesignerUrl() {
     return "https://builder.quantimo.do/#/app/configuration?clientId=" + qm.getClientId();
+}
+function writeStaticDataFile() {
+    qm.staticData.buildInfo = qm.buildInfoHelper.getCurrentBuildInfo();
+    var content = "var staticData = " + qmLog.prettyJSONStringify(qm.staticData) +
+        '; if(typeof window !== "undefined"){window.qm.staticData = staticData;} ' +
+        ' else if(typeof qm !== "undefined"){qm.staticData = staticData;} else {module.exports = staticData;} ' +
+        'if(typeof qm !== "undefined"){qm.stateNames = staticData.stateNames;}';
+    try {
+        fileHelper.writeToFile(env.paths.www.staticData, content);
+    }
+    catch (e) {
+        qmLog.error(e.message + ".  Maybe www/data doesn't exist but it might be resolved when we copy from src");
+    }
+    try {
+        fileHelper.writeToFile("build/chrome_extension/data/qmStaticData.js", content);
+    }
+    catch (e) {
+        qmLog.error(e.message + ".  Maybe build/chrome_extension/data doesn't exist but it might be resolved when we copy from src");
+    }
+    return fileHelper.writeToFile(env.paths.src.staticData, content);
 }
 //# sourceMappingURL=qm.app-settings.js.map

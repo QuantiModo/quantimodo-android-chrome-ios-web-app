@@ -12,7 +12,7 @@ function outputApiErrorResponse(err: { response: any; }, options: { uri: string;
     }
 }
 export function makeApiRequest(options: { uri: any; strictSSL?: any; qs?: any; }, successHandler: (arg0: any) => void) {
-    let rp = require("request-promise")
+    const rp = require("request-promise")
     qmLog.info("Making request to " + options.uri + " with clientId: " + env.getClientId())
     qmLog.debug(options.uri, options, 280)
     // options.uri = options.uri.replace('app', 'staging');
