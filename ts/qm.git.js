@@ -1,13 +1,35 @@
 "use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.createFeatureBranch = exports.deleteLocalFeatureBranches = exports.getBranchName = exports.createCommitComment = exports.setGithubStatus = exports.githubStatusStates = exports.getRepoUserName = exports.getRepoName = exports.getRepoParts = exports.getRepoUrl = exports.getAccessToken = exports.getCurrentGitCommitSha = exports.getOctoKit = void 0;
-var rest_1 = require("@octokit/rest");
+var rest_1 = __importDefault(require("@octokit/rest"));
 // @ts-ignore
-var git = require("simple-git");
-var underscore_string_1 = require("underscore.string");
+var git = __importStar(require("simple-git"));
+var underscore_string_1 = __importDefault(require("underscore.string"));
 var env_helper_1 = require("./env-helper");
-var qmLog = require("./qm.log");
-var qmShell = require("./qm.shell");
+var qmLog = __importStar(require("./qm.log"));
+var qmShell = __importStar(require("./qm.shell"));
 var test_helpers_1 = require("./test-helpers");
 // tslint:disable-next-line:no-var-requires
 var qm = require("../src/js/qmHelpers.js");
@@ -213,3 +235,4 @@ function createFeatureBranch(featureName) {
     }
 }
 exports.createFeatureBranch = createFeatureBranch;
+//# sourceMappingURL=qm.git.js.map
