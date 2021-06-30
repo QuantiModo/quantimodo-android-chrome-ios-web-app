@@ -99,3 +99,9 @@ export function logBugsnagLink(suite: string, start: string, end: string) {
         `&sort=last_seen`
     console.error(`https://app.bugsnag.com/quantimodo/` + suite + `/errors?` + query)
 }
+
+export function getCurrentServerContext() {
+    if(process.env.CIRCLE_BRANCH){return "circleci";}
+    if(process.env.BUDDYBUILD_BRANCH){return "buddybuild";}
+    return process.env.HOSTNAME;
+}

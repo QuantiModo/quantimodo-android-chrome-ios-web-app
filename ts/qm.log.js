@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.getCurrentServerContext = exports.logBugsnagLink = exports.prettyJSONStringify = exports.obfuscateSecrets = exports.obfuscateString = exports.isSecretWord = exports.obfuscateStringify = exports.addMetaData = exports.debug = exports.info = exports.error = void 0;
 var test_helpers_1 = require("./test-helpers");
 var QUANTIMODO_CLIENT_ID = process.env.QUANTIMODO_CLIENT_ID || process.env.CLIENT_ID;
 // tslint:disable-next-line:max-line-length
@@ -108,4 +109,14 @@ function logBugsnagLink(suite, start, end) {
     console.error("https://app.bugsnag.com/quantimodo/" + suite + "/errors?" + query);
 }
 exports.logBugsnagLink = logBugsnagLink;
+function getCurrentServerContext() {
+    if (process.env.CIRCLE_BRANCH) {
+        return "circleci";
+    }
+    if (process.env.BUDDYBUILD_BRANCH) {
+        return "buddybuild";
+    }
+    return process.env.HOSTNAME;
+}
+exports.getCurrentServerContext = getCurrentServerContext;
 //# sourceMappingURL=qm.log.js.map
