@@ -2975,7 +2975,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     if(v){buttons.push(allButtons.compare);}
                     if(v && v.outcome){
                         buttons.push(allButtons.predictors);
-                    } elseif(v && v.variableId === 1398){
+                    } else if(v && v.variableId === 1398){
                         qmLog.errorAndExceptionTestingOrDevelopment("why isn't mood an outcome: "+v.outcome, v)
                     }
                     if(v && v.predictor){buttons.push(allButtons.outcomes);}
@@ -2988,7 +2988,11 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                             var ionIcon = item.ionIcon || ionIcons.recordMeasurement;
                             qmLog.debug("Action array item: ", item);
                             if(item.action === "track"){
-                                buttons.push({action: item, id: id, text: '<span id="' + id + '"><i class="icon ' + ionIcon + '"></i>' + text + '</span>'});
+                                buttons.push({
+                                    action: item,
+                                    id: id,
+                                    text: '<span id="' + id + '"><i class="icon ' + ionIcon + '"></i>' + text + '</span>'
+                                });
                             }
                             if(buttons.length > 8){break;}
                         }
