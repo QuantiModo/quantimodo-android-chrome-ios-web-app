@@ -1,15 +1,12 @@
-"use strict";
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.InputField = void 0;
-var InputField;
+export var InputField;
 (function (InputField) {
     /**
      * Ex: Title
      */
-    var type;
+    let type;
     (function (type) {
         type["CHECK_BOX"] = "check_box";
         type["DATE"] = "date";
@@ -23,5 +20,4 @@ var InputField;
         type["UNIT"] = "unit";
         type["VARIABLE_CATEGORY"] = "variable_category";
     })(type = InputField.type || (InputField.type = {}));
-})(InputField = exports.InputField || (exports.InputField = {}));
-//# sourceMappingURL=InputField.js.map
+})(InputField || (InputField = {}));

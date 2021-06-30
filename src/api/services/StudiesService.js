@@ -1,46 +1,5 @@
-"use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-var __generator = (this && this.__generator) || function (thisArg, body) {
-    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
-    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
-    function verb(n) { return function (v) { return step([n, v]); }; }
-    function step(op) {
-        if (f) throw new TypeError("Generator is already executing.");
-        while (_) try {
-            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
-            if (y = 0, t) op = [op[0] & 2, t.value];
-            switch (op[0]) {
-                case 0: case 1: t = op; break;
-                case 4: _.label++; return { value: op[1], done: false };
-                case 5: _.label++; y = op[1]; op = [0]; continue;
-                case 7: op = _.ops.pop(); _.trys.pop(); continue;
-                default:
-                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
-                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
-                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
-                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
-                    if (t[2]) _.ops.pop();
-                    _.trys.pop(); continue;
-            }
-            op = body.call(thisArg, _);
-        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
-        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
-    }
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.StudiesService = void 0;
-var request_1 = require("../core/request");
-var StudiesService = /** @class */ (function () {
-    function StudiesService() {
-    }
+import { request as __request } from '../core/request';
+export class StudiesService {
     /**
      * Get Personal or Population Studies
      * If you have enough data, this will be a list of your personal studies, otherwise it will consist of aggregated population studies.
@@ -70,53 +29,43 @@ var StudiesService = /** @class */ (function () {
      * @returns GetStudiesResponse Successful operation
      * @throws ApiError
      */
-    StudiesService.getStudies = function (sort, causeVariableName, causeVariableId, effectVariableId, predictorVariableName, outcomeVariableName, userId, clientId, includeCharts, recalculate, studyId, effectVariableName, limit, offset, correlationCoefficient, updatedAt, outcomesOfInterest, principalInvestigatorUserId, open, joined, created, population, downvoted) {
-        if (limit === void 0) { limit = 100; }
-        return __awaiter(this, void 0, void 0, function () {
-            var result;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, request_1.request({
-                            method: 'GET',
-                            path: "/v3/studies",
-                            query: {
-                                'sort': sort,
-                                'causeVariableName': causeVariableName,
-                                'causeVariableId': causeVariableId,
-                                'effectVariableId': effectVariableId,
-                                'predictorVariableName': predictorVariableName,
-                                'outcomeVariableName': outcomeVariableName,
-                                'userId': userId,
-                                'clientId': clientId,
-                                'includeCharts': includeCharts,
-                                'recalculate': recalculate,
-                                'studyId': studyId,
-                                'effectVariableName': effectVariableName,
-                                'limit': limit,
-                                'offset': offset,
-                                'correlationCoefficient': correlationCoefficient,
-                                'updatedAt': updatedAt,
-                                'outcomesOfInterest': outcomesOfInterest,
-                                'principalInvestigatorUserId': principalInvestigatorUserId,
-                                'open': open,
-                                'joined': joined,
-                                'created': created,
-                                'population': population,
-                                'downvoted': downvoted,
-                            },
-                            errors: {
-                                401: "Successful operation",
-                                404: "Not found",
-                                500: "Internal server error",
-                            },
-                        })];
-                    case 1:
-                        result = _a.sent();
-                        return [2 /*return*/, result.body];
-                }
-            });
+    static async getStudies(sort, causeVariableName, causeVariableId, effectVariableId, predictorVariableName, outcomeVariableName, userId, clientId, includeCharts, recalculate, studyId, effectVariableName, limit = 100, offset, correlationCoefficient, updatedAt, outcomesOfInterest, principalInvestigatorUserId, open, joined, created, population, downvoted) {
+        const result = await __request({
+            method: 'GET',
+            path: `/v3/studies`,
+            query: {
+                'sort': sort,
+                'causeVariableName': causeVariableName,
+                'causeVariableId': causeVariableId,
+                'effectVariableId': effectVariableId,
+                'predictorVariableName': predictorVariableName,
+                'outcomeVariableName': outcomeVariableName,
+                'userId': userId,
+                'clientId': clientId,
+                'includeCharts': includeCharts,
+                'recalculate': recalculate,
+                'studyId': studyId,
+                'effectVariableName': effectVariableName,
+                'limit': limit,
+                'offset': offset,
+                'correlationCoefficient': correlationCoefficient,
+                'updatedAt': updatedAt,
+                'outcomesOfInterest': outcomesOfInterest,
+                'principalInvestigatorUserId': principalInvestigatorUserId,
+                'open': open,
+                'joined': joined,
+                'created': created,
+                'population': population,
+                'downvoted': downvoted,
+            },
+            errors: {
+                401: `Successful operation`,
+                404: `Not found`,
+                500: `Internal server error`,
+            },
         });
-    };
+        return result.body;
+    }
     /**
      * These are open studies that anyone can join
      * These are studies that anyone can join and share their data for the predictor and outcome variables of interest.
@@ -134,40 +83,31 @@ var StudiesService = /** @class */ (function () {
      * @returns GetStudiesResponse Successful operation
      * @throws ApiError
      */
-    StudiesService.getOpenStudies = function (outcomeVariableName, causeVariableName, causeVariableId, effectVariableId, predictorVariableName, effectVariableName, userId, clientId, includeCharts, recalculate, studyId) {
-        return __awaiter(this, void 0, void 0, function () {
-            var result;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, request_1.request({
-                            method: 'GET',
-                            path: "/v3/studies/open",
-                            query: {
-                                'outcomeVariableName': outcomeVariableName,
-                                'causeVariableName': causeVariableName,
-                                'causeVariableId': causeVariableId,
-                                'effectVariableId': effectVariableId,
-                                'predictorVariableName': predictorVariableName,
-                                'effectVariableName': effectVariableName,
-                                'userId': userId,
-                                'clientId': clientId,
-                                'includeCharts': includeCharts,
-                                'recalculate': recalculate,
-                                'studyId': studyId,
-                            },
-                            errors: {
-                                401: "Successful operation",
-                                404: "Not found",
-                                500: "Internal server error",
-                            },
-                        })];
-                    case 1:
-                        result = _a.sent();
-                        return [2 /*return*/, result.body];
-                }
-            });
+    static async getOpenStudies(outcomeVariableName, causeVariableName, causeVariableId, effectVariableId, predictorVariableName, effectVariableName, userId, clientId, includeCharts, recalculate, studyId) {
+        const result = await __request({
+            method: 'GET',
+            path: `/v3/studies/open`,
+            query: {
+                'outcomeVariableName': outcomeVariableName,
+                'causeVariableName': causeVariableName,
+                'causeVariableId': causeVariableId,
+                'effectVariableId': effectVariableId,
+                'predictorVariableName': predictorVariableName,
+                'effectVariableName': effectVariableName,
+                'userId': userId,
+                'clientId': clientId,
+                'includeCharts': includeCharts,
+                'recalculate': recalculate,
+                'studyId': studyId,
+            },
+            errors: {
+                401: `Successful operation`,
+                404: `Not found`,
+                500: `Internal server error`,
+            },
         });
-    };
+        return result.body;
+    }
     /**
      * Studies You Have Joined
      * These are studies that you are currently sharing your data with.
@@ -188,42 +128,32 @@ var StudiesService = /** @class */ (function () {
      * @returns GetStudiesResponse Successful operation
      * @throws ApiError
      */
-    StudiesService.getStudiesJoined = function (limit, causeVariableName, causeVariableId, effectVariableId, predictorVariableName, outcomeVariableName, sort, effectVariableName, offset, userId, correlationCoefficient, updatedAt, outcomesOfInterest, clientId) {
-        if (limit === void 0) { limit = 100; }
-        return __awaiter(this, void 0, void 0, function () {
-            var result;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, request_1.request({
-                            method: 'GET',
-                            path: "/v3/studies/joined",
-                            query: {
-                                'limit': limit,
-                                'causeVariableName': causeVariableName,
-                                'causeVariableId': causeVariableId,
-                                'effectVariableId': effectVariableId,
-                                'predictorVariableName': predictorVariableName,
-                                'outcomeVariableName': outcomeVariableName,
-                                'sort': sort,
-                                'effectVariableName': effectVariableName,
-                                'offset': offset,
-                                'userId': userId,
-                                'correlationCoefficient': correlationCoefficient,
-                                'updatedAt': updatedAt,
-                                'outcomesOfInterest': outcomesOfInterest,
-                                'clientId': clientId,
-                            },
-                            errors: {
-                                401: "Not Authenticated",
-                            },
-                        })];
-                    case 1:
-                        result = _a.sent();
-                        return [2 /*return*/, result.body];
-                }
-            });
+    static async getStudiesJoined(limit = 100, causeVariableName, causeVariableId, effectVariableId, predictorVariableName, outcomeVariableName, sort, effectVariableName, offset, userId, correlationCoefficient, updatedAt, outcomesOfInterest, clientId) {
+        const result = await __request({
+            method: 'GET',
+            path: `/v3/studies/joined`,
+            query: {
+                'limit': limit,
+                'causeVariableName': causeVariableName,
+                'causeVariableId': causeVariableId,
+                'effectVariableId': effectVariableId,
+                'predictorVariableName': predictorVariableName,
+                'outcomeVariableName': outcomeVariableName,
+                'sort': sort,
+                'effectVariableName': effectVariableName,
+                'offset': offset,
+                'userId': userId,
+                'correlationCoefficient': correlationCoefficient,
+                'updatedAt': updatedAt,
+                'outcomesOfInterest': outcomesOfInterest,
+                'clientId': clientId,
+            },
+            errors: {
+                401: `Not Authenticated`,
+            },
         });
-    };
+        return result.body;
+    }
     /**
      * Get studies you have created
      * These are studies that you have created.
@@ -242,40 +172,30 @@ var StudiesService = /** @class */ (function () {
      * @returns GetStudiesResponse Successful operation
      * @throws ApiError
      */
-    StudiesService.getStudiesCreated = function (sort, causeVariableName, causeVariableId, effectVariableId, predictorVariableName, outcomeVariableName, effectVariableName, limit, offset, userId, updatedAt, clientId) {
-        if (limit === void 0) { limit = 100; }
-        return __awaiter(this, void 0, void 0, function () {
-            var result;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, request_1.request({
-                            method: 'GET',
-                            path: "/v3/studies/created",
-                            query: {
-                                'sort': sort,
-                                'causeVariableName': causeVariableName,
-                                'causeVariableId': causeVariableId,
-                                'effectVariableId': effectVariableId,
-                                'predictorVariableName': predictorVariableName,
-                                'outcomeVariableName': outcomeVariableName,
-                                'effectVariableName': effectVariableName,
-                                'limit': limit,
-                                'offset': offset,
-                                'userId': userId,
-                                'updatedAt': updatedAt,
-                                'clientId': clientId,
-                            },
-                            errors: {
-                                401: "Not Authenticated",
-                            },
-                        })];
-                    case 1:
-                        result = _a.sent();
-                        return [2 /*return*/, result.body];
-                }
-            });
+    static async getStudiesCreated(sort, causeVariableName, causeVariableId, effectVariableId, predictorVariableName, outcomeVariableName, effectVariableName, limit = 100, offset, userId, updatedAt, clientId) {
+        const result = await __request({
+            method: 'GET',
+            path: `/v3/studies/created`,
+            query: {
+                'sort': sort,
+                'causeVariableName': causeVariableName,
+                'causeVariableId': causeVariableId,
+                'effectVariableId': effectVariableId,
+                'predictorVariableName': predictorVariableName,
+                'outcomeVariableName': outcomeVariableName,
+                'effectVariableName': effectVariableName,
+                'limit': limit,
+                'offset': offset,
+                'userId': userId,
+                'updatedAt': updatedAt,
+                'clientId': clientId,
+            },
+            errors: {
+                401: `Not Authenticated`,
+            },
         });
-    };
+        return result.body;
+    }
     /**
      * Publish Your Study
      * Make a study and all related measurements publicly visible by anyone
@@ -293,40 +213,31 @@ var StudiesService = /** @class */ (function () {
      * @returns PostStudyPublishResponse Successful operation
      * @throws ApiError
      */
-    StudiesService.publishStudy = function (outcomeVariableName, causeVariableName, causeVariableId, effectVariableId, predictorVariableName, effectVariableName, userId, clientId, includeCharts, recalculate, studyId) {
-        return __awaiter(this, void 0, void 0, function () {
-            var result;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, request_1.request({
-                            method: 'POST',
-                            path: "/v3/study/publish",
-                            query: {
-                                'outcomeVariableName': outcomeVariableName,
-                                'causeVariableName': causeVariableName,
-                                'causeVariableId': causeVariableId,
-                                'effectVariableId': effectVariableId,
-                                'predictorVariableName': predictorVariableName,
-                                'effectVariableName': effectVariableName,
-                                'userId': userId,
-                                'clientId': clientId,
-                                'includeCharts': includeCharts,
-                                'recalculate': recalculate,
-                                'studyId': studyId,
-                            },
-                            errors: {
-                                401: "Not authenticated",
-                                404: "Not found",
-                                500: "Internal server error",
-                            },
-                        })];
-                    case 1:
-                        result = _a.sent();
-                        return [2 /*return*/, result.body];
-                }
-            });
+    static async publishStudy(outcomeVariableName, causeVariableName, causeVariableId, effectVariableId, predictorVariableName, effectVariableName, userId, clientId, includeCharts, recalculate, studyId) {
+        const result = await __request({
+            method: 'POST',
+            path: `/v3/study/publish`,
+            query: {
+                'outcomeVariableName': outcomeVariableName,
+                'causeVariableName': causeVariableName,
+                'causeVariableId': causeVariableId,
+                'effectVariableId': effectVariableId,
+                'predictorVariableName': predictorVariableName,
+                'effectVariableName': effectVariableName,
+                'userId': userId,
+                'clientId': clientId,
+                'includeCharts': includeCharts,
+                'recalculate': recalculate,
+                'studyId': studyId,
+            },
+            errors: {
+                401: `Not authenticated`,
+                404: `Not found`,
+                500: `Internal server error`,
+            },
         });
-    };
+        return result.body;
+    }
     /**
      * Join a Study
      * Anonymously share measurements for specified variables
@@ -342,38 +253,29 @@ var StudiesService = /** @class */ (function () {
      * @returns StudyJoinResponse Successful operation
      * @throws ApiError
      */
-    StudiesService.joinStudy = function (studyId, causeVariableName, effectVariableName, causeVariableId, effectVariableId, predictorVariableName, outcomeVariableName, userId, clientId) {
-        return __awaiter(this, void 0, void 0, function () {
-            var result;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, request_1.request({
-                            method: 'POST',
-                            path: "/v3/study/join",
-                            query: {
-                                'studyId': studyId,
-                                'causeVariableName': causeVariableName,
-                                'effectVariableName': effectVariableName,
-                                'causeVariableId': causeVariableId,
-                                'effectVariableId': effectVariableId,
-                                'predictorVariableName': predictorVariableName,
-                                'outcomeVariableName': outcomeVariableName,
-                                'userId': userId,
-                                'clientId': clientId,
-                            },
-                            errors: {
-                                401: "Not authenticated",
-                                404: "Not found",
-                                500: "Internal server error",
-                            },
-                        })];
-                    case 1:
-                        result = _a.sent();
-                        return [2 /*return*/, result.body];
-                }
-            });
+    static async joinStudy(studyId, causeVariableName, effectVariableName, causeVariableId, effectVariableId, predictorVariableName, outcomeVariableName, userId, clientId) {
+        const result = await __request({
+            method: 'POST',
+            path: `/v3/study/join`,
+            query: {
+                'studyId': studyId,
+                'causeVariableName': causeVariableName,
+                'effectVariableName': effectVariableName,
+                'causeVariableId': causeVariableId,
+                'effectVariableId': effectVariableId,
+                'predictorVariableName': predictorVariableName,
+                'outcomeVariableName': outcomeVariableName,
+                'userId': userId,
+                'clientId': clientId,
+            },
+            errors: {
+                401: `Not authenticated`,
+                404: `Not found`,
+                500: `Internal server error`,
+            },
         });
-    };
+        return result.body;
+    }
     /**
      * Create a Study
      * Create an individual, group, or population study examining the relationship between a predictor and outcome variable. You will be given a study id which you can invite participants to join and share their measurements for the specified variables.
@@ -382,31 +284,22 @@ var StudiesService = /** @class */ (function () {
      * @returns PostStudyCreateResponse Successful operation
      * @throws ApiError
      */
-    StudiesService.createStudy = function (requestBody, clientId) {
-        return __awaiter(this, void 0, void 0, function () {
-            var result;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, request_1.request({
-                            method: 'POST',
-                            path: "/v3/study/create",
-                            query: {
-                                'clientId': clientId,
-                            },
-                            body: requestBody,
-                            errors: {
-                                401: "Not authenticated",
-                                404: "Not found",
-                                500: "Internal server error",
-                            },
-                        })];
-                    case 1:
-                        result = _a.sent();
-                        return [2 /*return*/, result.body];
-                }
-            });
+    static async createStudy(requestBody, clientId) {
+        const result = await __request({
+            method: 'POST',
+            path: `/v3/study/create`,
+            query: {
+                'clientId': clientId,
+            },
+            body: requestBody,
+            errors: {
+                401: `Not authenticated`,
+                404: `Not found`,
+                500: `Internal server error`,
+            },
         });
-    };
+        return result.body;
+    }
     /**
      * Post or update vote
      * I am really good at finding correlations and even compensating for various onset delays and durations of action. However, you are much better than me at knowing if there's a way that a given factor could plausibly influence an outcome. You can help me learn and get better at my predictions by pressing the thumbs down button for relationships that you think are coincidences and thumbs up once that make logic sense.
@@ -415,29 +308,20 @@ var StudiesService = /** @class */ (function () {
      * @returns CommonResponse Successful Operation
      * @throws ApiError
      */
-    StudiesService.postVote = function (requestBody, userId) {
-        return __awaiter(this, void 0, void 0, function () {
-            var result;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, request_1.request({
-                            method: 'POST',
-                            path: "/v3/votes",
-                            query: {
-                                'userId': userId,
-                            },
-                            body: requestBody,
-                            errors: {
-                                401: "Not Authenticated",
-                            },
-                        })];
-                    case 1:
-                        result = _a.sent();
-                        return [2 /*return*/, result.body];
-                }
-            });
+    static async postVote(requestBody, userId) {
+        const result = await __request({
+            method: 'POST',
+            path: `/v3/votes`,
+            query: {
+                'userId': userId,
+            },
+            body: requestBody,
+            errors: {
+                401: `Not Authenticated`,
+            },
         });
-    };
+        return result.body;
+    }
     /**
      * Delete vote
      * Delete previously posted vote
@@ -445,28 +329,19 @@ var StudiesService = /** @class */ (function () {
      * @returns void
      * @throws ApiError
      */
-    StudiesService.deleteVote = function (userId) {
-        return __awaiter(this, void 0, void 0, function () {
-            var result;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, request_1.request({
-                            method: 'DELETE',
-                            path: "/v3/votes/delete",
-                            query: {
-                                'userId': userId,
-                            },
-                            errors: {
-                                401: "Not Authenticated",
-                            },
-                        })];
-                    case 1:
-                        result = _a.sent();
-                        return [2 /*return*/, result.body];
-                }
-            });
+    static async deleteVote(userId) {
+        const result = await __request({
+            method: 'DELETE',
+            path: `/v3/votes/delete`,
+            query: {
+                'userId': userId,
+            },
+            errors: {
+                401: `Not Authenticated`,
+            },
         });
-    };
+        return result.body;
+    }
     /**
      * Get Study
      * Get Study
@@ -484,41 +359,29 @@ var StudiesService = /** @class */ (function () {
      * @returns Study Successful operation
      * @throws ApiError
      */
-    StudiesService.getStudy = function (outcomeVariableName, causeVariableName, causeVariableId, effectVariableId, predictorVariableName, effectVariableName, userId, clientId, includeCharts, recalculate, studyId) {
-        return __awaiter(this, void 0, void 0, function () {
-            var result;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, request_1.request({
-                            method: 'GET',
-                            path: "/v4/study",
-                            query: {
-                                'outcomeVariableName': outcomeVariableName,
-                                'causeVariableName': causeVariableName,
-                                'causeVariableId': causeVariableId,
-                                'effectVariableId': effectVariableId,
-                                'predictorVariableName': predictorVariableName,
-                                'effectVariableName': effectVariableName,
-                                'userId': userId,
-                                'clientId': clientId,
-                                'includeCharts': includeCharts,
-                                'recalculate': recalculate,
-                                'studyId': studyId,
-                            },
-                            errors: {
-                                401: "Successful operation",
-                                404: "Not found",
-                                500: "Internal server error",
-                            },
-                        })];
-                    case 1:
-                        result = _a.sent();
-                        return [2 /*return*/, result.body];
-                }
-            });
+    static async getStudy(outcomeVariableName, causeVariableName, causeVariableId, effectVariableId, predictorVariableName, effectVariableName, userId, clientId, includeCharts, recalculate, studyId) {
+        const result = await __request({
+            method: 'GET',
+            path: `/v4/study`,
+            query: {
+                'outcomeVariableName': outcomeVariableName,
+                'causeVariableName': causeVariableName,
+                'causeVariableId': causeVariableId,
+                'effectVariableId': effectVariableId,
+                'predictorVariableName': predictorVariableName,
+                'effectVariableName': effectVariableName,
+                'userId': userId,
+                'clientId': clientId,
+                'includeCharts': includeCharts,
+                'recalculate': recalculate,
+                'studyId': studyId,
+            },
+            errors: {
+                401: `Successful operation`,
+                404: `Not found`,
+                500: `Internal server error`,
+            },
         });
-    };
-    return StudiesService;
-}());
-exports.StudiesService = StudiesService;
-//# sourceMappingURL=StudiesService.js.map
+        return result.body;
+    }
+}

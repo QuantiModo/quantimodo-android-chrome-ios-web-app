@@ -189,7 +189,7 @@ function getAbsolutePath(relativePath) {
         return relativePath;
     }
     else {
-        return path.resolve(".", relativePath);
+        return path.resolve("..", relativePath);
     }
 }
 exports.getAbsolutePath = getAbsolutePath;

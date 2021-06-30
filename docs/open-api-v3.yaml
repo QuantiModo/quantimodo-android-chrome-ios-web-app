@@ -5646,8 +5646,6 @@ components:
             properties:
                 appSettings:
                     $ref: '#/components/schemas/AppSettings'
-                staticData:
-                    $ref: '#/components/schemas/StaticData'
                 description:
                     type: string
                     description: Can be used as body of help info popup
@@ -7479,7 +7477,6 @@ components:
                 scopes:
                     type: string
                     description: Space separated list of scopes to grant to the recipient (i.e. readmeasurements, writemeasurements, measurements:read
-
         Study:
             required:
                 - type

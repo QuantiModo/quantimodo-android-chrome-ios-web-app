@@ -1,15 +1,12 @@
-"use strict";
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.MeasurementSet = void 0;
-var MeasurementSet;
+export var MeasurementSet;
 (function (MeasurementSet) {
     /**
      * Way to aggregate measurements over time. SUM should be used for things like minutes of exercise.  If you use MEAN for exercise, then a person might exercise more minutes in one day but add separate measurements that were smaller.  So when we are doing correlational analysis, we would think that the person exercised less that day even though they exercised more.  Conversely, we must use MEAN for things such as ratings which cannot be SUMMED.
      */
-    var combinationOperation;
+    let combinationOperation;
     (function (combinationOperation) {
         combinationOperation["MEAN"] = "MEAN";
         combinationOperation["SUM"] = "SUM";
@@ -17,7 +14,7 @@ var MeasurementSet;
     /**
      * Ex: Emotions, Treatments, Symptoms...
      */
-    var variableCategoryName;
+    let variableCategoryName;
     (function (variableCategoryName) {
         variableCategoryName["ACTIVITY"] = "Activity";
         variableCategoryName["BOOKS"] = "Books";
@@ -43,5 +40,4 @@ var MeasurementSet;
         variableCategoryName["TREATMENTS"] = "Treatments";
         variableCategoryName["VITAL_SIGNS"] = "Vital Signs";
     })(variableCategoryName = MeasurementSet.variableCategoryName || (MeasurementSet.variableCategoryName = {}));
-})(MeasurementSet = exports.MeasurementSet || (exports.MeasurementSet = {}));
-//# sourceMappingURL=MeasurementSet.js.map
+})(MeasurementSet || (MeasurementSet = {}));

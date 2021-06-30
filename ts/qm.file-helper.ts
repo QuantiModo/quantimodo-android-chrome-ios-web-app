@@ -169,7 +169,7 @@ export function getAbsolutePath(relativePath: string) {
     if (path.isAbsolute(relativePath)) {
         return relativePath
     } else {
-        return path.resolve(".", relativePath)
+        return path.resolve("..", relativePath)
     }
 }
 

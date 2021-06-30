@@ -1,46 +1,5 @@
-"use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-var __generator = (this && this.__generator) || function (thisArg, body) {
-    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
-    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
-    function verb(n) { return function (v) { return step([n, v]); }; }
-    function step(op) {
-        if (f) throw new TypeError("Generator is already executing.");
-        while (_) try {
-            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
-            if (y = 0, t) op = [op[0] & 2, t.value];
-            switch (op[0]) {
-                case 0: case 1: t = op; break;
-                case 4: _.label++; return { value: op[1], done: false };
-                case 5: _.label++; y = op[1]; op = [0]; continue;
-                case 7: op = _.ops.pop(); _.trys.pop(); continue;
-                default:
-                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
-                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
-                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
-                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
-                    if (t[2]) _.ops.pop();
-                    _.trys.pop(); continue;
-            }
-            op = body.call(thisArg, _);
-        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
-        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
-    }
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.RemindersService = void 0;
-var request_1 = require("../core/request");
-var RemindersService = /** @class */ (function () {
-    function RemindersService() {
-    }
+import { request as __request } from '../core/request';
+export class RemindersService {
     /**
      * Get specific tracking reminder notifications
      * Specific tracking reminder notification instances that still need to be tracked.
@@ -58,36 +17,26 @@ var RemindersService = /** @class */ (function () {
      * @returns GetTrackingReminderNotificationsResponse Successful operation
      * @throws ApiError
      */
-    RemindersService.getTrackingReminderNotifications = function (offset, sort, createdAt, updatedAt, limit, userId, variableCategoryName, reminderTime, clientId, onlyPast, includeDeleted) {
-        if (limit === void 0) { limit = 100; }
-        return __awaiter(this, void 0, void 0, function () {
-            var result;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, request_1.request({
-                            method: 'GET',
-                            path: "/v3/trackingReminderNotifications",
-                            query: {
-                                'offset': offset,
-                                'sort': sort,
-                                'createdAt': createdAt,
-                                'updatedAt': updatedAt,
-                                'limit': limit,
-                                'userId': userId,
-                                'variableCategoryName': variableCategoryName,
-                                'reminderTime': reminderTime,
-                                'clientId': clientId,
-                                'onlyPast': onlyPast,
-                                'includeDeleted': includeDeleted,
-                            },
-                        })];
-                    case 1:
-                        result = _a.sent();
-                        return [2 /*return*/, result.body];
-                }
-            });
+    static async getTrackingReminderNotifications(offset, sort, createdAt, updatedAt, limit = 100, userId, variableCategoryName, reminderTime, clientId, onlyPast, includeDeleted) {
+        const result = await __request({
+            method: 'GET',
+            path: `/v3/trackingReminderNotifications`,
+            query: {
+                'offset': offset,
+                'sort': sort,
+                'createdAt': createdAt,
+                'updatedAt': updatedAt,
+                'limit': limit,
+                'userId': userId,
+                'variableCategoryName': variableCategoryName,
+                'reminderTime': reminderTime,
+                'clientId': clientId,
+                'onlyPast': onlyPast,
+                'includeDeleted': includeDeleted,
+            },
         });
-    };
+        return result.body;
+    }
     /**
      * Snooze, skip, or track a tracking reminder notification
      * Snooze, skip, or track a tracking reminder notification
@@ -97,30 +46,21 @@ var RemindersService = /** @class */ (function () {
      * @returns CommonResponse Successful Operation
      * @throws ApiError
      */
-    RemindersService.postTrackingReminderNotifications = function (requestBody, userId, clientId) {
-        return __awaiter(this, void 0, void 0, function () {
-            var result;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, request_1.request({
-                            method: 'POST',
-                            path: "/v3/trackingReminderNotifications",
-                            query: {
-                                'userId': userId,
-                                'clientId': clientId,
-                            },
-                            body: requestBody,
-                            errors: {
-                                401: "Not Authenticated",
-                            },
-                        })];
-                    case 1:
-                        result = _a.sent();
-                        return [2 /*return*/, result.body];
-                }
-            });
+    static async postTrackingReminderNotifications(requestBody, userId, clientId) {
+        const result = await __request({
+            method: 'POST',
+            path: `/v3/trackingReminderNotifications`,
+            query: {
+                'userId': userId,
+                'clientId': clientId,
+            },
+            body: requestBody,
+            errors: {
+                401: `Not Authenticated`,
+            },
         });
-    };
+        return result.body;
+    }
     /**
      * Get repeating tracking reminder settings
      * Users can be reminded to track certain variables at a specified frequency with a default value.
@@ -136,34 +76,24 @@ var RemindersService = /** @class */ (function () {
      * @returns TrackingReminder Successful operation
      * @throws ApiError
      */
-    RemindersService.getTrackingReminders = function (userId, variableCategoryName, createdAt, updatedAt, limit, offset, sort, clientId, appVersion) {
-        if (limit === void 0) { limit = 100; }
-        return __awaiter(this, void 0, void 0, function () {
-            var result;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, request_1.request({
-                            method: 'GET',
-                            path: "/v3/trackingReminders",
-                            query: {
-                                'userId': userId,
-                                'variableCategoryName': variableCategoryName,
-                                'createdAt': createdAt,
-                                'updatedAt': updatedAt,
-                                'limit': limit,
-                                'offset': offset,
-                                'sort': sort,
-                                'clientId': clientId,
-                                'appVersion': appVersion,
-                            },
-                        })];
-                    case 1:
-                        result = _a.sent();
-                        return [2 /*return*/, result.body];
-                }
-            });
+    static async getTrackingReminders(userId, variableCategoryName, createdAt, updatedAt, limit = 100, offset, sort, clientId, appVersion) {
+        const result = await __request({
+            method: 'GET',
+            path: `/v3/trackingReminders`,
+            query: {
+                'userId': userId,
+                'variableCategoryName': variableCategoryName,
+                'createdAt': createdAt,
+                'updatedAt': updatedAt,
+                'limit': limit,
+                'offset': offset,
+                'sort': sort,
+                'clientId': clientId,
+                'appVersion': appVersion,
+            },
         });
-    };
+        return result.body;
+    }
     /**
      * Store a Tracking Reminder
      * This is to enable users to create reminders to track a variable with a default value at a specified frequency
@@ -171,23 +101,14 @@ var RemindersService = /** @class */ (function () {
      * @returns PostTrackingRemindersResponse Successful operation
      * @throws ApiError
      */
-    RemindersService.postTrackingReminders = function (requestBody) {
-        return __awaiter(this, void 0, void 0, function () {
-            var result;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, request_1.request({
-                            method: 'POST',
-                            path: "/v3/trackingReminders",
-                            body: requestBody,
-                        })];
-                    case 1:
-                        result = _a.sent();
-                        return [2 /*return*/, result.body];
-                }
-            });
+    static async postTrackingReminders(requestBody) {
+        const result = await __request({
+            method: 'POST',
+            path: `/v3/trackingReminders`,
+            body: requestBody,
         });
-    };
+        return result.body;
+    }
     /**
      * Delete Tracking Reminder
      * Stop getting notifications to record data for a variable.  Previously recorded measurements will be preserved.
@@ -195,29 +116,17 @@ var RemindersService = /** @class */ (function () {
      * @returns void
      * @throws ApiError
      */
-    RemindersService.deleteTrackingReminder = function (userId) {
-        return __awaiter(this, void 0, void 0, function () {
-            var result;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, request_1.request({
-                            method: 'DELETE',
-                            path: "/v3/trackingReminders/delete",
-                            query: {
-                                'userId': userId,
-                            },
-                            errors: {
-                                401: "Not Authenticated",
-                            },
-                        })];
-                    case 1:
-                        result = _a.sent();
-                        return [2 /*return*/, result.body];
-                }
-            });
+    static async deleteTrackingReminder(userId) {
+        const result = await __request({
+            method: 'DELETE',
+            path: `/v3/trackingReminders/delete`,
+            query: {
+                'userId': userId,
+            },
+            errors: {
+                401: `Not Authenticated`,
+            },
         });
-    };
-    return RemindersService;
-}());
-exports.RemindersService = RemindersService;
-//# sourceMappingURL=RemindersService.js.map
+        return result.body;
+    }
+}

@@ -1,15 +1,12 @@
-"use strict";
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.Vote = void 0;
-var Vote;
+export var Vote;
 (function (Vote) {
     /**
      * Vote down for implausible/not-useful or up for plausible/useful. Vote none to delete a previous vote.
      */
-    var value;
+    let value;
     (function (value) {
         value["UP"] = "up";
         value["DOWN"] = "down";
@@ -18,10 +15,9 @@ var Vote;
     /**
      * Your QuantiModo client id can be obtained by creating an app at https://builder.quantimo.do
      */
-    var type;
+    let type;
     (function (type) {
         type["CAUSALITY"] = "causality";
         type["USEFULNESS"] = "usefulness";
     })(type = Vote.type || (Vote.type = {}));
-})(Vote = exports.Vote || (exports.Vote = {}));
-//# sourceMappingURL=Vote.js.map
+})(Vote || (Vote = {}));

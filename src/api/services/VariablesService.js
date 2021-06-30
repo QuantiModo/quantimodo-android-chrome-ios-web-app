@@ -1,46 +1,5 @@
-"use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-var __generator = (this && this.__generator) || function (thisArg, body) {
-    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
-    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
-    function verb(n) { return function (v) { return step([n, v]); }; }
-    function step(op) {
-        if (f) throw new TypeError("Generator is already executing.");
-        while (_) try {
-            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
-            if (y = 0, t) op = [op[0] & 2, t.value];
-            switch (op[0]) {
-                case 0: case 1: t = op; break;
-                case 4: _.label++; return { value: op[1], done: false };
-                case 5: _.label++; y = op[1]; op = [0]; continue;
-                case 7: op = _.ops.pop(); _.trys.pop(); continue;
-                default:
-                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
-                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
-                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
-                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
-                    if (t[2]) _.ops.pop();
-                    _.trys.pop(); continue;
-            }
-            op = body.call(thisArg, _);
-        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
-        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
-    }
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.VariablesService = void 0;
-var request_1 = require("../core/request");
-var VariablesService = /** @class */ (function () {
-    function VariablesService() {
-    }
+import { request as __request } from '../core/request';
+export class VariablesService {
     /**
      * Post or update user tags or ingredients
      * This endpoint allows users to tag foods with their ingredients.  This information will then be used to infer the user intake of the different ingredients by just entering the foods. The inferred intake levels will then be used to determine the effects of different nutrients on the user during analysis.
@@ -49,29 +8,20 @@ var VariablesService = /** @class */ (function () {
      * @returns CommonResponse Successful Operation
      * @throws ApiError
      */
-    VariablesService.postUserTags = function (requestBody, userId) {
-        return __awaiter(this, void 0, void 0, function () {
-            var result;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, request_1.request({
-                            method: 'POST',
-                            path: "/v3/userTags",
-                            query: {
-                                'userId': userId,
-                            },
-                            body: requestBody,
-                            errors: {
-                                401: "Not Authenticated",
-                            },
-                        })];
-                    case 1:
-                        result = _a.sent();
-                        return [2 /*return*/, result.body];
-                }
-            });
+    static async postUserTags(requestBody, userId) {
+        const result = await __request({
+            method: 'POST',
+            path: `/v3/userTags`,
+            query: {
+                'userId': userId,
+            },
+            body: requestBody,
+            errors: {
+                401: `Not Authenticated`,
+            },
         });
-    };
+        return result.body;
+    }
     /**
      * Delete user tag or ingredient
      * Delete previously created user tags or ingredients.
@@ -80,29 +30,20 @@ var VariablesService = /** @class */ (function () {
      * @returns void
      * @throws ApiError
      */
-    VariablesService.deleteUserTag = function (taggedVariableId, tagVariableId) {
-        return __awaiter(this, void 0, void 0, function () {
-            var result;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, request_1.request({
-                            method: 'DELETE',
-                            path: "/v3/userTags/delete",
-                            query: {
-                                'taggedVariableId': taggedVariableId,
-                                'tagVariableId': tagVariableId,
-                            },
-                            errors: {
-                                401: "Not Authenticated",
-                            },
-                        })];
-                    case 1:
-                        result = _a.sent();
-                        return [2 /*return*/, result.body];
-                }
-            });
+    static async deleteUserTag(taggedVariableId, tagVariableId) {
+        const result = await __request({
+            method: 'DELETE',
+            path: `/v3/userTags/delete`,
+            query: {
+                'taggedVariableId': taggedVariableId,
+                'tagVariableId': tagVariableId,
+            },
+            errors: {
+                401: `Not Authenticated`,
+            },
         });
-    };
+        return result.body;
+    }
     /**
      * Get variables along with related user-specific analysis settings and statistics
      * Get variables. If the user has specified variable settings, these are provided instead of the common variable defaults.
@@ -149,68 +90,58 @@ var VariablesService = /** @class */ (function () {
      * @returns Variable Variables returned
      * @throws ApiError
      */
-    VariablesService.getVariables = function (publicEffectOrCause, includeCharts, userId, variableCategoryName, name, variableName, updatedAt, sourceName, earliestMeasurementTime, latestMeasurementTime, id, lastSourceName, limit, offset, sort, includePublic, manualTracking, clientId, upc, effectOrCause, numberOfRawMeasurements, exactMatch, variableCategoryId, includePrivate, searchPhrase, synonyms, taggedVariableId, tagVariableId, joinVariableId, parentUserTagVariableId, childUserTagVariableId, ingredientUserTagVariableId, ingredientOfUserTagVariableId, commonOnly, userOnly, includeTags, recalculate, variableId, concise, refresh) {
-        if (limit === void 0) { limit = 100; }
-        return __awaiter(this, void 0, void 0, function () {
-            var result;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, request_1.request({
-                            method: 'GET',
-                            path: "/v3/variables",
-                            query: {
-                                'publicEffectOrCause': publicEffectOrCause,
-                                'includeCharts': includeCharts,
-                                'userId': userId,
-                                'variableCategoryName': variableCategoryName,
-                                'name': name,
-                                'variableName': variableName,
-                                'updatedAt': updatedAt,
-                                'sourceName': sourceName,
-                                'earliestMeasurementTime': earliestMeasurementTime,
-                                'latestMeasurementTime': latestMeasurementTime,
-                                'id': id,
-                                'lastSourceName': lastSourceName,
-                                'limit': limit,
-                                'offset': offset,
-                                'sort': sort,
-                                'includePublic': includePublic,
-                                'manualTracking': manualTracking,
-                                'clientId': clientId,
-                                'upc': upc,
-                                'effectOrCause': effectOrCause,
-                                'numberOfRawMeasurements': numberOfRawMeasurements,
-                                'exactMatch': exactMatch,
-                                'variableCategoryId': variableCategoryId,
-                                'includePrivate': includePrivate,
-                                'searchPhrase': searchPhrase,
-                                'synonyms': synonyms,
-                                'taggedVariableId': taggedVariableId,
-                                'tagVariableId': tagVariableId,
-                                'joinVariableId': joinVariableId,
-                                'parentUserTagVariableId': parentUserTagVariableId,
-                                'childUserTagVariableId': childUserTagVariableId,
-                                'ingredientUserTagVariableId': ingredientUserTagVariableId,
-                                'ingredientOfUserTagVariableId': ingredientOfUserTagVariableId,
-                                'commonOnly': commonOnly,
-                                'userOnly': userOnly,
-                                'includeTags': includeTags,
-                                'recalculate': recalculate,
-                                'variableId': variableId,
-                                'concise': concise,
-                                'refresh': refresh,
-                            },
-                            errors: {
-                                401: "Not Authenticated",
-                            },
-                        })];
-                    case 1:
-                        result = _a.sent();
-                        return [2 /*return*/, result.body];
-                }
-            });
+    static async getVariables(publicEffectOrCause, includeCharts, userId, variableCategoryName, name, variableName, updatedAt, sourceName, earliestMeasurementTime, latestMeasurementTime, id, lastSourceName, limit = 100, offset, sort, includePublic, manualTracking, clientId, upc, effectOrCause, numberOfRawMeasurements, exactMatch, variableCategoryId, includePrivate, searchPhrase, synonyms, taggedVariableId, tagVariableId, joinVariableId, parentUserTagVariableId, childUserTagVariableId, ingredientUserTagVariableId, ingredientOfUserTagVariableId, commonOnly, userOnly, includeTags, recalculate, variableId, concise, refresh) {
+        const result = await __request({
+            method: 'GET',
+            path: `/v3/variables`,
+            query: {
+                'publicEffectOrCause': publicEffectOrCause,
+                'includeCharts': includeCharts,
+                'userId': userId,
+                'variableCategoryName': variableCategoryName,
+                'name': name,
+                'variableName': variableName,
+                'updatedAt': updatedAt,
+                'sourceName': sourceName,
+                'earliestMeasurementTime': earliestMeasurementTime,
+                'latestMeasurementTime': latestMeasurementTime,
+                'id': id,
+                'lastSourceName': lastSourceName,
+                'limit': limit,
+                'offset': offset,
+                'sort': sort,
+                'includePublic': includePublic,
+                'manualTracking': manualTracking,
+                'clientId': clientId,
+                'upc': upc,
+                'effectOrCause': effectOrCause,
+                'numberOfRawMeasurements': numberOfRawMeasurements,
+                'exactMatch': exactMatch,
+                'variableCategoryId': variableCategoryId,
+                'includePrivate': includePrivate,
+                'searchPhrase': searchPhrase,
+                'synonyms': synonyms,
+                'taggedVariableId': taggedVariableId,
+                'tagVariableId': tagVariableId,
+                'joinVariableId': joinVariableId,
+                'parentUserTagVariableId': parentUserTagVariableId,
+                'childUserTagVariableId': childUserTagVariableId,
+                'ingredientUserTagVariableId': ingredientUserTagVariableId,
+                'ingredientOfUserTagVariableId': ingredientOfUserTagVariableId,
+                'commonOnly': commonOnly,
+                'userOnly': userOnly,
+                'includeTags': includeTags,
+                'recalculate': recalculate,
+                'variableId': variableId,
+                'concise': concise,
+                'refresh': refresh,
+            },
+            errors: {
+                401: `Not Authenticated`,
+            },
         });
-    };
+        return result.body;
+    }
     /**
      * Update User Settings for a Variable
      * Users can change the parameters used in analysis of that variable such as the expected duration of action for a variable to have an effect, the estimated delay before the onset of action. In order to filter out erroneous data, they are able to set the maximum and minimum reasonable daily values for a variable.
@@ -227,66 +158,48 @@ var VariablesService = /** @class */ (function () {
      * @returns CommonResponse Successful Operation
      * @throws ApiError
      */
-    VariablesService.postUserVariables = function (requestBody, includePrivate, clientId, includePublic, searchPhrase, exactMatch, manualTracking, variableCategoryName, variableCategoryId, synonyms) {
-        return __awaiter(this, void 0, void 0, function () {
-            var result;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, request_1.request({
-                            method: 'POST',
-                            path: "/v3/variables",
-                            query: {
-                                'includePrivate': includePrivate,
-                                'clientId': clientId,
-                                'includePublic': includePublic,
-                                'searchPhrase': searchPhrase,
-                                'exactMatch': exactMatch,
-                                'manualTracking': manualTracking,
-                                'variableCategoryName': variableCategoryName,
-                                'variableCategoryId': variableCategoryId,
-                                'synonyms': synonyms,
-                            },
-                            body: requestBody,
-                            errors: {
-                                400: "The received JSON was invalid or malformed",
-                                401: "Not Authenticated",
-                                404: "Unknown target user ID",
-                            },
-                        })];
-                    case 1:
-                        result = _a.sent();
-                        return [2 /*return*/, result.body];
-                }
-            });
+    static async postUserVariables(requestBody, includePrivate, clientId, includePublic, searchPhrase, exactMatch, manualTracking, variableCategoryName, variableCategoryId, synonyms) {
+        const result = await __request({
+            method: 'POST',
+            path: `/v3/variables`,
+            query: {
+                'includePrivate': includePrivate,
+                'clientId': clientId,
+                'includePublic': includePublic,
+                'searchPhrase': searchPhrase,
+                'exactMatch': exactMatch,
+                'manualTracking': manualTracking,
+                'variableCategoryName': variableCategoryName,
+                'variableCategoryId': variableCategoryId,
+                'synonyms': synonyms,
+            },
+            body: requestBody,
+            errors: {
+                400: `The received JSON was invalid or malformed`,
+                401: `Not Authenticated`,
+                404: `Unknown target user ID`,
+            },
         });
-    };
+        return result.body;
+    }
     /**
      * Delete All Measurements For Variable
      * Users can delete all of their measurements for a variable
      * @returns void
      * @throws ApiError
      */
-    VariablesService.deleteUserVariable = function () {
-        return __awaiter(this, void 0, void 0, function () {
-            var result;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, request_1.request({
-                            method: 'DELETE',
-                            path: "/v3/userVariables/delete",
-                            errors: {
-                                400: "The received JSON was invalid or malformed",
-                                401: "Not Authenticated",
-                                404: "Unknown target user ID",
-                            },
-                        })];
-                    case 1:
-                        result = _a.sent();
-                        return [2 /*return*/, result.body];
-                }
-            });
+    static async deleteUserVariable() {
+        const result = await __request({
+            method: 'DELETE',
+            path: `/v3/userVariables/delete`,
+            errors: {
+                400: `The received JSON was invalid or malformed`,
+                401: `Not Authenticated`,
+                404: `Unknown target user ID`,
+            },
         });
-    };
+        return result.body;
+    }
     /**
      * Reset user settings for a variable to defaults
      * Reset user settings for a variable to defaults
@@ -294,54 +207,33 @@ var VariablesService = /** @class */ (function () {
      * @returns any Successful operation
      * @throws ApiError
      */
-    VariablesService.resetUserVariableSettings = function (requestBody) {
-        return __awaiter(this, void 0, void 0, function () {
-            var result;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, request_1.request({
-                            method: 'POST',
-                            path: "/v3/userVariables/reset",
-                            body: requestBody,
-                            errors: {
-                                400: "The received JSON was invalid or malformed",
-                                401: "Not Authenticated",
-                                404: "Unknown target user ID",
-                            },
-                        })];
-                    case 1:
-                        result = _a.sent();
-                        return [2 /*return*/, result.body];
-                }
-            });
+    static async resetUserVariableSettings(requestBody) {
+        const result = await __request({
+            method: 'POST',
+            path: `/v3/userVariables/reset`,
+            body: requestBody,
+            errors: {
+                400: `The received JSON was invalid or malformed`,
+                401: `Not Authenticated`,
+                404: `Unknown target user ID`,
+            },
         });
-    };
+        return result.body;
+    }
     /**
      * Variable categories
      * The variable categories include Activity, Causes of Illness, Cognitive Performance, Conditions, Environment, Foods, Location, Miscellaneous, Mood, Nutrition, Physical Activity, Physique, Sleep, Social Interactions, Symptoms, Treatments, Vital Signs, and Goals.
      * @returns VariableCategory Successful operation
      * @throws ApiError
      */
-    VariablesService.getVariableCategories = function () {
-        return __awaiter(this, void 0, void 0, function () {
-            var result;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, request_1.request({
-                            method: 'GET',
-                            path: "/v3/variableCategories",
-                            errors: {
-                                401: "Not Authenticated",
-                            },
-                        })];
-                    case 1:
-                        result = _a.sent();
-                        return [2 /*return*/, result.body];
-                }
-            });
+    static async getVariableCategories() {
+        const result = await __request({
+            method: 'GET',
+            path: `/v3/variableCategories`,
+            errors: {
+                401: `Not Authenticated`,
+            },
         });
-    };
-    return VariablesService;
-}());
-exports.VariablesService = VariablesService;
-//# sourceMappingURL=VariablesService.js.map
+        return result.body;
+    }
+}

@@ -45,9 +45,7 @@ function getArgumentOrEnv(name, defaultValue) {
     }
     return defaultValue;
 }
-
 exports.getArgumentOrEnv = getArgumentOrEnv;
-
 function getRequiredArgumentOrEnv(name, defaultValue) {
     var val = getArgumentOrEnv(name, defaultValue);
     if (!val) {
@@ -55,46 +53,35 @@ function getRequiredArgumentOrEnv(name, defaultValue) {
     }
     return val;
 }
-
 exports.getRequiredArgumentOrEnv = getRequiredArgumentOrEnv;
-
 function loadEnv(path) {
     if (!path) {
         path = fileHelper.getAbsolutePath(".env");
     }
-    console.info("Loading .env");
+    console.info("Loading " + path);
     // https://github.com/motdotla/dotenv#what-happens-to-environment-variables-that-were-already-set
-    var result = dotenv_1.default.config();
+    var result = dotenv_1.default.config({path: path});
     if (result.error) {
         throw result.error;
     }
     console.log(result.parsed);
 }
-
 exports.loadEnv = loadEnv;
-
 function getClientId() {
     return getRequiredArgumentOrEnv(envs.QUANTIMODO_CLIENT_ID);
 }
-
 exports.getClientId = getClientId;
-
 function getClientSecret() {
     return getArgumentOrEnv(envs.QUANTIMODO_CLIENT_ID);
 }
-
 exports.getClientSecret = getClientSecret;
-
 function getAppHostName() {
     return getArgumentOrEnv(envs.APP_HOST_NAME);
 }
-
 exports.getAppHostName = getAppHostName;
-
 function getAccessToken() {
     return getRequiredArgumentOrEnv(envs.QUANTIMODO_ACCESS_TOKEN);
 }
-
 exports.getAccessToken = getAccessToken;
 exports.paths = {
     apk: {

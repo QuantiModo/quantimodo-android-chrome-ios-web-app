@@ -1,15 +1,12 @@
-"use strict";
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.TrackingReminder = void 0;
-var TrackingReminder;
+export var TrackingReminder;
 (function (TrackingReminder) {
     /**
      * The way multiple measurements are aggregated over time
      */
-    var combinationOperation;
+    let combinationOperation;
     (function (combinationOperation) {
         combinationOperation["MEAN"] = "MEAN";
         combinationOperation["SUM"] = "SUM";
@@ -17,7 +14,7 @@ var TrackingReminder;
     /**
      * Ex: Emotions, Treatments, Symptoms...
      */
-    var variableCategoryName;
+    let variableCategoryName;
     (function (variableCategoryName) {
         variableCategoryName["ACTIVITY"] = "Activity";
         variableCategoryName["BOOKS"] = "Books";
@@ -43,5 +40,4 @@ var TrackingReminder;
         variableCategoryName["TREATMENTS"] = "Treatments";
         variableCategoryName["VITAL_SIGNS"] = "Vital Signs";
     })(variableCategoryName = TrackingReminder.variableCategoryName || (TrackingReminder.variableCategoryName = {}));
-})(TrackingReminder = exports.TrackingReminder || (exports.TrackingReminder = {}));
-//# sourceMappingURL=TrackingReminder.js.map
+})(TrackingReminder || (TrackingReminder = {}));

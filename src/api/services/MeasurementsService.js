@@ -1,46 +1,5 @@
-"use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-var __generator = (this && this.__generator) || function (thisArg, body) {
-    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
-    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
-    function verb(n) { return function (v) { return step([n, v]); }; }
-    function step(op) {
-        if (f) throw new TypeError("Generator is already executing.");
-        while (_) try {
-            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
-            if (y = 0, t) op = [op[0] & 2, t.value];
-            switch (op[0]) {
-                case 0: case 1: t = op; break;
-                case 4: _.label++; return { value: op[1], done: false };
-                case 5: _.label++; y = op[1]; op = [0]; continue;
-                case 7: op = _.ops.pop(); _.trys.pop(); continue;
-                default:
-                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
-                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
-                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
-                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
-                    if (t[2]) _.ops.pop();
-                    _.trys.pop(); continue;
-            }
-            op = body.call(thisArg, _);
-        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
-        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
-    }
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.MeasurementsService = void 0;
-var request_1 = require("../core/request");
-var MeasurementsService = /** @class */ (function () {
-    function MeasurementsService() {
-    }
+import { request as __request } from '../core/request';
+export class MeasurementsService {
     /**
      * Post Request for Measurements CSV
      * Use this endpoint to schedule a CSV export containing all user measurements to be emailed to the user within 24 hours.
@@ -48,25 +7,16 @@ var MeasurementsService = /** @class */ (function () {
      * @returns number successful operation
      * @throws ApiError
      */
-    MeasurementsService.measurementExportRequest = function (userId) {
-        return __awaiter(this, void 0, void 0, function () {
-            var result;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, request_1.request({
-                            method: 'POST',
-                            path: "/v2/measurements/exportRequest",
-                            query: {
-                                'userId': userId,
-                            },
-                        })];
-                    case 1:
-                        result = _a.sent();
-                        return [2 /*return*/, result.body];
-                }
-            });
+    static async measurementExportRequest(userId) {
+        const result = await __request({
+            method: 'POST',
+            path: `/v2/measurements/exportRequest`,
+            query: {
+                'userId': userId,
+            },
         });
-    };
+        return result.body;
+    }
     /**
      * Get measurements for this user
      * Measurements are any value that can be recorded like daily steps, a mood rating, or apples eaten.
@@ -94,74 +44,55 @@ var MeasurementsService = /** @class */ (function () {
      * @returns Measurement Successful operation
      * @throws ApiError
      */
-    MeasurementsService.getMeasurements = function (unitName, variableName, limit, offset, variableCategoryName, updatedAt, userId, sourceName, connectorName, value, sort, earliestMeasurementTime, latestMeasurementTime, createdAt, id, groupingWidth, groupingTimezone, doNotProcess, clientId, doNotConvert, minMaxFilter) {
-        if (limit === void 0) { limit = 100; }
-        return __awaiter(this, void 0, void 0, function () {
-            var result;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, request_1.request({
-                            method: 'GET',
-                            path: "/v3/measurements",
-                            query: {
-                                'unitName': unitName,
-                                'variableName': variableName,
-                                'limit': limit,
-                                'offset': offset,
-                                'variableCategoryName': variableCategoryName,
-                                'updatedAt': updatedAt,
-                                'userId': userId,
-                                'sourceName': sourceName,
-                                'connectorName': connectorName,
-                                'value': value,
-                                'sort': sort,
-                                'earliestMeasurementTime': earliestMeasurementTime,
-                                'latestMeasurementTime': latestMeasurementTime,
-                                'createdAt': createdAt,
-                                'id': id,
-                                'groupingWidth': groupingWidth,
-                                'groupingTimezone': groupingTimezone,
-                                'doNotProcess': doNotProcess,
-                                'clientId': clientId,
-                                'doNotConvert': doNotConvert,
-                                'minMaxFilter': minMaxFilter,
-                            },
-                            errors: {
-                                401: "Not Authenticated",
-                            },
-                        })];
-                    case 1:
-                        result = _a.sent();
-                        return [2 /*return*/, result.body];
-                }
-            });
+    static async getMeasurements(unitName, variableName, limit = 100, offset, variableCategoryName, updatedAt, userId, sourceName, connectorName, value, sort, earliestMeasurementTime, latestMeasurementTime, createdAt, id, groupingWidth, groupingTimezone, doNotProcess, clientId, doNotConvert, minMaxFilter) {
+        const result = await __request({
+            method: 'GET',
+            path: `/v3/measurements`,
+            query: {
+                'unitName': unitName,
+                'variableName': variableName,
+                'limit': limit,
+                'offset': offset,
+                'variableCategoryName': variableCategoryName,
+                'updatedAt': updatedAt,
+                'userId': userId,
+                'sourceName': sourceName,
+                'connectorName': connectorName,
+                'value': value,
+                'sort': sort,
+                'earliestMeasurementTime': earliestMeasurementTime,
+                'latestMeasurementTime': latestMeasurementTime,
+                'createdAt': createdAt,
+                'id': id,
+                'groupingWidth': groupingWidth,
+                'groupingTimezone': groupingTimezone,
+                'doNotProcess': doNotProcess,
+                'clientId': clientId,
+                'doNotConvert': doNotConvert,
+                'minMaxFilter': minMaxFilter,
+            },
+            errors: {
+                401: `Not Authenticated`,
+            },
         });
-    };
+        return result.body;
+    }
     /**
      * Delete a measurement
      * Delete a previously submitted measurement
      * @returns void
      * @throws ApiError
      */
-    MeasurementsService.deleteMeasurement = function () {
-        return __awaiter(this, void 0, void 0, function () {
-            var result;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, request_1.request({
-                            method: 'DELETE',
-                            path: "/v3/measurements/delete",
-                            errors: {
-                                401: "Not Authenticated",
-                            },
-                        })];
-                    case 1:
-                        result = _a.sent();
-                        return [2 /*return*/, result.body];
-                }
-            });
+    static async deleteMeasurement() {
+        const result = await __request({
+            method: 'DELETE',
+            path: `/v3/measurements/delete`,
+            errors: {
+                401: `Not Authenticated`,
+            },
         });
-    };
+        return result.body;
+    }
     /**
      * Post a new set or update existing measurements to the database
      * You can submit or update multiple measurements in a "measurements" sub-array.  If the variable these measurements correspond to does not already exist in the database, it will be automatically added.
@@ -170,29 +101,20 @@ var MeasurementsService = /** @class */ (function () {
      * @returns PostMeasurementsResponse Successful operation
      * @throws ApiError
      */
-    MeasurementsService.postMeasurements = function (requestBody, userId) {
-        return __awaiter(this, void 0, void 0, function () {
-            var result;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, request_1.request({
-                            method: 'POST',
-                            path: "/v3/measurements/post",
-                            query: {
-                                'userId': userId,
-                            },
-                            body: requestBody,
-                            errors: {
-                                401: "Not Authenticated",
-                            },
-                        })];
-                    case 1:
-                        result = _a.sent();
-                        return [2 /*return*/, result.body];
-                }
-            });
+    static async postMeasurements(requestBody, userId) {
+        const result = await __request({
+            method: 'POST',
+            path: `/v3/measurements/post`,
+            query: {
+                'userId': userId,
+            },
+            body: requestBody,
+            errors: {
+                401: `Not Authenticated`,
+            },
         });
-    };
+        return result.body;
+    }
     /**
      * Update a measurement
      * Update a previously submitted measurement
@@ -200,26 +122,17 @@ var MeasurementsService = /** @class */ (function () {
      * @returns CommonResponse Successful Operation
      * @throws ApiError
      */
-    MeasurementsService.updateMeasurement = function (requestBody) {
-        return __awaiter(this, void 0, void 0, function () {
-            var result;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, request_1.request({
-                            method: 'POST',
-                            path: "/v3/measurements/update",
-                            body: requestBody,
-                            errors: {
-                                401: "Not Authenticated",
-                            },
-                        })];
-                    case 1:
-                        result = _a.sent();
-                        return [2 /*return*/, result.body];
-                }
-            });
+    static async updateMeasurement(requestBody) {
+        const result = await __request({
+            method: 'POST',
+            path: `/v3/measurements/update`,
+            body: requestBody,
+            errors: {
+                401: `Not Authenticated`,
+            },
         });
-    };
+        return result.body;
+    }
     /**
      * Get pairs of measurements for correlational analysis
      * Pairs cause measurements with effect measurements grouped over the duration of action after the onset delay.
@@ -242,45 +155,32 @@ var MeasurementsService = /** @class */ (function () {
      * @returns Pair Successful operation
      * @throws ApiError
      */
-    MeasurementsService.getPairs = function (causeUnitName, causeVariableName, causeVariableId, effectVariableId, predictorVariableName, outcomeVariableName, effectUnitName, userId, effectVariableName, onsetDelay, durationOfAction, earliestMeasurementTime, latestMeasurementTime, limit, offset, sort) {
-        if (limit === void 0) { limit = 100; }
-        return __awaiter(this, void 0, void 0, function () {
-            var result;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, request_1.request({
-                            method: 'GET',
-                            path: "/v3/pairs",
-                            query: {
-                                'causeUnitName': causeUnitName,
-                                'causeVariableName': causeVariableName,
-                                'causeVariableId': causeVariableId,
-                                'effectVariableId': effectVariableId,
-                                'predictorVariableName': predictorVariableName,
-                                'outcomeVariableName': outcomeVariableName,
-                                'effectUnitName': effectUnitName,
-                                'userId': userId,
-                                'effectVariableName': effectVariableName,
-                                'onsetDelay': onsetDelay,
-                                'durationOfAction': durationOfAction,
-                                'earliestMeasurementTime': earliestMeasurementTime,
-                                'latestMeasurementTime': latestMeasurementTime,
-                                'limit': limit,
-                                'offset': offset,
-                                'sort': sort,
-                            },
-                            errors: {
-                                401: "Not Authenticated",
-                            },
-                        })];
-                    case 1:
-                        result = _a.sent();
-                        return [2 /*return*/, result.body];
-                }
-            });
+    static async getPairs(causeUnitName, causeVariableName, causeVariableId, effectVariableId, predictorVariableName, outcomeVariableName, effectUnitName, userId, effectVariableName, onsetDelay, durationOfAction, earliestMeasurementTime, latestMeasurementTime, limit = 100, offset, sort) {
+        const result = await __request({
+            method: 'GET',
+            path: `/v3/pairs`,
+            query: {
+                'causeUnitName': causeUnitName,
+                'causeVariableName': causeVariableName,
+                'causeVariableId': causeVariableId,
+                'effectVariableId': effectVariableId,
+                'predictorVariableName': predictorVariableName,
+                'outcomeVariableName': outcomeVariableName,
+                'effectUnitName': effectUnitName,
+                'userId': userId,
+                'effectVariableName': effectVariableName,
+                'onsetDelay': onsetDelay,
+                'durationOfAction': durationOfAction,
+                'earliestMeasurementTime': earliestMeasurementTime,
+                'latestMeasurementTime': latestMeasurementTime,
+                'limit': limit,
+                'offset': offset,
+                'sort': sort,
+            },
+            errors: {
+                401: `Not Authenticated`,
+            },
         });
-    };
-    return MeasurementsService;
-}());
-exports.MeasurementsService = MeasurementsService;
-//# sourceMappingURL=MeasurementsService.js.map
+        return result.body;
+    }
+}

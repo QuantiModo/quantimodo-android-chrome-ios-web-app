@@ -31,9 +31,9 @@ export function loadEnv(path?: string) {
     if (!path) {
         path = fileHelper.getAbsolutePath(".env")
     }
-    console.info("Loading .env")
+    console.info("Loading " + path)
     // https://github.com/motdotla/dotenv#what-happens-to-environment-variables-that-were-already-set
-    const result = dotenv.config()
+    const result = dotenv.config({path})
     if (result.error) {
         throw result.error
     }
