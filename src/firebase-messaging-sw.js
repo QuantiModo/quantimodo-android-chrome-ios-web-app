@@ -45,7 +45,7 @@ qm.push.notificationClick = function(event){  // Have to attach to qm because it
         console.debug("urlPathToOpen from event.notification.data.url", urlPathToOpen);
     }
     if(event.action && event.action.indexOf("https://") !== -1){
-        var route = qm.stringHelper.getStringAfter(event.action, basePath);
+        var route = qm.stringHelper.after(event.action, basePath);
         urlPathToOpen = basePath + route;
         console.debug("basePath", basePath);
         console.debug("urlPathToOpen from basePath + route", urlPathToOpen);
