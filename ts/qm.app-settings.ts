@@ -1,9 +1,9 @@
+import * as api from "../src/api"
 import * as env from "./env-helper"
-import * as api from "./qm.api"
 import * as fileHelper from "./qm.file-helper"
 import * as qmLog from "./qm.log"
 import * as timeHelper from "./qm.time-helper"
-env.loadEnv("local")
+
 // tslint:disable-next-line:no-var-requires
 const qm = require("../src/js/qmHelpers.js")
 function isTruthy(value: any) {return (value && value !== "false")}
@@ -28,26 +28,28 @@ function getRequestOptions(path: string) {
     return options
 }
 
-api.makeApiRequest(getRequestOptions("/api/v1/appSettings"), function(response: { staticData: any }) {
-    qm.staticData = response.staticData
-    process.env.APP_DISPLAY_NAME = qm.getAppDisplayName()  // Need env for Fastlane
-    process.env.APP_IDENTIFIER = qm.getAppIdentifier()  // Need env for Fastlane
-    function addBuildInfoToAppSettings() {
-        qm.getAppSettings().buildServer = qmLog.getCurrentServerContext()
-        qm.getAppSettings().buildLink = qm.buildInfoHelper.getBuildLink()
-        qm.getAppSettings().versionNumber = qm.buildInfoHelper.buildInfo.versionNumbers.ionicApp
-        qm.getAppSettings().androidVersionCode = qm.buildInfoHelper.buildInfo.versionNumbers.androidVersionCode
-        qm.getAppSettings().debugMode = isTruthy(process.env.APP_DEBUG)
-        qm.getAppSettings().builtAt = timeHelper.getUnixTimestampInSeconds()
-    }
-    addBuildInfoToAppSettings()
-    qmLog.info("Got app settings for " + qm.getAppDisplayName() + ". You can change your app settings at " +
-        getAppEditUrl())
-    const url = env.getAppHostName()
-    if(url) {
-        qm.getAppSettings().apiUrl = url.replace("https://", "")
-    }
-    return writeStaticDataFile()
+api.AppSettingsService.getAppSettings(env.getClientId(), true)
+    .then(function (AppSettingsResponse) {
+        qm.staticData = AppSettingsResponse.appSettings
+        process.env.APP_DISPLAY_NAME = qm.getAppDisplayName()  // Need env for Fastlane
+        process.env.APP_IDENTIFIER = qm.getAppIdentifier()  // Need env for Fastlane
+        function addBuildInfoToAppSettings() {
+            qm.getAppSettings().buildServer = qmLog.getCurrentServerContext()
+            qm.getAppSettings().buildLink = qm.buildInfoHelper.getBuildLink()
+            qm.getAppSettings().versionNumber = qm.buildInfoHelper.buildInfo.versionNumbers.ionicApp
+            qm.getAppSettings().androidVersionCode = qm.buildInfoHelper.buildInfo.versionNumbers.androidVersionCode
+            qm.getAppSettings().debugMode = isTruthy(process.env.APP_DEBUG)
+            qm.getAppSettings().builtAt = timeHelper.getUnixTimestampInSeconds()
+        }
+
+        addBuildInfoToAppSettings()
+        qmLog.info("Got app settings for " + qm.getAppDisplayName() + ". You can change your app settings at " +
+            getAppEditUrl())
+        const url = env.getAppHostName()
+        if(url) {
+            qm.getAppSettings().apiUrl = url.replace("https://", "")
+        }
+        return writeStaticDataFile()
 })
 function getAppEditUrl() {
     return getAppsListUrl() + "?clientId=" + qm.getClientId()

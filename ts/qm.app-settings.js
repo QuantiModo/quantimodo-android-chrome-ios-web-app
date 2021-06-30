@@ -19,12 +19,11 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+var api = __importStar(require("../src/api"));
 var env = __importStar(require("./env-helper"));
-var api = __importStar(require("./qm.api"));
 var fileHelper = __importStar(require("./qm.file-helper"));
 var qmLog = __importStar(require("./qm.log"));
 var timeHelper = __importStar(require("./qm.time-helper"));
-env.loadEnv("local");
 // tslint:disable-next-line:no-var-requires
 var qm = require("../src/js/qmHelpers.js");
 function isTruthy(value) { return (value && value !== "false"); }
@@ -49,8 +48,9 @@ function getRequestOptions(path) {
     }
     return options;
 }
-api.makeApiRequest(getRequestOptions("/api/v1/appSettings"), function (response) {
-    qm.staticData = response.staticData;
+api.AppSettingsService.getAppSettings(env.getClientId(), true)
+    .then(function (AppSettingsResponse) {
+    qm.staticData = AppSettingsResponse.appSettings;
     process.env.APP_DISPLAY_NAME = qm.getAppDisplayName(); // Need env for Fastlane
     process.env.APP_IDENTIFIER = qm.getAppIdentifier(); // Need env for Fastlane
     function addBuildInfoToAppSettings() {

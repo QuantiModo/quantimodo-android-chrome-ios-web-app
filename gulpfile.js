@@ -747,7 +747,7 @@ var qmGulp = {
     }
 };
 qmGulp.buildInfoHelper.setVersionNumbers();
-var Quantimodo = require('quantimodo');
+var Quantimodo = require('./plain-javascript-client/index.js');
 /** @namespace Quantimodo.ApiClient */
 var defaultClient = Quantimodo.ApiClient.instance;
 var quantimodo_oauth2 = defaultClient.authentications.quantimodo_oauth2;

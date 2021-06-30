@@ -1,43 +1,59 @@
 import dotenv from "dotenv"
+import * as fileHelper from "./qm.file-helper"
+
 const envs = {
     APP_HOST_NAME: "APP_HOST_NAME",
     QUANTIMODO_ACCESS_TOKEN: "QUANTIMODO_ACCESS_TOKEN",
     QUANTIMODO_CLIENT_ID: "QUANTIMODO_CLIENT_ID",
+    QUANTIMODO_CLIENT_SECRET: "QUANTIMODO_CLIENT_SECRET",
 }
+
 export function getArgumentOrEnv(name: string, defaultValue?: null | string): string | null {
     if (typeof process.env[name] !== "undefined") {
         // @ts-ignore
         return process.env[name]
     }
     if (typeof defaultValue === "undefined") {
-        throw new Error(`Please specify ` + name + ` env or argument`)
+        throw new Error(`Please specify ` + name + ` in .env file in the root of this repo`)
     }
     return defaultValue
 }
-export function loadDotEnvFileInRootOfProject() {
-    console.info("Loading .env file from root of project. Existing env variables are not overwritten.")
-    dotenv.config() // https://github.com/motdotla/dotenv#what-happens-to-environment-variables-that-were-already-set
-}
-export function loadEnv(environment: string) {
-    const path = "secrets/.env."+environment
-    console.info("Loading env from "+path)
-    dotenv.config() // https://github.com/motdotla/dotenv#what-happens-to-environment-variables-that-were-already-set
-    try {
-        dotenv.config({path})
-    } catch (e) {
-        console.info(e.message)
+
+export function getRequiredArgumentOrEnv(name: string, defaultValue?: null | string): string {
+    const val = getArgumentOrEnv(name, defaultValue)
+    if (!val) {
+        throw new Error(`Please specify ` + name + ` env or argument`)
     }
+    return val
 }
 
-export function getClientId() {
+export function loadEnv(path?: string) {
+    if (!path) {
+        path = fileHelper.getAbsolutePath(".env")
+    }
+    console.info("Loading .env")
+    // https://github.com/motdotla/dotenv#what-happens-to-environment-variables-that-were-already-set
+    const result = dotenv.config()
+    if (result.error) {
+        throw result.error
+    }
+    console.log(result.parsed)
+}
+
+export function getClientId(): string {
+    return getRequiredArgumentOrEnv(envs.QUANTIMODO_CLIENT_ID)
+}
+
+export function getClientSecret(): string | null {
     return getArgumentOrEnv(envs.QUANTIMODO_CLIENT_ID)
 }
+
 export function getAppHostName() {
     return getArgumentOrEnv(envs.APP_HOST_NAME)
 }
 
-export function getAccessToken() {
-    return getArgumentOrEnv(envs.QUANTIMODO_ACCESS_TOKEN)
+export function getAccessToken(): string {
+    return getRequiredArgumentOrEnv(envs.QUANTIMODO_ACCESS_TOKEN)
 }
 
 export let paths = {
@@ -51,7 +67,7 @@ export let paths = {
     },
     chcpLogin: ".chcplogin",
     sass: ["./src/scss/**/*.scss"],
-    src:{
+    src: {
         defaultPrivateConfig: "src/default.private_config.json",
         devCredentials: "src/dev-credentials.json",
         firebase: "src/lib/firebase/**/*",
@@ -70,3 +86,5 @@ export let paths = {
         staticData: "src/data/qmStaticData.js",
     },
 }
+
+loadEnv()
