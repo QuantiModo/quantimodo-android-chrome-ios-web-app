@@ -1,4 +1,4 @@
-import * as api from "../src/api"
+import * as api from "../api-node"
 import * as env from "./env-helper"
 import * as fileHelper from "./qm.file-helper"
 import * as qmLog from "./qm.log"
@@ -29,8 +29,8 @@ function getRequestOptions(path: string) {
 }
 
 api.AppSettingsService.getAppSettings(env.getClientId(), true)
-    .then(function (AppSettingsResponse) {
-        qm.staticData = AppSettingsResponse.appSettings
+    .then(function(AppSettingsResponse) {
+        qm.staticData = AppSettingsResponse.staticData
         process.env.APP_DISPLAY_NAME = qm.getAppDisplayName()  // Need env for Fastlane
         process.env.APP_IDENTIFIER = qm.getAppIdentifier()  // Need env for Fastlane
         function addBuildInfoToAppSettings() {

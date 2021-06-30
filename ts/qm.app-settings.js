@@ -19,7 +19,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var api = __importStar(require("../src/api"));
+var api = __importStar(require("../api-node"));
 var env = __importStar(require("./env-helper"));
 var fileHelper = __importStar(require("./qm.file-helper"));
 var qmLog = __importStar(require("./qm.log"));
@@ -50,7 +50,7 @@ function getRequestOptions(path) {
 }
 api.AppSettingsService.getAppSettings(env.getClientId(), true)
     .then(function (AppSettingsResponse) {
-    qm.staticData = AppSettingsResponse.appSettings;
+    qm.staticData = AppSettingsResponse.staticData;
     process.env.APP_DISPLAY_NAME = qm.getAppDisplayName(); // Need env for Fastlane
     process.env.APP_IDENTIFIER = qm.getAppIdentifier(); // Need env for Fastlane
     function addBuildInfoToAppSettings() {
