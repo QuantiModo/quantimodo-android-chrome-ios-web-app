@@ -2975,9 +2975,10 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     if(v){buttons.push(allButtons.compare);}
                     if(v && v.outcome){
                         buttons.push(allButtons.predictors);
-                    }else{
-                        buttons.push(allButtons.outcomes);
+                    } elseif(v && v.variableId === 1398){
+                        qmLog.errorAndExceptionTestingOrDevelopment("why isn't mood an outcome: "+v.outcome, v)
                     }
+                    if(v && v.predictor){buttons.push(allButtons.outcomes);}
                     var actions = v.actionArray;
                     if(actions){
                         for(var i = 0; i < actions.length; i++){
