@@ -1,7 +1,10 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.paths = exports.getAccessToken = exports.getAppHostName = exports.getClientId = exports.loadEnv = exports.loadDotEnvFileInRootOfProject = exports.getArgumentOrEnv = void 0;
-var dotenv_1 = require("dotenv");
+var dotenv_1 = __importDefault(require("dotenv"));
 var envs = {
     APP_HOST_NAME: "APP_HOST_NAME",
     QUANTIMODO_ACCESS_TOKEN: "QUANTIMODO_ACCESS_TOKEN",
@@ -77,3 +80,4 @@ exports.paths = {
         staticData: "src/data/qmStaticData.js",
     },
 };
+//# sourceMappingURL=env-helper.js.map
