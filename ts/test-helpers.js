@@ -1,20 +1,12 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
-    result["default"] = mod;
-    return result;
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-var rimraf_1 = __importDefault(require("rimraf"));
-var qmEnv = __importStar(require("./env-helper"));
-var fileHelper = __importStar(require("./qm.file-helper"));
-var qmGit = __importStar(require("./qm.git"));
-var qmLog = __importStar(require("./qm.log"));
+exports.releaseStage = exports.getReleaseStage = exports.getApiUrl = exports.apiUrls = exports.releaseStages = exports.getCiProvider = exports.deleteEnvFile = exports.deleteSuccessFile = exports.createSuccessFile = exports.getBuildLink = void 0;
+var rimraf_1 = require("rimraf");
+var qmEnv = require("./env-helper");
+var fileHelper = require("./qm.file-helper");
+var qmGit = require("./qm.git");
+var qmLog = require("./qm.log");
+// tslint:disable-next-line:no-var-requires
 var qm = require("../src/js/qmHelpers.js");
 function getBuildLink() {
     if (process.env.BUILD_URL_FOR_STATUS) {
@@ -141,4 +133,3 @@ exports.releaseStage = {
         },
     },
 };
-//# sourceMappingURL=test-helpers.js.map

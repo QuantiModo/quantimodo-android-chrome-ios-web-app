@@ -1,22 +1,13 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
-    result["default"] = mod;
-    return result;
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-var rest_1 = __importDefault(require("@octokit/rest"));
+exports.createFeatureBranch = exports.deleteLocalFeatureBranches = exports.getBranchName = exports.createCommitComment = exports.setGithubStatus = exports.githubStatusStates = exports.getRepoUserName = exports.getRepoName = exports.getRepoParts = exports.getRepoUrl = exports.getAccessToken = exports.getCurrentGitCommitSha = exports.getOctoKit = void 0;
+var rest_1 = require("@octokit/rest");
 // @ts-ignore
-var git = __importStar(require("simple-git"));
-var underscore_string_1 = __importDefault(require("underscore.string"));
+var git = require("simple-git");
+var underscore_string_1 = require("underscore.string");
 var env_helper_1 = require("./env-helper");
-var qmLog = __importStar(require("./qm.log"));
-var qmShell = __importStar(require("./qm.shell"));
+var qmLog = require("./qm.log");
+var qmShell = require("./qm.shell");
 var test_helpers_1 = require("./test-helpers");
 // tslint:disable-next-line:no-var-requires
 var qm = require("../src/js/qmHelpers.js");
@@ -222,4 +213,3 @@ function createFeatureBranch(featureName) {
     }
 }
 exports.createFeatureBranch = createFeatureBranch;
-//# sourceMappingURL=qm.git.js.map
