@@ -1,18 +1,14 @@
 "use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function (o, m, k, k2) {
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
-    Object.defineProperty(o, k2, {
-        enumerable: true, get: function () {
-            return m[k];
-        }
-    });
-}) : (function (o, m, k, k2) {
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
     o[k2] = m[k];
 }));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function (o, v) {
-    Object.defineProperty(o, "default", {enumerable: true, value: v});
-}) : function (o, v) {
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
     o["default"] = v;
 });
 var __importStar = (this && this.__importStar) || function (mod) {
@@ -23,9 +19,9 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : {"default": mod};
+    return (mod && mod.__esModule) ? mod : { "default": mod };
 };
-Object.defineProperty(exports, "__esModule", {value: true});
+Object.defineProperty(exports, "__esModule", { value: true });
 exports.paths = exports.getAccessToken = exports.getAppHostName = exports.getClientSecret = exports.getClientId = exports.loadEnv = exports.getRequiredArgumentOrEnv = exports.getArgumentOrEnv = void 0;
 var dotenv_1 = __importDefault(require("dotenv"));
 var fileHelper = __importStar(require("./qm.file-helper"));
@@ -60,7 +56,7 @@ function loadEnv(path) {
     }
     console.info("Loading " + path);
     // https://github.com/motdotla/dotenv#what-happens-to-environment-variables-that-were-already-set
-    var result = dotenv_1.default.config({path: path});
+    var result = dotenv_1.default.config({ path: path });
     if (result.error) {
         throw result.error;
     }

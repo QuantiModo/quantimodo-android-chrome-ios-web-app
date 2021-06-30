@@ -1,9 +1,9 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type {Card} from '../models/Card';
-import type {FeedResponse} from '../models/FeedResponse';
-import {request as __request} from '../core/request';
+import type { Card } from '../models/Card';
+import type { FeedResponse } from '../models/FeedResponse';
+import { request as __request } from '../core/request';
 
 export class FeedService {
 
@@ -21,14 +21,14 @@ export class FeedService {
      * @throws ApiError
      */
     public static async getFeed(
-        sort?: string,
-        userId?: number,
-        createdAt?: string,
-        updatedAt?: string,
-        limit: number = 100,
-        offset?: number,
-        clientId?: string,
-    ): Promise<FeedResponse> {
+sort?: string,
+userId?: number,
+createdAt?: string,
+updatedAt?: string,
+limit: number = 100,
+offset?: number,
+clientId?: string,
+): Promise<FeedResponse> {
         const result = await __request({
             method: 'GET',
             path: `/v3/feed`,
@@ -55,10 +55,10 @@ export class FeedService {
      * @throws ApiError
      */
     public static async postFeed(
-        requestBody: Array<Card>,
-        userId?: number,
-        clientId?: string,
-    ): Promise<FeedResponse> {
+requestBody: Array<Card>,
+userId?: number,
+clientId?: string,
+): Promise<FeedResponse> {
         const result = await __request({
             method: 'POST',
             path: `/v3/feed`,

@@ -1,8 +1,8 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type {ActivitiesResponse} from '../models/ActivitiesResponse';
-import {request as __request} from '../core/request';
+import type { ActivitiesResponse } from '../models/ActivitiesResponse';
+import { request as __request } from '../core/request';
 
 export class ActivitiesService {
 
@@ -21,15 +21,15 @@ export class ActivitiesService {
      * @throws ApiError
      */
     public static async getActivities(
-        sort?: string,
-        limit: number = 100,
-        offset?: number,
-        updatedAt?: string,
-        userId?: number,
-        createdAt?: string,
-        id?: number,
-        clientId?: string,
-    ): Promise<Array<ActivitiesResponse>> {
+sort?: string,
+limit: number = 100,
+offset?: number,
+updatedAt?: string,
+userId?: number,
+createdAt?: string,
+id?: number,
+clientId?: string,
+): Promise<Array<ActivitiesResponse>> {
         const result = await __request({
             method: 'GET',
             path: `/v3/activities`,
@@ -67,15 +67,15 @@ export class ActivitiesService {
      * @throws ApiError
      */
     public static async postActivities(
-        sort?: string,
-        limit: number = 100,
-        offset?: number,
-        updatedAt?: string,
-        userId?: number,
-        createdAt?: string,
-        id?: number,
-        clientId?: string,
-    ): Promise<Array<ActivitiesResponse>> {
+sort?: string,
+limit: number = 100,
+offset?: number,
+updatedAt?: string,
+userId?: number,
+createdAt?: string,
+id?: number,
+clientId?: string,
+): Promise<Array<ActivitiesResponse>> {
         const result = await __request({
             method: 'POST',
             path: `/v3/activities`,

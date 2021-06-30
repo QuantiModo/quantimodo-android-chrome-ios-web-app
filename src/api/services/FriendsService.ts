@@ -1,8 +1,8 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type {FriendsResponse} from '../models/FriendsResponse';
-import {request as __request} from '../core/request';
+import type { FriendsResponse } from '../models/FriendsResponse';
+import { request as __request } from '../core/request';
 
 export class FriendsService {
 
@@ -21,15 +21,15 @@ export class FriendsService {
      * @throws ApiError
      */
     public static async getFriends(
-        sort?: string,
-        limit: number = 100,
-        offset?: number,
-        updatedAt?: string,
-        userId?: number,
-        createdAt?: string,
-        id?: number,
-        clientId?: string,
-    ): Promise<Array<FriendsResponse>> {
+sort?: string,
+limit: number = 100,
+offset?: number,
+updatedAt?: string,
+userId?: number,
+createdAt?: string,
+id?: number,
+clientId?: string,
+): Promise<Array<FriendsResponse>> {
         const result = await __request({
             method: 'GET',
             path: `/v3/friends`,
@@ -67,15 +67,15 @@ export class FriendsService {
      * @throws ApiError
      */
     public static async postFriends(
-        sort?: string,
-        limit: number = 100,
-        offset?: number,
-        updatedAt?: string,
-        userId?: number,
-        createdAt?: string,
-        id?: number,
-        clientId?: string,
-    ): Promise<Array<FriendsResponse>> {
+sort?: string,
+limit: number = 100,
+offset?: number,
+updatedAt?: string,
+userId?: number,
+createdAt?: string,
+id?: number,
+clientId?: string,
+): Promise<Array<FriendsResponse>> {
         const result = await __request({
             method: 'POST',
             path: `/v3/friends`,
