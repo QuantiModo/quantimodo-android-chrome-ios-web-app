@@ -1,24 +1,15 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
-    result["default"] = mod;
-    return result;
-};
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.listFilesRecursively = exports.uploadFolderToS3 = exports.download = exports.getAbsolutePath = exports.writeToFile = exports.uploadToS3 = exports.uploadToS3InSubFolderWithCurrentDateTime = exports.downloadFromS3 = exports.getS3Client = exports.deleteFile = exports.createFile = exports.exists = exports.assertExists = exports.assertDoesNotExist = void 0;
 // noinspection JSUnusedGlobalSymbols,JSUnusedGlobalSymbols
-var aws_sdk_1 = __importDefault(require("aws-sdk"));
-var fs = __importStar(require("fs"));
-var https = __importStar(require("https"));
-var mime = __importStar(require("mime"));
-var path = __importStar(require("path"));
-var Q = __importStar(require("q"));
-var rimraf_1 = __importDefault(require("rimraf"));
-var qmLog = __importStar(require("./qm.log"));
+var aws_sdk_1 = require("aws-sdk");
+var fs = require("fs");
+var https = require("https");
+var mime = require("mime");
+var path = require("path");
+var Q = require("q");
+var rimraf_1 = require("rimraf");
+var qmLog = require("./qm.log");
 var defaultS3Bucket = "qmimages";
 function assertDoesNotExist(relative) {
     var abs = getAbsolutePath(relative);
@@ -249,4 +240,3 @@ function listFilesRecursively(dir) {
     return deferred.promise;
 }
 exports.listFilesRecursively = listFilesRecursively;
-//# sourceMappingURL=qm.file-helper.js.map
