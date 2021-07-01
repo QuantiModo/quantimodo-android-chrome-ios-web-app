@@ -31,7 +31,7 @@
     "@types/rimraf": "2.0.4",
     "@types/underscore.string": "0.0.38",
     "angular": "latest",
-    "aws-sdk": "2.937.0",
+    "aws-sdk": "2.938.0",
     "aws-sdk-mock": "4.5.0",
     "beautify": "0.0.8",
     "chai": "4.3.4",
