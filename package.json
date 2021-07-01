@@ -268,8 +268,9 @@
     "types": "cd ts && tsc",
     "up": "docker-compose up --abort-on-container-exit --exit-code-from e2e",
     "watch": "tsc --watch --noEmit --project ./ts/tsconfig.json",
-    "openapi": "npx openapi-typescript-codegen --input ./docs/open-api-v3.yaml --output ./src/api",
-    "openapi-node": "npx openapi-typescript-codegen --input ./docs/open-api-v3.yaml --output ./api-node --client node"
+    "openapi-web": "openapi --input ./docs/open-api-v3.yaml --output ./src/api/web",
+    "openapi-node": "openapi --input ./docs/open-api-v3.yaml --output ./src/api/node --client node",
+    "openapi": "npm run openapi-node && npm run openapi-web && cd src/api && tsc"
   },
   "cordovaPlugins": [],
   "cordovaPlatforms": [

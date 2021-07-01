@@ -27,13 +27,14 @@ var rest_1 = __importDefault(require("@octokit/rest"));
 // @ts-ignore
 var git = __importStar(require("simple-git"));
 var underscore_string_1 = __importDefault(require("underscore.string"));
+var env_helper_1 = require("./env-helper");
 var qmLog = __importStar(require("./qm.log"));
 var qmShell = __importStar(require("./qm.shell"));
 var test_helpers_1 = require("./test-helpers");
 // tslint:disable-next-line:no-var-requires
 var qm = require("../src/js/qmHelpers.js");
 function getOctoKit() {
-    return new rest_1.default({ auth: getGithubAccessToken() });
+    return new rest_1.default({ auth: env_helper_1.getGithubAccessToken() });
 }
 exports.getOctoKit = getOctoKit;
 function getCurrentGitCommitSha() {
