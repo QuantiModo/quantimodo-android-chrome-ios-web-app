@@ -83,7 +83,7 @@
     "mochawesome-merge": "2.1.0",
     "mochawesome-report-generator": "4.0.1",
     "node-fetch": "^2.6.1",
-    "openapi-typescript-codegen": "^0.9.3",
+    "openapi-typescript-codegen": "0.9.3",
     "pkg-fetch": "3.2.1",
     "power-assert": "1.6.1",
     "prettier": "1.19.1",
