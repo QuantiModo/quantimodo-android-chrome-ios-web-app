@@ -22,38 +22,75 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.paths = exports.getAccessToken = exports.getAppHostName = exports.getClientSecret = exports.getClientId = exports.loadEnv = exports.getRequiredArgumentOrEnv = exports.getArgumentOrEnv = void 0;
+exports.paths = exports.getGithubAccessToken = exports.getAccessToken = exports.getAppHostName = exports.getClientSecret = exports.getClientId = exports.loadEnv = exports.getenvOrException = exports.getenv = exports.envs = void 0;
 var dotenv_1 = __importDefault(require("dotenv"));
 var fileHelper = __importStar(require("./qm.file-helper"));
-var envs = {
+exports.envs = {
     APP_HOST_NAME: "APP_HOST_NAME",
+    GH_TOKEN: "GH_TOKEN",
+    GITHUB_ACCESS_TOKEN: "GITHUB_ACCESS_TOKEN",
+    GITHUB_ACCESS_TOKEN_FOR_STATUS: "GITHUB_ACCESS_TOKEN_FOR_STATUS",
     QUANTIMODO_ACCESS_TOKEN: "QUANTIMODO_ACCESS_TOKEN",
     QUANTIMODO_CLIENT_ID: "QUANTIMODO_CLIENT_ID",
     QUANTIMODO_CLIENT_SECRET: "QUANTIMODO_CLIENT_SECRET",
 };
-function getArgumentOrEnv(name, defaultValue) {
-    if (typeof process.env[name] !== "undefined") {
-        // @ts-ignore
-        return process.env[name];
+function getenv(names, defaultValue) {
+    if (!Array.isArray(names)) {
+        names = [names];
     }
-    if (typeof defaultValue === "undefined") {
-        throw new Error("Please specify " + name + " in .env file in the root of this repo");
+    function getFromProcess() {
+        // tslint:disable-next-line:prefer-for-of
+        for (var i = 0; i < names.length; i++) {
+            var name_1 = names[i];
+            if (typeof process.env[name_1] !== "undefined") {
+                // @ts-ignore
+                return process.env[name_1];
+            }
+        }
+        return null;
     }
-    return defaultValue;
+    var result = getFromProcess();
+    if (result !== null) {
+        return result;
+    }
+    try {
+        loadEnv(".env.local");
+        result = getFromProcess();
+        if (result !== null) {
+            return result;
+        }
+        console.info("Got " + names.join(" or ") + " from .env.local");
+    }
+    catch (e) {
+        console.error(e);
+    }
+    try {
+        loadEnv(".env");
+        result = getFromProcess();
+        if (result !== null) {
+            return result;
+        }
+        console.info("Got " + names.join(" or ") + " from .env");
+    }
+    catch (e) {
+        console.error(e);
+    }
+    return defaultValue || null;
 }
-exports.getArgumentOrEnv = getArgumentOrEnv;
-function getRequiredArgumentOrEnv(name, defaultValue) {
-    var val = getArgumentOrEnv(name, defaultValue);
-    if (!val) {
-        throw new Error("Please specify " + name + " env or argument");
+exports.getenv = getenv;
+function getenvOrException(names) {
+    if (!Array.isArray(names)) {
+        names = [names];
+    }
+    var val = getenv(names);
+    if (val === null) {
+        throw new Error("Please specify " + names.join(" or ") + " env or argument");
     }
     return val;
 }
-exports.getRequiredArgumentOrEnv = getRequiredArgumentOrEnv;
-function loadEnv(path) {
-    if (!path) {
-        path = fileHelper.getAbsolutePath(".env");
-    }
+exports.getenvOrException = getenvOrException;
+function loadEnv(relativeEnvPath) {
+    var path = fileHelper.getAbsolutePath(relativeEnvPath);
     console.info("Loading " + path);
     // https://github.com/motdotla/dotenv#what-happens-to-environment-variables-that-were-already-set
     var result = dotenv_1.default.config({ path: path });
@@ -64,21 +101,25 @@ function loadEnv(path) {
 }
 exports.loadEnv = loadEnv;
 function getClientId() {
-    return getRequiredArgumentOrEnv(envs.QUANTIMODO_CLIENT_ID);
+    return getenvOrException(exports.envs.QUANTIMODO_CLIENT_ID);
 }
 exports.getClientId = getClientId;
 function getClientSecret() {
-    return getArgumentOrEnv(envs.QUANTIMODO_CLIENT_ID);
+    return getenv(exports.envs.QUANTIMODO_CLIENT_ID);
 }
 exports.getClientSecret = getClientSecret;
 function getAppHostName() {
-    return getArgumentOrEnv(envs.APP_HOST_NAME);
+    return getenv(exports.envs.APP_HOST_NAME);
 }
 exports.getAppHostName = getAppHostName;
 function getAccessToken() {
-    return getRequiredArgumentOrEnv(envs.QUANTIMODO_ACCESS_TOKEN);
+    return getenvOrException(exports.envs.QUANTIMODO_ACCESS_TOKEN);
 }
 exports.getAccessToken = getAccessToken;
+function getGithubAccessToken() {
+    return getenvOrException([exports.envs.GITHUB_ACCESS_TOKEN_FOR_STATUS, exports.envs.GITHUB_ACCESS_TOKEN, exports.envs.GH_TOKEN]);
+}
+exports.getGithubAccessToken = getGithubAccessToken;
 exports.paths = {
     apk: {
         arm7Release: "platforms/android/app/build/outputs/apk/release/app-arm7-release.apk",
@@ -109,5 +150,4 @@ exports.paths = {
         staticData: "src/data/qmStaticData.js",
     },
 };
-loadEnv();
 //# sourceMappingURL=env-helper.js.map

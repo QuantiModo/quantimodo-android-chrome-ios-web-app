@@ -5,6 +5,7 @@
 import type { AppSettings } from './AppSettings';
 import type { Card } from './Card';
 import type { Error } from './Error';
+import type { StaticData } from './StaticData';
 
 export type AppSettingsResponse = {
     appSettings?: AppSettings;
@@ -37,4 +38,5 @@ export type AppSettingsResponse = {
      */
     link?: string;
     card?: Card;
+    staticData?: StaticData;
 }

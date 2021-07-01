@@ -2,29 +2,23 @@
 /* tslint:disable */
 /* eslint-disable */
 
+import type { AdditionalSettings } from './AdditionalSettings';
+import type { AppDesign } from './AppDesign';
+import type { AppStatus } from './AppStatus';
 import type { User } from './User';
 
 export type AppSettings = {
-    /**
-     * What do you expect?
-     */
-    additionalSettings?: any;
+    additionalSettings?: AdditionalSettings;
     /**
      * What do you expect?
      */
     appDescription?: string;
-    /**
-     * What do you expect?
-     */
-    appDesign?: any;
+    appDesign?: AppDesign;
     /**
      * What do you expect?
      */
     appDisplayName?: string;
-    /**
-     * What do you expect?
-     */
-    appStatus?: any;
+    appStatus?: AppStatus;
     /**
      * What do you expect?
      */

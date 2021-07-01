@@ -1,36 +1,61 @@
 import dotenv from "dotenv"
 import * as fileHelper from "./qm.file-helper"
 
-const envs = {
+export const envs = {
     APP_HOST_NAME: "APP_HOST_NAME",
+    GH_TOKEN: "GH_TOKEN",
+    GITHUB_ACCESS_TOKEN: "GITHUB_ACCESS_TOKEN",
+    GITHUB_ACCESS_TOKEN_FOR_STATUS: "GITHUB_ACCESS_TOKEN_FOR_STATUS",
     QUANTIMODO_ACCESS_TOKEN: "QUANTIMODO_ACCESS_TOKEN",
     QUANTIMODO_CLIENT_ID: "QUANTIMODO_CLIENT_ID",
     QUANTIMODO_CLIENT_SECRET: "QUANTIMODO_CLIENT_SECRET",
 }
 
-export function getArgumentOrEnv(name: string, defaultValue?: null | string): string | null {
-    if (typeof process.env[name] !== "undefined") {
-        // @ts-ignore
-        return process.env[name]
+export function getenv(names: string|string[], defaultValue?: null | string): string | null {
+    if(!Array.isArray(names)) {names = [names]}
+    function getFromProcess(): string | null  {
+        // tslint:disable-next-line:prefer-for-of
+        for (let i = 0; i < names.length; i++) {
+            const name = names[i]
+            if (typeof process.env[name] !== "undefined") {
+                // @ts-ignore
+                return process.env[name]
+            }
+        }
+        return null
     }
-    if (typeof defaultValue === "undefined") {
-        throw new Error(`Please specify ` + name + ` in .env file in the root of this repo`)
+    let result = getFromProcess()
+    if(result !== null) {return result}
+    try {
+        loadEnv(".env.local")
+        result = getFromProcess()
+        if(result !== null) {return result}
+        console.info("Got "+names.join(" or ")+" from .env.local")
+    } catch (e) {
+        console.error(e)
     }
-    return defaultValue
+    try {
+        loadEnv(".env")
+        result = getFromProcess()
+        if(result !== null) {return result}
+        console.info("Got "+names.join(" or ")+" from .env")
+    } catch (e) {
+        console.error(e)
+    }
+    return defaultValue || null
 }
 
-export function getRequiredArgumentOrEnv(name: string, defaultValue?: null | string): string {
-    const val = getArgumentOrEnv(name, defaultValue)
-    if (!val) {
-        throw new Error(`Please specify ` + name + ` env or argument`)
+export function getenvOrException(names: string|string[]): string {
+    if(!Array.isArray(names)) {names = [names]}
+    const val = getenv(names)
+    if (val === null) {
+        throw new Error(`Please specify ` + names.join(" or ") + ` env or argument`)
     }
     return val
 }
 
-export function loadEnv(path?: string) {
-    if (!path) {
-        path = fileHelper.getAbsolutePath(".env")
-    }
+export function loadEnv(relativeEnvPath: string) {
+    const path = fileHelper.getAbsolutePath(relativeEnvPath)
     console.info("Loading " + path)
     // https://github.com/motdotla/dotenv#what-happens-to-environment-variables-that-were-already-set
     const result = dotenv.config({path})
@@ -41,19 +66,23 @@ export function loadEnv(path?: string) {
 }
 
 export function getClientId(): string {
-    return getRequiredArgumentOrEnv(envs.QUANTIMODO_CLIENT_ID)
+    return getenvOrException(envs.QUANTIMODO_CLIENT_ID)
 }
 
 export function getClientSecret(): string | null {
-    return getArgumentOrEnv(envs.QUANTIMODO_CLIENT_ID)
+    return getenv(envs.QUANTIMODO_CLIENT_ID)
 }
 
 export function getAppHostName() {
-    return getArgumentOrEnv(envs.APP_HOST_NAME)
+    return getenv(envs.APP_HOST_NAME)
 }
 
 export function getAccessToken(): string {
-    return getRequiredArgumentOrEnv(envs.QUANTIMODO_ACCESS_TOKEN)
+    return getenvOrException(envs.QUANTIMODO_ACCESS_TOKEN)
+}
+
+export function getGithubAccessToken(): string {
+    return getenvOrException([envs.GITHUB_ACCESS_TOKEN_FOR_STATUS, envs.GITHUB_ACCESS_TOKEN, envs.GH_TOKEN])
 }
 
 export let paths = {
@@ -86,5 +115,3 @@ export let paths = {
         staticData: "src/data/qmStaticData.js",
     },
 }
-
-loadEnv()
