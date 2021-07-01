@@ -1,14 +1,18 @@
+"use strict";
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export var ConversionStep;
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.ConversionStep = void 0;
+var ConversionStep;
 (function (ConversionStep) {
     /**
      * ADD or MULTIPLY
      */
-    let operation;
+    var operation;
     (function (operation) {
         operation["ADD"] = "ADD";
         operation["MULTIPLY"] = "MULTIPLY";
     })(operation = ConversionStep.operation || (ConversionStep.operation = {}));
-})(ConversionStep || (ConversionStep = {}));
+})(ConversionStep = exports.ConversionStep || (exports.ConversionStep = {}));
+//# sourceMappingURL=ConversionStep.js.map

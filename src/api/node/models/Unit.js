@@ -1,12 +1,15 @@
+"use strict";
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export var Unit;
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.Unit = void 0;
+var Unit;
 (function (Unit) {
     /**
      * Unit category
      */
-    let category;
+    var category;
     (function (category) {
         category["DISTANCE"] = "Distance";
         category["DURATION"] = "Duration";
@@ -21,4 +24,5 @@ export var Unit;
         category["WEIGHT"] = "Weight";
         category["COUNT"] = "Count";
     })(category = Unit.category || (Unit.category = {}));
-})(Unit || (Unit = {}));
+})(Unit = exports.Unit || (exports.Unit = {}));
+//# sourceMappingURL=Unit.js.map

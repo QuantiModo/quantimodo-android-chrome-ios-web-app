@@ -1,4 +1,4 @@
-import * as api from "../api-node"
+import * as api from "../src/api/node"
 import * as env from "./env-helper"
 import * as fileHelper from "./qm.file-helper"
 import * as qmLog from "./qm.log"

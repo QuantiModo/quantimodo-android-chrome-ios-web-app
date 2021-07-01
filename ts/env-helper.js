@@ -62,7 +62,7 @@ function getenv(names, defaultValue) {
         console.info("Got " + names.join(" or ") + " from .env.local");
     }
     catch (e) {
-        console.error(e);
+        console.info("no .env.local to get " + names.join(" or "));
     }
     try {
         loadEnv(".env");
@@ -73,7 +73,7 @@ function getenv(names, defaultValue) {
         console.info("Got " + names.join(" or ") + " from .env");
     }
     catch (e) {
-        console.error(e);
+        console.info("no .env to get " + names.join(" or "));
     }
     return defaultValue || null;
 }

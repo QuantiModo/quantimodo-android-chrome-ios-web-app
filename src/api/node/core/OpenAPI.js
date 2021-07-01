@@ -1,4 +1,7 @@
-export const OpenAPI = {
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.OpenAPI = void 0;
+exports.OpenAPI = {
     BASE: 'https://app.quantimo.do/api',
     VERSION: '1',
     WITH_CREDENTIALS: false,
@@ -7,3 +10,4 @@ export const OpenAPI = {
     PASSWORD: undefined,
     HEADERS: undefined,
 };
+//# sourceMappingURL=OpenAPI.js.map

@@ -1,12 +1,15 @@
+"use strict";
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export var Measurement;
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.Measurement = void 0;
+var Measurement;
 (function (Measurement) {
     /**
      * Ex: Emotions, Treatments, Symptoms...
      */
-    let variableCategoryName;
+    var variableCategoryName;
     (function (variableCategoryName) {
         variableCategoryName["ACTIVITY"] = "Activity";
         variableCategoryName["BOOKS"] = "Books";
@@ -32,4 +35,5 @@ export var Measurement;
         variableCategoryName["TREATMENTS"] = "Treatments";
         variableCategoryName["VITAL_SIGNS"] = "Vital Signs";
     })(variableCategoryName = Measurement.variableCategoryName || (Measurement.variableCategoryName = {}));
-})(Measurement || (Measurement = {}));
+})(Measurement = exports.Measurement || (exports.Measurement = {}));
+//# sourceMappingURL=Measurement.js.map

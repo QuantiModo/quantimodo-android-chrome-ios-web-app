@@ -19,7 +19,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var api = __importStar(require("../api-node"));
+var api = __importStar(require("../src/api/node"));
 var env = __importStar(require("./env-helper"));
 var fileHelper = __importStar(require("./qm.file-helper"));
 var qmLog = __importStar(require("./qm.log"));
