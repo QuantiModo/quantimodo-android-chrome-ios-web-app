@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.throwError = exports.getCurrentServerContext = exports.logBugsnagLink = exports.prettyJSONStringify = exports.obfuscateSecrets = exports.obfuscateString = exports.isSecretWord = exports.obfuscateStringify = exports.addMetaData = exports.debug = exports.info = exports.error = void 0;
+exports.logErrorAndThrowException = exports.slugify = exports.throwError = exports.getCurrentServerContext = exports.logBugsnagLink = exports.prettyJSONStringify = exports.obfuscateSecrets = exports.obfuscateString = exports.isSecretWord = exports.obfuscateStringify = exports.addMetaData = exports.debug = exports.info = exports.error = void 0;
 var js_1 = __importDefault(require("@bugsnag/js"));
 // @ts-ignore
 var qmHelpers_js_1 = __importDefault(require("../src/js/qmHelpers.js"));
@@ -138,4 +138,25 @@ function throwError(message, metaData, maxCharacters) {
     throw Error(message);
 }
 exports.throwError = throwError;
+function slugify(str) {
+    str = str.replace(/^\s+|\s+$/g, ""); // trim
+    str = str.toLowerCase();
+    // remove accents, swap ñ for n, etc
+    var from = "àáäâèéëêìíïîòóöôùúüûñç·/_,:;";
+    var to = "aaaaeeeeiiiioooouuuunc------";
+    for (var i = 0, l = from.length; i < l; i++) {
+        str = str.replace(new RegExp(from.charAt(i), "g"), to.charAt(i));
+    }
+    str = str.replace(".", "-") // replace a dot by a dash
+        .replace(/[^a-z0-9 -]/g, "") // remove invalid chars
+        .replace(/\s+/g, "-") // collapse whitespace and replace by a dash
+        .replace(/-+/g, "-"); // collapse dashes
+    return str;
+}
+exports.slugify = slugify;
+function logErrorAndThrowException(message, object) {
+    error(message, object);
+    throw message;
+}
+exports.logErrorAndThrowException = logErrorAndThrowException;
 //# sourceMappingURL=qm.log.js.map

@@ -116,4 +116,65 @@ export function getGithubAccessToken(): string {
     return getenvOrException([envs.GITHUB_ACCESS_TOKEN_FOR_STATUS, envs.GITHUB_ACCESS_TOKEN, envs.GH_TOKEN])
 }
 
-
+export const qmPlatform = {
+    android: "android",
+    buildingFor: {
+        getPlatformBuildingFor() {
+            if(qmPlatform.buildingFor.android()) {return "android"}
+            if(qmPlatform.buildingFor.ios()) {return "ios"}
+            if(qmPlatform.buildingFor.chrome()) {return "chrome"}
+            if(qmPlatform.buildingFor.web()) {return "web"}
+            qmLog.error("What platform are we building for?")
+            return null
+        },
+        setChrome() {
+            qmPlatform.buildingFor.platform = qmPlatform.chrome
+        },
+        platform: "",
+        web() {
+            return !qmPlatform.buildingFor.android() &&
+                !qmPlatform.buildingFor.ios() &&
+                !qmPlatform.buildingFor.chrome()
+        },
+        android() {
+            if (qmPlatform.buildingFor.platform === "android") { return true }
+            if (process.env.BUDDYBUILD_SECURE_FILES) { return true }
+            if (process.env.TRAVIS_OS_NAME === "osx") { return false }
+            return process.env.BUILD_ANDROID
+        },
+        ios() {
+            if (qmPlatform.buildingFor.platform === qmPlatform.ios) { return true }
+            if (process.env.BUDDYBUILD_SCHEME) {return true}
+            if (process.env.TRAVIS_OS_NAME === "osx") { return true }
+            return process.env.BUILD_IOS
+        },
+        chrome() {
+            if (qmPlatform.buildingFor.platform === qmPlatform.chrome) { return true }
+            return process.env.BUILD_CHROME
+        },
+        mobile() {
+            return qmPlatform.buildingFor.android() || qmPlatform.buildingFor.ios()
+        },
+    },
+    chrome: "chrome",
+    setBuildingFor(platform: string) {
+        qmPlatform.buildingFor.platform = platform
+    },
+    isOSX() {
+        return process.platform === "darwin"
+    },
+    isLinux() {
+        return process.platform === "linux"
+    },
+    isWindows() {
+        return !qmPlatform.isOSX() && !qmPlatform.isLinux()
+    },
+    getPlatform() {
+        if(qmPlatform.buildingFor) {return qmPlatform.buildingFor}
+        if(qmPlatform.isOSX()) {return qmPlatform.ios}
+        if(qmPlatform.isWindows()) {return qmPlatform.android}
+        return qmPlatform.web
+    },
+    ios: "ios",
+    web: "web",
+}

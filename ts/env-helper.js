@@ -22,7 +22,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getGithubAccessToken = exports.getAccessToken = exports.getAppHostName = exports.getClientSecret = exports.getClientId = exports.loadEnv = exports.getenvOrException = exports.getenv = exports.paths = exports.envs = void 0;
+exports.qmPlatform = exports.getGithubAccessToken = exports.getAccessToken = exports.getAppHostName = exports.getClientSecret = exports.getClientId = exports.loadEnv = exports.getenvOrException = exports.getenv = exports.paths = exports.envs = void 0;
 var dotenv_1 = __importDefault(require("dotenv"));
 var fileHelper = __importStar(require("./qm.file-helper"));
 var qmLog = __importStar(require("./qm.log"));
@@ -147,4 +147,94 @@ function getGithubAccessToken() {
     return getenvOrException([exports.envs.GITHUB_ACCESS_TOKEN_FOR_STATUS, exports.envs.GITHUB_ACCESS_TOKEN, exports.envs.GH_TOKEN]);
 }
 exports.getGithubAccessToken = getGithubAccessToken;
+exports.qmPlatform = {
+    android: "android",
+    buildingFor: {
+        getPlatformBuildingFor: function () {
+            if (exports.qmPlatform.buildingFor.android()) {
+                return "android";
+            }
+            if (exports.qmPlatform.buildingFor.ios()) {
+                return "ios";
+            }
+            if (exports.qmPlatform.buildingFor.chrome()) {
+                return "chrome";
+            }
+            if (exports.qmPlatform.buildingFor.web()) {
+                return "web";
+            }
+            qmLog.error("What platform are we building for?");
+            return null;
+        },
+        setChrome: function () {
+            exports.qmPlatform.buildingFor.platform = exports.qmPlatform.chrome;
+        },
+        platform: "",
+        web: function () {
+            return !exports.qmPlatform.buildingFor.android() &&
+                !exports.qmPlatform.buildingFor.ios() &&
+                !exports.qmPlatform.buildingFor.chrome();
+        },
+        android: function () {
+            if (exports.qmPlatform.buildingFor.platform === "android") {
+                return true;
+            }
+            if (process.env.BUDDYBUILD_SECURE_FILES) {
+                return true;
+            }
+            if (process.env.TRAVIS_OS_NAME === "osx") {
+                return false;
+            }
+            return process.env.BUILD_ANDROID;
+        },
+        ios: function () {
+            if (exports.qmPlatform.buildingFor.platform === exports.qmPlatform.ios) {
+                return true;
+            }
+            if (process.env.BUDDYBUILD_SCHEME) {
+                return true;
+            }
+            if (process.env.TRAVIS_OS_NAME === "osx") {
+                return true;
+            }
+            return process.env.BUILD_IOS;
+        },
+        chrome: function () {
+            if (exports.qmPlatform.buildingFor.platform === exports.qmPlatform.chrome) {
+                return true;
+            }
+            return process.env.BUILD_CHROME;
+        },
+        mobile: function () {
+            return exports.qmPlatform.buildingFor.android() || exports.qmPlatform.buildingFor.ios();
+        },
+    },
+    chrome: "chrome",
+    setBuildingFor: function (platform) {
+        exports.qmPlatform.buildingFor.platform = platform;
+    },
+    isOSX: function () {
+        return process.platform === "darwin";
+    },
+    isLinux: function () {
+        return process.platform === "linux";
+    },
+    isWindows: function () {
+        return !exports.qmPlatform.isOSX() && !exports.qmPlatform.isLinux();
+    },
+    getPlatform: function () {
+        if (exports.qmPlatform.buildingFor) {
+            return exports.qmPlatform.buildingFor;
+        }
+        if (exports.qmPlatform.isOSX()) {
+            return exports.qmPlatform.ios;
+        }
+        if (exports.qmPlatform.isWindows()) {
+            return exports.qmPlatform.android;
+        }
+        return exports.qmPlatform.web;
+    },
+    ios: "ios",
+    web: "web",
+};
 //# sourceMappingURL=env-helper.js.map
