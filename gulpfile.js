@@ -1,10 +1,9 @@
-/* eslint-disable no-process-env */
-try {
-    var dotenv = require('dotenv')
-    dotenv.config({path: './secrets/.env'});
-} catch (e) {
-    console.error(e);
-}
+/* eslint-disable no-process-env,object-shorthand,semi,block-spacing,comma-dangle,one-var,space-infix-ops,no-unused-vars,no-multi-spaces,no-useless-concat,no-empty */
+const {loadEnv} = require("./ts/env-helper");
+const {envs} = require("./ts/env-helper");
+const {paths} = require("./ts/env-helper");
+const {getenvOrException} = require("./ts/env-helper");
+loadEnv(".env")
 var QUANTIMODO_CLIENT_ID = process.env.QUANTIMODO_CLIENT_ID || process.env.CLIENT_ID;
 var devCredentials;
 var androidArm7DebugApkName = 'android-armv7-debug';
@@ -54,7 +53,7 @@ var qmPlatform = {
         },
         mobile: function () {
             return qmPlatform.buildingFor.android() || qmPlatform.buildingFor.ios();
-        }
+        },
     },
     setBuildingFor: function(platform){
         qmPlatform.buildingFor.platform = platform;
@@ -116,36 +115,6 @@ var appIds = {
     'energymodo': 'aibgaobhplpnjmcnnmdamabfjnbgflob',
     'quantimodo': true,
     'medimodo': true
-};
-var paths = {
-    apk: {//android\app\build\outputs\apk\release\app-release.apk
-        combinedRelease: "platforms/android/app/build/outputs/apk/release/app-release.apk",
-        combinedDebug: "platforms/android/app/build/outputs/apk/release/app-debug.apk",
-        arm7Release: "platforms/android/app/build/outputs/apk/release/app-arm7-release.apk",
-        x86Release: "platforms/android/app/build/outputs/apk/release/app-x86-release.apk",
-        outputFolder: "platforms/android/app/build/outputs/apk",
-        builtApk: null,
-    },
-    sass: ['./src/scss/**/*.scss'],
-    src:{
-        devCredentials: "src/dev-credentials.json",
-        defaultPrivateConfig: "src/default.private_config.json",
-        icons: "src/img/icons",
-        firebase: "src/lib/firebase/**/*",
-        js: "src/js/*.js",
-        serviceWorker: "src/firebase-messaging-sw.js",
-        staticData: 'src/data/qmStaticData.js',
-    },
-    www: {
-        devCredentials: "www/dev-credentials.json",
-        defaultPrivateConfig: "www/default.private_config.json",
-        icons: "www/img/icons",
-        firebase: "www/lib/firebase/",
-        js: "www/js/",
-        scripts: "www/scripts",
-        staticData: 'src/data/qmStaticData.js',
-    },
-    chcpLogin: '.chcplogin',
 };
 var argv = require('yargs').argv;
 var defaultRequestOptions = {strictSSL: false};
@@ -249,8 +218,7 @@ var qmLog = {
         // remove accents, swap ñ for n, etc
         var from = "àáäâèéëêìíïîòóöôùúüûñç·/_,:;";
         var to   = "aaaaeeeeiiiioooouuuunc------";
-        for (var i=0, l=from.length ; i<l ; i++)
-        {
+        for (var i=0, l=from.length; i<l; i++) {
             str = str.replace(new RegExp(from.charAt(i), 'g'), to.charAt(i));
         }
         str = str.replace('.', '-') // replace a dot by a dash
@@ -260,17 +228,7 @@ var qmLog = {
         return str;
     }
 };
-var bugsnag = require("bugsnag");
-bugsnag.register("ae7bc49d1285848342342bb5c321a2cf");
-bugsnag.releaseStage = qmLog.getCurrentServerContext();
-process.on('unhandledRejection', function (err) {
-    console.error("Unhandled rejection: " + (err && err.stack || err));
-    bugsnag.notify(err);
-});
-bugsnag.onBeforeNotify(function (notification) {
-    var metaData = notification.events[0].metaData;
-    metaData = qmLog.addMetaData(metaData);
-});
+qmLog = require("./ts/qm.log");
 var qmGit = {
     branchName: null,
     getBranchName: function(){
@@ -830,7 +788,7 @@ function convertToCamelCase(string) {
     string = string.replace('.', '-');
     string = string.replace('_', '-');
     if(string.charAt(0) === "-"){string = string.substr(1);}
-    string = string.replace(/(\_[a-z])/g, function($1){return $1.toUpperCase().replace('_','');});
+    string = string.replace(/(\_[a-z])/g, function($1){return $1.toUpperCase().replace('_', '');});
     string = string.replace(/-([a-z])/g, function (g) { return g[1].toUpperCase(); });
     return string;
 }
@@ -901,10 +859,9 @@ function uploadToS3(filePath) {
                 maxRetries: 5,
                 logger: console
             }));
-        } else {
-            qmLog.error('Could not find ' + filePath);
-            qmLog.error(err);
         }
+        qmLog.error('Could not find ' + filePath);
+        qmLog.error(err);
     });
 }
 function execute(command, callback, suppressErrors, lotsOfOutput) {
@@ -1127,7 +1084,7 @@ function getRequestOptions(path) {
     };
     if(process.env.QUANTIMODO_ACCESS_TOKEN){
         options.qs.access_token = process.env.QUANTIMODO_ACCESS_TOKEN;
-        qmLog.info("Using QUANTIMODO_ACCESS_TOKEN: " + options.qs.access_token.substring(0,4)+'...');
+        qmLog.info("Using QUANTIMODO_ACCESS_TOKEN: " + options.qs.access_token.substring(0, 4)+'...');
     } else {
         qmLog.error("Please add your QUANTIMODO_ACCESS_TOKEN environmental variable from " + qmGulp.getAppHostName() + "/api/v2/account");
     }
@@ -1646,22 +1603,22 @@ var buildSettings;
 gulp.task('downloadAndroidReleaseKeystore', ['getAppConfigs'], function () {
     /** @namespace buildSettings.androidReleaseKeystoreFile */
     if(!buildSettings.androidReleaseKeystoreFile){
-        qmLog.error( "No Android Keystore provided.  Using QuantiModo one.  If you have your own, please upload it at " + getAppDesignerUrl());
+        qmLog.error("No Android Keystore provided.  Using QuantiModo one.  If you have your own, please upload it at " + getAppDesignerUrl());
         return;
     }
     /** @namespace buildSettings.androidReleaseKeystorePassword */
     if(!buildSettings.androidReleaseKeystorePassword){
-        qmLog.error( "No Android keystore storePassword provided.  Using QuantiModo one.  If you have your own, please add it at " + getAppDesignerUrl());
+        qmLog.error("No Android keystore storePassword provided.  Using QuantiModo one.  If you have your own, please add it at " + getAppDesignerUrl());
         return;
     }
     /** @namespace buildSettings.androidReleaseKeyAlias */
     if(!buildSettings.androidReleaseKeyAlias){
-        qmLog.error( "No Android keystore alias provided.  Using QuantiModo one.  If you have your own, please add it at " + getAppDesignerUrl());
+        qmLog.error("No Android keystore alias provided.  Using QuantiModo one.  If you have your own, please add it at " + getAppDesignerUrl());
         return;
     }
     /** @namespace buildSettings.androidReleaseKeyPassword */
     if(!buildSettings.androidReleaseKeyPassword){
-        qmLog.error( "No Android keystore password provided.  Using QuantiModo one.  If you have your own, please add it at " + getAppDesignerUrl());
+        qmLog.error("No Android keystore password provided.  Using QuantiModo one.  If you have your own, please add it at " + getAppDesignerUrl());
         return;
     }
     writeBuildJson();
@@ -2007,9 +1964,9 @@ gulp.task("upload-combined-debug-apk-to-s3", function() {
     if(!buildSettings.xwalkMultipleApk){
         if(qmGulp.buildSettings.buildDebug()){
             return qmGulp.uploadBuildToS3(paths.apk.combinedDebug);
-        } else {
-            return console.log("Not building debug version because process.env.BUILD_DEBUG is not true");
         }
+            return console.log("Not building debug version because process.env.BUILD_DEBUG is not true");
+
     }
 });
 gulp.task('uploadChromeApp', ['getAccessTokenFromGoogle'], function () {
@@ -2723,11 +2680,11 @@ gulp.task('addBugsnagInObjC', function () {
             if (content.indexOf('Bugsnag') !== -1) {
                 qmLog.info('Bugsnag Already Present');
                 return content;
-            } else {
+            }
                 content = content.replace(/#import "MainViewController.h"/g, '#import "MainViewController.h"\n#import "Bugsnag.h"');
                 content = content.replace(/self\.window\.rootViewController(\s)?=(\s)?self\.viewController\;/g, '[Bugsnag startBugsnagWithApiKey:@"ae7bc49d1285848342342bb5c321a2cf"];\n\tself.window.rootViewController = self.viewController;');
                 qmLog.info('Bugsnag Added');
-            }
+
             return content;
         }))
         .pipe(gulp.dest('./platforms/ios/' + qmGulp.getAppDisplayName() + '/Classes/'));
@@ -2975,12 +2932,12 @@ gulp.task('copyIconsToChromeImg', [], function () {
     return copyFiles('www/img/icons/*', chromeExtensionBuildPath+"/img/icons");
 });
 gulp.task('copyServiceWorkerFirebaseLocalForage', [], function () {
-    return gulp.src( serviceWorkerFirebaseLocalForage, { base: './src' } )
-        .pipe( gulp.dest( './www' ));
+    return gulp.src(serviceWorkerFirebaseLocalForage, { base: './src' })
+        .pipe(gulp.dest('./www'));
 });
 gulp.task('copyOverrideFiles', [], function () {
-    return gulp.src( ['overrides/**/*'], { base: './overrides' } )
-        .pipe( gulp.dest( '.' ));
+    return gulp.src(['overrides/**/*'], { base: './overrides' })
+        .pipe(gulp.dest('.'));
 });
 gulp.task('copyAndroidLicenses', [], function () {
     if(!process.env.ANDROID_HOME){
@@ -3467,10 +3424,10 @@ gulp.task('cordovaBuildAndroid', function (callback) {
     if(qmGulp.buildSettings.buildDebug()){
         console.log("Building DEBUG version because process.env.BUILD_DEBUG is true");
         return buildAndroidDebug(callback);
-    } else {
+    }
         console.log("Building RELEASE version because process.env.BUILD_DEBUG is not true");
         return buildAndroidRelease(callback);
-    }
+
 });
 gulp.task('prepareQuantiModoIos', function (callback) {
     runSequence(
@@ -3627,7 +3584,8 @@ gulp.task('deleteAppSpecificFilesFromWww', [], function () {
         'www/configs/*',
         'www/private_configs/*',
         'www/img/icons/*',
-        'www/manifest.json']);
+        'www/manifest.json'
+]);
 });
 gulp.task('deleteLargeFilesFromWww', [], function () {
     return cleanFiles([

@@ -1,4 +1,4 @@
-import UniversalBugsnagStatic from "@bugsnag/js"
+import Bugsnag from "@bugsnag/js"
 // @ts-ignore
 import qm from "../src/js/qmHelpers.js"
 import {envs, getClientId, getenv, getenvOrException} from "./env-helper"
@@ -10,7 +10,21 @@ function isTruthy(value: any) {
 }
 
 function getBugsnag() {
-    return UniversalBugsnagStatic.createClient(getenvOrException(envs.BUGSNAG_API_KEY))
+    Bugsnag.start({
+        apiKey: getenvOrException(envs.BUGSNAG_API_KEY),
+        releaseStage:  getCurrentServerContext(),
+        onError(event: { addMetadata: (arg0: string, arg1: any) => void }) {
+            event.addMetadata("GLOBAL_META_DATA", addMetaData())
+        },
+        // otherOptions: https://docs.bugsnag.com/platforms/javascript/configuration-options/
+    })
+    process.on("unhandledRejection", function(err) {
+        // @ts-ignore
+        console.error("Unhandled rejection: " + (err && err.stack || err))
+        // @ts-ignore
+        Bugsnag.notify(err)
+    })
+    return Bugsnag
 }
 
 export function error(message: string, metaData?: any, maxCharacters?: number) {
@@ -31,7 +45,7 @@ export function debug(message: string, object?: any, maxCharacters?: any) {
     }
 }
 
-export function addMetaData(metaData: { environment?: any; subsystem?: any; client_id?: any; build_link?: any; }) {
+export function addMetaData(metaData?: { environment?: any; subsystem?: any; client_id?: any; build_link?: any; }) {
     metaData = metaData || {}
     metaData.environment = obfuscateSecrets(process.env)
     metaData.subsystem = {name: getCiProvider()}

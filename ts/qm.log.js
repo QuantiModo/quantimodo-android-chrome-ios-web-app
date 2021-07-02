@@ -14,7 +14,20 @@ function isTruthy(value) {
     return (value && value !== "false");
 }
 function getBugsnag() {
-    return js_1.default.createClient(env_helper_1.getenvOrException(env_helper_1.envs.BUGSNAG_API_KEY));
+    js_1.default.start({
+        apiKey: env_helper_1.getenvOrException(env_helper_1.envs.BUGSNAG_API_KEY),
+        releaseStage: getCurrentServerContext(),
+        onError: function (event) {
+            event.addMetadata("GLOBAL_META_DATA", addMetaData());
+        },
+    });
+    process.on("unhandledRejection", function (err) {
+        // @ts-ignore
+        console.error("Unhandled rejection: " + (err && err.stack || err));
+        // @ts-ignore
+        js_1.default.notify(err);
+    });
+    return js_1.default;
 }
 function error(message, metaData, maxCharacters) {
     // tslint:disable-next-line:no-debugger
