@@ -6,6 +6,7 @@ import * as mime from "mime"
 import * as path from "path"
 import * as Q from "q"
 import rimraf from "rimraf"
+import {envs, getenvOrException} from "./env-helper"
 import * as qmLog from "./qm.log"
 const defaultS3Bucket = "qmimages"
 export function assertDoesNotExist(relative: string) {
@@ -46,19 +47,9 @@ export function deleteFile(filename: string) {
 }
 
 export function getS3Client() {
-    const AWS_ACCESS_KEY_ID =
-        process.env.QM_AWS_ACCESS_KEY_ID || process.env.AWS_ACCESS_KEY_ID // Netlify has their own
-    if (!AWS_ACCESS_KEY_ID) {
-        throw new Error("Please set AWS_ACCESS_KEY_ID env")
-    }
-    const AWS_SECRET_ACCESS_KEY =
-        process.env.QM_AWS_SECRET_ACCESS_KEY || process.env.AWS_SECRET_ACCESS_KEY // Netlify has their own
-    if (!AWS_SECRET_ACCESS_KEY) {
-        throw new Error("Please set AWS_ACCESS_KEY_ID env")
-    }
     const s3Options = {
-        accessKeyId: AWS_ACCESS_KEY_ID,
-        secretAccessKey: AWS_SECRET_ACCESS_KEY,
+        accessKeyId: getenvOrException([envs.QM_AWS_ACCESS_KEY_ID, envs.AWS_ACCESS_KEY_ID]),
+        secretAccessKey: getenvOrException([envs.QM_AWS_SECRET_ACCESS_KEY, envs.AWS_SECRET_ACCESS_KEY]),
     }
     return new AWS.S3(s3Options)
 }
@@ -169,7 +160,7 @@ export function getAbsolutePath(relativePath: string) {
     if (path.isAbsolute(relativePath)) {
         return relativePath
     } else {
-        return path.resolve("..", relativePath)
+        return path.resolve(".", relativePath)
     }
 }
 

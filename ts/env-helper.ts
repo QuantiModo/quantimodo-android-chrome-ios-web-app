@@ -1,88 +1,20 @@
 import dotenv from "dotenv"
 import * as fileHelper from "./qm.file-helper"
+import * as qmLog from "./qm.log"
 
 export const envs = {
     APP_HOST_NAME: "APP_HOST_NAME",
+    AWS_ACCESS_KEY_ID: "AWS_ACCESS_KEY_ID",
+    AWS_SECRET_ACCESS_KEY: "AWS_SECRET_ACCESS_KEY",
+    BUGSNAG_API_KEY: "BUGSNAG_API_KEY",
     GH_TOKEN: "GH_TOKEN",
     GITHUB_ACCESS_TOKEN: "GITHUB_ACCESS_TOKEN",
     GITHUB_ACCESS_TOKEN_FOR_STATUS: "GITHUB_ACCESS_TOKEN_FOR_STATUS",
+    QM_AWS_ACCESS_KEY_ID: "QM_AWS_ACCESS_KEY_ID",
+    QM_AWS_SECRET_ACCESS_KEY: "QM_AWS_SECRET_ACCESS_KEY",
     QUANTIMODO_ACCESS_TOKEN: "QUANTIMODO_ACCESS_TOKEN",
     QUANTIMODO_CLIENT_ID: "QUANTIMODO_CLIENT_ID",
     QUANTIMODO_CLIENT_SECRET: "QUANTIMODO_CLIENT_SECRET",
-}
-
-export function getenv(names: string|string[], defaultValue?: null | string): string | null {
-    if(!Array.isArray(names)) {names = [names]}
-    function getFromProcess(): string | null  {
-        // tslint:disable-next-line:prefer-for-of
-        for (let i = 0; i < names.length; i++) {
-            const name = names[i]
-            if (typeof process.env[name] !== "undefined") {
-                // @ts-ignore
-                return process.env[name]
-            }
-        }
-        return null
-    }
-    let result = getFromProcess()
-    if(result !== null) {return result}
-    try {
-        loadEnv(".env.local")
-        result = getFromProcess()
-        if(result !== null) {return result}
-        console.info("Got "+names.join(" or ")+" from .env.local")
-    } catch (e) {
-        console.info("no .env.local to get "+names.join(" or "))
-    }
-    try {
-        loadEnv(".env")
-        result = getFromProcess()
-        if(result !== null) {return result}
-        console.info("Got "+names.join(" or ")+" from .env")
-    } catch (e) {
-        console.info("no .env to get "+names.join(" or "))
-    }
-    return defaultValue || null
-}
-
-export function getenvOrException(names: string|string[]): string {
-    if(!Array.isArray(names)) {names = [names]}
-    const val = getenv(names)
-    if (val === null) {
-        throw new Error(`Please specify ` + names.join(" or ") + ` env or argument`)
-    }
-    return val
-}
-
-export function loadEnv(relativeEnvPath: string) {
-    const path = fileHelper.getAbsolutePath(relativeEnvPath)
-    console.info("Loading " + path)
-    // https://github.com/motdotla/dotenv#what-happens-to-environment-variables-that-were-already-set
-    const result = dotenv.config({path})
-    if (result.error) {
-        throw result.error
-    }
-    console.log(result.parsed)
-}
-
-export function getClientId(): string {
-    return getenvOrException(envs.QUANTIMODO_CLIENT_ID)
-}
-
-export function getClientSecret(): string | null {
-    return getenv(envs.QUANTIMODO_CLIENT_ID)
-}
-
-export function getAppHostName() {
-    return getenv(envs.APP_HOST_NAME)
-}
-
-export function getAccessToken(): string {
-    return getenvOrException(envs.QUANTIMODO_ACCESS_TOKEN)
-}
-
-export function getGithubAccessToken(): string {
-    return getenvOrException([envs.GITHUB_ACCESS_TOKEN_FOR_STATUS, envs.GITHUB_ACCESS_TOKEN, envs.GH_TOKEN])
 }
 
 export let paths = {
@@ -115,3 +47,73 @@ export let paths = {
         staticData: "src/data/qmStaticData.js",
     },
 }
+
+export function getenv(names: string|string[], defaultValue?: null | string): string | null {
+    if(!Array.isArray(names)) {names = [names]}
+    function getFromProcess(): string | null  {
+        // tslint:disable-next-line:prefer-for-of
+        for (let i = 0; i < names.length; i++) {
+            const name = names[i]
+            if (typeof process.env[name] !== "undefined") {
+                // @ts-ignore
+                return process.env[name]
+            }
+        }
+        return null
+    }
+    let result = getFromProcess()
+    if(result !== null) {return result}
+    try {
+        loadEnv(".env")
+        result = getFromProcess()
+        if(result !== null) {return result}
+        console.info("Got "+names.join(" or ")+" from .env")
+    } catch (e) {
+        console.info(e.message+"\n No .env to get "+names.join(" or "))
+    }
+    return defaultValue || null
+}
+
+export function getenvOrException(names: string|string[]): string {
+    if(!Array.isArray(names)) {names = [names]}
+    const val = getenv(names)
+    if (val === null) {
+        const msg = `Please specify ` + names.join(" or ") + ` in .env file in root of project or system environmental variables `
+        qmLog.throwError(msg)
+        throw new Error(msg)
+    }
+    return val
+}
+
+export function loadEnv(relativeEnvPath: string) {
+    const path = fileHelper.getAbsolutePath(relativeEnvPath)
+    console.info("Loading " + path)
+    // https://github.com/motdotla/dotenv#what-happens-to-environment-variables-that-were-already-set
+    const result = dotenv.config({path})
+    if (result.error) {
+        throw result.error
+    }
+    // qmLog.info(result.parsed.name)
+}
+
+export function getClientId(): string {
+    return getenvOrException(envs.QUANTIMODO_CLIENT_ID)
+}
+
+export function getClientSecret(): string | null {
+    return getenv(envs.QUANTIMODO_CLIENT_ID)
+}
+
+export function getAppHostName() {
+    return getenv(envs.APP_HOST_NAME)
+}
+
+export function getAccessToken(): string {
+    return getenvOrException(envs.QUANTIMODO_ACCESS_TOKEN)
+}
+
+export function getGithubAccessToken(): string {
+    return getenvOrException([envs.GITHUB_ACCESS_TOKEN_FOR_STATUS, envs.GITHUB_ACCESS_TOKEN, envs.GH_TOKEN])
+}
+
+
