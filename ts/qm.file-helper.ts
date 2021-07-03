@@ -10,6 +10,8 @@ import {envs, getenvOrException} from "./env-helper"
 import * as qmLog from "./qm.log"
 import {missingRequiredParameter} from "./qm.log"
 const defaultS3Bucket = "qmimages"
+// tslint:disable-next-line:no-var-requires
+const appRoot = require("app-root-path")
 export function assertDoesNotExist(relative: string) {
     const abs = getAbsolutePath(relative)
     if (fs.existsSync(abs)) {
@@ -56,7 +58,7 @@ export function getS3Client() {
 }
 
 export function downloadFromS3(filePath: string, key: string, bucketName = defaultS3Bucket) {
-    const s3 = new AWS.S3()
+    const s3 = getS3Client()
     const deferred = Q.defer()
     s3.getObject({
         Bucket: bucketName,
@@ -161,7 +163,7 @@ export function getAbsolutePath(relativePath: string) {
     if (path.isAbsolute(relativePath)) {
         return relativePath
     } else {
-        return path.resolve(".", relativePath)
+        return path.resolve(appRoot.path, relativePath)
     }
 }
 

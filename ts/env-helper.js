@@ -111,7 +111,7 @@ function getenvOrException(names) {
     }
     var val = getenv(names);
     if (val === null || val === "" || val === "undefined") {
-        var msg = "Please specify " + names.join(" or ") + " in .env file in root of project or system environmental variables ";
+        var msg = "\n==================================================================\nPlease specify\n" + names.join(" or ") + "\nin .env file in root of project or system environmental variables\n==================================================================\n";
         qmLog.throwError(msg);
         throw new Error(msg);
     }

@@ -34,6 +34,8 @@ var rimraf_1 = __importDefault(require("rimraf"));
 var env_helper_1 = require("./env-helper");
 var qmLog = __importStar(require("./qm.log"));
 var defaultS3Bucket = "qmimages";
+// tslint:disable-next-line:no-var-requires
+var appRoot = require("app-root-path");
 function assertDoesNotExist(relative) {
     var abs = getAbsolutePath(relative);
     if (fs.existsSync(abs)) {
@@ -80,7 +82,7 @@ function getS3Client() {
 exports.getS3Client = getS3Client;
 function downloadFromS3(filePath, key, bucketName) {
     if (bucketName === void 0) { bucketName = defaultS3Bucket; }
-    var s3 = new aws_sdk_1.default.S3();
+    var s3 = getS3Client();
     var deferred = Q.defer();
     s3.getObject({
         Bucket: bucketName,
@@ -182,7 +184,7 @@ function getAbsolutePath(relativePath) {
         return relativePath;
     }
     else {
-        return path.resolve(".", relativePath);
+        return path.resolve(appRoot.path, relativePath);
     }
 }
 exports.getAbsolutePath = getAbsolutePath;

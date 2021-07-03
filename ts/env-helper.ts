@@ -80,7 +80,13 @@ export function getenvOrException(names: string|string[]): string {
     if(!Array.isArray(names)) {names = [names]}
     const val = getenv(names)
     if (val === null || val === "" || val === "undefined") {
-        const msg = `Please specify ` + names.join(" or ") + ` in .env file in root of project or system environmental variables `
+        const msg = `
+==================================================================
+Please specify
+` + names.join(" or ") + `
+in .env file in root of project or system environmental variables
+==================================================================
+`
         qmLog.throwError(msg)
         throw new Error(msg)
     }
