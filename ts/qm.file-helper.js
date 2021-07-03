@@ -31,6 +31,7 @@ var mime = __importStar(require("mime"));
 var path = __importStar(require("path"));
 var Q = __importStar(require("q"));
 var rimraf_1 = __importDefault(require("rimraf"));
+var env_helper_1 = require("./env-helper");
 var qmLog = __importStar(require("./qm.log"));
 var defaultS3Bucket = "qmimages";
 function assertDoesNotExist(relative) {
@@ -70,17 +71,9 @@ function deleteFile(filename) {
 }
 exports.deleteFile = deleteFile;
 function getS3Client() {
-    var AWS_ACCESS_KEY_ID = process.env.QM_AWS_ACCESS_KEY_ID || process.env.AWS_ACCESS_KEY_ID; // Netlify has their own
-    if (!AWS_ACCESS_KEY_ID) {
-        throw new Error("Please set AWS_ACCESS_KEY_ID env");
-    }
-    var AWS_SECRET_ACCESS_KEY = process.env.QM_AWS_SECRET_ACCESS_KEY || process.env.AWS_SECRET_ACCESS_KEY; // Netlify has their own
-    if (!AWS_SECRET_ACCESS_KEY) {
-        throw new Error("Please set AWS_ACCESS_KEY_ID env");
-    }
     var s3Options = {
-        accessKeyId: AWS_ACCESS_KEY_ID,
-        secretAccessKey: AWS_SECRET_ACCESS_KEY,
+        accessKeyId: env_helper_1.getenvOrException([env_helper_1.envs.QM_AWS_ACCESS_KEY_ID, env_helper_1.envs.AWS_ACCESS_KEY_ID]),
+        secretAccessKey: env_helper_1.getenvOrException([env_helper_1.envs.QM_AWS_SECRET_ACCESS_KEY, env_helper_1.envs.AWS_SECRET_ACCESS_KEY]),
     };
     return new aws_sdk_1.default.S3(s3Options);
 }

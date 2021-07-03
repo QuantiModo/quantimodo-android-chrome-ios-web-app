@@ -98,11 +98,11 @@ exports.apiUrls = {
     staging: "https://staging.quantimo.do",
 };
 function getApiUrl() {
-    var url = qmEnv.getArgumentOrEnv("API_URL", null);
+    var url = qmEnv.getenv("API_URL", null);
     if (url) {
         return url;
     }
-    var stage = qmEnv.getArgumentOrEnv("RELEASE_STAGE", null);
+    var stage = qmEnv.getenv("RELEASE_STAGE", null);
     if (stage) {
         // @ts-ignore
         if (typeof exports.apiUrls[stage] !== "undefined") {
@@ -119,11 +119,11 @@ function getApiUrl() {
 }
 exports.getApiUrl = getApiUrl;
 function getReleaseStage() {
-    var stage = qmEnv.getArgumentOrEnv("RELEASE_STAGE", null);
+    var stage = qmEnv.getenv("RELEASE_STAGE", null);
     if (stage) {
         return stage;
     }
-    var url = qmEnv.getArgumentOrEnv("API_URL", null);
+    var url = qmEnv.getenv("API_URL", null);
     if (!url) {
         throw Error("Please set RELEASE_STAGE env");
     }
