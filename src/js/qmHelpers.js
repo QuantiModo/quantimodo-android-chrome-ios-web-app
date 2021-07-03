@@ -11930,11 +11930,11 @@ var qm = {
                 qmLog.error("no variables provided to putManualTrackingFirst");
                 return;
             }
-            var manualTracking = variables.filter(function(variableToCheck){
-                return variableToCheck.manualTracking === true;
+            var manualTracking = variables.filter(function(v){
+                return v.manualTracking === true;
             });
-            var nonManual = variables.filter(function(variableToCheck){
-                return variableToCheck.manualTracking !== true;
+            var nonManual = variables.filter(function(v){
+                return v.manualTracking !== true;
             });
             return manualTracking.concat(nonManual);
         },
@@ -11977,6 +11977,7 @@ var qm = {
                 var q = params.name || params.searchPhrase || null;
                 if(q){variables = qm.variablesHelper.putExactMatchFirst(variables, q);}
             }
+            qm.variablesHelper.validateVariables(variables)
             return variables;
         },
         getUserAndCommonVariablesFromLocalStorage: function(params){
@@ -12067,6 +12068,7 @@ var qm = {
                 }
             }
             if(userVariables.length){
+                qm.variablesHelper.validateVariables(userVariables)
                 qm.localForage.saveWithUniqueId(qm.items.userVariables, userVariables);
             }
             if(commonVariables.length){
