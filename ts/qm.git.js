@@ -223,4 +223,15 @@ function createFeatureBranch(featureName) {
     }
 }
 exports.createFeatureBranch = createFeatureBranch;
+function createFeatureBranch(featureName) {
+    var branchName = "feature/" + featureName;
+    try {
+        qmShell.executeSynchronously("git checkout -b " + branchName + " develop", false);
+    }
+    catch (e) {
+        qmLog.error(e);
+        return;
+    }
+}
+exports.createFeatureBranch = createFeatureBranch;
 //# sourceMappingURL=qm.git.js.map
