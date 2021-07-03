@@ -52,7 +52,7 @@ export const gi = {
             }
             return "https://medimodo.herokuapp.com"
         }
-        const startUrl = qmEnv.getArgumentOrEnv("START_URL", defaultValue)
+        const startUrl = qmEnv.getenv("START_URL", defaultValue)
         if (!startUrl) {
             handleTestErrors("Please set START_URL env")
         }
@@ -95,7 +95,7 @@ export const gi = {
     getSuiteId(type: string): string {
         gi.suiteType = type
         // @ts-ignore
-        return qmEnv.getArgumentOrEnv("TEST_SUITE", gi.suites[type][th.getReleaseStage()])
+        return qmEnv.getenv("TEST_SUITE", gi.suites[type][th.getReleaseStage()])
     },
     runAllIonic(callback: () => void) {
         gi.context = "all-gi-ionic"

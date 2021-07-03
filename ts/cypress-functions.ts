@@ -19,7 +19,8 @@ import * as qmGit from "./qm.git"
 import * as qmLog from "./qm.log"
 import {createSuccessFile, deleteEnvFile, deleteSuccessFile, getBuildLink, getCiProvider} from "./test-helpers"
 
-loadEnv("local") // https://github.com/motdotla/dotenv#what-happens-to-environment-variables-that-were-already-set
+// https://github.com/motdotla/dotenv#what-happens-to-environment-variables-that-were-already-set
+// loadEnv(".env.local")
 const ciProvider = getCiProvider()
 const isWin = process.platform === "win32"
 const outputReportDir = repoPath + "/cypress/reports/mocha"
