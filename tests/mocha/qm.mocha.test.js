@@ -1,4 +1,5 @@
 "use strict"
+var REPORT_EVERY_TEST_RESULT = false
 Object.defineProperty(exports, "__esModule", { value: true })
 var path = require('path')
 var appDir = path.resolve(".")
@@ -187,15 +188,28 @@ var qmTests = {
         if(callback){ callback() }
     },
 }
-beforeEach(function (done) {
-    var t = this.currentTest
-    this.timeout(10000) // Default 2000 is too fast for Github API
-    // @ts-ignore
-    qmGit.setGithubStatus("pending", t.title, "Running...", null, function (res) {
+var context = "qm.mocha.test.js"
+before(function (done) {
+    qmGit.setGithubStatus("pending", context, "Running...", null, function (res) {
         qmLog.debug(res)
         done()
     })
 })
+beforeEach(function (done) {
+    var t = this.currentTest
+    this.timeout(10000) // Default 2000 is too fast for Github API
+    // @ts-ignore
+    if(REPORT_EVERY_TEST_RESULT){
+        qmGit.setGithubStatus("pending", t.title, "Running...", null, function (res) {
+            qmLog.debug(res)
+            done()
+        })
+    } else {
+        done()
+    }
+})
+var failedTests = []
+var successfulTests = []
 afterEach(function (done) {
     var t = this.currentTest
     // @ts-ignore
@@ -208,12 +222,41 @@ afterEach(function (done) {
     var githubState = "success"
     if (state === "failed") {
         githubState = "failure"
+        failedTests.push(t)
+    } else if (!REPORT_EVERY_TEST_RESULT) {
+        successfulTests.push(t)
+        done()
+        return
     }
     // @ts-ignore
     qmGit.setGithubStatus(githubState, t.title, t.title, null, function (res) {
         qmLog.debug(res)
         done()
     })
+})
+after(async function(done){
+    if (failedTests.length) {
+        qmGit.setGithubStatus("failure", context, failedTests.length + " failed tests in after() hook!", null, function (res) {
+            qmLog.debug(res)
+            done()
+        })
+        done()
+        return
+    }
+    if (!successfulTests.length) {
+        // eslint-disable-next-line no-debugger
+        debugger
+        qmGit.setGithubStatus("error", context, "No successfulTests or failedTests in after() hook!", null, function (res) {
+            qmLog.debug(res)
+            done()
+        })
+        return
+    }
+    qmGit.setGithubStatus("success", context, successfulTests.length + " tests passed!", null, function (res) {
+        qmLog.debug(res)
+        done()
+    })
+    done()
 })
 function downloadFileContains(url, expectedToContain) {
     const deferred = Q.defer()
