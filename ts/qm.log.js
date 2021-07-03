@@ -51,7 +51,7 @@ function addMetaData(metaData) {
     metaData = metaData || {};
     metaData.environment = obfuscateSecrets(process.env);
     metaData.subsystem = { name: test_helpers_1.getCiProvider() };
-    metaData.client_id = env_helper_1.getClientId();
+    metaData.client_id = env_helper_1.getQMClientId();
     metaData.build_link = test_helpers_1.getBuildLink();
     return metaData;
 }

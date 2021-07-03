@@ -22,7 +22,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.qmPlatform = exports.getGithubAccessToken = exports.getAccessToken = exports.getAppHostName = exports.getClientSecret = exports.getClientId = exports.loadEnv = exports.getenvOrException = exports.getenv = exports.paths = exports.envs = void 0;
+exports.qmPlatform = exports.getGithubAccessToken = exports.getAccessToken = exports.getAppHostName = exports.getQMClientSecret = exports.getQMClientId = exports.loadEnv = exports.getenvOrException = exports.getenv = exports.paths = exports.envs = void 0;
 var dotenv_1 = __importDefault(require("dotenv"));
 var fileHelper = __importStar(require("./qm.file-helper"));
 var qmLog = __importStar(require("./qm.log"));
@@ -127,14 +127,14 @@ function loadEnv(relativeEnvPath) {
     // qmLog.info(result.parsed.name)
 }
 exports.loadEnv = loadEnv;
-function getClientId() {
+function getQMClientId() {
     return getenvOrException(exports.envs.QUANTIMODO_CLIENT_ID);
 }
-exports.getClientId = getClientId;
-function getClientSecret() {
-    return getenv(exports.envs.QUANTIMODO_CLIENT_ID);
+exports.getQMClientId = getQMClientId;
+function getQMClientSecret() {
+    return getenv(exports.envs.QUANTIMODO_CLIENT_SECRET);
 }
-exports.getClientSecret = getClientSecret;
+exports.getQMClientSecret = getQMClientSecret;
 function getAppHostName() {
     return getenv(exports.envs.APP_HOST_NAME);
 }

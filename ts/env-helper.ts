@@ -96,12 +96,12 @@ export function loadEnv(relativeEnvPath: string) {
     // qmLog.info(result.parsed.name)
 }
 
-export function getClientId(): string {
+export function getQMClientId(): string {
     return getenvOrException(envs.QUANTIMODO_CLIENT_ID)
 }
 
-export function getClientSecret(): string | null {
-    return getenv(envs.QUANTIMODO_CLIENT_ID)
+export function getQMClientSecret(): string | null {
+    return getenv(envs.QUANTIMODO_CLIENT_SECRET)
 }
 
 export function getAppHostName() {

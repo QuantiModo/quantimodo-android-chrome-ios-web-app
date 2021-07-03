@@ -1,7 +1,7 @@
 import Bugsnag from "@bugsnag/js"
 // @ts-ignore
 import qm from "../src/js/qmHelpers.js"
-import {envs, getClientId, getenv, getenvOrException} from "./env-helper"
+import {envs, getenv, getenvOrException, getQMClientId} from "./env-helper"
 import {getBuildLink, getCiProvider} from "./test-helpers"
 
 // tslint:disable-next-line:max-line-length
@@ -49,7 +49,7 @@ export function addMetaData(metaData?: { environment?: any; subsystem?: any; cli
     metaData = metaData || {}
     metaData.environment = obfuscateSecrets(process.env)
     metaData.subsystem = {name: getCiProvider()}
-    metaData.client_id = getClientId()
+    metaData.client_id = getQMClientId()
     metaData.build_link = getBuildLink()
     return metaData
 }
