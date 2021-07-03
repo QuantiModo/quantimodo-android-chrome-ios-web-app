@@ -1872,9 +1872,9 @@ var qm = {
                 throw name + " should be null but is " + JSON.stringify(value);
             }
         },
-        isInteger: function(value){
+        isInteger: function(value, type, meta){
             if(!Number.isInteger(value)){
-                qmLog.lei("not an integer: ", {value: value})
+                qmLog.le(type+" is not an integer: ", meta|| {value: value})
             }
         }
     },
@@ -5438,7 +5438,8 @@ var qm = {
         },
         deleteMeasurement: function(toDelete){
             var deferred = Q.defer();
-            qm.assert.isInteger(toDelete.id);
+            if(!toDelete.id){qmLog.info("No id to delete measurement, so I guess it was just created: ", toDelete)}
+            //qm.assert.isInteger(toDelete.id, "measurement id", toDelete);
             //debugger
             qm.measurements.deleteLocally(toDelete);
             qm.toast.infoToast("Deleted " + toDelete.variableName + " measurement");
