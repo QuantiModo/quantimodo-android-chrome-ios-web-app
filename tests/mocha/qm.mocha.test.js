@@ -8,6 +8,10 @@ var expect = chai.expect
 // Otherwise assertion failures in async tests are wrapped, which prevents mocha from
 // being able to interpret them (such as displaying a diff).
 process.on('unhandledRejection', function(err) {
+    if(typeof err !== "string"){
+        qmLog.error("Error is not as string but is: ", null, {err})
+        throw err
+    }
     if(err.indexOf("unhandledRejection: Uncaught FetchError: invalid json response body") !== -1){
         qmLog.error(err)
     } else {
