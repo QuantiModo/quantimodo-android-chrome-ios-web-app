@@ -12091,6 +12091,14 @@ var qm = {
             var v = qm.userVariables.getCached().find(matches)
             if(!v){v = qm.commonVariablesHelper.getCached().find(matches)}
             return v;
+        },
+        validateVariables: function(variables){
+            if(!Array.isArray(variables)){variables = [variables];}
+            variables.map(function (v){
+                if(v && v.variableId === 1398){
+                    qmLog.errorAndExceptionTestingOrDevelopment("why isn't mood an outcome: "+v.outcome, v)
+                }
+            });
         }
     },
     variableCategoryHelper: {

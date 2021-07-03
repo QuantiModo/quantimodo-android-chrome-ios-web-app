@@ -3,6 +3,7 @@ import * as qmEnv from "./env-helper"
 import * as fileHelper from "./qm.file-helper"
 import * as qmGit from "./qm.git"
 import * as qmLog from "./qm.log"
+// tslint:disable-next-line:no-var-requires
 const qm = require("../src/js/qmHelpers.js")
 export function getBuildLink() {
     if (process.env.BUILD_URL_FOR_STATUS) {
