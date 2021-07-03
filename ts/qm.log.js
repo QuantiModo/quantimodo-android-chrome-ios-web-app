@@ -1,15 +1,47 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getCurrentServerContext = exports.logBugsnagLink = exports.prettyJSONStringify = exports.obfuscateSecrets = exports.obfuscateString = exports.isSecretWord = exports.obfuscateStringify = exports.addMetaData = exports.debug = exports.info = exports.error = void 0;
+exports.logErrorAndThrowException = exports.slugify = exports.throwError = exports.getCurrentServerContext = exports.logBugsnagLink = exports.prettyJSONStringify = exports.obfuscateSecrets = exports.obfuscateString = exports.isSecretWord = exports.obfuscateStringify = exports.addMetaData = exports.debug = exports.info = exports.error = void 0;
+var js_1 = __importDefault(require("@bugsnag/js"));
+// @ts-ignore
+var qmHelpers_js_1 = __importDefault(require("../src/js/qmHelpers.js"));
+var env_helper_1 = require("./env-helper");
 var test_helpers_1 = require("./test-helpers");
-var QUANTIMODO_CLIENT_ID = process.env.QUANTIMODO_CLIENT_ID || process.env.CLIENT_ID;
 // tslint:disable-next-line:max-line-length
-var AWS_SECRET_ACCESS_KEY = process.env.QM_AWS_SECRET_ACCESS_KEY || process.env.AWS_SECRET_ACCESS_KEY; // Netlify has their own
-function isTruthy(value) { return (value && value !== "false"); }
+function isTruthy(value) {
+    return (value && value !== "false");
+}
+// getenvOrException(envs.BUGSNAG_API_KEY)
+function getBugsnag() {
+    js_1.default.start({
+        apiKey: env_helper_1.getenvOrException(env_helper_1.envs.BUGSNAG_API_KEY),
+        releaseStage: getCurrentServerContext(),
+        onError: function (event) {
+            event.addMetadata("GLOBAL_META_DATA", addMetaData());
+        },
+    });
+    process.on("unhandledRejection", function (err) {
+        // @ts-ignore
+        console.error("Unhandled rejection: " + (err && err.stack || err));
+        // @ts-ignore
+        js_1.default.notify(err);
+    });
+    return js_1.default;
+}
 function error(message, metaData, maxCharacters) {
+    // tslint:disable-next-line:no-debugger
+    debugger;
     metaData = addMetaData(metaData);
-    console.error(obfuscateStringify(message, metaData, maxCharacters));
-    // bugsnag.notify(new Error(obfuscateStringify(message)));
+    message = obfuscateStringify(message, metaData, maxCharacters);
+    if (env_helper_1.qmPlatform.isBackEnd()) {
+        message = "=====================\n" + message + "\n=====================";
+    }
+    console.error(message);
+    if (env_helper_1.getenv(env_helper_1.envs.BUGSNAG_API_KEY)) {
+        getBugsnag().notify(obfuscateStringify(message), metaData);
+    }
 }
 exports.error = error;
 function info(message, object, maxCharacters) {
@@ -26,7 +58,7 @@ function addMetaData(metaData) {
     metaData = metaData || {};
     metaData.environment = obfuscateSecrets(process.env);
     metaData.subsystem = { name: test_helpers_1.getCiProvider() };
-    metaData.client_id = QUANTIMODO_CLIENT_ID;
+    metaData.client_id = env_helper_1.getQMClientIdIfSet();
     metaData.build_link = test_helpers_1.getBuildLink();
     return metaData;
 }
@@ -42,18 +74,6 @@ function obfuscateStringify(message, object, maxCharacters) {
         objectString = objectString.substring(0, maxCharacters) + "...";
     }
     message += objectString;
-    if (process.env.QUANTIMODO_CLIENT_SECRET) {
-        message = message.replace(process.env.QUANTIMODO_CLIENT_SECRET, "HIDDEN");
-    }
-    if (AWS_SECRET_ACCESS_KEY) {
-        message = message.replace(AWS_SECRET_ACCESS_KEY, "HIDDEN");
-    }
-    if (process.env.ENCRYPTION_SECRET) {
-        message = message.replace(process.env.ENCRYPTION_SECRET, "HIDDEN");
-    }
-    if (process.env.QUANTIMODO_ACCESS_TOKEN) {
-        message = message.replace(process.env.QUANTIMODO_ACCESS_TOKEN, "HIDDEN");
-    }
     message = obfuscateString(message);
     return message;
 }
@@ -71,9 +91,10 @@ function obfuscateString(str) {
     var env = process.env;
     for (var propertyName in env) {
         if (env.hasOwnProperty(propertyName)) {
-            if (isSecretWord(propertyName)) {
+            var val = env[propertyName];
+            if (val && isSecretWord(propertyName) && val.length > 6) {
                 // @ts-ignore
-                str = str.replace(env[propertyName], "[SECURE]");
+                str = qmHelpers_js_1.default.stringHelper.replaceAll(str, val, "[" + propertyName + " hidden by obfuscateString]");
             }
         }
     }
@@ -88,7 +109,7 @@ function obfuscateSecrets(object) {
     for (var propertyName in object) {
         if (object.hasOwnProperty(propertyName)) {
             if (isSecretWord(propertyName)) {
-                object[propertyName] = "[SECURE]";
+                object[propertyName] = "[" + propertyName + " hidden by obfuscateSecrets]";
             }
             else {
                 object[propertyName] = obfuscateSecrets(object[propertyName]);
@@ -119,4 +140,30 @@ function getCurrentServerContext() {
     return process.env.HOSTNAME;
 }
 exports.getCurrentServerContext = getCurrentServerContext;
+function throwError(message, metaData, maxCharacters) {
+    error(message, metaData, maxCharacters);
+    throw Error(message);
+}
+exports.throwError = throwError;
+function slugify(str) {
+    str = str.replace(/^\s+|\s+$/g, ""); // trim
+    str = str.toLowerCase();
+    // remove accents, swap ñ for n, etc
+    var from = "àáäâèéëêìíïîòóöôùúüûñç·/_,:;";
+    var to = "aaaaeeeeiiiioooouuuunc------";
+    for (var i = 0, l = from.length; i < l; i++) {
+        str = str.replace(new RegExp(from.charAt(i), "g"), to.charAt(i));
+    }
+    str = str.replace(".", "-") // replace a dot by a dash
+        .replace(/[^a-z0-9 -]/g, "") // remove invalid chars
+        .replace(/\s+/g, "-") // collapse whitespace and replace by a dash
+        .replace(/-+/g, "-"); // collapse dashes
+    return str;
+}
+exports.slugify = slugify;
+function logErrorAndThrowException(message, object) {
+    error(message, object);
+    throw message;
+}
+exports.logErrorAndThrowException = logErrorAndThrowException;
 //# sourceMappingURL=qm.log.js.map
