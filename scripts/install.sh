@@ -6,7 +6,7 @@ echo "SCRIPT_FOLDER is $SCRIPT_FOLDER" && cd "${SCRIPT_FOLDER}" && cd .. && expo
 set -e
 set -x
 source "$SCRIPT_FOLDER"/no-root.sh
-sudo chown -R $USER ~/.nvm
+sudo chown -R $USER ~/.nvm || true
 set +x
 echo "nvm install 10..."
 nvm install 10
