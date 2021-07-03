@@ -67,9 +67,9 @@ export const apiUrls = {
 }
 
 export function getApiUrl(): string {
-    const url = qmEnv.getArgumentOrEnv("API_URL", null)
+    const url = qmEnv.getenv("API_URL", null)
     if(url) {return url}
-    const stage = qmEnv.getArgumentOrEnv("RELEASE_STAGE", null)
+    const stage = qmEnv.getenv("RELEASE_STAGE", null)
     if(stage) {
         // @ts-ignore
         if(typeof apiUrls[stage] !== "undefined") {
@@ -84,9 +84,9 @@ export function getApiUrl(): string {
     return "https://app.quantimo.do"
 }
 export function getReleaseStage() {
-    const stage = qmEnv.getArgumentOrEnv("RELEASE_STAGE", null)
+    const stage = qmEnv.getenv("RELEASE_STAGE", null)
     if(stage) {return stage}
-    const url = qmEnv.getArgumentOrEnv("API_URL", null)
+    const url = qmEnv.getenv("API_URL", null)
     if(!url) {
         throw Error("Please set RELEASE_STAGE env")
     }

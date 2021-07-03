@@ -35,7 +35,7 @@ function outputApiErrorResponse(err, options) {
 }
 function makeApiRequest(options, successHandler) {
     var rp = require("request-promise");
-    qmLog.info("Making request to " + options.uri + " with clientId: " + env.getClientId());
+    qmLog.info("Making request to " + options.uri + " with clientId: " + env.getQMClientIdOrException());
     qmLog.debug(options.uri, options, 280);
     // options.uri = options.uri.replace('app', 'staging');
     if (options.uri.indexOf("staging") !== -1) {

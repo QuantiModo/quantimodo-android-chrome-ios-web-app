@@ -2,14 +2,14 @@ import Octokit from "@octokit/rest"
 // @ts-ignore
 import * as git from "simple-git"
 import _str from "underscore.string"
-import {loadEnv} from "./env-helper"
+import {envs, getenv, getGithubAccessToken, loadEnv} from "./env-helper"
 import * as qmLog from "./qm.log"
 import * as qmShell from "./qm.shell"
 import {getBuildLink} from "./test-helpers"
 // tslint:disable-next-line:no-var-requires
 const qm = require("../src/js/qmHelpers.js")
 export function getOctoKit() {
-    return new Octokit({auth: getAccessToken()})
+    return new Octokit({auth: getGithubAccessToken()})
 }
 export function getCurrentGitCommitSha() {
     if (process.env.GIT_COMMIT_FOR_STATUS) {
@@ -33,17 +33,7 @@ export function getCurrentGitCommitSha() {
         console.info(error)
     }
 }
-export function getAccessToken() {
-    let t = process.env.GITHUB_ACCESS_TOKEN_FOR_STATUS || process.env.GITHUB_ACCESS_TOKEN || process.env.GH_TOKEN
-    if(!t) {
-        loadEnv("local")
-        t = process.env.GITHUB_ACCESS_TOKEN_FOR_STATUS || process.env.GITHUB_ACCESS_TOKEN || process.env.GH_TOKEN
-    }
-    if(!t) {
-        throw new Error("Please set GITHUB_ACCESS_TOKEN or GH_TOKEN env")
-    }
-    return t
-}
+
 export function getRepoUrl() {
     if (process.env.REPOSITORY_URL_FOR_STATUS) {
         return process.env.REPOSITORY_URL_FOR_STATUS

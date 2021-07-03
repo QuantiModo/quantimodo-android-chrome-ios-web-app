@@ -33,7 +33,6 @@ var mochawesome_merge_1 = require("mochawesome-merge");
 var mochawesome_report_generator_1 = __importDefault(require("mochawesome-report-generator"));
 var Q = __importStar(require("q"));
 var rimraf_1 = __importDefault(require("rimraf"));
-var env_helper_1 = require("./env-helper");
 var fileHelper = __importStar(require("./qm.file-helper"));
 // require untyped library file
 // tslint:disable-next-line:no-var-requires
@@ -41,7 +40,8 @@ var qm = require("../src/js/qmHelpers.js");
 var qmGit = __importStar(require("./qm.git"));
 var qmLog = __importStar(require("./qm.log"));
 var test_helpers_1 = require("./test-helpers");
-env_helper_1.loadEnv("local"); // https://github.com/motdotla/dotenv#what-happens-to-environment-variables-that-were-already-set
+// https://github.com/motdotla/dotenv#what-happens-to-environment-variables-that-were-already-set
+// loadEnv(".env.local")
 var ciProvider = test_helpers_1.getCiProvider();
 var isWin = process.platform === "win32";
 var outputReportDir = app_root_path_1.default + "/cypress/reports/mocha";
