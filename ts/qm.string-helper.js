@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.stripLiteralBrackets = exports.replaceQuoteBracketsWithBackTicks = exports.slugify = exports.stripLineBreaks = exports.stripQuotes = exports.replaceQuotesWithBackTicks = void 0;
 function replaceQuotesWithBackTicks(str) {
     var hasVariables = str.indexOf("${") !== -1;
     if (!hasVariables) {
