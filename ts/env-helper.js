@@ -95,7 +95,7 @@ function getenv(names, defaultValue) {
         if (result !== null) {
             return result;
         }
-        console.info("Got " + names.join(" or ") + " from .env");
+        console.info("Could not get " + names.join(" or ") + " from .env file or process.env");
     }
     catch (e) {
         console.info(e.message + "\n No .env to get " + names.join(" or "));
@@ -108,7 +108,7 @@ function getenvOrException(names) {
         names = [names];
     }
     var val = getenv(names);
-    if (val === null) {
+    if (val === null || val === "" || val === "undefined") {
         var msg = "Please specify " + names.join(" or ") + " in .env file in root of project or system environmental variables ";
         qmLog.throwError(msg);
         throw new Error(msg);
