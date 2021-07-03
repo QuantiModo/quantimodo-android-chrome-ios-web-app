@@ -5,6 +5,7 @@ SCRIPT_PATH="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/$(basename "${BASH_SO
 echo "SCRIPT_FOLDER is $SCRIPT_FOLDER" && cd "${SCRIPT_FOLDER}" && cd .. && export IONIC_PATH="$PWD" && echo "IONIC_PATH is $IONIC_PATH"
 set -e
 set -x
+source "$SCRIPT_FOLDER"/no-root.sh
 sudo chown -R $USER ~/.nvm
 nvm install 10
 nvm use 10
