@@ -1,15 +1,28 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
 var __importStar = (this && this.__importStar) || function (mod) {
     if (mod && mod.__esModule) return mod;
     var result = {};
-    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
-    result["default"] = mod;
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
     return result;
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.uploadMochawesome = exports.runLastFailedCypressTest = exports.runCypressTests = exports.runCypressTestsInParallel = exports.downloadLastFailed = exports.uploadLastFailed = exports.uploadCypressVideo = exports.getVideoPath = exports.runOneCypressSpec = exports.runWithRecording = exports.mochawesome = void 0;
 var app_root_path_1 = __importDefault(require("app-root-path"));
 var cypress = __importStar(require("cypress"));
 var slack_alert_js_1 = require("cypress-slack-reporter/bin/slack/slack-alert.js");
@@ -20,7 +33,6 @@ var mochawesome_merge_1 = require("mochawesome-merge");
 var mochawesome_report_generator_1 = __importDefault(require("mochawesome-report-generator"));
 var Q = __importStar(require("q"));
 var rimraf_1 = __importDefault(require("rimraf"));
-var env_helper_1 = require("./env-helper");
 var fileHelper = __importStar(require("./qm.file-helper"));
 // require untyped library file
 // tslint:disable-next-line:no-var-requires
@@ -28,7 +40,8 @@ var qm = require("../src/js/qmHelpers.js");
 var qmGit = __importStar(require("./qm.git"));
 var qmLog = __importStar(require("./qm.log"));
 var test_helpers_1 = require("./test-helpers");
-env_helper_1.loadEnv("local"); // https://github.com/motdotla/dotenv#what-happens-to-environment-variables-that-were-already-set
+// https://github.com/motdotla/dotenv#what-happens-to-environment-variables-that-were-already-set
+// loadEnv(".env.local")
 var ciProvider = test_helpers_1.getCiProvider();
 var isWin = process.platform === "win32";
 var outputReportDir = app_root_path_1.default + "/cypress/reports/mocha";

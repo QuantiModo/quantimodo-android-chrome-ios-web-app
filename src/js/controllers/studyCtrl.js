@@ -34,12 +34,9 @@ angular.module("starter").controller("StudyCtrl", [
         qm.loaders.robots();
     });
     function setAllStateProperties(study){
-        if(!study){
-            return;
-        }
-        if(study.statistics){
-            delete study.statistics.studyText;
-        }
+        if(!study){return;}
+        if(study.statistics){delete study.statistics.studyText;}
+        qm.studyHelper.isOwner(study);
         $scope.state.study = study;
     }
     function matchesVariableNames(study){

@@ -3,6 +3,7 @@ import * as qmEnv from "./env-helper"
 import * as fileHelper from "./qm.file-helper"
 import * as qmGit from "./qm.git"
 import * as qmLog from "./qm.log"
+// tslint:disable-next-line:no-var-requires
 const qm = require("../src/js/qmHelpers.js")
 export function getBuildLink() {
     if (process.env.BUILD_URL_FOR_STATUS) {
@@ -66,9 +67,9 @@ export const apiUrls = {
 }
 
 export function getApiUrl(): string {
-    const url = qmEnv.getArgumentOrEnv("API_URL", null)
+    const url = qmEnv.getenv("API_URL", null)
     if(url) {return url}
-    const stage = qmEnv.getArgumentOrEnv("RELEASE_STAGE", null)
+    const stage = qmEnv.getenv("RELEASE_STAGE", null)
     if(stage) {
         // @ts-ignore
         if(typeof apiUrls[stage] !== "undefined") {
@@ -83,9 +84,9 @@ export function getApiUrl(): string {
     return "https://app.quantimo.do"
 }
 export function getReleaseStage() {
-    const stage = qmEnv.getArgumentOrEnv("RELEASE_STAGE", null)
+    const stage = qmEnv.getenv("RELEASE_STAGE", null)
     if(stage) {return stage}
-    const url = qmEnv.getArgumentOrEnv("API_URL", null)
+    const url = qmEnv.getenv("API_URL", null)
     if(!url) {
         throw Error("Please set RELEASE_STAGE env")
     }

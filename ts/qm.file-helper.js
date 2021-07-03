@@ -1,15 +1,28 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
 var __importStar = (this && this.__importStar) || function (mod) {
     if (mod && mod.__esModule) return mod;
     var result = {};
-    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
-    result["default"] = mod;
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
     return result;
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.listFilesRecursively = exports.uploadFolderToS3 = exports.download = exports.getAbsolutePath = exports.writeToFile = exports.uploadToS3 = exports.uploadToS3InSubFolderWithCurrentDateTime = exports.downloadFromS3 = exports.getS3Client = exports.deleteFile = exports.createFile = exports.exists = exports.assertExists = exports.assertDoesNotExist = void 0;
 // noinspection JSUnusedGlobalSymbols,JSUnusedGlobalSymbols
 var aws_sdk_1 = __importDefault(require("aws-sdk"));
 var fs = __importStar(require("fs"));
@@ -18,6 +31,7 @@ var mime = __importStar(require("mime"));
 var path = __importStar(require("path"));
 var Q = __importStar(require("q"));
 var rimraf_1 = __importDefault(require("rimraf"));
+var env_helper_1 = require("./env-helper");
 var qmLog = __importStar(require("./qm.log"));
 var defaultS3Bucket = "qmimages";
 function assertDoesNotExist(relative) {
@@ -57,17 +71,9 @@ function deleteFile(filename) {
 }
 exports.deleteFile = deleteFile;
 function getS3Client() {
-    var AWS_ACCESS_KEY_ID = process.env.QM_AWS_ACCESS_KEY_ID || process.env.AWS_ACCESS_KEY_ID; // Netlify has their own
-    if (!AWS_ACCESS_KEY_ID) {
-        throw new Error("Please set AWS_ACCESS_KEY_ID env");
-    }
-    var AWS_SECRET_ACCESS_KEY = process.env.QM_AWS_SECRET_ACCESS_KEY || process.env.AWS_SECRET_ACCESS_KEY; // Netlify has their own
-    if (!AWS_SECRET_ACCESS_KEY) {
-        throw new Error("Please set AWS_ACCESS_KEY_ID env");
-    }
     var s3Options = {
-        accessKeyId: AWS_ACCESS_KEY_ID,
-        secretAccessKey: AWS_SECRET_ACCESS_KEY,
+        accessKeyId: env_helper_1.getenvOrException([env_helper_1.envs.QM_AWS_ACCESS_KEY_ID, env_helper_1.envs.AWS_ACCESS_KEY_ID]),
+        secretAccessKey: env_helper_1.getenvOrException([env_helper_1.envs.QM_AWS_SECRET_ACCESS_KEY, env_helper_1.envs.AWS_SECRET_ACCESS_KEY]),
     };
     return new aws_sdk_1.default.S3(s3Options);
 }

@@ -1,11 +1,12 @@
 # Contributing
 
-We love pull requests and would be very grateful if you'd help us abolish suffering with data!  
+We love pull requests and would be very grateful if you'd help us abolish suffering with data!
 
 [ ] [Fork](https://help.github.com/articles/fork-a-repo/) a copy of the repo to your own Github account.
 
-[ ] [Clone](https://help.github.com/articles/cloning-a-repository/) your forked version of the repo locally.  
-(Ideally, use a powerful GUI git client like [SourceTree](https://www.sourcetreeapp.com/). The command line is for barbarians.)
+[ ] [Clone](https://help.github.com/articles/cloning-a-repository/) your forked version of the repo locally.
+(Ideally, use a powerful GUI git client like [SourceTree](https://www.sourcetreeapp.com/). The command line is for
+barbarians.)
 
 If you must use the command line, you can use these:
 
@@ -42,8 +43,8 @@ git push origin
 
 [Submit a pull request on Github.com](https://help.github.com/articles/creating-a-pull-request/).
 
-At this point you're waiting on me. I do my best to keep on top of all the pull requests. 
-I may suggest some changes, improvements or alternatives.
+At this point you're waiting on me. I do my best to keep on top of all the pull requests. I may suggest some changes,
+improvements or alternatives.
 
 Some things that will increase the chance that your pull request is accepted:
 
@@ -79,6 +80,7 @@ or on-edit linting.
 1. Sublime -> Preferences -> Package Settings -> JSHint Gutter
 1. Set `lint_on_load` and `lint_on_save` to `true`
 
-Tips
+### Tips
 
 - I recommend using [SourceTree and the Gitflow model] (https://github.com/GSoft-SharePoint/Dynamite/wiki/Getting-started-with-SourceTree,-Git-and-git-flow) for development.
+
