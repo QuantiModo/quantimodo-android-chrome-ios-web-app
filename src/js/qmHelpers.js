@@ -9486,7 +9486,26 @@ var qm = {
                     qm.chrome.updateChromeBadge(notifications.length);
                 }
             }
-            return qm.notifications.removeDuplicates(notifications);
+            function shouldWeShowZeroButton(trn){
+                return trn.inputType === 'defaultValue' || (trn.inputType === 'value' && trn.defaultValue !== null);
+            }
+            for(var i = 0; i < notifications.length; i++){
+                var n = notifications[i]
+                n.showZeroButton = shouldWeShowZeroButton(notifications[i]);
+                n.trackAllActions.forEach(function (a) {
+                    if(a.callback === "skipAction"){
+                        a.valueUnit = "Skip"
+                        a.longTitle = "Skip all remaining un-tracked past notifications"
+                        a.titleHtml = "<p>Skip All</p>"
+                    } else{
+                        a.valueUnit = a.title.replace(" for all", "");
+                        a.longTitle = "Record "+a.valueUnit + " for all remaining un-tracked past notifications"
+                        a.titleHtml = "<p>"+a.valueUnit+"</p>"+"<p><small>for all</small></p>"
+                    }
+                })
+            }
+            var noDupes = qm.notifications.removeDuplicates(notifications);
+            return noDupes;
         },
         getAsString: function(key){
             var item = qm.storage.getItem(key);
@@ -9957,6 +9976,10 @@ var qm = {
         }
     },
     studyHelper: {
+        isOwner: function(study){
+            var user = qm.getUser();
+            return study.isOwner = study.userId && user && study.userId === user.id;
+        },
         cached: {},
         getStudiesApiInstance: function(params, functionName){
             qm.api.configureClient(functionName, null, params);
@@ -12068,6 +12091,14 @@ var qm = {
             var v = qm.userVariables.getCached().find(matches)
             if(!v){v = qm.commonVariablesHelper.getCached().find(matches)}
             return v;
+        },
+        validateVariables: function(variables){
+            if(!Array.isArray(variables)){variables = [variables];}
+            variables.map(function (v){
+                if(v && v.variableId === 1398){
+                    qmLog.errorAndExceptionTestingOrDevelopment("why isn't mood an outcome: "+v.outcome, v)
+                }
+            });
         }
     },
     variableCategoryHelper: {

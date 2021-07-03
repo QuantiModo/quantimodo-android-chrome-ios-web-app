@@ -1,6 +1,6 @@
 import * as qmTests from "./cypress-functions"
 import {loadEnv} from "./env-helper"
-loadEnv("local")
+// loadEnv("local")
 if(!process.env.ELECTRON_ENABLE_LOGGING) {
     console.log("set env ELECTRON_ENABLE_LOGGING=\"1\" if you want to log to CI.  Disabled by default to avoid leaking secrets on Travis")
 }

@@ -49,7 +49,7 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
             qmLog.info('RemindersInboxCtrl enter: ' + window.location.href);
             $scope.defaultHelpCards = qmService.setupHelpCards($rootScope.appSettings);
             readHelpCards();
-            getLocalNotifications();
+            addLocalNotificationsToScope('$ionicView.enter');
             //getFavorites();  Not sure why we need to do this here?
             qmService.rootScope.setProperty('bloodPressure', {displayTotal: "Blood Pressure"});
             $scope.stateParams = $stateParams;
@@ -137,13 +137,22 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
         function refreshIfRunningOutOfNotifications(){
             var num = getNumberOfDisplayedNotifications();
             if(num < 2){
-                var cat = getVariableCategoryName();
-                if(qm.notifications.getNumberInGlobalsOrLocalStorage(cat)){
-                    getLocalNotifications();
+                if(moreNotificationsInStorage()){
+                    addLocalNotificationsToScope('refreshIfRunningOutOfNotifications');
                 }else{
                     $scope.syncNotifications();
                 }
             }
+        }
+        function getNumberOfNotificationsInStorage() {
+            var cat = getVariableCategoryName();
+            var inStorage = qm.notifications.getNumberInGlobalsOrLocalStorage(cat);
+            return inStorage;
+        }
+        function moreNotificationsInStorage(){
+            var displayed = getNumberOfDisplayedNotifications();
+            var inStorage = getNumberOfNotificationsInStorage();
+            return inStorage > displayed;
         }
         $scope.trackByValueField = function(n, $event){
             if(isGhostClick($event)){return;}
@@ -211,7 +220,7 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
                     qm.notifications.removeNotificationFromSyncQueueAndUnhide(n)
                 }
             })
-            getLocalNotifications()
+            addLocalNotificationsToScope('undoByVariableId')
         }
         function getFallbackInboxContentIfNecessary(){
             var num = getNumberOfDisplayedNotifications();
@@ -248,14 +257,14 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
             if(!n.trackingReminderNotificationId){n.trackingReminderNotificationId = n.id;}
             closeWindowIfNecessary();
             if(!getNumberOfDisplayedNotifications()){
-                getLocalNotifications();
+                addLocalNotificationsToScope('!getNumberOfDisplayedNotifications');
             }
             refreshIfRunningOutOfNotifications();
             return n;
         };
         function undoOne(n) {
             qm.notifications.removeNotificationFromSyncQueueAndUnhide(n)
-            getLocalNotifications();
+            addLocalNotificationsToScope('undoOne');
         }
         $scope.track = function(n, value, $ev){ // Keep trackAll param because it's used in templates/items/notification-item.html
             if(isGhostClick($ev)){return false;}
@@ -352,14 +361,34 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
                 })
             })
         }
-        var getLocalNotifications = function(){
+        function getNotifications() {
             var notifications = qm.storage.getTrackingReminderNotifications(getVariableCategoryName(),
                 $scope.state.maximumNotificationsToDisplay);
             qmLog.debug('Just got ' + notifications.length + ' trackingReminderNotifications from local storage');
+            return notifications;
+        }
+        var addLocalNotificationsToScopeIfMoreInStorage = function(reason){
+            if(moreNotificationsInStorage()){
+                addLocalNotificationsToScope(reason);
+            } else {
+                qmLog.info('We already have '+getNumberOfDisplayedNotifications()+' displayed notifications and '+
+                    getNumberOfNotificationsInStorage()+' so not adding despite '+reason);
+            }
+        }
+        var addLocalNotificationsToScope = function(reason){
+            //debugger
+            qmLog.info("addLocalNotificationsToScope because "+reason || addLocalNotificationsToScope.caller)
+            var notifications = getNotifications();
             if($state.current.name === "app.remindersInboxCompact"){
                 $scope.trackingReminderNotifications = notifications;
             }else{
-                addNotificationsToScope(notifications)
+                var dividers = qm.notifications.groupByDate(notifications)
+                $scope.safeApply(function () { // For som reason these are not visible to Ghost Inspector sometimes
+                    $scope.notificationDividers = dividers;
+                    $scope.state.numberOfDisplayedNotifications = notifications.length;
+                    $scope.state.showTrackAllButtons = notifications.length >= $scope.state.maximumNotificationsToDisplay;
+                    logNotificationDividers($scope.notificationDividers);
+                })
             }
             hideInboxLoader();
             getFallbackInboxContentIfNecessary();
@@ -370,44 +399,10 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
             $scope.state.loading = false;
             qmService.hideLoader();
         };
-        function addNotificationsToScope(notifications) {
-            for(var i = 0; i < notifications.length; i++){
-                var n = notifications[i]
-                n.showZeroButton = shouldWeShowZeroButton(notifications[i]);
-                n.trackAllActions.forEach(function (a) {
-                    if(a.callback === "skipAction"){
-                        a.valueUnit = "Skip"
-                        a.longTitle = "Skip all remaining un-tracked past notifications"
-                        a.titleHtml = "<p>Skip All</p>"
-                    } else{
-                        a.valueUnit = a.title.replace(" for all", "");
-                        a.longTitle = "Record "+a.valueUnit + " for all remaining un-tracked past notifications"
-                        a.titleHtml = "<p>"+a.valueUnit+"</p>"+"<p><small>for all</small></p>"
-                    }
-                })
-            }
-            notifications = qm.notifications.removeDuplicates(notifications);
-            var dividers = qm.notifications.groupByDate(notifications)
-            $scope.safeApply(function () { // For som reason these are not visible to Ghost Inspector sometimes
-                $scope.notificationDividers = dividers;
-                $scope.state.numberOfDisplayedNotifications = notifications.length;
-                $scope.state.showTrackAllButtons = notifications.length >= $scope.state.maximumNotificationsToDisplay;
-                logNotificationDividers($scope.notificationDividers);
-            })
-        }
         $rootScope.$on('broadcastGetTrackingReminderNotifications', function(){
             qmLog.info('getTrackingReminderNotifications broadcast received...');
-            var num = getNumberOfDisplayedNotifications();
-            if(num < 3){
-                getLocalNotifications();
-            } else {
-                qmLog.info('We already have '+num+' displayed notifications so ignoring broadcast...');
-            }
+            addLocalNotificationsToScopeIfMoreInStorage('broadcastGetTrackingReminderNotifications numDisplayed < 3 && numDisplayed < numInStorage');
         });
-        function shouldWeShowZeroButton(trackingReminderNotification){
-            return trackingReminderNotification.inputType === 'defaultValue' ||
-                (trackingReminderNotification.inputType === 'value' && trackingReminderNotification.defaultValue !== null);
-        }
         var showLoader = function(){
             $scope.state.loading = true;
             $timeout(function(){
@@ -419,9 +414,9 @@ angular.module('starter').controller('RemindersInboxCtrl', ["$scope", "$state", 
         $scope.syncNotifications = function(params){
             showLoader();
             qm.notifications.syncDeferred(params).then(function(){
-                getLocalNotifications();
+                addLocalNotificationsToScope('syncDeferred success');
             }, function(error){
-                getLocalNotifications();
+                addLocalNotificationsToScope('syncDeferred error');
                 qmLog.error('$scope.syncNotifications error: ', error);
             });
         };

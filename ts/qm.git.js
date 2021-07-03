@@ -1,15 +1,28 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
 var __importStar = (this && this.__importStar) || function (mod) {
     if (mod && mod.__esModule) return mod;
     var result = {};
-    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
-    result["default"] = mod;
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
     return result;
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.createFeatureBranch = exports.deleteLocalFeatureBranches = exports.getBranchName = exports.createCommitComment = exports.setGithubStatus = exports.githubStatusStates = exports.getRepoUserName = exports.getRepoName = exports.getRepoParts = exports.getRepoUrl = exports.getCurrentGitCommitSha = exports.getOctoKit = void 0;
 var rest_1 = __importDefault(require("@octokit/rest"));
 // @ts-ignore
 var git = __importStar(require("simple-git"));
@@ -21,7 +34,7 @@ var test_helpers_1 = require("./test-helpers");
 // tslint:disable-next-line:no-var-requires
 var qm = require("../src/js/qmHelpers.js");
 function getOctoKit() {
-    return new rest_1.default({ auth: getAccessToken() });
+    return new rest_1.default({ auth: env_helper_1.getGithubAccessToken() });
 }
 exports.getOctoKit = getOctoKit;
 function getCurrentGitCommitSha() {
@@ -48,18 +61,6 @@ function getCurrentGitCommitSha() {
     }
 }
 exports.getCurrentGitCommitSha = getCurrentGitCommitSha;
-function getAccessToken() {
-    var t = process.env.GITHUB_ACCESS_TOKEN_FOR_STATUS || process.env.GITHUB_ACCESS_TOKEN || process.env.GH_TOKEN;
-    if (!t) {
-        env_helper_1.loadEnv("local");
-        t = process.env.GITHUB_ACCESS_TOKEN_FOR_STATUS || process.env.GITHUB_ACCESS_TOKEN || process.env.GH_TOKEN;
-    }
-    if (!t) {
-        throw new Error("Please set GITHUB_ACCESS_TOKEN or GH_TOKEN env");
-    }
-    return t;
-}
-exports.getAccessToken = getAccessToken;
 function getRepoUrl() {
     if (process.env.REPOSITORY_URL_FOR_STATUS) {
         return process.env.REPOSITORY_URL_FOR_STATUS;
