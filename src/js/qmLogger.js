@@ -468,10 +468,11 @@ var qmLog = {
         }
     },
     lei: function(shouldThrow, message, meta){
-        if(shouldThrow){
-            debugger
-            qmLog.errorAndExceptionTestingOrDevelopment(message, meta);
-        }
+        if(shouldThrow){qmLog.le(message, meta);}
+    },
+    le: function(message, meta){
+        debugger
+        qmLog.errorAndExceptionTestingOrDevelopment(message, meta);
     },
     errorAndExceptionTestingOrDevelopment: function(name, message, metaData, stackTrace){
         if(typeof message === "object"){
