@@ -83,7 +83,7 @@ export function obfuscateString(str: string) {
     for (const propertyName in env) {
         if (env.hasOwnProperty(propertyName)) {
             const val = env[propertyName]
-            if (isSecretWord(propertyName)) {
+            if (val && isSecretWord(propertyName) && val.length > 6) {
                 // @ts-ignore
                 str = qm.stringHelper.replaceAll(str, val, "["+propertyName+" hidden by obfuscateString]")
             }

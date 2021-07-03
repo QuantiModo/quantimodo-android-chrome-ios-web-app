@@ -4,7 +4,6 @@ echo "SCRIPT_FOLDER is $SCRIPT_FOLDER" && cd "${SCRIPT_FOLDER}" && cd .. && expo
 set -xe
 sudo bash "${SCRIPT_FOLDER}"/output_commit_message_and_env.sh
 
-sudo bash "${SCRIPT_FOLDER}"/install.sh
 set -e
 npm run test:mocha
 if [[ ${GIT_BRANCH} = "origin/develop" ]]; then bash "${SCRIPT_FOLDER}"/commit-build.sh && exit 0; fi

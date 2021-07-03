@@ -85,7 +85,7 @@ function obfuscateString(str) {
     for (var propertyName in env) {
         if (env.hasOwnProperty(propertyName)) {
             var val = env[propertyName];
-            if (isSecretWord(propertyName)) {
+            if (val && isSecretWord(propertyName) && val.length > 6) {
                 // @ts-ignore
                 str = qmHelpers_js_1.default.stringHelper.replaceAll(str, val, "[" + propertyName + " hidden by obfuscateString]");
             }
