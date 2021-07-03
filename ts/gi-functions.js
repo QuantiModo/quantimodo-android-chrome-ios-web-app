@@ -82,7 +82,7 @@ exports.gi = {
             }
             return "https://medimodo.herokuapp.com";
         }
-        var startUrl = qmEnv.getArgumentOrEnv("START_URL", defaultValue);
+        var startUrl = qmEnv.getenv("START_URL", defaultValue);
         if (!startUrl) {
             handleTestErrors("Please set START_URL env");
         }
@@ -124,7 +124,7 @@ exports.gi = {
     getSuiteId: function (type) {
         exports.gi.suiteType = type;
         // @ts-ignore
-        return qmEnv.getArgumentOrEnv("TEST_SUITE", exports.gi.suites[type][th.getReleaseStage()]);
+        return qmEnv.getenv("TEST_SUITE", exports.gi.suites[type][th.getReleaseStage()]);
     },
     runAllIonic: function (callback) {
         exports.gi.context = "all-gi-ionic";

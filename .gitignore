@@ -131,7 +131,8 @@ src/css/app.css
 src/css/app.min.css
 
 secrets/*
-!/secrets/.env.example
+.env*
+!.env.example
 /.gradle/
 /ionic.iml
 /cypress/reports/merged/mochawesome.json

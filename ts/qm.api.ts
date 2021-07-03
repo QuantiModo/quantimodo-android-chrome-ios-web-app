@@ -13,7 +13,7 @@ function outputApiErrorResponse(err: { response: any; }, options: { uri: string;
 }
 export function makeApiRequest(options: { uri: any; strictSSL?: any; qs?: any; }, successHandler: (arg0: any) => void) {
     const rp = require("request-promise")
-    qmLog.info("Making request to " + options.uri + " with clientId: " + env.getClientId())
+    qmLog.info("Making request to " + options.uri + " with clientId: " + env.getQMClientIdOrException())
     qmLog.debug(options.uri, options, 280)
     // options.uri = options.uri.replace('app', 'staging');
     if(options.uri.indexOf("staging") !== -1) {options.strictSSL = false}
