@@ -6,12 +6,6 @@ echo "SCRIPT_FOLDER is $SCRIPT_FOLDER" && cd "${SCRIPT_FOLDER}" && cd .. && expo
 BUILD_REPO=$IONIC_PATH/tmp/qm-web-build
 set -xe
 
-cd $IONIC_PATH
-nvm use 10
-npm install
-npm run configure:app
-npm run test:mocha
-
 git config user.email "m@quantimodo.com"
 git config user.name "mikepsinn"
 
