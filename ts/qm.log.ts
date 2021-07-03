@@ -1,32 +1,66 @@
+import Bugsnag from "@bugsnag/js"
+// @ts-ignore
+import qm from "../src/js/qmHelpers.js"
+import {envs, getenv, getenvOrException, getQMClientIdIfSet, qmPlatform} from "./env-helper"
 import {getBuildLink, getCiProvider} from "./test-helpers"
 
-const QUANTIMODO_CLIENT_ID = process.env.QUANTIMODO_CLIENT_ID || process.env.CLIENT_ID
 // tslint:disable-next-line:max-line-length
-const AWS_SECRET_ACCESS_KEY = process.env.QM_AWS_SECRET_ACCESS_KEY || process.env.AWS_SECRET_ACCESS_KEY // Netlify has their own
-function isTruthy(value: any) {return (value && value !== "false") }
+function isTruthy(value: any) {
+    return (value && value !== "false")
+}
+// getenvOrException(envs.BUGSNAG_API_KEY)
+function getBugsnag() {
+    Bugsnag.start({
+        apiKey: getenvOrException(envs.BUGSNAG_API_KEY),
+        releaseStage:  getCurrentServerContext(),
+        onError(event: { addMetadata: (arg0: string, arg1: any) => void }) {
+            event.addMetadata("GLOBAL_META_DATA", addMetaData())
+        },
+        // otherOptions: https://docs.bugsnag.com/platforms/javascript/configuration-options/
+    })
+    process.on("unhandledRejection", function(err) {
+        // @ts-ignore
+        console.error("Unhandled rejection: " + (err && err.stack || err))
+        // @ts-ignore
+        Bugsnag.notify(err)
+    })
+    return Bugsnag
+}
 
 export function error(message: string, metaData?: any, maxCharacters?: number) {
+    // tslint:disable-next-line:no-debugger
+    debugger
     metaData = addMetaData(metaData)
-    console.error(obfuscateStringify(message, metaData, maxCharacters))
-    // bugsnag.notify(new Error(obfuscateStringify(message)));
+    message = obfuscateStringify(message, metaData, maxCharacters)
+    if(qmPlatform.isBackEnd()) {
+        message = "=====================\n"+message+"\n====================="
+    }
+    console.error(message)
+    if(getenv(envs.BUGSNAG_API_KEY)) {
+        getBugsnag().notify(obfuscateStringify(message), metaData)
+    }
 }
+
 export function info(message: string, object?: any, maxCharacters?: any) {
     console.info(obfuscateStringify(message, object, maxCharacters))
 }
+
 export function debug(message: string, object?: any, maxCharacters?: any) {
     if (isTruthy(process.env.BUILD_DEBUG || process.env.DEBUG_BUILD)) {
         info("DEBUG: " + message, object, maxCharacters)
     }
 }
-export function addMetaData(metaData: { environment?: any; subsystem?: any; client_id?: any; build_link?: any; }) {
+
+export function addMetaData(metaData?: { environment?: any; subsystem?: any; client_id?: any; build_link?: any; }) {
     metaData = metaData || {}
     metaData.environment = obfuscateSecrets(process.env)
     metaData.subsystem = {name: getCiProvider()}
-    metaData.client_id = QUANTIMODO_CLIENT_ID
+    metaData.client_id = getQMClientIdIfSet()
     metaData.build_link = getBuildLink()
     return metaData
 }
-export function obfuscateStringify(message: string, object: undefined, maxCharacters?: number) {
+
+export function obfuscateStringify(message: string, object?: object, maxCharacters?: number): string {
     maxCharacters = maxCharacters || 140
     let objectString = ""
     if (object) {
@@ -37,21 +71,10 @@ export function obfuscateStringify(message: string, object: undefined, maxCharac
         objectString = objectString.substring(0, maxCharacters) + "..."
     }
     message += objectString
-    if (process.env.QUANTIMODO_CLIENT_SECRET) {
-        message = message.replace(process.env.QUANTIMODO_CLIENT_SECRET, "HIDDEN")
-    }
-    if (AWS_SECRET_ACCESS_KEY) {
-        message = message.replace(AWS_SECRET_ACCESS_KEY, "HIDDEN")
-    }
-    if (process.env.ENCRYPTION_SECRET) {
-        message = message.replace(process.env.ENCRYPTION_SECRET, "HIDDEN")
-    }
-    if (process.env.QUANTIMODO_ACCESS_TOKEN) {
-        message = message.replace(process.env.QUANTIMODO_ACCESS_TOKEN, "HIDDEN")
-    }
     message = obfuscateString(message)
     return message
 }
+
 export function isSecretWord(propertyName: string) {
     const lowerCaseProperty = propertyName.toLowerCase()
     return lowerCaseProperty.indexOf("secret") !== -1 ||
@@ -60,18 +83,21 @@ export function isSecretWord(propertyName: string) {
         lowerCaseProperty.indexOf("database") !== -1 ||
         lowerCaseProperty.indexOf("token") !== -1
 }
+
 export function obfuscateString(str: string) {
     const env = process.env
     for (const propertyName in env) {
         if (env.hasOwnProperty(propertyName)) {
-            if (isSecretWord(propertyName)) {
+            const val = env[propertyName]
+            if (val && isSecretWord(propertyName) && val.length > 6) {
                 // @ts-ignore
-                str = str.replace(env[propertyName], "[SECURE]")
+                str = qm.stringHelper.replaceAll(str, val, "["+propertyName+" hidden by obfuscateString]")
             }
         }
     }
     return str
 }
+
 export function obfuscateSecrets(object: any) {
     if (typeof object !== "object") {
         return object
@@ -80,7 +106,7 @@ export function obfuscateSecrets(object: any) {
     for (const propertyName in object) {
         if (object.hasOwnProperty(propertyName)) {
             if (isSecretWord(propertyName)) {
-                object[propertyName] = "[SECURE]"
+                object[propertyName] = "["+propertyName+" hidden by obfuscateSecrets]"
             } else {
                 object[propertyName] = obfuscateSecrets(object[propertyName])
             }
@@ -101,7 +127,37 @@ export function logBugsnagLink(suite: string, start: string, end: string) {
 }
 
 export function getCurrentServerContext() {
-    if(process.env.CIRCLE_BRANCH){return "circleci";}
-    if(process.env.BUDDYBUILD_BRANCH){return "buddybuild";}
-    return process.env.HOSTNAME;
+    if (process.env.CIRCLE_BRANCH) {
+        return "circleci"
+    }
+    if (process.env.BUDDYBUILD_BRANCH) {
+        return "buddybuild"
+    }
+    return process.env.HOSTNAME
+}
+
+export function throwError(message: string, metaData?: any, maxCharacters?: number) {
+    error(message, metaData, maxCharacters)
+    throw Error(message)
+}
+
+export function slugify(str: string) {
+    str = str.replace(/^\s+|\s+$/g, "") // trim
+    str = str.toLowerCase()
+    // remove accents, swap ñ for n, etc
+    const from = "àáäâèéëêìíïîòóöôùúüûñç·/_,:;"
+    const to   = "aaaaeeeeiiiioooouuuunc------"
+    for (let i=0, l=from.length; i<l; i++) {
+        str = str.replace(new RegExp(from.charAt(i), "g"), to.charAt(i))
+    }
+    str = str.replace(".", "-") // replace a dot by a dash
+        .replace(/[^a-z0-9 -]/g, "") // remove invalid chars
+        .replace(/\s+/g, "-") // collapse whitespace and replace by a dash
+        .replace(/-+/g, "-") // collapse dashes
+    return str
+}
+
+export function logErrorAndThrowException(message: string, object?: any) {
+    error(message, object)
+    throw message
 }
