@@ -7,8 +7,12 @@ set -e
 set -x
 source "$SCRIPT_FOLDER"/no-root.sh
 sudo chown -R $USER ~/.nvm
+set +x
+echo "nvm install 10..."
 nvm install 10
+echo "nvm use 10..."
 nvm use 10
+set -x
 node -v
 npm install
 if [[ ${NODE_NAME} = "sonicmaster-ubuntu" ]];
