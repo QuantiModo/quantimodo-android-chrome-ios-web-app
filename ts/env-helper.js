@@ -22,7 +22,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.qmPlatform = exports.getGithubAccessToken = exports.getAccessToken = exports.getAppHostName = exports.getQMClientSecret = exports.getQMClientId = exports.loadEnv = exports.getenvOrException = exports.getenv = exports.paths = exports.envs = void 0;
+exports.qmPlatform = exports.getGithubAccessToken = exports.getAccessToken = exports.getAppHostName = exports.getQMClientSecret = exports.getQMClientIdIfSet = exports.getQMClientIdOrException = exports.loadEnv = exports.getenvOrException = exports.getenv = exports.paths = exports.envs = void 0;
 var dotenv_1 = __importDefault(require("dotenv"));
 var fileHelper = __importStar(require("./qm.file-helper"));
 var qmLog = __importStar(require("./qm.log"));
@@ -78,9 +78,10 @@ function getenv(names, defaultValue) {
         // tslint:disable-next-line:prefer-for-of
         for (var i = 0; i < names.length; i++) {
             var name_1 = names[i];
-            if (typeof process.env[name_1] !== "undefined") {
+            var val = process.env[name_1];
+            if (typeof val !== "undefined" && val !== null && val !== "") {
                 // @ts-ignore
-                return process.env[name_1];
+                return val;
             }
         }
         return null;
@@ -127,10 +128,14 @@ function loadEnv(relativeEnvPath) {
     // qmLog.info(result.parsed.name)
 }
 exports.loadEnv = loadEnv;
-function getQMClientId() {
+function getQMClientIdOrException() {
     return getenvOrException(exports.envs.QUANTIMODO_CLIENT_ID);
 }
-exports.getQMClientId = getQMClientId;
+exports.getQMClientIdOrException = getQMClientIdOrException;
+function getQMClientIdIfSet() {
+    return getenv(exports.envs.QUANTIMODO_CLIENT_ID);
+}
+exports.getQMClientIdIfSet = getQMClientIdIfSet;
 function getQMClientSecret() {
     return getenv(exports.envs.QUANTIMODO_CLIENT_SECRET);
 }
@@ -236,5 +241,8 @@ exports.qmPlatform = {
     },
     ios: "ios",
     web: "web",
+    isBackEnd: function () {
+        return typeof window === "undefined";
+    },
 };
 //# sourceMappingURL=env-helper.js.map

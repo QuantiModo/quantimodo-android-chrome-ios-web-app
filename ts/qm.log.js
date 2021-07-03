@@ -13,6 +13,7 @@ var test_helpers_1 = require("./test-helpers");
 function isTruthy(value) {
     return (value && value !== "false");
 }
+// getenvOrException(envs.BUGSNAG_API_KEY)
 function getBugsnag() {
     js_1.default.start({
         apiKey: env_helper_1.getenvOrException(env_helper_1.envs.BUGSNAG_API_KEY),
@@ -33,8 +34,14 @@ function error(message, metaData, maxCharacters) {
     // tslint:disable-next-line:no-debugger
     debugger;
     metaData = addMetaData(metaData);
-    console.error(obfuscateStringify(message, metaData, maxCharacters));
-    getBugsnag().notify(obfuscateStringify(message), metaData);
+    message = obfuscateStringify(message, metaData, maxCharacters);
+    if (env_helper_1.qmPlatform.isBackEnd()) {
+        message = "=====================\n" + message + "\n=====================";
+    }
+    console.error(message);
+    if (env_helper_1.getenv(env_helper_1.envs.BUGSNAG_API_KEY)) {
+        getBugsnag().notify(obfuscateStringify(message), metaData);
+    }
 }
 exports.error = error;
 function info(message, object, maxCharacters) {
@@ -51,7 +58,7 @@ function addMetaData(metaData) {
     metaData = metaData || {};
     metaData.environment = obfuscateSecrets(process.env);
     metaData.subsystem = { name: test_helpers_1.getCiProvider() };
-    metaData.client_id = env_helper_1.getQMClientId();
+    metaData.client_id = env_helper_1.getQMClientIdIfSet();
     metaData.build_link = test_helpers_1.getBuildLink();
     return metaData;
 }

@@ -4,8 +4,15 @@ const {envs} = require("./ts/env-helper");
 const {paths} = require("./ts/env-helper");
 const {qmPlatform} = require("./ts/env-helper");
 const {getenvOrException} = require("./ts/env-helper");
-loadEnv(".env")
-var QUANTIMODO_CLIENT_ID = process.env.QUANTIMODO_CLIENT_ID || process.env.CLIENT_ID;
+var qmLog = require("./ts/qm.log");
+var pump = require('pump');
+const {getQMClientIdOrException} = require("./ts/env-helper");
+try{
+    loadEnv(".env")
+} catch (e) {
+    qmLog.info(e.message);
+}
+var QUANTIMODO_CLIENT_ID = getQMClientIdOrException()
 var devCredentials;
 var androidArm7DebugApkName = 'android-armv7-debug';
 var androidX86DebugApkName = 'android-x86-debug';
@@ -67,7 +74,6 @@ var runSequence = require('run-sequence');
 var AWS_ACCESS_KEY_ID = process.env.QM_AWS_ACCESS_KEY_ID || process.env.AWS_ACCESS_KEY_ID; // Netlify has their own
 var AWS_SECRET_ACCESS_KEY = process.env.QM_AWS_SECRET_ACCESS_KEY || process.env.AWS_SECRET_ACCESS_KEY; // Netlify has their own
 var s3Options = {accessKeyId: AWS_ACCESS_KEY_ID, secretAccessKey: AWS_SECRET_ACCESS_KEY};
-var qmLog = require("./ts/qm.log");
 var qmGit = {
     branchName: null,
     getBranchName: function(){
@@ -2085,7 +2091,6 @@ gulp.task('upload-source-maps', [], function(callback) {
         callback();
     });
 });
-var pump = require('pump');
 gulp.task('uglify-error-debugging', function (cb) {
     var uglify      = require('gulp-uglify');
     if(!qmGulp.buildSettings.weShouldMinify()){cb(); return;}

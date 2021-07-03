@@ -14,7 +14,7 @@ function getRequestOptions(path: string) {
         qs: {
             access_token: env.getAccessToken(),
             allStaticAppData: true,
-            clientId: env.getQMClientId(),
+            clientId: env.getQMClientIdOrException(),
             includeClientSecret: true,
         },
         uri: qm.getAppHostName() + path,
@@ -28,7 +28,7 @@ function getRequestOptions(path: string) {
     return options
 }
 
-api.AppSettingsService.getAppSettings(env.getQMClientId(), true)
+api.AppSettingsService.getAppSettings(env.getQMClientIdOrException(), true)
     .then(function(AppSettingsResponse) {
         qm.staticData = AppSettingsResponse.staticData
         process.env.APP_DISPLAY_NAME = qm.getAppDisplayName()  // Need env for Fastlane

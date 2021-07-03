@@ -1,14 +1,14 @@
 import Bugsnag from "@bugsnag/js"
 // @ts-ignore
 import qm from "../src/js/qmHelpers.js"
-import {envs, getenv, getenvOrException, getQMClientId} from "./env-helper"
+import {envs, getenv, getenvOrException, getQMClientIdIfSet, qmPlatform} from "./env-helper"
 import {getBuildLink, getCiProvider} from "./test-helpers"
 
 // tslint:disable-next-line:max-line-length
 function isTruthy(value: any) {
     return (value && value !== "false")
 }
-
+// getenvOrException(envs.BUGSNAG_API_KEY)
 function getBugsnag() {
     Bugsnag.start({
         apiKey: getenvOrException(envs.BUGSNAG_API_KEY),
@@ -31,8 +31,14 @@ export function error(message: string, metaData?: any, maxCharacters?: number) {
     // tslint:disable-next-line:no-debugger
     debugger
     metaData = addMetaData(metaData)
-    console.error(obfuscateStringify(message, metaData, maxCharacters))
-    getBugsnag().notify(obfuscateStringify(message), metaData)
+    message = obfuscateStringify(message, metaData, maxCharacters)
+    if(qmPlatform.isBackEnd()) {
+        message = "=====================\n"+message+"\n====================="
+    }
+    console.error(message)
+    if(getenv(envs.BUGSNAG_API_KEY)) {
+        getBugsnag().notify(obfuscateStringify(message), metaData)
+    }
 }
 
 export function info(message: string, object?: any, maxCharacters?: any) {
@@ -49,7 +55,7 @@ export function addMetaData(metaData?: { environment?: any; subsystem?: any; cli
     metaData = metaData || {}
     metaData.environment = obfuscateSecrets(process.env)
     metaData.subsystem = {name: getCiProvider()}
-    metaData.client_id = getQMClientId()
+    metaData.client_id = getQMClientIdIfSet()
     metaData.build_link = getBuildLink()
     return metaData
 }

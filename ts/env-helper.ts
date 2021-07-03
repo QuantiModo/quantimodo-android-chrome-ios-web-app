@@ -54,9 +54,10 @@ export function getenv(names: string|string[], defaultValue?: null | string): st
         // tslint:disable-next-line:prefer-for-of
         for (let i = 0; i < names.length; i++) {
             const name = names[i]
-            if (typeof process.env[name] !== "undefined") {
+            const val = process.env[name]
+            if (typeof val !== "undefined" && val !== null && val !== "") {
                 // @ts-ignore
-                return process.env[name]
+                return val
             }
         }
         return null
@@ -96,8 +97,12 @@ export function loadEnv(relativeEnvPath: string) {
     // qmLog.info(result.parsed.name)
 }
 
-export function getQMClientId(): string {
+export function getQMClientIdOrException(): string {
     return getenvOrException(envs.QUANTIMODO_CLIENT_ID)
+}
+
+export function getQMClientIdIfSet(): string|null {
+    return getenv(envs.QUANTIMODO_CLIENT_ID)
 }
 
 export function getQMClientSecret(): string | null {
@@ -177,4 +182,7 @@ export const qmPlatform = {
     },
     ios: "ios",
     web: "web",
+    isBackEnd() {
+        return typeof window === "undefined"
+    },
 }
