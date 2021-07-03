@@ -5,7 +5,7 @@ export GIT_BRANCH=${TRAVIS_BRANCH:-${GIT_BRANCH}} && export GIT_BRANCH=${BUDDYBU
 COMMIT_MESSAGE=$(git log -1 HEAD --pretty=format:%s)
 echo "
 ============================================================
-Building $COMMIT_MESSAGE on ${GIT_BRANCH} as ${USER}
+Building $COMMIT_MESSAGE on ${GIT_BRANCH} as USER: ${USER}
 ============================================================
 "
 #printenv
