@@ -1,7 +1,9 @@
 var Bugsnag = require('@bugsnag/js')
 var BugsnagPluginExpress = require('@bugsnag/plugin-express')
+const {getenvOrException} = require("./ts/env-helper")
+const {envs} = require("./ts/env-helper")
 Bugsnag.start({
-    apiKey: process.env.BUGSNAG_API_KEY,
+    apiKey: getenvOrException(envs.BUGSNAG_API_KEY),
     plugins: [BugsnagPluginExpress],
 })
 var express = require('express')
