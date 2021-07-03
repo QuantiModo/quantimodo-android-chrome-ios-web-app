@@ -8,6 +8,10 @@ var expect = chai.expect
 // Otherwise assertion failures in async tests are wrapped, which prevents mocha from
 // being able to interpret them (such as displaying a diff).
 process.on('unhandledRejection', function(err) {
+    if(typeof err !== "string"){
+        qmLog.error("Error is not as string but is: ", null, {err})
+        throw err
+    }
     if(err.indexOf("unhandledRejection: Uncaught FetchError: invalid json response body") !== -1){
         qmLog.error(err)
     } else {
@@ -46,6 +50,7 @@ global.Swal = require('./../../node_modules/sweetalert2/dist/sweetalert2.all')
 //global.moment = require('./../../src/lib/moment/moment')
 global.moment = require('./../../src/lib/moment-timezone/moment-timezone')
 const chrome = require('sinon-chrome/extensions')
+const {getBuildLink} = require("../../ts/test-helpers")
 var qmTests = {
     getTestAccessToken(){
         var t = process.env.TEST_ACCESS_TOKEN
@@ -190,7 +195,7 @@ var qmTests = {
 }
 var context = "qm.mocha.test.js"
 before(function (done) {
-    qmGit.setGithubStatus("pending", context, "Running...", null, function (res) {
+    qmGit.setGithubStatus("pending", context, "Running...", getBuildLink(), function (res) {
         qmLog.debug(res)
         done()
     })
@@ -200,7 +205,7 @@ beforeEach(function (done) {
     this.timeout(10000) // Default 2000 is too fast for Github API
     // @ts-ignore
     if(REPORT_EVERY_TEST_RESULT){
-        qmGit.setGithubStatus("pending", t.title, "Running...", null, function (res) {
+        qmGit.setGithubStatus("pending", t.title, "Running...", getBuildLink(), function (res) {
             qmLog.debug(res)
             done()
         })
@@ -215,48 +220,46 @@ afterEach(function (done) {
     // @ts-ignore
     var state = t.state
     if (!state) {
-        console.debug("No test state in afterEach!")
+        qmLog.error("No test state in afterEach!")
         done()
         return
     }
-    var githubState = "success"
     if (state === "failed") {
-        githubState = "failure"
         failedTests.push(t)
     } else if (!REPORT_EVERY_TEST_RESULT) {
         successfulTests.push(t)
-        done()
-        return
     }
-    // @ts-ignore
-    qmGit.setGithubStatus(githubState, t.title, t.title, null, function (res) {
-        qmLog.debug(res)
-        done()
-    })
-})
-after(async function(done){
-    if (failedTests.length) {
-        qmGit.setGithubStatus("failure", context, failedTests.length + " failed tests in after() hook!", null, function (res) {
+    if (state === "failed" || REPORT_EVERY_TEST_RESULT) {
+        // @ts-ignore
+        qmGit.setGithubStatus((state === "failed") ? "failure" : "success", t.title, t.title, getBuildLink(), function (res) {
             qmLog.debug(res)
             done()
         })
+    } else {
         done()
+    }
+})
+after(function(done){
+    if (failedTests.length) {
+        qmGit.setGithubStatus("failure", context, failedTests.length + " failed tests in after() hook!", getBuildLink(), function (res) {
+            qmLog.debug(res)
+            done()
+        })
         return
     }
     if (!successfulTests.length) {
         // eslint-disable-next-line no-debugger
         debugger
-        qmGit.setGithubStatus("error", context, "No successfulTests or failedTests in after() hook!", null, function (res) {
+        qmGit.setGithubStatus("error", context, "No successfulTests or failedTests in after() hook!", getBuildLink(), function (res) {
             qmLog.debug(res)
             done()
         })
         return
     }
-    qmGit.setGithubStatus("success", context, successfulTests.length + " tests passed!", null, function (res) {
+    qmGit.setGithubStatus("success", context, successfulTests.length + " tests passed!", getBuildLink(), function (res) {
         qmLog.debug(res)
         done()
     })
-    done()
 })
 function downloadFileContains(url, expectedToContain) {
     const deferred = Q.defer()
