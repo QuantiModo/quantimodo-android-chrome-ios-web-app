@@ -5,6 +5,7 @@ SCRIPT_PATH="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/$(basename "${BASH_SO
 echo "SCRIPT_FOLDER is $SCRIPT_FOLDER" && cd "${SCRIPT_FOLDER}" && cd .. && export IONIC_PATH="$PWD" && echo "IONIC_PATH is $IONIC_PATH"
 source "$SCRIPT_FOLDER"/no-root.sh
 set +x
+sudo chown -R $USER ~/.nvm
 command -v nvm >/dev/null 2>&1 || {
     echo >&2 "nvm is required, but it's not installed.  Trying to install it now...";
     echo "Installing curl..."
