@@ -1,4 +1,6 @@
 /* eslint-disable no-process-env,object-shorthand,semi,block-spacing,comma-dangle,one-var,space-infix-ops,no-unused-vars,no-multi-spaces,no-useless-concat,no-empty */
+const {missingRequiredParameter}  = require("./ts/qm.log");
+const {readJsonFile}  = require("./ts/qm.file-helper");
 const {loadEnv} = require("./ts/env-helper");
 const {envs} = require("./ts/env-helper");
 const {paths} = require("./ts/env-helper");
@@ -362,7 +364,7 @@ var qmGulp = {
             return qmGulp.buildInfoHelper.currentBuildInfo;
         },
         getPreviousBuildInfo: function () {
-            var previousBuildInfo = readFile(paths.src.buildInfo);
+            var previousBuildInfo = readJsonFile(paths.src.buildInfo);
             if(!previousBuildInfo){
                 qmLog.info("No previous BuildInfo file at "+paths.src.buildInfo);
                 qmGulp.buildInfoHelper.previousBuildInfo = false;
@@ -599,21 +601,14 @@ function getPathToChromeExtensionZip() {return buildPath + '/' + getChromeExtens
 function getPathToUnzippedChromeExtension() {return buildPath + '/' + QUANTIMODO_CLIENT_ID + '-chrome-extension';}
 function readDevCredentials(){
     try{
-        devCredentials = JSON.parse(fs.readFileSync(paths.src.devCredentials));
+        devCredentials = readJsonFile(paths.src.devCredentials);
         qmLog.info("Using dev credentials from " + paths.src.devCredentials + ". This file is ignored in .gitignore and should never be committed to any repository.");
     } catch (error){
         qmLog.debug('No existing dev credentials found');
         devCredentials = {};
     }
 }
-function readFile(path){
-    try {
-        return JSON.parse(fs.readFileSync(path));
-    } catch (e) {
-        qmLog.error("Could not read "+path);
-        return false;
-    }
-}
+
 function outputFileContents(path){
     qmLog.info(path+": "+fs.readFileSync(path));
 }
