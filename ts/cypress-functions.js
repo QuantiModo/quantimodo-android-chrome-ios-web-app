@@ -38,7 +38,6 @@ var fileHelper = __importStar(require("./qm.file-helper"));
 // tslint:disable-next-line:no-var-requires
 var qm = require("../src/js/qmHelpers.js");
 var qmGit = __importStar(require("./qm.git"));
-var qmLog = __importStar(require("./qm.log"));
 var test_helpers_1 = require("./test-helpers");
 // https://github.com/motdotla/dotenv#what-happens-to-environment-variables-that-were-already-set
 // loadEnv(".env.local")
@@ -120,34 +119,6 @@ function mochawesome(failedTests, cb) {
     });
 }
 exports.mochawesome = mochawesome;
-function copyCypressEnvConfigIfNecessary() {
-    console.info("Copying " + envPath + " to cypress.json");
-    try {
-        fs.unlinkSync(cypressJson);
-    }
-    catch (err) {
-        console.log(err);
-    }
-    fs.copyFileSync(envPath, cypressJson);
-    var cypressJsonString = fs.readFileSync(cypressJson).toString();
-    var cypressJsonObject;
-    try {
-        cypressJsonObject = JSON.parse(cypressJsonString);
-    }
-    catch (e) {
-        console.error("Could not parse  " + cypressJson + " because " + e.message + "! Here's the string " + cypressJsonString);
-        var fixed = cypressJsonString.replace("}\n}", "}");
-        console.error("Going to try replacing extra bracket. Here's the fixed version " + fixed);
-        fs.writeFileSync(cypressJson, fixed);
-        cypressJsonString = fs.readFileSync(cypressJson).toString();
-        cypressJsonObject = JSON.parse(cypressJsonString);
-    }
-    if (!cypressJsonObject) {
-        var before_1 = fs.readFileSync(envPath).toString();
-        throw Error("Could not parse " + cypressJson + " after copy! " + envPath + " is " + before_1);
-    }
-    console.info("Cypress Configuration: " + cypressJsonString);
-}
 function setGithubStatusAndUploadTestResults(failedTests, context, cb) {
     // @ts-ignore
     var failedTestTitle = failedTests[0].title[1];
@@ -246,6 +217,9 @@ function handleTestSuccess(results, context, cb) {
         });
     });
 }
+function getCypressConfig() {
+    return JSON.parse(fs.readFileSync(envPath).toString());
+}
 function runOneCypressSpec(specName, cb) {
     uploadLastFailed(specName); // Set last failed first so it exists if we have an exception
     var specsPath = getSpecsPath();
@@ -257,6 +231,8 @@ function runOneCypressSpec(specName, cb) {
     // noinspection JSUnresolvedFunction
     cypress.run({
         browser: browser,
+        config: getCypressConfig(),
+        configFile: false,
         record: true,
         spec: "cypress/integration/" + specName,
     }).then(function (results) {
@@ -320,13 +296,6 @@ function getSpecsPath() {
 }
 function runCypressTestsInParallel(cb) {
     test_helpers_1.deleteSuccessFile();
-    try {
-        copyCypressEnvConfigIfNecessary();
-    }
-    catch (e) {
-        console.error(e.message + "!  Going to try again...");
-        copyCypressEnvConfigIfNecessary();
-    }
     deleteJUnitTestResults();
     rimraf_1.default(paths.reports.mocha + "/*.json", function () {
         var specsPath = getSpecsPath();
@@ -366,76 +335,64 @@ function runCypressTestsInParallel(cb) {
 }
 exports.runCypressTestsInParallel = runCypressTestsInParallel;
 function runCypressTests(cb) {
-    test_helpers_1.deleteSuccessFile();
-    try {
-        copyCypressEnvConfigIfNecessary();
-    }
-    catch (e) {
-        console.error(e.message + "!  Going to try again...");
-        copyCypressEnvConfigIfNecessary();
-    }
-    deleteJUnitTestResults();
-    rimraf_1.default(paths.reports.mocha + "/*.json", function () {
-        var specsPath = getSpecsPath();
-        fs.readdir(specsPath, function (err, specFileNames) {
-            if (!specFileNames) {
-                throw new Error("No specFileNames in " + specsPath);
-            }
-            var _loop_2 = function (i, p) {
-                var specName = specFileNames[i];
-                if (releaseStage === "ionic" && specName.indexOf("ionic_") === -1) {
-                    console.debug("skipping " + specName + " because it doesn't test ionic app and release stage is " +
-                        releaseStage);
-                    return out_p_1 = p, "continue";
+    test_helpers_1.deleteSuccessFile().then(function () {
+        deleteJUnitTestResults();
+        rimraf_1.default(paths.reports.mocha + "/*.json", function () {
+            var specsPath = getSpecsPath();
+            fs.readdir(specsPath, function (err, specFileNames) {
+                if (!specFileNames) {
+                    throw new Error("No specFileNames in " + specsPath);
                 }
-                p = p.then(function (_) { return new Promise(function (resolve) {
-                    runOneCypressSpec(specName, function () {
-                        if (i === specFileNames.length - 1) {
-                            test_helpers_1.createSuccessFile()
-                                .then(function () {
-                                test_helpers_1.deleteEnvFile();
-                                if (cb) {
-                                    cb(false);
-                                }
-                            });
-                        }
-                        resolve();
-                    });
-                }); });
-                out_p_1 = p;
-            };
-            var out_p_1;
-            for (var i = 0, p = Promise.resolve(); i < specFileNames.length; i++) {
-                _loop_2(i, p);
-                p = out_p_1;
-            }
+                var _loop_2 = function (i, p) {
+                    var specName = specFileNames[i];
+                    if (releaseStage === "ionic" && specName.indexOf("ionic_") === -1) {
+                        console.debug("skipping " + specName + " because it doesn't test ionic app and release stage is " +
+                            releaseStage);
+                        return out_p_1 = p, "continue";
+                    }
+                    p = p.then(function (_) { return new Promise(function (resolve) {
+                        runOneCypressSpec(specName, function () {
+                            if (i === specFileNames.length - 1) {
+                                test_helpers_1.createSuccessFile()
+                                    .then(function () {
+                                    test_helpers_1.deleteEnvFile();
+                                    if (cb) {
+                                        cb(false);
+                                    }
+                                });
+                            }
+                            resolve();
+                        });
+                    }); });
+                    out_p_1 = p;
+                };
+                var out_p_1;
+                for (var i = 0, p = Promise.resolve(); i < specFileNames.length; i++) {
+                    _loop_2(i, p);
+                    p = out_p_1;
+                }
+            });
         });
     });
 }
 exports.runCypressTests = runCypressTests;
 function getLastFailedCypressTest() {
     var deferred = Q.defer();
-    try {
-        downloadLastFailed()
-            .then(function (absPath) {
-            if (!absPath) {
-                deferred.resolve(null);
-                return;
-            }
-            try {
-                // @ts-ignore
-                var spec = fs.readFileSync(absPath, "utf8");
-                deferred.resolve(spec);
-            }
-            catch (error) {
-                deferred.resolve(null);
-            }
-        });
-    }
-    catch (error) {
-        qmLog.error(error);
-        deferred.resolve(null);
-    }
+    downloadLastFailed()
+        .then(function (absPath) {
+        if (!absPath) {
+            deferred.resolve(null);
+            return;
+        }
+        try {
+            // @ts-ignore
+            var spec = fs.readFileSync(absPath, "utf8");
+            deferred.resolve(spec);
+        }
+        catch (error) {
+            deferred.resolve(null);
+        }
+    });
     return deferred.promise;
 }
 function deleteLastFailedCypressTest() {
@@ -456,16 +413,10 @@ function runLastFailedCypressTest(cb) {
             cb(false);
             return;
         }
-        test_helpers_1.deleteSuccessFile();
-        try {
-            copyCypressEnvConfigIfNecessary();
-        }
-        catch (e) {
-            console.error(e.message + "!  Going to try again...");
-            copyCypressEnvConfigIfNecessary();
-        }
-        // @ts-ignore
-        runOneCypressSpec(name, cb);
+        test_helpers_1.deleteSuccessFile().then((function () {
+            // @ts-ignore
+            runOneCypressSpec(name, cb);
+        }));
     });
 }
 exports.runLastFailedCypressTest = runLastFailedCypressTest;

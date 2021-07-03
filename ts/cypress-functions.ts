@@ -103,32 +103,6 @@ export function mochawesome(failedTests: any[], cb: (err: any) => void) {
         cb(generatedReport[0])
     })
 }
-function copyCypressEnvConfigIfNecessary() {
-    console.info(`Copying ${envPath} to cypress.json`)
-    try {
-        fs.unlinkSync(cypressJson)
-    } catch(err) {
-        console.log(err)
-    }
-    fs.copyFileSync(envPath, cypressJson)
-    let cypressJsonString = fs.readFileSync(cypressJson).toString()
-    let cypressJsonObject: null
-    try {
-        cypressJsonObject = JSON.parse(cypressJsonString)
-    } catch (e) {
-        console.error("Could not parse  "+cypressJson+" because "+e.message+"! Here's the string "+cypressJsonString)
-        const fixed = cypressJsonString.replace("}\n}", "}")
-        console.error("Going to try replacing extra bracket. Here's the fixed version "+fixed)
-        fs.writeFileSync(cypressJson, fixed)
-        cypressJsonString = fs.readFileSync(cypressJson).toString()
-        cypressJsonObject = JSON.parse(cypressJsonString)
-    }
-    if(!cypressJsonObject) {
-        const before = fs.readFileSync(envPath).toString()
-        throw Error(`Could not parse ${cypressJson} after copy! ${envPath} is ${before}`)
-    }
-    console.info("Cypress Configuration: " + cypressJsonString)
-}
 function setGithubStatusAndUploadTestResults(failedTests: any[] | null, context: string, cb: (err: any) => void) {
     // @ts-ignore
     const failedTestTitle = failedTests[0].title[1]
@@ -232,6 +206,10 @@ function handleTestSuccess(results: any, context: string, cb: (err: any) => void
     })
 }
 
+function getCypressConfig() {
+    return JSON.parse(fs.readFileSync(envPath).toString())
+}
+
 export function runOneCypressSpec(specName: string, cb: ((err: any) => void)) {
     uploadLastFailed(specName)  // Set last failed first so it exists if we have an exception
     const specsPath = getSpecsPath()
@@ -240,9 +218,12 @@ export function runOneCypressSpec(specName: string, cb: ((err: any) => void)) {
     const context = specName.replace("_spec.js", "") + "-" + releaseStage
     qmGit.setGithubStatus("pending", context, `Running ${context} Cypress tests...`)
     console.info("Running " + specPath + "...")
+
     // noinspection JSUnresolvedFunction
     cypress.run({
         browser,
+        config: getCypressConfig(),
+        configFile: false,
         record: true,
         spec: "cypress/integration/"+specName,
     }).then((results) => {
@@ -304,12 +285,6 @@ function getSpecsPath() {
 
 export function runCypressTestsInParallel(cb?: (err: any) => void) {
     deleteSuccessFile()
-    try {
-        copyCypressEnvConfigIfNecessary()
-    } catch (e) {
-        console.error(e.message+"!  Going to try again...")
-        copyCypressEnvConfigIfNecessary()
-    }
     deleteJUnitTestResults()
     rimraf(paths.reports.mocha + "/*.json", function() {
         const specsPath = getSpecsPath()
@@ -345,66 +320,56 @@ export function runCypressTestsInParallel(cb?: (err: any) => void) {
 }
 
 export function runCypressTests(cb?: (err: any) => void) {
-    deleteSuccessFile()
-    try {
-        copyCypressEnvConfigIfNecessary()
-    } catch (e) {
-        console.error(e.message+"!  Going to try again...")
-        copyCypressEnvConfigIfNecessary()
-    }
-    deleteJUnitTestResults()
-    rimraf(paths.reports.mocha + "/*.json", function() {
-        const specsPath = getSpecsPath()
-        fs.readdir(specsPath, function(err: any, specFileNames: string[]) {
-            if (!specFileNames) {
-                throw new Error("No specFileNames in " + specsPath)
-            }
-            for (let i = 0, p = Promise.resolve(); i < specFileNames.length; i++) {
-                const specName = specFileNames[i]
-                if (releaseStage === "ionic" && specName.indexOf("ionic_") === -1) {
-                    console.debug("skipping " + specName + " because it doesn't test ionic app and release stage is "+
-                        releaseStage)
-                    continue
+    deleteSuccessFile().then(function() {
+        deleteJUnitTestResults()
+        rimraf(paths.reports.mocha + "/*.json", function() {
+            const specsPath = getSpecsPath()
+            fs.readdir(specsPath, function(err: any, specFileNames: string[]) {
+                if (!specFileNames) {
+                    throw new Error("No specFileNames in " + specsPath)
                 }
-                p = p.then((_) => new Promise((resolve) => {
-                    runOneCypressSpec(specName,function() {
-                        if (i === specFileNames.length - 1) {
-                            createSuccessFile()
-                                .then(function() {
-                                    deleteEnvFile()
-                                    if (cb) {
-                                        cb(false)
-                                    }
-                                })
-                        }
-                        resolve()
-                    })
-                }))
-            }
+                for (let i = 0, p = Promise.resolve(); i < specFileNames.length; i++) {
+                    const specName = specFileNames[i]
+                    if (releaseStage === "ionic" && specName.indexOf("ionic_") === -1) {
+                        console.debug("skipping " + specName + " because it doesn't test ionic app and release stage is "+
+                            releaseStage)
+                        continue
+                    }
+                    p = p.then((_) => new Promise((resolve) => {
+                        runOneCypressSpec(specName,function() {
+                            if (i === specFileNames.length - 1) {
+                                createSuccessFile()
+                                    .then(function() {
+                                        deleteEnvFile()
+                                        if (cb) {
+                                            cb(false)
+                                        }
+                                    })
+                            }
+                            resolve()
+                        })
+                    }))
+                }
+            })
         })
     })
 }
 function getLastFailedCypressTest() {
     const deferred = Q.defer()
-    try {
-        downloadLastFailed()
-            .then(function(absPath) {
-                if(!absPath) {
-                    deferred.resolve(null)
-                    return
-                }
-                try {
-                    // @ts-ignore
-                    const spec = fs.readFileSync(absPath, "utf8")
-                    deferred.resolve(spec)
-                } catch (error) {
-                    deferred.resolve(null)
-                }
-            })
-    } catch (error) {
-        qmLog.error(error)
-        deferred.resolve(null)
-    }
+    downloadLastFailed()
+        .then(function(absPath) {
+            if(!absPath) {
+                deferred.resolve(null)
+                return
+            }
+            try {
+                // @ts-ignore
+                const spec = fs.readFileSync(absPath, "utf8")
+                deferred.resolve(spec)
+            } catch (error) {
+                deferred.resolve(null)
+            }
+        })
     return deferred.promise
 }
 function deleteLastFailedCypressTest() {
@@ -424,15 +389,10 @@ export function runLastFailedCypressTest(cb: (err: any) => void) {
                 cb(false)
                 return
             }
-            deleteSuccessFile()
-            try {
-                copyCypressEnvConfigIfNecessary()
-            } catch (e) {
-                console.error(e.message+"!  Going to try again...")
-                copyCypressEnvConfigIfNecessary()
-            }
-            // @ts-ignore
-            runOneCypressSpec(name, cb)
+            deleteSuccessFile().then((function() {
+                // @ts-ignore
+                runOneCypressSpec(name, cb)
+            }))
         })
 }
 export function uploadMochawesome() {
