@@ -7,7 +7,8 @@
   },
   "ignorePaths": [
     "src/package.json",
-    "tests/package.json"
+    "tests/package.json",
+    "src/js/angular-material-datetimepicker/**"
   ],
   "packageRules": [
     {
