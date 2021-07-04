@@ -147,3 +147,5 @@ debug.log
 /.env
 ts/**/*.js
 ts/**/*.map
+cypress/**/*.js
+cypress/**/*.map
