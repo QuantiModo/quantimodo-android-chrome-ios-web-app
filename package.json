@@ -98,8 +98,8 @@
     "yaml-lint": "1.2.4"
   },
   "dependencies": {
-    "@bugsnag/js": "^7.10.4",
-    "@bugsnag/plugin-express": "^7.10.0",
+    "@bugsnag/js": "7.10.4",
+    "@bugsnag/plugin-express": "7.10.0",
     "@capacitor/core": "2.4.7",
     "@octokit/rest": "16.35.2",
     "@types/q": "1.5.4",
