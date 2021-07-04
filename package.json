@@ -224,7 +224,7 @@
     "cy:report:mochawesome:generate": "npx mochawesome-report-generator cypress/reports/mocha/mochawesome.json --charts true --showPassed true --autoOpen true --cdn true --reportDir cypress/reports/mocha",
     "cy:report:mochawesome:merge": "npx mochawesome-merge --reportDir cypress/reports/mocha > cypress/reports/mocha/mochawesome.json",
     "cy:report:slack": "npx ts-node cypress/reports/cypress-slack-reporter.ts",
-    "cy:run": "npx ts-node ts/cypress-runner.ts",
+    "cy:run": "npx ts-node cypress/cypress-runner.ts",
     "cy:run:development": "cypress run --browser chrome --config-file cypress/config/cypress.development.json && npm run report:slack",
     "cy:run:docs": "cypress run --spec cypress/integration/docs_spec.js",
     "cy:run:onboarding:ionic": "cypress run --config-file cypress/config/cypress.ionic.json --spec cypress/integration/ionic_onboarding_spec.js",
