@@ -262,7 +262,7 @@ var qmLog = {
         for(var i = 0; i < qmLog.secretAliases.length; i++){
             var secretAlias = qmLog.secretAliases[i];
             if(lowerCase.indexOf(secretAlias) !== -1){
-                censoredString = qm.stringHelper.getStringBeforeSubstring(secretAlias, censoredString) +
+                censoredString = qm.stringHelper.before(secretAlias, censoredString) +
                     " " + secretAlias + "[redacted]";
             }
         }
@@ -468,10 +468,11 @@ var qmLog = {
         }
     },
     lei: function(shouldThrow, message, meta){
-        if(shouldThrow){
-            debugger
-            qmLog.errorAndExceptionTestingOrDevelopment(message, meta);
-        }
+        if(shouldThrow){qmLog.le(message, meta);}
+    },
+    le: function(message, meta){
+        debugger
+        qmLog.errorAndExceptionTestingOrDevelopment(message, meta);
     },
     errorAndExceptionTestingOrDevelopment: function(name, message, metaData, stackTrace){
         if(typeof message === "object"){
