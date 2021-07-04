@@ -102,6 +102,7 @@
     "@bugsnag/plugin-express": "^7.10.0",
     "@capacitor/core": "2.4.7",
     "@octokit/rest": "16.35.2",
+    "@types/node-fetch": "^2.5.10",
     "@types/q": "1.5.4",
     "ansi-colors": "4.1.1",
     "app-root-path": "3.0.0",
