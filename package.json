@@ -206,7 +206,7 @@
     "ci": "npm run test",
     "circle": "npm run lint && npm run test:ci && make test && npm run pre-publish",
     "compile": "npm run types",
-    "configure:app": "npm run bower && gulp configureAppAfterNpmInstall",
+    "configure:app": "npm run types && npm run bower && gulp configureAppAfterNpmInstall",
     "coverage": "nyc -r text -e .ts -x \"tests/*.test.ts\" npm run test",
     "cy:chrome": "cypress run --browser chrome",
     "cy:heroku-test-setup": "whoami && node -e 'console.log(process.geteuid())' && npx cypress install && npx cypress cache path && npx cypress cache list && npx cypress verify",
