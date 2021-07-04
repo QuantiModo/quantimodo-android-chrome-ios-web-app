@@ -670,8 +670,9 @@ var qm = {
             });
         },
         postResponseSuccessful: function(response, data){
+            if(response.status === 201 || response.status === 204){return true;}
             data = data.data || data;
-            return response.status === 201 || response.status === 204 || data.success === true
+            return data.success === true
         },
         post: function(path, body, successHandler, errorHandler){
             qm.api.getRequestUrl(path, {}, function(url){
