@@ -59,7 +59,7 @@
     "quantimodo": "5.10.100719",
     "svg-morpheus": "^0.3.2",
     "underscore": "^1.9.1",
-    "moment-timezone": "^0.5.23",
+    "moment-timezone": "0.5.33",
     "qm-redirector": "*",
     "q": "1.0.1"
   },
