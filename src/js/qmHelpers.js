@@ -7910,8 +7910,10 @@ var qm = {
             var u = qm.getUser();
             if(u){ // Don't overwrite existing manually defined user time zone
                 var timezone = u.timezone;
-                if(timezone && timezone.toUpperCase() !== "UTC"){
-                    return tz;
+                if(timezone &&
+                    timezone.toUpperCase() !== "UTC" &&
+                    timezone !== "Africa/Abidjan"){ // Not sure where Africa/Abidjan is coming from
+                    return timezone;
                 }
             }
             if(qm.platform.timezone){return qm.platform.timezone;} // moment makes to many error logs
@@ -7928,7 +7930,7 @@ var qm = {
             if(!guess){
                 guess = Intl.DateTimeFormat().resolvedOptions().timeZone;
             }
-            return qm.platform.timezone = guess; // moment makes to many error logs
+            return qm.platform.timezone = guess || null; // moment makes to many error logs
         }
     },
     pouch: {
