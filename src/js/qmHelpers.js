@@ -175,20 +175,12 @@ var qm = {
             var headers = {
                 'X-Client-Id': qm.getClientId(),
                 'X-Platform': qm.platform.getCurrentPlatform(),
+                'X-Timezone': qm.platform.getTimeZone(),
                 'X-App-Version': qm.appsManager.getAppVersion(),
                 'X-Framework': 'ionic',
                 "Content-Type": "application/json;charset=UTF-8",
                 'Accept': "application/json"
             };
-            if(!qm.appMode.isBackEnd() && typeof moment !== "undefined"){
-                if(typeof moment.tz === "undefined"){
-                    qmLog.error("moment.tz is not defined!");
-                } else {
-                    var tz = moment.tz;
-                    var guess = tz.guess();
-                    if(guess){headers['X-Timezone'] = guess;}
-                }
-            }
             var token = qm.auth.getAccessToken();
             if(token){headers['Authorization'] = 'Bearer ' + token;}
             return headers;
@@ -7909,6 +7901,31 @@ var qm = {
                 }
                 return (qm.platform.browser.isChromeBrowser() || qm.platform.browser.isOpera()) && !!window.CSS;
             }
+        },
+        timezone: null,
+        getTimeZone: function() {
+            var u = qm.getUser();
+            if(u){ // Don't overwrite existing manually defined user time zone
+                var timezone = u.timezone;
+                if(timezone && timezone.toUpperCase() !== "UTC"){
+                    return tz;
+                }
+            }
+            if(qm.platform.timezone){return qm.platform.timezone;} // moment makes to many error logs
+            if(typeof moment === "undefined"){
+                qmLog.error("moment is not defined!");
+                return null;
+            }
+            if(typeof moment.tz === "undefined"){
+                qmLog.error("moment.tz is not defined!");
+                return null;
+            }
+            var tz = moment.tz;
+            var guess = tz.guess();
+            if(!guess){
+                guess = Intl.DateTimeFormat().resolvedOptions().timeZone;
+            }
+            return qm.platform.timezone = guess; // moment makes to many error logs
         }
     },
     pouch: {
