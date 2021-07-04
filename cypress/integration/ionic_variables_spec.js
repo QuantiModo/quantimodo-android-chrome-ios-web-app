@@ -7,7 +7,7 @@ let chartsPath = `/#/app/charts/${encodeURIComponent(variableName)}`
  * @param {string} variableString
  */
 function verifyAndDeleteMeasurement(variableString){
-    cy.get('#historyItemTitle-0').should('contain', variableString)
+    cy.get('#historyItemTitle-0', {timeout: 10000}).should('contain', variableString)
     cy.get('#historyItemTitle-0').click({force: true})
     cy.get('button.button.destructive').click({force: true})
     cy.log('Waiting for deletion to complete...')
