@@ -2270,6 +2270,7 @@ var qm = {
         majorMinorVersionNumbers: '2.10.',
         alreadyMinified: function(){
             try {
+                var fs = qm.fileHelper.fs();
                 var files = qm.fileHelper.fs().readdirSync(qm.buildInfoHelper.paths.www.scripts);
                 if (!files.length) {
                     qmLog.info("Scripts folder is empty so we need to minify");
@@ -2340,15 +2341,46 @@ var qm = {
         },
         previousBuildInfo: null,
         writeCommitSha: function () {
-            var sha = qm.gitHelper.getCurrentGitCommitSha();
-            qm.fileHelper.writeToFile('www/data/commits/'+sha, sha);
-            qm.fileHelper.writeToFile('src/data/commits/'+sha, sha);
+            qm.fileHelper.writeFileSync('www/data/commits/'+qm.gitHelper.getCurrentGitCommitSha(), qm.gitHelper.getCurrentGitCommitSha());
+            // noinspection JSUnresolvedFunction
+            qm.fileHelper.writeFileSync('src/data/commits/'+qm.gitHelper.getCurrentGitCommitSha(), qm.gitHelper.getCurrentGitCommitSha());
+        },
+        paths: {
+            apk: {//android\app\build\outputs\apk\release\app-release.apk
+                combinedRelease: "platforms/android/app/build/outputs/apk/release/app-release.apk",
+                combinedDebug: "platforms/android/app/build/outputs/apk/release/app-debug.apk",
+                arm7Release: "platforms/android/app/build/outputs/apk/release/app-arm7-release.apk",
+                x86Release: "platforms/android/app/build/outputs/apk/release/app-x86-release.apk",
+                outputFolder: "platforms/android/app/build/outputs/apk",
+                builtApk: null
+            },
+            sass: ['./src/scss/**/*.scss'],
+            src:{
+                devCredentials: "src/dev-credentials.json",
+                defaultPrivateConfig: "src/default.private_config.json",
+                icons: "src/img/icons",
+                firebase: "src/lib/firebase/**/*",
+                js: "src/js/*.js",
+                serviceWorker: "src/firebase-messaging-sw.js",
+                staticData: 'src/data/qmStaticData.js'
+            },
+            www: {
+                devCredentials: "www/dev-credentials.json",
+                defaultPrivateConfig: "www/default.private_config.json",
+                icons: "www/img/icons",
+                firebase: "www/lib/firebase/",
+                js: "www/js/",
+                scripts: "www/scripts",
+                staticData: 'src/data/qmStaticData.js'
+            },
+            chcpLogin: '.chcplogin'
         },
         getBuildLink: function() {
             if(process.env.BUDDYBUILD_APP_ID){return "https://dashboard.buddybuild.com/apps/" + process.env.BUDDYBUILD_APP_ID + "/build/" + process.env.BUDDYBUILD_APP_ID;}
             if(process.env.CIRCLE_BUILD_NUM){return "https://circleci.com/gh/QuantiModo/quantimodo-android-chrome-ios-web-app/" + process.env.CIRCLE_BUILD_NUM;}
             if(process.env.TRAVIS_BUILD_ID){return "https://travis-ci.org/" + process.env.TRAVIS_REPO_SLUG + "/builds/" + process.env.TRAVIS_BUILD_ID;}
         },
+        majorMinorVersionNumbers: '2.10.',
         setVersionNumbers: function(){
             var date = new Date();
             function getPatchVersionNumber() {
@@ -4240,6 +4272,15 @@ var qm = {
             }
             return qm.gulp.src(srcArray)
                 .pipe(qm.gulp.dest(destinationPath));
+        },
+        readFile: function(path){
+            try {
+                var fs = qm.fileHelper.fs();
+                return JSON.parse(fs.readFileSync(path));
+            } catch (e) {
+                qmLog.error("Could not read "+path);
+                return false;
+            }
         },
         writeToFile: function(filePath, stringContents) {
             qm.fileHelper.writeFileSync(filePath, stringContents)

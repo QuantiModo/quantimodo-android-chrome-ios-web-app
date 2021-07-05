@@ -157,110 +157,11 @@ var runSequence = require('run-sequence');
 var AWS_ACCESS_KEY_ID = process.env.QM_AWS_ACCESS_KEY_ID || process.env.AWS_ACCESS_KEY_ID; // Netlify has their own
 var AWS_SECRET_ACCESS_KEY = process.env.QM_AWS_SECRET_ACCESS_KEY || process.env.AWS_SECRET_ACCESS_KEY; // Netlify has their own
 var s3Options = {accessKeyId: AWS_ACCESS_KEY_ID, secretAccessKey: AWS_SECRET_ACCESS_KEY};
-var qmLog = {
-    error: function (message, metaData, maxCharacters) {
-        metaData = qmLog.addMetaData(metaData);
-        console.error(qmLog.obfuscateStringify(message, metaData, maxCharacters));
-        metaData.build_info = qmGulp.buildInfoHelper.getCurrentBuildInfo();
-        bugsnag.notify(new Error(qmLog.obfuscateStringify(message), qmLog.obfuscateSecrets(metaData)));
-    },
-    info: function (message, object, maxCharacters) {
-        if(typeof message !== "string"){
-            object = message;
-            message = null;
-        }
-        console.log(qmLog.obfuscateStringify(message, object, maxCharacters));
-    },
-    debug: function (message, object, maxCharacters) {
-        if(isTruthy(process.env.BUILD_DEBUG || process.env.DEBUG_BUILD)){
-            qmLog.info("DEBUG: " + message, object, maxCharacters);
-        }
-    },
-    logErrorAndThrowException: function (message, object) {
-        qmLog.error(message, object);
-        throw message;
-    },
-    addMetaData: function(metaData){
-        metaData = metaData || {};
-        metaData.environment = qmLog.obfuscateSecrets(process.env);
-        metaData.subsystem = { name: qmLog.getCurrentServerContext() };
-        metaData.client_id = QUANTIMODO_CLIENT_ID;
-        metaData.build_link = qmGulp.buildInfoHelper.getBuildLink();
-        return metaData;
-    },
-    obfuscateStringify: function(message, object, maxCharacters) {
-        if(maxCharacters !== false){maxCharacters = maxCharacters || 140;}
-        var objectString = '';
-        if(object){
-            object = qmLog.obfuscateSecrets(object);
-            objectString = ':  ' + qmLog.prettyJSONStringify(object);
-        }
-        if (maxCharacters !== false && objectString.length > maxCharacters) {objectString = objectString.substring(0, maxCharacters) + '...';}
-        message += objectString;
-        if(process.env.QUANTIMODO_CLIENT_SECRET){message = message.replace(process.env.QUANTIMODO_CLIENT_SECRET, 'HIDDEN');}
-        if(AWS_SECRET_ACCESS_KEY){message = message.replace(AWS_SECRET_ACCESS_KEY, 'HIDDEN');}
-        if(process.env.ENCRYPTION_SECRET){message = message.replace(process.env.ENCRYPTION_SECRET, 'HIDDEN');}
-        if(process.env.QUANTIMODO_ACCESS_TOKEN){message = message.replace(process.env.QUANTIMODO_ACCESS_TOKEN, 'HIDDEN');}
-        message = qmLog.obfuscateString(message);
-        return message;
-    },
-    isSecretWord: function(propertyName){
-        var lowerCaseProperty = propertyName.toLowerCase();
-        return lowerCaseProperty.indexOf('secret') !== -1 ||
-            lowerCaseProperty.indexOf('password') !== -1 ||
-            lowerCaseProperty.indexOf('key') !== -1 ||
-            lowerCaseProperty.indexOf('database') !== -1 ||
-            lowerCaseProperty.indexOf('token') !== -1;
-    },
-    obfuscateString: function(string){
-        var env = process.env;
-        for (var propertyName in env) {
-            if (env.hasOwnProperty(propertyName)) {
-                if(qmLog.isSecretWord(propertyName)){
-                    string = string.replace(env[propertyName], '[SECURE]');
-                }
-            }
-        }
-        return string;
-    },
-    obfuscateSecrets: function(object){
-        if(typeof object !== 'object'){return object;}
-        object = JSON.parse(JSON.stringify(object)); // Decouple so we don't screw up original object
-        for (var propertyName in object) {
-            if (object.hasOwnProperty(propertyName)) {
-                if(qmLog.isSecretWord(propertyName)){
-                    object[propertyName] = "[SECURE]";
-                } else {
-                    object[propertyName] = qmLog.obfuscateSecrets(object[propertyName]);
-                }
-            }
-        }
-        return object;
-    },
-    getCurrentServerContext: function() {
-        if(process.env.CIRCLE_BRANCH){return "circleci";}
-        if(process.env.BUDDYBUILD_BRANCH){return "buddybuild";}
-        return process.env.HOSTNAME;
-    },
-    prettyJSONStringify: function(object) {return JSON.stringify(object, null, '\t');},
-    slugify: function(str){
-        str = str.replace(/^\s+|\s+$/g, ''); // trim
-        str = str.toLowerCase();
-        // remove accents, swap ñ for n, etc
-        var from = "àáäâèéëêìíïîòóöôùúüûñç·/_,:;";
-        var to   = "aaaaeeeeiiiioooouuuunc------";
-        for (var i=0, l=from.length ; i<l ; i++)
-        {
-            str = str.replace(new RegExp(from.charAt(i), 'g'), to.charAt(i));
-        }
-        str = str.replace('.', '-') // replace a dot by a dash
-            .replace(/[^a-z0-9 -]/g, '') // remove invalid chars
-            .replace(/\s+/g, '-') // collapse whitespace and replace by a dash
-            .replace(/-+/g, '-'); // collapse dashes
-        return str;
-    }
-};
 var bugsnag = require("bugsnag");
+var qmLog = global.qmLog = require('./src/js/qmLogger.js')
+var qm = global.qm = require('./src/js/qmHelpers.js')
+var paths = qm.buildInfoHelper.paths
+qm.staticData = require('./src/data/qmStaticData.js')
 bugsnag.register("ae7bc49d1285848342342bb5c321a2cf");
 bugsnag.releaseStage = qmLog.getCurrentServerContext();
 process.on('unhandledRejection', function (err) {
@@ -271,96 +172,7 @@ bugsnag.onBeforeNotify(function (notification) {
     var metaData = notification.events[0].metaData;
     metaData = qmLog.addMetaData(metaData);
 });
-var qmGit = {
-    branchName: null,
-    getBranchName: function(){
-        if(qmGit.branchName){return qmGit.branchName;}
-        qmLog.info("Branch name not set!");
-        return null;
-    },
-    isMaster: function () {
-        if(!qmGit.getBranchName()){throw "Branch name not set!";}
-        return qmGit.getBranchName() === "master";
-    },
-    isDevelop: function () {
-        if(!qmGit.getBranchName()){throw "Branch name not set!";}
-        return qmGit.getBranchName() === "develop";
-    },
-    isFeature: function () {
-        return qmGit.getBranchName().indexOf("feature") !== -1;
-    },
-    getCurrentGitCommitSha: function () {
-        if(process.env.SOURCE_VERSION){return process.env.SOURCE_VERSION;}
-        try {
-            return require('child_process').execSync('git rev-parse HEAD').toString().trim();
-        } catch (error) {
-            qmLog.info(error);
-        }
-    },
-    accessToken: process.env.GITHUB_ACCESS_TOKEN,
-    getCommitMessage: function(callback){
-        if(process.env.BUILDPACK_LOG_FILE){
-            qmLog.info("Can't get commit on Heroku");
-            callback("Can't get commit on Heroku");
-            return;
-        }
-        var commandForGit = 'git log -1 HEAD --pretty=format:%s';
-        execute(commandForGit, function (error, output) {
-            var commitMessage = output.trim();
-            qmLog.info("Commit: "+ commitMessage);
-            if(callback) {callback(commitMessage);}
-        });
-    },
-    outputCommitMessageAndBranch: function () {
-        qmGit.getCommitMessage(function (commitMessage) {
-            qmGit.setBranchName(function () {
-                qmLog.info("===== Building " + commitMessage + " on "+ qmGit.getBranchName() + " =====");
-            });
-        });
-    },
-    setBranchName: function (callback) {
-        if(qmGit.branchName){
-            qmLog.info("branchName already set to "+qmGit.branchName);
-            if (callback) {callback();}
-            return;
-        }
-        var git = require('gulp-git');
-        function setBranch(branch, callback) {
-            qmGit.branchName = branch.replace('origin/', '');
-            qmLog.info('current git branch: ' + qmGit.branchName);
-            if (callback) {callback();}
-        }
-        if (qmGit.getBranchEnv()){
-            setBranch(qmGit.getBranchEnv(), callback);
-            return;
-        }
-        if(process.env.BUILDPACK_LOG_FILE){
-            console.info("Setting branch to FEATURE because on Heroku and we can't access git repo data");
-            setBranch("feature", callback);
-            return;
-        }
-        try {
-            git.revParse({args: '--abbrev-ref HEAD'}, function (err, branch) {
-                if(err){qmLog.error(err); return;}
-                setBranch(branch, callback);
-            });
-        } catch (e) {
-            qmLog.info("Could not set branch name because " + e.message);
-        }
-    },
-    getBranchEnv: function () {
-        function getNameIfNotHead(envName) {
-            if(process.env[envName] && process.env[envName].indexOf("HEAD") === -1){return process.env[envName];}
-            return false;
-        }
-        if(getNameIfNotHead('CIRCLE_BRANCH')){return process.env.CIRCLE_BRANCH;}
-        if(getNameIfNotHead('BUDDYBUILD_BRANCH')){return process.env.BUDDYBUILD_BRANCH;}
-        if(getNameIfNotHead('TRAVIS_BRANCH')){return process.env.TRAVIS_BRANCH;}
-        if(getNameIfNotHead('GIT_BRANCH')){return process.env.GIT_BRANCH;}
-    }
-};
-qmGit.setBranchName();
-var majorMinorVersionNumbers = '2.10.';
+qm.gitHelper.setBranchName();
 if(argv.clientSecret){process.env.QUANTIMODO_CLIENT_SECRET = argv.clientSecret;}
 process.env.npm_package_licenseText = null; // Pollutes logs
 qmLog.debug("Environmental Variables", process.env, 50000);
@@ -424,8 +236,8 @@ var qmGulp = {
         getReleaseStagePath: function () {
             if(qmGulp.chcp.releaseStagePath){return qmGulp.chcp.releaseStagePath;}
             var path = "dev";
-            if(qmGit.getBranchName() && qmGit.isMaster()){path = "production";}
-            if(qmGit.getBranchName() && qmGit.isDevelop()){path = "qa";}
+            if(qm.gitHelper.getBranchName() && qm.gitHelper.isMaster()){path = "production";}
+            if(qm.gitHelper.getBranchName() && qm.gitHelper.isDevelop()){path = "qa";}
             if(qmGulp.buildSettings.buildDebug()){
                 qmLog.info("qmGulp.buildSettings.buildDebug returns true so using ReleaseStagePath dev");
                 path = "dev";
@@ -493,120 +305,8 @@ var qmGulp = {
             }
             if(qmPlatform.buildingFor.chrome()){return false;}  // Otherwise we don't minify and extension is huge
             // Always building debug when not on master causes unexpected results.  Just use BUILD_DEBUG env if necessary
-            //if(!qmGit.isMaster()){ qmLog.info("Not on master so buildDebug is true"); return true; }
+            //if(!qm.gitHelper.isMaster()){ qmLog.info("Not on master so buildDebug is true"); return true; }
             return false;
-        }
-    },
-    buildInfoHelper: {
-        alreadyMinified: function(){
-            try {
-                var files = fs.readdirSync(paths.www.scripts);
-                if (!files.length) {
-                    qmLog.info("Scripts folder is empty so we need to minify");
-                    return false;
-                }
-            } catch (e) {
-                qmLog.info("No scripts folder so we need to minify");
-                return false;
-            }
-            var previousSha = qmGulp.buildInfoHelper.getPreviousBuildSha();
-            if(!previousSha){
-                qmLog.error("Could not get previous git commit SHA!");
-                return false;
-            }
-            var currentSha = qmGit.getCurrentGitCommitSha();
-            if(!currentSha){
-                qmLog.error("Could not get current git commit SHA!");
-                return false;
-            }
-            var alreadyMinified = previousSha === currentSha;
-            if(!alreadyMinified){
-                qmLog.info("current sha " + currentSha + " and previous commit SHA " + previousSha +
-                    " don't match so we need to minify again");
-            } else {
-                qmLog.info("No need to minify again because current sha " + currentSha + " and previous commit SHA " +
-                    previousSha + " match");
-            }
-            return alreadyMinified;
-        },
-        buildInfo: {
-            iosCFBundleVersion: null,
-            builtAt: null,
-            buildServer: null,
-            buildLink: null,
-            versionNumber: null,
-            versionNumbers: {},
-            gitBranch: null,
-            gitCommitShaHash: null
-        },
-        getPreviousBuildSha: function(){
-            var previousBuildInfo = qmGulp.buildInfoHelper.getPreviousBuildInfo();
-            if(!previousBuildInfo){return false;}
-            return previousBuildInfo.gitCommitShaHash;
-        },
-        getCurrentBuildInfo: function () {
-            qmGulp.buildInfoHelper.currentBuildInfo = {
-                iosCFBundleVersion: qmGulp.buildInfoHelper.buildInfo.versionNumbers.iosCFBundleVersion,
-                builtAt: timeHelper.getUnixTimestampInSeconds(),
-                builtAtString:  new Date().toISOString(),
-                buildServer: qmLog.getCurrentServerContext(),
-                buildLink: qmGulp.buildInfoHelper.getBuildLink(),
-                versionNumber: qmGulp.buildInfoHelper.buildInfo.versionNumbers.ionicApp,
-                versionNumbers: qmGulp.buildInfoHelper.buildInfo.versionNumbers,
-                gitBranch: qmGit.getBranchName(),
-                gitCommitShaHash: qmGit.getCurrentGitCommitSha()
-            };
-            return qmGulp.buildInfoHelper.currentBuildInfo;
-        },
-        getPreviousBuildInfo: function () {
-            var previousBuildInfo = readFile(paths.src.buildInfo);
-            if(!previousBuildInfo){
-                qmLog.info("No previous BuildInfo file at "+paths.src.buildInfo);
-                qmGulp.buildInfoHelper.previousBuildInfo = false;
-            } else {
-                qmGulp.buildInfoHelper.previousBuildInfo = previousBuildInfo;
-            }
-            return qmGulp.buildInfoHelper.previousBuildInfo;
-        },
-        previousBuildInfo: null,
-        writeCommitSha: function () {
-            writeToFile('www/data/commits/'+qmGit.getCurrentGitCommitSha(), qmGit.getCurrentGitCommitSha());
-            writeToFile('src/data/commits/'+qmGit.getCurrentGitCommitSha(), qmGit.getCurrentGitCommitSha());
-        },
-        getBuildLink: function() {
-            if(process.env.BUDDYBUILD_APP_ID){return "https://dashboard.buddybuild.com/apps/" + process.env.BUDDYBUILD_APP_ID + "/build/" + process.env.BUDDYBUILD_APP_ID;}
-            if(process.env.CIRCLE_BUILD_NUM){return "https://circleci.com/gh/QuantiModo/quantimodo-android-chrome-ios-web-app/" + process.env.CIRCLE_BUILD_NUM;}
-            if(process.env.TRAVIS_BUILD_ID){return "https://travis-ci.org/" + process.env.TRAVIS_REPO_SLUG + "/builds/" + process.env.TRAVIS_BUILD_ID;}
-        },
-        setVersionNumbers: function(){
-            var date = new Date();
-            function getPatchVersionNumber() {
-                var monthNumber = (date.getMonth() + 1).toString();
-                var dayOfMonth = ('0' + date.getDate()).slice(-2);
-                return monthNumber + dayOfMonth;
-            }
-            function getIosMinorVersionNumber() {
-                return (getMinutesSinceMidnight()).toString();
-            }
-            function getMinutesSinceMidnight() {
-                return date.getHours() * 60 + date.getMinutes();
-            }
-            function getAndroidMinorVersionNumber() {
-                var number = getMinutesSinceMidnight() * 99 / 1440;
-                number = Math.round(number);
-                number = appendLeadingZero(number);
-                return number;
-            }
-            function appendLeadingZero(integer) {return ('0' + integer).slice(-2);}
-            function getLongDateFormat(){return date.getFullYear().toString() + appendLeadingZero(date.getMonth() + 1) + appendLeadingZero(date.getDate());}
-            qmGulp.buildInfoHelper.buildInfo.versionNumbers = {
-                iosCFBundleVersion: majorMinorVersionNumbers + getPatchVersionNumber() + '.' + getIosMinorVersionNumber(),
-                //androidVersionCodes: {armV7: getLongDateFormat() + appendLeadingZero(date.getHours()), x86: getLongDateFormat() + appendLeadingZero(date.getHours() + 1)},
-                androidVersionCode: getLongDateFormat() + getAndroidMinorVersionNumber(),
-                ionicApp: majorMinorVersionNumbers + getPatchVersionNumber()
-            };
-            qmGulp.buildInfoHelper.buildInfo.versionNumbers.buildVersionNumber = qmGulp.buildInfoHelper.buildInfo.versionNumbers.androidVersionCode;
-            qmLog.info(JSON.stringify(qmGulp.buildInfoHelper.buildInfo.versionNumbers));
         }
     },
     getAdditionalSettings: function(){
@@ -617,10 +317,9 @@ var qmGulp = {
         return qmGulp.staticData.appSettings.appDisplayName;
     },
     getAppHostName: function(){
-        if(process.env.APP_HOST_NAME){return process.env.APP_HOST_NAME;}
-        // We can set utopia as env or in the app when necessary because always using it in build process on develop causes too many problems
-        //if(qmGulp.buildSettings.buildDebug()){return "https://utopia.quantimo.do";}
-        return "https://app.quantimo.do";
+        //if(process.env.APP_HOST_NAME){return process.env.APP_HOST_NAME;}
+        var url = qm.api.getBaseUrl();
+        return url;
     },
     getAppIds: function(){
         return qmGulp.getAdditionalSettings().appIds;
@@ -698,7 +397,7 @@ var qmGulp = {
             git_repo: 'QuantiModo/quantimodo-android-chrome-ios-web-app',
             //git_prid: '1',
             // create status to this commit, optional
-            git_sha: qmGit.getCurrentGitCommitSha(),
+            git_sha: qm.gitHelper.getCurrentGitCommitSha(),
             jshint_status: 'error',       // Set status to error when jshint errors, optional
             jscs_status: 'failure',       // Set git status to failure when jscs errors, optional
             eslint_status: 'error',       // Set git status to error when eslint errors, optional
@@ -746,14 +445,14 @@ var qmGulp = {
         return uploadToS3(filePath);
     }
 };
-qmGulp.buildInfoHelper.setVersionNumbers();
+qm.buildInfoHelper.setVersionNumbers();
 var Quantimodo = require('quantimodo');
 /** @namespace Quantimodo.ApiClient */
 var defaultClient = Quantimodo.ApiClient.instance;
 var quantimodo_oauth2 = defaultClient.authentications.quantimodo_oauth2;
 quantimodo_oauth2.accessToken = process.env.QUANTIMODO_ACCESS_TOKEN;
 console.log("process.platform is " + process.platform + " and process.env.OS is " + process.env.OS);
-qmGit.outputCommitMessageAndBranch();
+qm.gitHelper.outputCommitMessageAndBranch();
 function setClientId(callback) {
     if (process.env.BUDDYBUILD_SCHEME) {
         QUANTIMODO_CLIENT_ID = process.env.BUDDYBUILD_SCHEME.toLowerCase().substr(0, process.env.BUDDYBUILD_SCHEME.indexOf(' '));
@@ -772,8 +471,8 @@ function setClientId(callback) {
         qmLog.info('Stripped apps/ and now client id is ' + QUANTIMODO_CLIENT_ID);
     }
     if (!QUANTIMODO_CLIENT_ID) {
-        qmGit.setBranchName(function () {
-            var fullBranchName = qmGit.getBranchName();
+        qm.gitHelper.setBranchName(function () {
+            var fullBranchName = qm.gitHelper.getBranchName();
             var branch = fullBranchName.replace('apps/', '');
             if (!QUANTIMODO_CLIENT_ID) {
                 if (appIds[branch]) {
@@ -803,14 +502,7 @@ function readDevCredentials(){
         devCredentials = {};
     }
 }
-function readFile(path){
-    try {
-        return JSON.parse(fs.readFileSync(path));
-    } catch (e) {
-        qmLog.error("Could not read "+path);
-        return false;
-    }
-}
+
 function outputFileContents(path){
     qmLog.info(path+": "+fs.readFileSync(path));
 }
@@ -848,9 +540,9 @@ function convertFilePathToPropertyName(filePath) {
 function getS3AppUploadsRelativePath(relative_filename) {
     var path =  'app_uploads/' + QUANTIMODO_CLIENT_ID + '/' + relative_filename;
     // noinspection JSUnusedLocalSymbols
-    var numbers = qmGulp.buildInfoHelper.buildInfo.versionNumbers;
+    var numbers = qm.buildInfoHelper.buildInfo.versionNumbers;
     if(relative_filename.indexOf('.apk') !== -1 && QUANTIMODO_CLIENT_ID === 'quantimodo'){
-        var slug = qmLog.slugify(qmGit.getBranchName());
+        var slug = qmLog.slugify(qm.gitHelper.getBranchName());
         slug = slug.replace('renovate-', '');
         path = path.replace('app-',
             //numbers.buildVersionNumber
@@ -1075,9 +767,9 @@ function fastlaneSupply(track, callback) {
 }
 function setVersionNumbersInWidget(parsedXmlFile) {
     /** @namespace parsedXmlFile.widget */
-    parsedXmlFile.widget.$.version = qmGulp.buildInfoHelper.buildInfo.versionNumbers.ionicApp;
-    parsedXmlFile.widget.$['ios-CFBundleVersion'] = qmGulp.buildInfoHelper.buildInfo.versionNumbers.iosCFBundleVersion;
-    parsedXmlFile.widget.$['android-versionCode'] = qmGulp.buildInfoHelper.buildInfo.versionNumbers.androidVersionCode;
+    parsedXmlFile.widget.$.version = qm.buildInfoHelper.buildInfo.versionNumbers.ionicApp;
+    parsedXmlFile.widget.$['ios-CFBundleVersion'] = qm.buildInfoHelper.buildInfo.versionNumbers.iosCFBundleVersion;
+    parsedXmlFile.widget.$['android-versionCode'] = qm.buildInfoHelper.buildInfo.versionNumbers.androidVersionCode;
     return parsedXmlFile;
 }
 function getPostRequestOptions() {
@@ -1378,7 +1070,7 @@ var chromeScripts = [
     'data/qmStaticData.js', // Must come after qmHelpers because we assign to qm.staticData
     'lib/underscore/underscore-min.js',
 ];
-//if(qmGit.accessToken){chromeScripts.push('qm-amazon/qmUrlUpdater.js');}
+//if(qm.gitHelper.accessToken){chromeScripts.push('qm-amazon/qmUrlUpdater.js');}
 // noinspection JSUnusedLocalSymbols
 function deleteFile(path){
     if (fs.existsSync(path)) {
@@ -1391,7 +1083,7 @@ function chromeManifest(outputPath, backgroundScriptArray) {
         'manifest_version': 2,
         'name': qmGulp.getAppDisplayName(),
         'description': qmGulp.getAppSettings().appDescription,
-        'version': qmGulp.buildInfoHelper.buildInfo.versionNumbers.ionicApp,
+        'version': qm.buildInfoHelper.buildInfo.versionNumbers.ionicApp,
         'options_page': 'chrome_options.html',
         'icons': {
             '16': 'img/icons/icon_16.png',
@@ -1522,8 +1214,8 @@ function writeToFileWithCallback(filePath, stringContents, callback) {
     return fs.writeFile(filePath, stringContents, callback);
 }
 gulp.task('createSuccessFile', function () {
-    writeToFile('lastCommitBuilt', qmGit.getCurrentGitCommitSha());
-    return fs.writeFileSync('success', qmGit.getCurrentGitCommitSha());
+    writeToFile('lastCommitBuilt', qm.gitHelper.getCurrentGitCommitSha());
+    return fs.writeFileSync('success', qm.gitHelper.getCurrentGitCommitSha());
 });
 gulp.task('deleteSuccessFile', function () {
     if(qmPlatform.buildingFor.ios()){
@@ -1600,9 +1292,9 @@ gulp.task('getAppConfigs', ['setClientId'], function () {
         process.env.APP_IDENTIFIER = qmGulp.getAppIdentifier();  // Need env for Fastlane
         function addBuildInfoToAppSettings() {
             qmGulp.getAppSettings().buildServer = qmLog.getCurrentServerContext();
-            qmGulp.getAppSettings().buildLink = qmGulp.buildInfoHelper.getBuildLink();
-            qmGulp.getAppSettings().versionNumber = qmGulp.buildInfoHelper.buildInfo.versionNumbers.ionicApp;
-            qmGulp.getAppSettings().androidVersionCode = qmGulp.buildInfoHelper.buildInfo.versionNumbers.androidVersionCode;
+            qmGulp.getAppSettings().buildLink = qm.buildInfoHelper.getBuildLink();
+            qmGulp.getAppSettings().versionNumber = qm.buildInfoHelper.buildInfo.versionNumbers.ionicApp;
+            qmGulp.getAppSettings().androidVersionCode = qm.buildInfoHelper.buildInfo.versionNumbers.androidVersionCode;
             qmGulp.getAppSettings().debugMode = isTruthy(process.env.APP_DEBUG);
             qmGulp.getAppSettings().builtAt = timeHelper.getUnixTimestampInSeconds();
             // if (!qm.getAppSettings().clientSecret && process.env.QUANTIMODO_CLIENT_SECRET) {
@@ -1748,7 +1440,7 @@ gulp.task('downloadSwaggerJson', [], function () {
     return getConstantsFromApiAndWriteToJson('docs', url);
 });
 function writeStaticDataFile(){
-    qmGulp.staticData.buildInfo = qmGulp.buildInfoHelper.getCurrentBuildInfo();
+    qmGulp.staticData.buildInfo = qm.buildInfoHelper.getCurrentBuildInfo();
     var string = 'var staticData = '+ qmLog.prettyJSONStringify(qmGulp.staticData)+
         '; if(typeof window !== "undefined"){window.qm.staticData = staticData;} ' +
         ' else if(typeof qm !== "undefined"){qm.staticData = staticData;} else {module.exports = staticData;} ' +
@@ -1998,7 +1690,7 @@ gulp.task("upload-armv7-release-apk-to-s3", function() {
 gulp.task("upload-combined-release-apk-to-s3", ['getAppConfigs'], function() {
     qmGulp.currentTask = this.currentTask.name;
     if(!buildSettings.xwalkMultipleApk){
-        qmLog.info(qmGulp.buildInfoHelper.buildInfo.versionNumbers);
+        qmLog.info(qm.buildInfoHelper.buildInfo.versionNumbers);
         return qmGulp.uploadBuildToS3(paths.apk.combinedRelease);
     }
 });
@@ -2148,7 +1840,7 @@ gulp.task('git-create-feature-for-each-changed-file', function (done) {
         });
 });
 gulp.task('git-set-branch-name', function (callback) {
-    qmGit.setBranchName(callback);
+    qm.gitHelper.setBranchName(callback);
 });
 gulp.task('deleteIOSApp', function () {
     var deferred = q.defer();
@@ -2264,7 +1956,7 @@ gulp.task('upload-source-maps', [], function(callback) {
             if(file.indexOf('.map') !== -1){return;}
             var options = {
                 apiKey: 'ae7bc49d1285848342342bb5c321a2cf',
-                appVersion: qmGulp.buildInfoHelper.buildInfo.versionNumbers.androidVersionCode, // 	the version of the application you are building (this should match the appVersion configured in your notifier)
+                appVersion: qm.buildInfoHelper.buildInfo.versionNumbers.androidVersionCode, // 	the version of the application you are building (this should match the appVersion configured in your notifier)
                 //codeBundleId: '1.0-123', // optional (react-native only)
                 minifiedUrl: '*'+file, // supports wildcards
                 sourceMap: paths.www.scripts + '/'+file+'.map', // file path of the source map on the current machine
@@ -2334,7 +2026,7 @@ gulp.task('ionicStateReset', function (callback) {
     execute('ionic state reset', callback);
 });
 gulp.task('fastlaneSupplyBeta', ['decryptSupplyJsonKeyForGooglePlay'], function (callback) {
-    if(!qmGit.isMaster()){
+    if(!qm.gitHelper.isMaster()){
         qmLog.info("Not doing fastlaneSupplyBeta because not on develop or master");
         callback();
         return;
@@ -2351,7 +2043,7 @@ gulp.task('fastlaneSupplyBeta', ['decryptSupplyJsonKeyForGooglePlay'], function 
     }
 });
 gulp.task('fastlaneSupplyProduction', ['decryptSupplyJsonKeyForGooglePlay'], function (callback) {
-    if(!qmGit.isDevelop() && !qmGit.isMaster()){
+    if(!qm.gitHelper.isDevelop() && !qm.gitHelper.isMaster()){
         qmLog.info("Not doing fastlaneSupplyProduction because not on develop or master");
         callback();
         return;
@@ -2810,12 +2502,12 @@ gulp.task('setVersionNumberInFiles', function () {
         'resources/chrome_app/manifest.json'
     ];
     return gulp.src(filesToUpdate, {base: '.'})
-        .pipe(replace('IONIC_IOS_APP_VERSION_NUMBER_PLACEHOLDER', qmGulp.buildInfoHelper.buildInfo.versionNumbers.iosCFBundleVersion))
-        .pipe(replace('IONIC_APP_VERSION_NUMBER_PLACEHOLDER', qmGulp.buildInfoHelper.buildInfo.versionNumbers.ionicApp))
+        .pipe(replace('IONIC_IOS_APP_VERSION_NUMBER_PLACEHOLDER', qm.buildInfoHelper.buildInfo.versionNumbers.iosCFBundleVersion))
+        .pipe(replace('IONIC_APP_VERSION_NUMBER_PLACEHOLDER', qm.buildInfoHelper.buildInfo.versionNumbers.ionicApp))
         .pipe(gulp.dest('./'));
 });
 gulp.task('writeCommitSha', ['getAppConfigs'], function () {
-    return qmGulp.buildInfoHelper.writeCommitSha();
+    return qm.buildInfoHelper.writeCommitSha();
 });
 gulp.task('ic_notification', function () {
     gulp.src('./resources/android/res/**')
@@ -3138,7 +2830,7 @@ gulp.task('uploadBuddyBuildToS3', ['zipBuild'], function () {
 // Need configureAppAfterNpmInstall or build-ios-app results in infinite loop
 gulp.task('configureAppAfterNpmInstall', [], function (callback) {
     qmLog.info('gulp configureAppAfterNpmInstall');
-    if(qmGulp.buildInfoHelper.alreadyMinified()){
+    if(qm.buildInfoHelper.alreadyMinified()){
         qmLog.info("Not configuring app because already built this commit");
         callback();
         return;
@@ -3318,14 +3010,14 @@ gulp.task('_build-all-chrome', function (callback) {
 });
 gulp.task('downloadQmAmazonJs', function (callback) {
     var git = require('gulp-git');
-    git.clone('https://'+qmGit.accessToken+'@github.com/mikepsinn/qm-amazon', {args: './src/qm-amazon'}, function (err) {
+    git.clone('https://'+qm.gitHelper.accessToken+'@github.com/mikepsinn/qm-amazon', {args: './src/qm-amazon'}, function (err) {
         if (err) {qmLog.info(err);}
         callback();
     });
 });
 gulp.task('clone-ios-build-repo', function (callback) {
     var git = require('gulp-git');
-    git.clone('https://'+qmGit.accessToken+'@github.com/mikepsinn/qm-ios-build', function (err) {
+    git.clone('https://'+qm.gitHelper.accessToken+'@github.com/mikepsinn/qm-ios-build', function (err) {
         if (err) {qmLog.info(err);}
         callback();
     });
@@ -3414,7 +3106,7 @@ gulp.task('buildAndReleaseIosApp', function (callback) {
         callback);
 });
 gulp.task('fastlaneBetaIos', function (callback) {
-    if(!qmGit.isDevelop() && !qmGit.isMaster()){
+    if(!qm.gitHelper.isDevelop() && !qm.gitHelper.isMaster()){
         qmLog.info("Not doing fastlaneBetaIos because not on develop or master");
         callback();
         return;
@@ -3710,14 +3402,14 @@ gulp.task('deploy-to-github-pages', ['add-client-remote'], function() {
 });
 gulp.task('add-client-remote', function(callback) {
     setClientId(function () {
-        var remoteUrl ="https://" + qmGit.accessToken + "@github.com/mikepsinn/qm-ionic-" + QUANTIMODO_CLIENT_ID + ".git";
+        var remoteUrl ="https://" + qm.gitHelper.accessToken + "@github.com/mikepsinn/qm-ionic-" + QUANTIMODO_CLIENT_ID + ".git";
         qmLog.info("Deploying to "+ remoteUrl);
         changeOriginRemote(remoteUrl, callback);
     });
 });
 gulp.task('reset-remote', function(callback) {
     setClientId(function () {
-        var remoteUrl ="https://" + qmGit.accessToken + "@github.com/QuantiModo/quantimodo-android-chrome-ios-web-app.git";
+        var remoteUrl ="https://" + qm.gitHelper.accessToken + "@github.com/QuantiModo/quantimodo-android-chrome-ios-web-app.git";
         qmLog.info("Resetting remote to "+ remoteUrl);
         changeOriginRemote(remoteUrl, callback);
     });
