@@ -12116,7 +12116,7 @@ var qm = {
         validateVariables: function(variables){
             if(!Array.isArray(variables)){variables = [variables];}
             variables.map(function (v){
-                if(v && v.variableId === 1398){
+                if(v && v.variableId === 1398 && !v.outcome){
                     qmLog.errorAndExceptionTestingOrDevelopment("why isn't mood an outcome: "+v.outcome, v)
                 }
             });
