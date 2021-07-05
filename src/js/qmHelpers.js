@@ -4432,7 +4432,7 @@ var qm = {
         outputCommitMessageAndBranch: function(){
             qm.gitHelper.getCommitMessage(function(commitMessage){
                 qm.gitHelper.setBranchName(function(branchName){
-                    qmLog.info("===== Building " + commitMessage + " on " + branchName + " =====");
+                    qmLog.info("===== \nBuilding \n" + commitMessage + "\non branch: " + branchName + "\n=====");
                 });
             });
         },

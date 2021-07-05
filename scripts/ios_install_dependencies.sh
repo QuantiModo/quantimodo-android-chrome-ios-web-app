@@ -5,7 +5,12 @@ BRANCH_NAME=${BRANCH_NAME:-${TRAVIS_BRANCH}}
 BRANCH_NAME=${BRANCH_NAME:-${BUDDYBUILD_BRANCH}}
 BRANCH_NAME=${BRANCH_NAME:-${CIRCLE_BRANCH}}
 BRANCH_NAME=${BRANCH_NAME:-${GIT_BRANCH}}
-COMMIT_MESSAGE=$(git log -1 HEAD --pretty=format:%s) && echo "===== Building $COMMIT_MESSAGE on ${BRANCH_NAME} ====="
+COMMIT_MESSAGE=$(git log -1 HEAD --pretty=format:%s) && echo "
+=====
+Building
+$COMMIT_MESSAGE
+on branch: ${BRANCH_NAME}
+====="
 set -x
 
 bundle install

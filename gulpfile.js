@@ -314,7 +314,7 @@ var qmGit = {
     outputCommitMessageAndBranch: function () {
         qmGit.getCommitMessage(function (commitMessage) {
             qmGit.setBranchName(function () {
-                qmLog.info("===== Building " + commitMessage + " on "+ qmGit.getBranchName() + " =====");
+                qmLog.info("=====\nBuilding\n" + commitMessage + "\non branch: "+ qmGit.getBranchName() + "\n=====");
             });
         });
     },
