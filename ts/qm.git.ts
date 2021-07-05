@@ -168,15 +168,6 @@ export function getBranchName() {
         throw new Error("Branch name not set!")
     }
 }
-export function deleteLocalFeatureBranches() {
-    git.branchLocal(function(branches: []) {
-        branches.forEach(function(branch: string) {
-            if(branch.indexOf("feature/") !== -1) {
-                git.deleteLocalBranch(branch)
-            }
-        })
-    })
-}
 export function createFeatureBranch(featureName: string) {
     const branchName = "feature/" + featureName
     try {
