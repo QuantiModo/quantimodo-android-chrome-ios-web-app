@@ -134,7 +134,7 @@ var paths = {
         firebase: "src/lib/firebase/**/*",
         js: "src/js/*.js",
         serviceWorker: "src/firebase-messaging-sw.js",
-        staticData: 'src/data/qmStaticData.js',
+        data: "src/data",
     },
     www: {
         devCredentials: "www/dev-credentials.json",
@@ -143,7 +143,7 @@ var paths = {
         firebase: "www/lib/firebase/",
         js: "www/js/",
         scripts: "www/scripts",
-        staticData: 'src/data/qmStaticData.js',
+        data: "www/data",
     },
     chcpLogin: '.chcplogin',
 };
@@ -1375,7 +1375,13 @@ var chromeScripts = [
     'lib/quantimodo/quantimodo-web.js',
     'js/qmLogger.js',
     'js/qmHelpers.js',
-    'data/qmStaticData.js', // Must come after qmHelpers because we assign to qm.staticData
+    'data/appSettings.js', // Must come after qmHelpers because we assign to qm.staticData
+    'data/qmStates.js',
+    'data/units.js',
+    'data/variableCategories.js',
+    'data/commonVariables.js',
+    'data/docs.js',
+    'data/dialogAgent.js',
     'lib/underscore/underscore-min.js',
 ];
 //if(qmGit.accessToken){chromeScripts.push('qm-amazon/qmUrlUpdater.js');}
@@ -1749,21 +1755,22 @@ gulp.task('downloadSwaggerJson', [], function () {
 });
 function writeStaticDataFile(){
     qmGulp.staticData.buildInfo = qmGulp.buildInfoHelper.getCurrentBuildInfo();
-    var string = 'var staticData = '+ qmLog.prettyJSONStringify(qmGulp.staticData)+
-        '; if(typeof window !== "undefined"){window.qm.staticData = staticData;} ' +
-        ' else if(typeof qm !== "undefined"){qm.staticData = staticData;} else {module.exports = staticData;} ' +
-        'if(typeof qm !== "undefined"){qm.stateNames = staticData.stateNames;}';
+    var as = qmGulp.getAppSettings();
+    var string =
+        'if(typeof qm === "undefined"){if(typeof window === "undefined") {global.qm = {}; }else{window.qm = {};}}\n'+
+    'if(typeof qm.staticData === "undefined"){qm.staticData = {};}\n' +
+        'qm.staticData.appSettings ='+qmLog.prettyJSONStringify(as);
     try {
-        writeToFile(paths.www.staticData, string);
+        writeToFile(paths.www.data+"/appSettings.js", string);
     } catch(e){
         qmLog.error(e.message + ".  Maybe www/data doesn't exist but it might be resolved when we copy from src");
     }
     try {
-        writeToFile('build/chrome_extension/data/qmStaticData.js', string);
+        writeToFile('build/chrome_extension/data/appSettings.js', string);
     } catch(e){
         qmLog.error(e.message + ".  Maybe build/chrome_extension/data doesn't exist but it might be resolved when we copy from src");
     }
-    return writeToFile(paths.src.staticData, string);
+    return writeToFile(paths.src.data+"/appSettings.js", string);
 }
 gulp.task('staticDataFile', ['getAppConfigs'], function () {
     return writeStaticDataFile();
