@@ -1,3 +1,4 @@
+// @ts-ignore
 import repoPath from "app-root-path"
 import * as cypress from "cypress"
 import {slackRunner} from "cypress-slack-reporter/bin/slack/slack-alert.js"
@@ -7,17 +8,18 @@ import {merge} from "mochawesome-merge"
 // @ts-ignore
 import marge from "mochawesome-report-generator"
 import * as Q from "q"
+// @ts-ignore
 import rimraf from "rimraf"
-import {loadEnv} from "./env-helper"
-import * as fileHelper from "./qm.file-helper"
+import {loadEnv} from "../ts/env-helper"
+import * as fileHelper from "../ts/qm.file-helper"
 // require hack
 declare function require(path: string): any
 // require untyped library file
 // tslint:disable-next-line:no-var-requires
 const qm = require("../src/js/qmHelpers.js")
-import * as qmGit from "./qm.git"
-import * as qmLog from "./qm.log"
-import {createSuccessFile, deleteEnvFile, deleteSuccessFile, getBuildLink, getCiProvider} from "./test-helpers"
+import * as qmGit from "../ts/qm.git"
+import * as qmLog from "../ts/qm.log"
+import {createSuccessFile, deleteEnvFile, deleteSuccessFile, getBuildLink, getCiProvider} from "../ts/test-helpers"
 
 // https://github.com/motdotla/dotenv#what-happens-to-environment-variables-that-were-already-set
 // loadEnv(".env.local")
