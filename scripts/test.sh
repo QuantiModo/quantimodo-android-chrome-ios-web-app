@@ -6,6 +6,7 @@ sudo bash "${SCRIPT_FOLDER}"/output_commit_message_and_env.sh
 source "$SCRIPT_FOLDER"/no-root.sh
 
 set -e
+npm run types
 npm run test:mocha
 if [[ ${GIT_BRANCH} = "origin/develop" ]]; then bash "${SCRIPT_FOLDER}"/commit-build.sh && exit 0; fi
 if [[ ${GIT_BRANCH} != *"feature"* && ${GIT_BRANCH} != *"renovate"* ]]; then exit 0; fi
