@@ -98,9 +98,8 @@ export const githubStatusStates = {
 // tslint:disable-next-line:max-line-length
 export function setGithubStatus(testState: "error" | "failure" | "pending" | "success", context: string,
                                 description: string, url?: string | null, cb?: ((arg0: any) => void) | undefined) {
-    if (testState === "error") {
-        qmLog.error(description + " " + context)
-    }
+    if(testState === "pending") {qmLog.logStartOfProcess(context)}
+    if (testState === "error") {qmLog.error(description + " " + context)}
     qmLog.info("Setting status on Github: "+ description + " " + context)
     description = _str.truncate(description, 135)
     url = url || getBuildLink()
@@ -124,6 +123,7 @@ export function setGithubStatus(testState: "error" | "failure" | "pending" | "su
         target_url: url,
     }
     console.log(`${context} - ${description} - ${testState} at ${url}`)
+    if(testState !== "pending") {qmLog.logEndOfProcess(context)}
     getOctoKit().repos.createStatus(params).then((data: any) => {
         if (cb) {
             cb(data)
