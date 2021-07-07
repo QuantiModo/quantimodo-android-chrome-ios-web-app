@@ -56,7 +56,7 @@
     "fs-extra": "8.1.0",
     "ghost-inspector": "4.0.1",
     "git-repo-name": "1.0.1",
-    "husky": "7.0.0",
+    "husky": "7.0.1",
     "ionic-plugin-keyboard": "2.2.1",
     "jasmine": "3.8.0",
     "js-beautify": "1.14.0",
