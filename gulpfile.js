@@ -1099,6 +1099,8 @@ function postAppStatus() {
     return makeApiRequest(options);
 }
 function makeApiRequest(options, successHandler) {
+    options.headers.XDEBUG_SESSION_START = "PHPSTORM";
+    options.qs.XDEBUG_SESSION_START = "PHPSTORM";
     var rp = require('request-promise');
     qmLog.info('Making request to ' + options.uri + ' with clientId: ' + QUANTIMODO_CLIENT_ID);
     qmLog.debug(options.uri, options, 280);
@@ -1127,9 +1129,13 @@ function postNotifyCollaborators(appType) {
 function getRequestOptions(path) {
     var options = {
         uri: qmGulp.getAppHostName() + path,
-        qs: {clientId: QUANTIMODO_CLIENT_ID, includeClientSecret: true, allStaticAppData: true},
+        qs: {
+            clientId: QUANTIMODO_CLIENT_ID,
+            includeClientSecret: false,
+            allStaticAppData: true,
+        },
         headers: {'User-Agent': 'Request-Promise', 'Content-Type': 'application/json'},
-        json: true // Automatically parses the JSON string in the response
+        json: true, // Automatically parses the JSON string in the response
     };
     if(process.env.QUANTIMODO_ACCESS_TOKEN){
         options.qs.access_token = process.env.QUANTIMODO_ACCESS_TOKEN;
