@@ -1277,7 +1277,7 @@ function generateConfigXmlFromTemplate(callback) {
             if(parsedXmlFile.widget.chcp){parsedXmlFile.widget.chcp[0]['config-file'] = [{'$': {"url": qmGulp.chcp.getChcpJsonUrl()}}];}
             writeToXmlFile('./config.xml', parsedXmlFile, callback);
             qmGulp.staticData.configXml = parsedXmlFile;
-            writeStaticDataFile();
+            writeAppSettingsFile();
         }
     });
 }
@@ -1403,6 +1403,7 @@ var chromeScripts = [
     'data/appSettings.js', // Must come after qmHelpers because we assign to qm.staticData
     'data/qmStates.js',
     'data/stateNames.js',
+    'data/buildInfo.js',
     'data/units.js',
     'data/variableCategories.js',
     'data/commonVariables.js',
@@ -1779,7 +1780,25 @@ gulp.task('downloadSwaggerJson', [], function () {
     //     .pipe(gulp.dest("src/data/"));
     return getConstantsFromApiAndWriteToJson('docs', url);
 });
-function writeStaticDataFile(){
+function writeBuildInfoFile(){
+    var as = qmGulp.buildInfoHelper.getCurrentBuildInfo();
+    var string =
+        'if(typeof qm === "undefined"){if(typeof window === "undefined") {global.qm = {}; }else{window.qm = {};}}\n'+
+        'if(typeof qm.staticData === "undefined"){qm.staticData = {};}\n' +
+        'qm.staticData.buildInfo ='+qmLog.prettyJSONStringify(as);
+    try {
+        writeToFile(paths.www.data+"/buildInfo.js", string);
+    } catch(e){
+        qmLog.error(e.message + ".  Maybe www/data doesn't exist but it might be resolved when we copy from src");
+    }
+    try {
+        writeToFile('build/chrome_extension/data/buildInfo.js', string);
+    } catch(e){
+        qmLog.error(e.message + ".  Maybe build/chrome_extension/data doesn't exist but it might be resolved when we copy from src");
+    }
+    return writeToFile(paths.src.data+"/buildInfo.js", string);
+}
+function writeAppSettingsFile(){
     qmGulp.staticData.buildInfo = qmGulp.buildInfoHelper.getCurrentBuildInfo();
     var as = qmGulp.getAppSettings();
     var string =
@@ -1799,7 +1818,8 @@ function writeStaticDataFile(){
     return writeToFile(paths.src.data+"/appSettings.js", string);
 }
 gulp.task('staticDataFile', ['getAppConfigs'], function () {
-    return writeStaticDataFile();
+    writeBuildInfoFile();
+    return writeAppSettingsFile();
 });
 function getConstantsFromApiAndWriteToJson(type, urlPath){
     var jeditor = require('gulp-json-editor');
