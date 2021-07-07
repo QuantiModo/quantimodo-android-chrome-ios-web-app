@@ -161,3 +161,11 @@ export function logErrorAndThrowException(message: string, object?: any) {
     error(message, object)
     throw message
 }
+
+export function logStartOfProcess(str: string) {
+    console.log("STARTING "+str+"\n====================================")
+}
+
+export function logEndOfProcess(str: string) {
+    console.log("====================================\n"+"DONE WITH "+str)
+}
