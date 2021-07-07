@@ -853,6 +853,12 @@ var qmLog = {
             .replace(/\s+/g, '-') // collapse whitespace and replace by a dash
             .replace(/-+/g, '-'); // collapse dashes
         return str;
+    },
+    logStartOfProcess: function (str){
+        console.log("STARTING "+str+"\n====================================")
+    },
+    logEndOfProcess: function (str){
+        console.log("====================================\n"+"DONE WITH "+str)
     }
 };
 function getCalleeFunction(){
