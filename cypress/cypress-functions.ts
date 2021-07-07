@@ -241,7 +241,6 @@ export function runOneCypressSpec(specName: string, cb: ((err: any) => void)) {
     const browser = process.env.CYPRESS_BROWSER || "electron"
     const context = specName.replace("_spec.js", "") + "-" + releaseStage
     qmGit.setGithubStatus("pending", context, `Running ${context} Cypress tests...`)
-    console.info("Running " + specPath + "...")
     // noinspection JSUnresolvedFunction
     cypress.run({
         browser,
@@ -280,6 +279,7 @@ export function runOneCypressSpec(specName: string, cb: ((err: any) => void)) {
             console.error(runtimeError)
             process.exit(1)
         })
+        qmLog.logEndOfProcess(specPath)
     })
 }
 
@@ -305,6 +305,7 @@ function getSpecsPath() {
 }
 
 export function runCypressTestsInParallel(cb?: (err: any) => void) {
+    qmLog.logStartOfProcess("runCypressTestsInParallel")
     deleteSuccessFile()
     try {
         copyCypressEnvConfigIfNecessary()
@@ -340,6 +341,7 @@ export function runCypressTestsInParallel(cb?: (err: any) => void) {
                         if (cb) {
                             cb(false)
                         }
+                        qmLog.logEndOfProcess("runCypressTestsInParallel")
                 })
             })
         })
@@ -347,6 +349,7 @@ export function runCypressTestsInParallel(cb?: (err: any) => void) {
 }
 
 export function runCypressTests(cb?: (err: any) => void) {
+    qmLog.logStartOfProcess("runCypressTests")
     deleteSuccessFile()
     try {
         copyCypressEnvConfigIfNecessary()
@@ -379,6 +382,7 @@ export function runCypressTests(cb?: (err: any) => void) {
                                     }
                                 })
                         }
+                        qmLog.logEndOfProcess("runCypressTests")
                         resolve()
                     })
                 }))
@@ -419,6 +423,7 @@ function deleteLastFailedCypressTest() {
 }
 // tslint:disable-next-line:unified-signatures
 export function runLastFailedCypressTest(cb: (err: any) => void) {
+    qmLog.logStartOfProcess("runLastFailedCypressTest")
     getLastFailedCypressTest()
         .then(function(name) {
             if (!name) {
