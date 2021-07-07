@@ -146,3 +146,4 @@ ts/**/*.js
 ts/**/*.map
 cypress/**/*.js
 cypress/**/*.map
+/src/data/qmStaticData.js
