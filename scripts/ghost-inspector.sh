@@ -6,4 +6,4 @@ source "$IONIC_PATH"/scripts/log_start.sh "${BASH_SOURCE[0]}"
 set -xe
 npm run test:ghostinspector
 # shellcheck source=./log_end.sh
-source "$IONIC_PATH"/scripts/log_end.sh
+source "$IONIC_PATH"/scripts/log_end.sh "${BASH_SOURCE[0]}"

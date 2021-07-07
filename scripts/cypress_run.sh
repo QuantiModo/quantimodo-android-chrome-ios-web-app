@@ -11,4 +11,4 @@ else
 	echo "success-file exists so running ghostinspector tests..."
 fi
 # shellcheck source=./log_end.sh
-source "$IONIC_PATH"/scripts/log_end.sh
+source "$IONIC_PATH"/scripts/log_end.sh "${BASH_SOURCE[0]}"
