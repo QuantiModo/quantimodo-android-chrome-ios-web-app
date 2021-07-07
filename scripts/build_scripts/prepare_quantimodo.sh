@@ -4,8 +4,8 @@ export RED='\033[0;31m'
 export GREEN='\033[0;32m'
 export NC='\033[0m' # No Color
 
-SCRIPT_PATH="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/$(basename "${BASH_SOURCE[0]}")"
-SCRIPT_FOLDER=`dirname ${SCRIPT_PATH}`
+PARENT_SCRIPT_PATH="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/$(basename "${BASH_SOURCE[0]}")"
+SCRIPT_FOLDER=`dirname ${PARENT_SCRIPT_PATH}`
 echo "SCRIPT_FOLDER is $SCRIPT_FOLDER"
 cd ${SCRIPT_FOLDER}
 cd ../..
