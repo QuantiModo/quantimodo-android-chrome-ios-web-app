@@ -258,6 +258,12 @@ var qmLog = {
             .replace(/\s+/g, '-') // collapse whitespace and replace by a dash
             .replace(/-+/g, '-'); // collapse dashes
         return str;
+    },
+    logStartOfProcess: function (str){
+        console.log("STARTING "+str+"\n====================================")
+    },
+    logEndOfProcess: function (str){
+        console.log("====================================\n"+"DONE WITH "+str)
     }
 };
 var bugsnag = require("bugsnag");
@@ -1295,7 +1301,26 @@ var timeHelper = {
     secondsAgo: function(unixTimestamp) {return Math.round((timeHelper.getUnixTimestampInSeconds() - unixTimestamp));}
 };
 gulp.Gulp.prototype.__runTask = gulp.Gulp.prototype._runTask; // Lets us get task name
-gulp.Gulp.prototype._runTask = function(task) { this.currentTask = task; this.__runTask(task);};
+gulp.Gulp.prototype._runTask = function(task) {
+    this.currentTask = task;
+    this.__runTask(task);
+};
+
+gulp.on('task_start', function(e) {
+    // TODO: batch these
+    // so when 5 tasks start at once it only logs one time with all 5
+    //gutil.log('Starting', '\'' + chalk.cyan(e.task) + '\'...');
+    qmLog.logStartOfProcess(e.task);
+});
+
+gulp.on('task_stop', function(e) {
+    // var time = prettyTime(e.hrDuration);
+    // gutil.log(
+    //     'Finished', '\'' + chalk.cyan(e.task) + '\'',
+    //     'after', chalk.magenta(time)
+    // );
+    qmLog.logEndOfProcess(e.task);
+});
 // Set the default to the build task
 gulp.task('default', ['configureApp']);
 // Executes taks specified in winPlatforms, linuxPlatforms, or osxPlatforms based on
