@@ -7,4 +7,4 @@ set -xe
 npm run types
 npm run test:mocha
 # shellcheck source=./log_end.sh
-source "$IONIC_PATH"/scripts/log_end.sh
+source "$IONIC_PATH"/scripts/log_end.sh "${BASH_SOURCE[0]}"
