@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 set +x
 called=$_ && [[ ${called} != $0 ]] && echo "${BASH_SOURCE[@]} is being sourced" || echo "${0} is being run"
-SCRIPT_PATH="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/$(basename "${BASH_SOURCE[0]}")"
-SCRIPT_FOLDER=`dirname ${SCRIPT_PATH}` && cd ${SCRIPT_FOLDER} && cd ..
+PARENT_SCRIPT_PATH="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/$(basename "${BASH_SOURCE[0]}")"
+SCRIPT_FOLDER=`dirname ${PARENT_SCRIPT_PATH}` && cd ${SCRIPT_FOLDER} && cd ..
 
 source ${SCRIPT_FOLDER}/ios_install_dependencies.sh
 
