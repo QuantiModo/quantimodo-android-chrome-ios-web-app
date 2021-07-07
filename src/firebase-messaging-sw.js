@@ -19,6 +19,7 @@ importScripts(getIonicAppBaseUrl()+'js/qmLogger.js');
 importScripts(getIonicAppBaseUrl()+'js/qmHelpers.js');
 importScripts(getIonicAppBaseUrl()+'data/appSettings.js');
 importScripts(getIonicAppBaseUrl()+'data/qmStates.js');
+importScripts(getIonicAppBaseUrl()+'data/stateNames.js');
 importScripts(getIonicAppBaseUrl()+'data/units.js');
 importScripts(getIonicAppBaseUrl()+'data/variableCategories.js');
 importScripts(getIonicAppBaseUrl()+'data/commonVariables.js');

@@ -1402,6 +1402,7 @@ var chromeScripts = [
     'js/qmHelpers.js',
     'data/appSettings.js', // Must come after qmHelpers because we assign to qm.staticData
     'data/qmStates.js',
+    'data/stateNames.js',
     'data/units.js',
     'data/variableCategories.js',
     'data/commonVariables.js',
