@@ -10,7 +10,7 @@ sudo chown -R $USER ~/.nvm
 command -v nvm >/dev/null 2>&1 || {
     echo >&2 "nvm is required, but it's not installed.  Trying to install it now...";
     # shellcheck source=./nvm_load.sh
-    source "$IONIC_PATH"/scripts/install.sh
+    source "$IONIC_PATH"/scripts/nvm_install.sh
 }
 # shellcheck source=./nvm_load.sh
 source "$IONIC_PATH"/scripts/nvm_load.sh
