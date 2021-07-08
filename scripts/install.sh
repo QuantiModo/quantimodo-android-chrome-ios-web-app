@@ -10,14 +10,8 @@ set -e
 set -x
 # shellcheck source=./no-root.sh
 source "$SCRIPT_FOLDER"/no-root.sh
-sudo chown -R $USER ~/.nvm || true
-set +x
-echo "nvm install 10..."
-nvm install 10
-echo "nvm use 10..."
-nvm use 10
-set -x
-node -v
+# shellcheck source=./nvm.sh
+source "$SCRIPT_FOLDER"/nvm.sh
 npm install
 if [[ ${NODE_NAME} = "sonicmaster-ubuntu" ]];
     then
