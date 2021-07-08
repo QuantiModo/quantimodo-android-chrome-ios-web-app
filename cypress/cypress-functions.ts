@@ -350,6 +350,12 @@ export function runCypressTestsInParallel(cb?: (err: any) => void) {
     })
 }
 
+function moveToFront(specFileNames: string[], first: string) {
+    specFileNames.sort(function (x, y) {
+        return x == first ? -1 : y == first ? 1 : 0;
+    });
+}
+
 export function runCypressTests(cb?: (err: any) => void) {
     qmLog.logStartOfProcess("runCypressTests")
     deleteSuccessFile()
@@ -366,6 +372,7 @@ export function runCypressTests(cb?: (err: any) => void) {
             if (!specFileNames) {
                 throw new Error("No specFileNames in " + specsPath)
             }
+            moveToFront(specFileNames, "ionic_variables_spec.js") // Fails a lot
             for (let i = 0, p = Promise.resolve(); i < specFileNames.length; i++) {
                 const specName = specFileNames[i]
                 if (releaseStage === "ionic" && specName.indexOf("ionic_") === -1) {
