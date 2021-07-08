@@ -152,6 +152,10 @@ describe('Reminders', function () {
     cy.wait(1000) // Have to wait for save to complete
     goToCategoryInbox(variableCategoryName)
   }
+    it('Selects a reminder time', function () {
+        cy.loginWithAccessTokenIfNecessary('/#/app/reminder-add/', false)
+        setReminderTime(8, 15, 'AM')
+    })
   it('Creates a goals reminder and skip it', function () {
     let variableName = 'Aaa Test Reminder Goal Skip'
     let variableCategoryName = 'Goals'
@@ -235,10 +239,6 @@ describe('Reminders', function () {
     cy.get('#yesButton').click({ force: true })
     cy.wait(1000)
     deleteReminders(variableCategoryName)
-  })
-  it('Selects a reminder time', function () {
-    cy.loginWithAccessTokenIfNecessary('/#/app/reminder-add/', false)
-    setReminderTime(8, 15, 'AM')
   })
   it('Sets frequency to 30 minutes', function () {
     cy.loginWithAccessTokenIfNecessary('/#/app/reminder-add/', false)
