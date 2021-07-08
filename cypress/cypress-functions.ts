@@ -372,6 +372,7 @@ export function runCypressTests(cb?: (err: any) => void) {
             if (!specFileNames) {
                 throw new Error("No specFileNames in " + specsPath)
             }
+            moveToFront(specFileNames, "ionic_measurements_spec.js") // Fails a lot
             moveToFront(specFileNames, "ionic_variables_spec.js") // Fails a lot
             for (let i = 0, p = Promise.resolve(); i < specFileNames.length; i++) {
                 const specName = specFileNames[i]
