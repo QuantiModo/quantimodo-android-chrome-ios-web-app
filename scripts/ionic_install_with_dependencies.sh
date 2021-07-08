@@ -35,8 +35,8 @@ sudo chmod -R 777 /home/ubuntu/Dropbox/QuantiModo
 sudo usermod -a -G ubuntu jenkins
 
 ionic info
-sudo chmod 777 -R $PWD
-sudo chmod -R 770 ${IONIC_PATH}/scripts
+sudo chmod 777 -R "$PWD"
+sudo chmod -R 770 "${IONIC_PATH}"/scripts
 
 # shellcheck source=./log_start.sh
 source "$IONIC_PATH"/scripts/log_end.sh "${BASH_SOURCE[0]}"
