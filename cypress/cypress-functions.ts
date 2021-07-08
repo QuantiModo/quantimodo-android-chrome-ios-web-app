@@ -380,9 +380,9 @@ export function runCypressTests(cb?: (err: any) => void) {
                                     if (cb) {
                                         cb(false)
                                     }
+                                    qmLog.logEndOfProcess("runCypressTests")
                                 })
                         }
-                        qmLog.logEndOfProcess("runCypressTests")
                         resolve()
                     })
                 }))
