@@ -11,7 +11,7 @@ set -x
 # shellcheck source=./no-root.sh
 source "$SCRIPT_FOLDER"/no-root.sh
 # shellcheck source=./nvm.sh
-source "$SCRIPT_FOLDER"/nvm.sh
+source "$SCRIPT_FOLDER"/nvm.sh 10
 npm install
 if [[ ${NODE_NAME} = "sonicmaster-ubuntu" ]];
     then
