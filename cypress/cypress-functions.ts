@@ -362,6 +362,7 @@ export function runCypressTests(cb?: (err: any) => void) {
         const specsPath = getSpecsPath()
         fs.readdir(specsPath, function(err: any, specFileNames: string[]) {
             if (!specFileNames) {
+                qmLog.logEndOfProcess("runCypressTests")
                 throw new Error("No specFileNames in " + specsPath)
             }
             for (let i = 0, p = Promise.resolve(); i < specFileNames.length; i++) {
