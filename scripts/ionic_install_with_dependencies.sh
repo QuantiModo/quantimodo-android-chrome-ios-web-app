@@ -7,7 +7,7 @@ echo "SCRIPT_FOLDER is $SCRIPT_FOLDER"
 cd "${SCRIPT_FOLDER}"
 cd ..
 # shellcheck source=./log_start.sh
-export IONIC_PATH="$PWD" && source "$IONIC_PATH"/scripts/log_end.sh "${BASH_SOURCE[0]}"
+export IONIC_PATH="$PWD" && source "$IONIC_PATH"/scripts/log_start.sh "${BASH_SOURCE[0]}"
 
 set -x
 
