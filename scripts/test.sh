@@ -20,4 +20,4 @@ source "${SCRIPT_FOLDER}"/cypress_run.sh
 # shellcheck source=./ghost-inspector.sh
 source "${SCRIPT_FOLDER}"/ghost-inspector.sh
 # shellcheck source=./log_end.sh
-source "$IONIC_PATH"/scripts/log_end.sh
+source "$IONIC_PATH"/scripts/log_end.sh "${BASH_SOURCE[0]}"

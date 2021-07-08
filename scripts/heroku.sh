@@ -8,4 +8,4 @@ set -xe
 source "$SCRIPT_FOLDER"/no-root.sh
 git push git@heroku.com:medimodo.git HEAD:master -f;
 # shellcheck source=./log_end.sh
-source "$IONIC_PATH"/scripts/log_end.sh
+source "$IONIC_PATH"/scripts/log_end.sh "${BASH_SOURCE[0]}"
