@@ -222,7 +222,7 @@ describe('Reminders', function () {
     cy.get('#negativeRatingOptions4').click({ force: true, timeout: 30000 })
     cy.get('#menu-item-chart-search > a').click({ force: true, timeout: 20000 })
     cy.log("waiting for notifications to post after leaving inbox state before checking history...")
-      cy.wait('@post-notifications', {timeout: 30000}).should('have.property', 'status', 201)
+      cy.wait('@post-notifications', {timeout: 30000}).its('response.statusCode').should('eq', 201)
     cy.searchAndClickTopResult(variableName, true)
     cy.contains(`${variableName} Over Time`, {timeout: 30000})
     cy.get('#menu-more-button').click({ force: true })

@@ -131,13 +131,15 @@ function copyCypressEnvConfigIfNecessary() {
     }
     console.info("Cypress Configuration: " + cypressJsonString)
 }
-function setGithubStatusAndUploadTestResults(failedTests: any[] | null, context: string, cb: (err: any) => void) {
-    // @ts-ignore
+function setGithubStatusAndUploadTestResults(failedTests: any[], context: string, cb: (err: any) => void) {
+    const test = failedTests[0];
     const failedTestTitle = failedTests[0].title[1]
-    // @ts-ignore
-    const errorMessage = failedTests[0].error
-    qmGit.setGithubStatus("failure", context, failedTestTitle + ": " +
-        errorMessage, getReportUrl(), function() {
+    const errorMessage = test.error
+    if(!failedTests[0].error || failedTests[0].error === "undefined"){
+        qmLog.le("No error on failedTests[0]: ", failedTests[0])
+    }
+    qmGit.setGithubStatus("failure", context, failedTestTitle + " err: " +
+        failedTests[0].error, getReportUrl(), function() {
         uploadMochawesome().then(function(urls) {
             console.error(errorMessage)
             cb(errorMessage)

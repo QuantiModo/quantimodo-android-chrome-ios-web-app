@@ -3,7 +3,7 @@
 function saveMeasurement() {
     cy.get('#saveButton').click({force: true})
     cy.log('Waiting for measurement to post to API...')
-    cy.wait('@post-measurement', {timeout: 30000}).should('have.property', 'status', 201)
+    cy.wait('@post-measurement', {timeout: 30000}).its('response.statusCode').should('eq', 201)
     cy.log('Waiting for measurement with id to be stored...')
     cy.wait(500)
 }
@@ -125,7 +125,7 @@ function deleteMeasurements(variableName) {
                     cy.wrap($el).click({force: true, timeout: 10000})
                     cy.clickActionSheetButtonContaining('Delete')
                     cy.wait('@measurements-delete', {timeout: 30000})
-                        .should('have.property', 'status', 204)
+                        .its('response.statusCode').should('eq', 204)
                     deleted = true
                 })
         }
@@ -139,7 +139,7 @@ function deleteMeasurements(variableName) {
                 cy.wrap($el).click()
                 cy.clickActionSheetButtonContaining('Delete')
                 cy.wait('@measurements-delete', {timeout: 30000})
-                    .should('have.property', 'status', 204)
+                    .its('response.statusCode').should('eq', 204)
                 deleted = true
             } else {
                 // It's a header
@@ -164,7 +164,7 @@ describe('Measurements', function () {
     it('Goes to edit measurement from history page', function () {
         cy.loginWithAccessTokenIfNecessary('/#/app/history-all-category/Anything')
         cy.wait('@measurements', {timeout: 30000})
-            .should('have.property', 'status', 200)
+            .its('response.statusCode').should('eq', 200)
         cy.get('#historyItemTitle-0', {timeout: 30000}).click({force: true})
         cy.clickActionSheetButtonContaining('Edit')
         cy.wait(2000)
@@ -178,7 +178,7 @@ describe('Measurements', function () {
         checkChartsPage(variableName)
         goToHistoryForVariable(variableName, true)
         cy.wait('@measurements', {timeout: 30000})
-            .should('have.property', 'status', 200)
+            .its('response.statusCode').should('eq', 200)
         deleteMeasurements(variableName)
         cy.loginWithAccessTokenIfNecessary('/#/app/measurement-add-search')
         cy.searchAndClickTopResult(variableName, true)
