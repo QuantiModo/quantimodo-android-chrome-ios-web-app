@@ -134,9 +134,9 @@ function copyCypressEnvConfigIfNecessary() {
 function setGithubStatusAndUploadTestResults(failedTests: any[], context: string, cb: (err: any) => void) {
     const test = failedTests[0];
     const failedTestTitle = failedTests[0].title[1]
-    const errorMessage = test.error
-    if(!failedTests[0].error || failedTests[0].error === "undefined"){
-        qmLog.le("No error on failedTests[0]: ", failedTests[0])
+    const errorMessage = test.displayError
+    if(!failedTests[0].displayError || failedTests[0].displayError === "undefined"){
+        qmLog.le("No displayError on failedTests[0]: ", failedTests[0])
     }
     qmGit.setGithubStatus("failure", context, failedTestTitle + " err: " +
         failedTests[0].error, getReportUrl(), function() {
