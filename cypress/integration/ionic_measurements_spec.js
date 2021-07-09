@@ -67,6 +67,10 @@ function ratingValueToImage(value, valence) {
     return ratingImages[valence][value - 1]
 }
 
+function getTopMeasurementTitle() {
+    return cy.get('#historyItemTitle-0', {timeout: 40000})
+}
+
 /**
  * @param {number} [dosageValue]
  * @param variableName
@@ -93,8 +97,12 @@ function recordTreatmentMeasurementAndCheckHistoryPage(dosageValue, variableName
     saveMeasurement()
     cy.visitIonicAndSetApiUrl('/#/app/history-all-category/' + variableCategory)
     let treatmentStringNoQuotes = `${dosageValue} mg Aaa Test Treatment`
-    cy.get('#historyItemTitle-0', {timeout: 40000})
-        .should('contain', treatmentStringNoQuotes)
+    let gotten = getTopMeasurementTitle()
+    cy.log(gotten.toString())
+    if(gotten.toString() !== treatmentStringNoQuotes){
+        cy.log("ERROR: top value should be " + treatmentStringNoQuotes + " but is " + gotten.toString())
+    }
+    // gotten.should('contain', treatmentStringNoQuotes)
 }
 
 /**
@@ -102,7 +110,7 @@ function recordTreatmentMeasurementAndCheckHistoryPage(dosageValue, variableName
  */
 function editHistoryPageMeasurement(itemTitle) {
     cy.log(`Editing history measurement with title containing: ${itemTitle}`)
-    cy.get('#historyItemTitle-0', {timeout: 30000}).contains(itemTitle)
+    getTopMeasurementTitle().contains(itemTitle)
     cy.get('#action-sheet-button-0', {timeout: 30000}).click({force: true})
     cy.clickActionSheetButtonContaining('Edit')
     cy.wait(2000)
@@ -165,7 +173,7 @@ describe('Measurements', function () {
         cy.loginWithAccessTokenIfNecessary('/#/app/history-all-category/Anything')
         cy.wait('@measurements', {timeout: 30000})
             .its('response.statusCode').should('eq', 200)
-        cy.get('#historyItemTitle-0', {timeout: 30000}).click({force: true})
+        getTopMeasurementTitle().click({force: true})
         cy.clickActionSheetButtonContaining('Edit')
         cy.wait(2000)
         cy.url().should('include', 'measurement-add')
@@ -228,7 +236,7 @@ describe('Measurements', function () {
         cy.url().should('include', '/#/app/history-all-category/' + variableCategoryName)
         cy.log('Check that deleted measurement is gone (must use does not equal instead of does not contain because a ' +
             'measurement of 0mg will be true if the value is 50mg)')
-        cy.get('#historyItemTitle-0', {timeout: 40000})
+        getTopMeasurementTitle()
             .should('not.contain', `${newDosageValue} mg ` + variableName)
     })
     // Seeing if skip fixes timeout problem
