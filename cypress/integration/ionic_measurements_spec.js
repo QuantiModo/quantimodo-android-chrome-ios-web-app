@@ -97,12 +97,13 @@ function recordTreatmentMeasurementAndCheckHistoryPage(dosageValue, variableName
     saveMeasurement()
     cy.visitIonicAndSetApiUrl('/#/app/history-all-category/' + variableCategory)
     let treatmentStringNoQuotes = `${dosageValue} mg Aaa Test Treatment`
-    let gotten = getTopMeasurementTitle()
-    cy.log(gotten.toString())
-    if(gotten.toString() !== treatmentStringNoQuotes){
-        cy.log("ERROR: top value should be " + treatmentStringNoQuotes + " but is " + gotten.toString())
-    }
-    // gotten.should('contain', treatmentStringNoQuotes)
+    getTopMeasurementTitle().invoke('text').then((text) => {
+        //debugger
+        if(text.trim() !== treatmentStringNoQuotes){
+            cy.log("ERROR: top value should be " + treatmentStringNoQuotes + " but is " + text.trim())
+        }
+    })
+    getTopMeasurementTitle().should('contain', treatmentStringNoQuotes)
 }
 
 /**
@@ -220,7 +221,7 @@ describe('Measurements', function () {
         })
     })
     // Skipping because it fails randomly and can't reproduce failure locally
-    it('Record, edit, and delete a treatment measurement', function () {
+    it.only('Record, edit, and delete a treatment measurement', function () {
         let dosageValue = Math.floor(Math.random() * 100) + 10
         let variableName = 'Aaa Test Treatment'
         let variableCategoryName = 'Treatments'
