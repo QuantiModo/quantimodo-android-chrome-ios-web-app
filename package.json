@@ -119,6 +119,7 @@
     "es6-promise-plugin": "4.2.2",
     "event-stream": "4.0.1",
     "express": "4.17.1",
+    "generate-schema": "^2.6.0",
     "gulp": "3.9.1",
     "gulp-angular-templatecache": "2.2.7",
     "gulp-change": "1.0.2",
