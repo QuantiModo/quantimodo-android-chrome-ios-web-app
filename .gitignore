@@ -145,3 +145,7 @@ debug.log
 /cypress/reports/mocha/
 /cypress/fixtures/get/api/
 /.env
+ts/**/*.js
+ts/**/*.map
+cypress/**/*.js
+cypress/**/*.map
