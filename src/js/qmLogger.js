@@ -67,8 +67,12 @@ var qmLog = {
             return;
         }
         qmLog.logLevel = value;
-        if(typeof localStorage !== "undefined" && localStorage){
-            localStorage.setItem(qm.items.logLevel, value); // Can't use qm.storage because of recursion issue
+        try {
+            if(typeof localStorage !== "undefined" && localStorage){
+                localStorage.setItem(qm.items.logLevel, value); // Can't use qm.storage because of recursion issue
+            }
+        } catch (e) {
+            console.error(e);
         }
     },
     getLogLevelName: function(){
@@ -81,8 +85,12 @@ var qmLog = {
         if(qmLog.logLevel){
             return qmLog.logLevel;
         }
-        if(typeof localStorage !== "undefined" && localStorage){ // Sometimes localStorage is null apparently?
-            qmLog.logLevel = localStorage.getItem(qm.items.logLevel);  // Can't use qm.storage because of recursion issue
+        try {
+            if(typeof localStorage !== "undefined" && localStorage){ // Sometimes localStorage is null apparently?
+                qmLog.logLevel = localStorage.getItem(qm.items.logLevel);  // Can't use qm.storage because of recursion issue
+            }
+        } catch (e) {
+            console.error(e);
         }
         if(qmLog.logLevel){
             return qmLog.logLevel;
@@ -254,7 +262,7 @@ var qmLog = {
         for(var i = 0; i < qmLog.secretAliases.length; i++){
             var secretAlias = qmLog.secretAliases[i];
             if(lowerCase.indexOf(secretAlias) !== -1){
-                censoredString = qm.stringHelper.getStringBeforeSubstring(secretAlias, censoredString) +
+                censoredString = qm.stringHelper.before(secretAlias, censoredString) +
                     " " + secretAlias + "[redacted]";
             }
         }
@@ -288,6 +296,7 @@ var qmLog = {
         }
     },
     error: function(name, message, errorSpecificMetaData, stackTrace){
+        debugger
         if(typeof message === 'object' && message !== null){
             errorSpecificMetaData = message;
             message = null;
@@ -459,10 +468,11 @@ var qmLog = {
         }
     },
     lei: function(shouldThrow, message, meta){
-        if(shouldThrow){
-            debugger
-            qmLog.errorAndExceptionTestingOrDevelopment(message, meta);
-        }
+        if(shouldThrow){qmLog.le(message, meta);}
+    },
+    le: function(message, meta){
+        debugger
+        qmLog.errorAndExceptionTestingOrDevelopment(message, meta);
     },
     errorAndExceptionTestingOrDevelopment: function(name, message, metaData, stackTrace){
         if(typeof message === "object"){
@@ -475,6 +485,7 @@ var qmLog = {
         qmLog.error(name, message, metaData, stackTrace);
         var dev = qm.appMode.isDevelopment();
         if(qm.appMode.isTesting() || dev){
+            debugger
             throw name;
         }
     },
@@ -842,6 +853,12 @@ var qmLog = {
             .replace(/\s+/g, '-') // collapse whitespace and replace by a dash
             .replace(/-+/g, '-'); // collapse dashes
         return str;
+    },
+    logStartOfProcess: function (str){
+        console.log("STARTING "+str+"\n====================================")
+    },
+    logEndOfProcess: function (str){
+        console.log("====================================\n"+"DONE WITH "+str)
     }
 };
 function getCalleeFunction(){

@@ -5,9 +5,12 @@
 /* global chcp $ionicDeploy qm.stateNames chcp qm.stateNames */
 angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$ionicPopup", "$state", "$timeout",
     "$ionicPlatform", "$mdDialog", "$mdToast", "$cordovaGeolocation", "CacheFactory", "$ionicLoading",
-    "Analytics", "wikipediaFactory", "$ionicHistory", "$ionicActionSheet", "clipboard",
+    //"Analytics", // Analytics + uBlock origin extension breaks app
+    "wikipediaFactory", "$ionicHistory", "$ionicActionSheet", "clipboard",
     function($http, $q, $rootScope, $ionicPopup, $state, $timeout, $ionicPlatform, $mdDialog, $mdToast,
-             $cordovaGeolocation, CacheFactory, $ionicLoading, Analytics, wikipediaFactory, $ionicHistory,
+             $cordovaGeolocation, CacheFactory, $ionicLoading,
+             //Analytics, // Analytics + uBlock origin extension breaks app
+             wikipediaFactory, $ionicHistory,
              $ionicActionSheet, clipboard){
         var allStates = $state.get();
         //console.log(JSON.stringify(allStates));
@@ -188,6 +191,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             adSense: {
                 showOrHide: function(){
                     function showAdSense(){
+                        return false; // Remove this line if you need to show ads
                         var u = $rootScope.user;
                         if(!u){
                             return false;
@@ -306,8 +310,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 showErrorAlertMessageOrSendToLogin: function(title, errorMessage){
                     if(errorMessage){
                         if(typeof errorMessage !== "string"){
-                            qmLog.error('errorMessage is not a string and is type '+typeof errorMessage+": "+JSON.stringify(errorMessage));
-                            return;
+                            errorMessage = JSON.stringify(errorMessage);
                         }
                         if(errorMessage.toLowerCase().indexOf('unauthorized') !== -1){
                             qm.auth.setAfterLoginGoToUrlAndSendToLogin(title + ": " + errorMessage);
@@ -1855,14 +1858,12 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     });
                     //$timeout(function() {hideSheetForNotification();}, 20000);
                 },
-                editReminderSettingsByNotification: function(trackingReminderNotification){
-                    trackingReminderNotification.hide = true;
-                    var trackingReminder = trackingReminderNotification;
-                    trackingReminder.id = trackingReminderNotification.trackingReminderId;
+                editReminderSettingsByNotification: function(notification){
+                    var reminder = JSON.parse(JSON.stringify(notification));
+                    notification.hide = true;
+                    reminder.id = notification.trackingReminderId;
                     qmService.goToState('app.reminderAdd', {
-                        reminder: trackingReminder,
-                        fromUrl: window.location.href,
-                        fromState: $state.current.name
+                        reminder: reminder,
                     });
                 },
                 broadcastGetTrackingReminderNotifications: function(){
@@ -2555,7 +2556,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 }
             },
             stateHelper: {
-                previousUrl: null,
                 goBack: function(providedStateParams){
                     qmLog.info("goBack: Called goBack with state params: ", providedStateParams);
                     function skipSearchPages(){
@@ -3336,15 +3336,43 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             return null;
         };
         qmService.goToState = function(to, params, options){
+            qmService.setLastStateAndUrl()
             if(params && params.variableObject && !params.variableName){params.variableName = params.variableObject.name;}
             //qmLog.info('Called goToState: ' + to, null, qmLog.getStackTrace());
             qmLog.info('Going to state ' + to);
             if(to !== "false"){
                 params = params || {};
                 params.fromUrl = window.location.href;
+                params.fromState = $state.current.name;
+                params = qm.objectHelper.snakeToCamelCaseProperties(params);
+                qmService.setCurrentState({name: to, params: params})
                 $state.go(to, params, options);
             }
         };
+        qmService.goToLastState =  function(){
+            var state = qm.storage.getItem(qm.items.lastState, state);
+            if(state && state.name === $state.current.name){
+                qmService.goToDefaultState()
+                return;
+            }
+            var url = qm.storage.getItem(qm.items.lastUrl, window.location.href);
+            if(url.indexOf("?") !== -1){
+                window.location.hef = url;
+            } else {
+                qmService.goToState(state.name, state.params)
+            }
+        }
+        qmService.setLastStateAndUrl = function(){
+            qm.storage.setItem(qm.items.lastState, $state.current);
+            qm.storage.setItem(qm.items.lastUrl, window.location.href);
+        }
+        qmService.setCurrentState = function(state){
+            //debugger
+            qm.storage.setItem(qm.items.currentState, state);
+        }
+        qmService.getCurrentState = function(){
+            return qm.storage.getItem(qm.items.currentState);
+        }
         function getDefaultState(){
             if(qm.appMode.isPhysician()){
                 return qm.staticData.stateNames.physician;
@@ -3455,47 +3483,49 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             return deferred.promise;
         };
         var setupGoogleAnalytics = function(user, appSettings){
-            if(!appSettings){appSettings = qm.getAppSettings();}
-            if(!appSettings){
-                appSettings = qm.getAppSettings();
-                qmLog.errorAndExceptionTestingOrDevelopment("No appSettings for googleAnalyticsTrackingIds");
-                return;
-            }
-            var additionalSettings = appSettings.additionalSettings;
-            if(additionalSettings && additionalSettings.googleAnalyticsTrackingIds){
-                if(typeof Analytics !== "undefined"){
-                    Analytics.configuration.accounts[0].tracker = additionalSettings.googleAnalyticsTrackingIds.endUserApps;
+            if(typeof Analytics !== "undefined") {
+                if (!appSettings) {
+                    appSettings = qm.getAppSettings();
                 }
-            }else{
-                qmLog.error("No qm.getAppSettings().additionalSettings.googleAnalyticsTrackingIds.endUserApps!");
+                if (!appSettings) {
+                    appSettings = qm.getAppSettings();
+                    qmLog.errorAndExceptionTestingOrDevelopment("No appSettings for googleAnalyticsTrackingIds");
+                    return;
+                }
+                var additionalSettings = appSettings.additionalSettings;
+                if (additionalSettings && additionalSettings.googleAnalyticsTrackingIds) {
+                    Analytics.configuration.accounts[0].tracker = additionalSettings.googleAnalyticsTrackingIds.endUserApps;
+                } else {
+                    qmLog.debug("No qm.getAppSettings().additionalSettings.googleAnalyticsTrackingIds.endUserApps!");
+                }
+                Analytics.registerScriptTags();
+                Analytics.registerTrackers();
+                // you can set any advanced configuration here
+                if (user) {
+                    Analytics.set('&uid', user.id);
+                }
+                Analytics.set('&ds', qm.platform.getCurrentPlatform());
+                Analytics.set('&cn', appSettings.appDisplayName);
+                Analytics.set('&cs', appSettings.appDisplayName);
+                Analytics.set('&cm', qm.platform.getCurrentPlatform());
+                Analytics.set('&an', appSettings.appDisplayName);
+                if (additionalSettings && additionalSettings.appIds && additionalSettings.appIds.googleReversedClientId) {
+                    Analytics.set('&aid', additionalSettings.appIds.googleReversedClientId);
+                }
+                Analytics.set('&av', appSettings.versionNumber);
+                // Register a custom dimension for the default, unnamed account object
+                // e.g., ga('set', 'dimension1', 'Paid');
+                Analytics.set('dimension1', 'Paid');
+                if (user) {
+                    Analytics.set('dimension2', user.id.toString());
+                }
+                // Register a custom dimension for a named account object
+                // e.g., ga('accountName.set', 'dimension2', 'Paid');
+                //Analytics.set('dimension2', 'Paid', 'accountName');
+                Analytics.pageView(); // send data to Google Analytics
+                //qmLog.debug('Just set up Google Analytics');
             }
-            Analytics.registerScriptTags();
-            Analytics.registerTrackers();
-            // you can set any advanced configuration here
-            if(user){
-                Analytics.set('&uid', user.id);
-            }
-            Analytics.set('&ds', qm.platform.getCurrentPlatform());
-            Analytics.set('&cn', appSettings.appDisplayName);
-            Analytics.set('&cs', appSettings.appDisplayName);
-            Analytics.set('&cm', qm.platform.getCurrentPlatform());
-            Analytics.set('&an', appSettings.appDisplayName);
-            if(additionalSettings && additionalSettings.appIds && additionalSettings.appIds.googleReversedClientId){
-                Analytics.set('&aid', additionalSettings.appIds.googleReversedClientId);
-            }
-            Analytics.set('&av', appSettings.versionNumber);
-            // Register a custom dimension for the default, unnamed account object
-            // e.g., ga('set', 'dimension1', 'Paid');
-            Analytics.set('dimension1', 'Paid');
-            if(user){
-                Analytics.set('dimension2', user.id.toString());
-            }
-            // Register a custom dimension for a named account object
-            // e.g., ga('accountName.set', 'dimension2', 'Paid');
-            //Analytics.set('dimension2', 'Paid', 'accountName');
-            Analytics.pageView(); // send data to Google Analytics
-            //qmLog.debug('Just set up Google Analytics');
-        };
+        }
         qmService.setUser = function(user){
             qmLog.authDebug("Setting user to: ", user, user);
             qmService.rootScope.setUser(user);
@@ -3698,11 +3728,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 deferred.reject(error);
             });
             return deferred.promise;
-        };
-        qmService.updateConnector = function(name){
-            qm.api.get('api/v3/connectors/' + name + '/update', [], {}, function(){
-            }, function(){
-            });
         };
         qmService.connectConnectorWithParamsDeferred = function(params, lowercaseConnectorName){
             var deferred = $q.defer();
@@ -5682,24 +5707,28 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             // position	integer	No	The product's position in a list or collection (e.g. 2).
             // price	currency	No	The price of a product (e.g. 29.20).
             // example: Analytics.addImpression(baseProductId, name, list, brand, category, variant, position, price);
-            Analytics.addImpression(upgradeSubscriptionProducts.monthly7.baseProductId,
-                upgradeSubscriptionProducts.monthly7.name, $rootScope.platform.currentPlatform + ' Upgrade Options',
-                $rootScope.appSettings.appDisplayName, upgradeSubscriptionProducts.monthly7.category,
-                upgradeSubscriptionProducts.monthly7.variant, upgradeSubscriptionProducts.monthly7.position,
-                upgradeSubscriptionProducts.monthly7.price);
-            Analytics.addImpression(upgradeSubscriptionProducts.yearly60.baseProductId,
-                upgradeSubscriptionProducts.yearly60.name, $rootScope.platform.currentPlatform + ' Upgrade Options',
-                $rootScope.appSettings.appDisplayName, upgradeSubscriptionProducts.yearly60.category,
-                upgradeSubscriptionProducts.yearly60.variant, upgradeSubscriptionProducts.yearly60.position,
-                upgradeSubscriptionProducts.yearly60.price);
-            Analytics.pageView();
+            if(typeof Analytics !== "undefined"){
+                Analytics.addImpression(upgradeSubscriptionProducts.monthly7.baseProductId,
+                    upgradeSubscriptionProducts.monthly7.name, $rootScope.platform.currentPlatform + ' Upgrade Options',
+                    $rootScope.appSettings.appDisplayName, upgradeSubscriptionProducts.monthly7.category,
+                    upgradeSubscriptionProducts.monthly7.variant, upgradeSubscriptionProducts.monthly7.position,
+                    upgradeSubscriptionProducts.monthly7.price);
+                Analytics.addImpression(upgradeSubscriptionProducts.yearly60.baseProductId,
+                    upgradeSubscriptionProducts.yearly60.name, $rootScope.platform.currentPlatform + ' Upgrade Options',
+                    $rootScope.appSettings.appDisplayName, upgradeSubscriptionProducts.yearly60.category,
+                    upgradeSubscriptionProducts.yearly60.variant, upgradeSubscriptionProducts.yearly60.position,
+                    upgradeSubscriptionProducts.yearly60.price);
+                Analytics.pageView();
+            }
         };
         qmService.recordUpgradeProductPurchase = function(baseProductId, transactionId, step, coupon){
             //Analytics.addProduct(baseProductId, name, category, brand, variant, price, quantity, coupon, position);
-            Analytics.addProduct(baseProductId, upgradeSubscriptionProducts[baseProductId].name,
-                upgradeSubscriptionProducts[baseProductId].category, $rootScope.appSettings.appDisplayName,
-                upgradeSubscriptionProducts[baseProductId].variant, upgradeSubscriptionProducts[baseProductId].price,
-                1, coupon, upgradeSubscriptionProducts[baseProductId].position);
+            if(typeof Analytics !== "undefined"){
+                Analytics.addProduct(baseProductId, upgradeSubscriptionProducts[baseProductId].name,
+                    upgradeSubscriptionProducts[baseProductId].category, $rootScope.appSettings.appDisplayName,
+                    upgradeSubscriptionProducts[baseProductId].variant, upgradeSubscriptionProducts[baseProductId].price,
+                    1, coupon, upgradeSubscriptionProducts[baseProductId].position);
+            }
             // id	text	Yes*	The transaction ID (e.g. T1234). *Required if the action type is purchase or refund.
             // affiliation	text	No	The store or affiliation from which this transaction occurred (e.g. Google Store).
             // revenue	currency	No	Specifies the total revenue or grand total associated with the transaction (e.g. 11.99). This value may include shipping, tax costs, or other adjustments to total revenue that you want to include as part of your revenue calculations. Note: if revenue is not set, its value will be automatically calculated using the product quantity and price fields of all products in the same hit.
@@ -5715,7 +5744,10 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             var shipping = 0;
             var list = $rootScope.appSettings.appDisplayName;
             var option = '';
-            Analytics.trackTransaction(transactionId, affiliation, revenue, tax, shipping, coupon, list, step, option);
+            if(typeof Analytics !== "undefined"){
+                Analytics.trackTransaction(transactionId, affiliation, revenue, tax, shipping, coupon, list, step,
+                    option);
+            }
         };
         qmService.getStudyLinks = function(causeVariableName, effectVariableName, study){
             if(study && study.studyLinks){
@@ -5788,8 +5820,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 qmLog.debug('Going to favoriteAdd state', null);
                 qmService.goToState(qm.staticData.stateNames.favoriteAdd, {
                     variableObject: v,
-                    fromState: $state.current.name,
-                    fromUrl: window.location.href,
                     doneState: 'app.favorites'
                 });
                 return;
@@ -5797,8 +5827,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             qm.reminderHelper.addToQueue(tr);
             qmService.goToState(qm.staticData.stateNames.favorites, {
                 trackingReminder: tr,
-                fromState: $state.current.name,
-                fromUrl: window.location.href
             });
             qm.reminderHelper.syncReminders();
         };
@@ -6329,10 +6357,12 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             if(typeof nonInteraction === "undefined"){
                 nonInteraction = true;
             }
-            Analytics.trackEvent(category, action, label, value, nonInteraction, {
-                dimension15: 'My Custom Dimension',
-                metric18: 8000
-            });
+            if(typeof Analytics !== "undefined"){
+                Analytics.trackEvent(category, action, label, value, nonInteraction, {
+                    dimension15: 'My Custom Dimension',
+                    metric18: 8000
+                });
+            }
         };
         qmService.configurePushNotifications = function(){
             if(!qm.getUser()){ // Otherwise we try to do it immediately and always get 401 and make duplicate appSettings requests

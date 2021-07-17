@@ -258,6 +258,12 @@ var qmLog = {
             .replace(/\s+/g, '-') // collapse whitespace and replace by a dash
             .replace(/-+/g, '-'); // collapse dashes
         return str;
+    },
+    logStartOfProcess: function (str){
+        console.log("STARTING "+str+"\n====================================")
+    },
+    logEndOfProcess: function (str){
+        console.log("====================================\n"+"DONE WITH "+str)
     }
 };
 var bugsnag = require("bugsnag");
@@ -314,7 +320,7 @@ var qmGit = {
     outputCommitMessageAndBranch: function () {
         qmGit.getCommitMessage(function (commitMessage) {
             qmGit.setBranchName(function () {
-                qmLog.info("===== Building " + commitMessage + " on "+ qmGit.getBranchName() + " =====");
+                qmLog.info("=====\nBuilding\n" + commitMessage + "\non branch: "+ qmGit.getBranchName() + "\n=====");
             });
         });
     },
@@ -617,6 +623,7 @@ var qmGulp = {
         return qmGulp.staticData.appSettings.appDisplayName;
     },
     getAppHostName: function(){
+        if(process.env.RELEASE_STAGE === "staging"){return "https://staging.quantimo.do";}
         if(process.env.APP_HOST_NAME){return process.env.APP_HOST_NAME;}
         // We can set utopia as env or in the app when necessary because always using it in build process on develop causes too many problems
         //if(qmGulp.buildSettings.buildDebug()){return "https://utopia.quantimo.do";}
@@ -1295,7 +1302,26 @@ var timeHelper = {
     secondsAgo: function(unixTimestamp) {return Math.round((timeHelper.getUnixTimestampInSeconds() - unixTimestamp));}
 };
 gulp.Gulp.prototype.__runTask = gulp.Gulp.prototype._runTask; // Lets us get task name
-gulp.Gulp.prototype._runTask = function(task) { this.currentTask = task; this.__runTask(task);};
+gulp.Gulp.prototype._runTask = function(task) {
+    this.currentTask = task;
+    this.__runTask(task);
+};
+
+gulp.on('task_start', function(e) {
+    // TODO: batch these
+    // so when 5 tasks start at once it only logs one time with all 5
+    //gutil.log('Starting', '\'' + chalk.cyan(e.task) + '\'...');
+    qmLog.logStartOfProcess(e.task);
+});
+
+gulp.on('task_stop', function(e) {
+    // var time = prettyTime(e.hrDuration);
+    // gutil.log(
+    //     'Finished', '\'' + chalk.cyan(e.task) + '\'',
+    //     'after', chalk.magenta(time)
+    // );
+    qmLog.logEndOfProcess(e.task);
+});
 // Set the default to the build task
 gulp.task('default', ['configureApp']);
 // Executes taks specified in winPlatforms, linuxPlatforms, or osxPlatforms based on
@@ -1369,13 +1395,14 @@ gulp.task('scripts', function () {
     }
 });
 var chromeScripts = [
+    'lib/q/q.js',
     'lib/localforage/dist/localforage.js',
     'lib/bugsnag/dist/bugsnag.js',
     'lib/quantimodo/quantimodo-web.js',
     'js/qmLogger.js',
     'js/qmHelpers.js',
     'data/qmStaticData.js', // Must come after qmHelpers because we assign to qm.staticData
-    'lib/underscore/underscore-min.js'
+    'lib/underscore/underscore-min.js',
 ];
 //if(qmGit.accessToken){chromeScripts.push('qm-amazon/qmUrlUpdater.js');}
 // noinspection JSUnusedLocalSymbols
@@ -1401,7 +1428,7 @@ function chromeManifest(outputPath, backgroundScriptArray) {
             'alarms',
             'notifications',
             'storage',
-            'tabs',
+            //'tabs',
             'https://*.google.com/*',
             'https://*.facebook.com/*',
             'https://*.quantimo.do/*',

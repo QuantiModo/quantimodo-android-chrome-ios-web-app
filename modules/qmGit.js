@@ -63,7 +63,7 @@ var qmGit = {
     outputCommitMessageAndBranch: function () {
         qmGit.getCommitMessage(function (commitMessage) {
             qmGit.setBranchName(function (branchName) {
-                qmLog.info("===== Building " + commitMessage + " on "+ branchName + " =====");
+                qmLog.info("=====\nBuilding\n" + commitMessage + "\non branch: "+ branchName + "\n=====");
             })
         })
     },

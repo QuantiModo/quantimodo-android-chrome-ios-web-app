@@ -25,7 +25,7 @@ angular.module('starter').controller('MeasurementAddCtrl', [
             unitChanged = false;
             qmLog.debug($state.current.name + ': beforeEnter', null);
             qmService.navBar.showNavigationMenuIfHideUrlParamNotSet();
-            qmService.rootScope.setProperty('bloodPressure', {systolicValue: null, diastolicValue: null, show: false});
+            qmService.rootScope.setProperty('bloodPressure', {show: false});
             $scope.state.title = 'Record a Measurement';
             setupMeasurement();
             var cat = getVariableCategory();
@@ -81,23 +81,22 @@ angular.module('starter').controller('MeasurementAddCtrl', [
             } else if ($stateParams.variableName) {
                 setupFromVariableName($stateParams.variableName);
                 fallback();
+            } else {
+                var state = qmService.getCurrentState();
+                qmService.setCurrentState(null)
+                if(state && state.name === $state.current.name){
+                    $stateParams = state.params;
+                    setupMeasurement();
+                } else {
+                    qmService.goToLastState()
+                }
             }
         }
         var trackBloodPressure = function(){
-            if(!$rootScope.bloodPressure.diastolicValue || !$rootScope.bloodPressure.systolicValue){
-                qm.measurements.validationFailure('Please enter both values for blood pressure.', $scope.state.measurement);
-                return;
-            }
-            $scope.state.selectedDate = moment($scope.state.selectedDate);
-            $rootScope.bloodPressure.startAt = $scope.state.selectedDate;
-            $rootScope.bloodPressure.note = $scope.state.measurement.note;
-            qm.measurements.postBloodPressureMeasurements($rootScope.bloodPressure)
-                .then(function(){
-                    qmLog.debug('Successfully qmService.postMeasurementByReminder: ' +
-                        JSON.stringify($rootScope.bloodPressure), null);
-                }, function(error){
-                    qmLog.error('Failed to Track by favorite! ', error);
-                });
+            var m = $rootScope.bloodPressure;
+            m.startAt = $scope.state.selectedDate = moment($scope.state.selectedDate);
+            m.note = $scope.state.measurement.note;
+            qm.measurements.postBloodPressureMeasurements(m);
             $scope.goBack();
         };
         $scope.cancel = function(){
@@ -138,7 +137,8 @@ angular.module('starter').controller('MeasurementAddCtrl', [
             return m;
         }
         function showToast() {
-            var toastMessage = 'Recorded ' + $scope.state.measurement.value + ' ' + $scope.state.measurement.unitAbbreviatedName;
+            var toastMessage = 'Recorded ' + $scope.state.measurement.value + ' ' +
+                $scope.state.measurement.unitAbbreviatedName;
             toastMessage = toastMessage.replace(' /', '/');
             qmService.showInfoToast(toastMessage);
         }
@@ -210,7 +210,7 @@ angular.module('starter').controller('MeasurementAddCtrl', [
             $scope.state.measurement.unitName = null;
             $scope.state.measurement.unitId = null;
         }
-        function setupUnit(unitAbbreviatedName, valence){
+        function setupUnit(unitAbbreviatedName){
             if(!unitAbbreviatedName){
                 qmLog.info("No unitAbbreviatedName provided to setupUnit! Maybe a new variable?");
                 return;
@@ -223,15 +223,20 @@ angular.module('starter').controller('MeasurementAddCtrl', [
                 $scope.state.measurement = qm.unitHelper.updateAllUnitPropertiesOnObject(unitAbbreviatedName, $scope.state.measurement);
                 qmLog.info("Setting $scope.state.measurement to ", $scope.state.measurement);
                 qm.unitHelper.setInputType($scope.state.measurement);
+                if($scope.state.measurement.inputType === "bloodPressure" && $scope.state.measurement.value){
+                    $scope.state.measurement.inputType = "value"; // For editing a single value
+                }
                 $scope.state.units = qm.unitHelper.getUnitArrayContaining(unitAbbreviatedName);
             }
         }
         $scope.selectPrimaryOutcomeVariableValue = function($event, newValue){
             // remove any previous primary outcome variables if present
-            jQuery('.primary-outcome-variable-rating-buttons .active-primary-outcome-variable-rating-button').removeClass('active-primary-outcome-variable-rating-button');
+            jQuery('.primary-outcome-variable-rating-buttons .active-primary-outcome-variable-rating-button')
+                .removeClass('active-primary-outcome-variable-rating-button');
             // make this primary outcome variable glow visually
             jQuery($event.target).addClass('active-primary-outcome-variable-rating-button');
-            jQuery($event.target).parent().removeClass('primary-outcome-variable-history').addClass('primary-outcome-variable-history');
+            jQuery($event.target).parent().removeClass('primary-outcome-variable-history')
+                .addClass('primary-outcome-variable-history');
             if($scope.state.measurement.displayValueAndUnitString){
                 $scope.state.measurement.displayValueAndUnitString =
                     $scope.state.measurement.displayValueAndUnitString.replace($scope.state.measurement.value, newValue);
@@ -286,10 +291,12 @@ angular.module('starter').controller('MeasurementAddCtrl', [
                 setupUnit(v.unitAbbreviatedName, v.valence);
             }else if(v.variableCategoryName){
                 var category = qm.variableCategoryHelper.findByNameIdObjOrUrl(v);
-                setupUnit(category.defaultUnitAbbreviatedName, v.valence);
+                setupUnit(category.defaultUnitAbbreviatedName);
             }
             var m = qm.measurements.newMeasurement(v);
-            if(m.variableName.toLowerCase().indexOf('blood pressure') > -1){$rootScope.bloodPressure.show = true;}
+            if(m.variableName.toLowerCase().indexOf('blood pressure') > -1){
+                qmService.rootScope.setProperty('bloodPressure', {show: true});
+            }
             if(m.variableCategoryName){
                 setupVariableCategory(m.variableCategoryName);
             }else{
@@ -335,8 +342,6 @@ angular.module('starter').controller('MeasurementAddCtrl', [
         $scope.goToAddReminder = function(){
             qmService.goToState('app.reminderAdd', {
                 variableObject: $scope.state.variableObject,
-                fromState: $state.current.name,
-                fromUrl: window.location.href,
                 measurement: $stateParams.measurement
             });
         };

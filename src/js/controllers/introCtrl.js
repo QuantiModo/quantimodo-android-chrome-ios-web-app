@@ -2,7 +2,6 @@ angular.module('starter').controller('IntroCtrl', ["$scope", "$state", "$ionicSl
     "$rootScope", "$stateParams", "qmService", "appSettingsResponse", "$timeout",
     function($scope, $state, $ionicSlideBoxDelegate, $ionicLoading,
              $rootScope, $stateParams, qmService, appSettingsResponse, $timeout){
-
         qmLog.debug('IntroCtrl first starting in state: ' + $state.current.name);
         qmService.initializeApplication(appSettingsResponse);
         qmService.navBar.setFilterBarSearchIcon(false);
@@ -39,13 +38,14 @@ angular.module('starter').controller('IntroCtrl', ["$scope", "$state", "$ionicSl
                 if($state.current.name.indexOf('intro') !== -1){
                     function goToLoginConfigurationOrOnboarding(){
                         // Called to navigate to the main app
-                        if(qm.auth.sendToLogin("Intro has completed")){
-                            return;
-                        }
-                        if(qm.platform.isDesignMode()){
-                            qmService.goToState(qm.staticData.stateNames.configuration);
-                        }else{
-                            qmService.goToState(qm.staticData.stateNames.onboarding);
+                        if(qm.getUser()){
+                            if(qm.platform.isDesignMode()){
+                                qmService.goToState(qm.staticData.stateNames.configuration);
+                            }else{
+                                qmService.goToState(qm.staticData.stateNames.onboarding);
+                            }
+                        } else{
+                            qm.auth.sendToLogin("Intro has completed")
                         }
                     }
                     var message = "Now let's create a mathematical model of YOU!  ";
@@ -101,7 +101,9 @@ angular.module('starter').controller('IntroCtrl', ["$scope", "$state", "$ionicSl
             }else{
                 //qmLog.debug($state.current.name + ' initializing...');
             }
-            if(!qm.speech.getSpeechAvailable() || useFuturisticBackground() === false){
+            var disableSpeech = !qm.speech.getSpeechAvailable() || useFuturisticBackground() === false;
+            disableSpeech = true; // TODO: Add testing and fix issues with Chrome
+            if(disableSpeech){
                 $scope.state.setSpeechEnabled(false);
             }
             var appSettings = qm.getAppSettings();

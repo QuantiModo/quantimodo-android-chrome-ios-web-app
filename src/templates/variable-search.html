@@ -9,7 +9,9 @@
                      style="white-space:normal; width: 60%">Category
                 </div>
                 <select id="variable-category-selector"
-                        ng-model="state.variableSearchParameters.variableCategoryName">
+                        ng-model="state.variableSearchParameters.variableCategoryName"
+                        ng-change="onVariableSearch()"
+                >
                     <option ng-repeat="variableCategoryName in variableCategoryNames"
                             value="{{variableCategoryName}}">{{variableCategoryName}}
                     </option>
@@ -18,19 +20,19 @@
             <div ng-show="state.helpText" class="item item-text-wrap"> {{state.helpText}}</div>
             <label class="item item-input">
                 <i class="icon ion-search placeholder-icon"></i>
-                <input ng-model="state.variableSearchQuery.name"
+                <input ng-model="state.variableSearchParameters.searchPhrase"
                        ng-model-options="{ debounce: 500 }"
                        ng-change="onVariableSearch()"
                        id="variableSearchBox"
                        type="search"
                        placeholder={{state.variableSearchPlaceholderText}}>
-                <a style="font-size: 35px;" ng-if="state.variableSearchQuery.name == '' && platform.isMobile"
+                <a style="font-size: 35px;" ng-if="state.variableSearchParameters.searchPhrase == '' && platform.isMobile"
                    on-touch="scanBarcode()">
                     <i class="icon ion-ios-camera placeholder-icon"></i>
                     &nbsp
                 </a>
-                <a ng-if="state.variableSearchQuery.name != ''" style="font-size: 30px;"
-                   on-touch="state.variableSearchQuery.name=''; onVariableSearch()">
+                <a ng-if="state.variableSearchParameters.searchPhrase != ''" style="font-size: 30px;"
+                   on-touch="state.variableSearchParameters.searchPhrase=''; onVariableSearch()">
                     <i class="icon ion-close-round placeholder-icon"></i>
                     &nbsp
                 </a>
@@ -45,7 +47,7 @@
             <ion-list ng-show="state.variableSearchResults.length" class>
                 <!--<ion-item ng-click="selectVariable(item)" ng-repeat="item in state.variableSearchResults | orderBy:'-latestMeasurementTime' | limitTo:5 | unique:'id'  ">-->
                 <ion-item id="variable-search-result" ng-click="selectVariable(item)"
-                          ng-repeat="item in state.variableSearchResults | filter:matchEveryWord() | unique:'name' track by $index">
+                          ng-repeat="item in state.variableSearchResults | unique:'name' track by $index">
                     <div>
                         <!-- For some reason, putting displayName on new line in HTML code also produces new line in rendered HTML even though there's no <br> -->
                         <p style="font-size:18px; white-space: pre;"><i ng-if="item.ionIcon" class="icon {{item.ionIcon}}"></i>&nbsp {{item.displayName}}</p>

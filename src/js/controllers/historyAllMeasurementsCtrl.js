@@ -1,3 +1,4 @@
+
 angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$state", "$stateParams", "$rootScope",
     "$timeout", "$ionicActionSheet", "qmService", function($scope, $state, $stateParams, $rootScope, $timeout,
                                                                            $ionicActionSheet, qmService){
@@ -13,9 +14,12 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
             sort: "-startAt",
             title: "History",
             units: [],
+            setNote:function (m, note){
+                m.note = note;
+                qm.measurements.saveMeasurement(m)
+            }
         };
         $scope.$on('$ionicView.beforeEnter', function(e){
-            if (document.title !== $scope.state.title) {document.title = $scope.state.title;}
             if(!$scope.helpCard || $scope.helpCard.title !== "Past Measurements"){
                 $scope.helpCard = {
                     title: "Past Measurements",
@@ -25,28 +29,56 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
             }
         });
         $scope.$on('$ionicView.enter', function(e){
-            var params = getRequestParams();
-            qm.measurements.getLocalMeasurements(params).then(function(combined){
-                setHistory(combined)
-            })
-            $scope.state.moreDataCanBeLoaded = true;
+            setupMeasurements($stateParams, $scope, setHistory, getRequestParams);
             // Need to use rootScope here for some reason
-            qmService.rootScope.setProperty('hideHistoryPageInstructionsCard',
-                qm.storage.getItem('hideHistoryPageInstructionsCard'));
+            qmService.rootScope.setProperty('hideHistoryPageInstructionsCard', qm.storage.getItem('hideHistoryPageInstructionsCard'));
             qmService.navBar.showNavigationMenuIfHideUrlParamNotSet();
-            var cat = getVariableCategoryName();
-            if(cat && cat !== 'Anything'){
-                document.title = $scope.state.title = cat + ' History';
-                $scope.state.showLocationToggle = cat === "Location";
-            }
-            if(cat){setupVariableCategoryActionSheet();}
-            getScopedVariableObject();
-            if(getVariableName()){$scope.state.title = getVariableName() + ' History';}
+            setupCategory();
+            setupVariable();
+            setupConnector();
             updateNavigationMenuButton();
             if(!$scope.state.history || !$scope.state.history.length){ // Otherwise it keeps add more measurements whenever we edit one
                 $scope.getHistory();
             }
+            //qm.urlHelper.addParamsToCurrentUrl($stateParams)
         });
+        function setTitle(title){document.title = $scope.state.title = title;}
+        function setupVariable() {
+            getScopedVariableObject();
+            if (getVariableName()) {
+                setTitle(getVariableName() + ' History');
+            }
+        }
+        function setupConnector() {
+            var c = getConnector()
+            if (c) {
+                setTitle(c.displayName + " History")
+            }
+        }
+        function setupCategory() {
+            var cat = getVariableCategoryName();
+            if (cat && cat !== 'Anything') {
+                setTitle(cat + ' History');
+                $scope.state.showLocationToggle = cat === "Location";
+            }
+            if (cat) {
+                setupVariableCategoryActionSheet();
+            }
+        }
+        function setupMeasurements() {
+            var measurements = $stateParams.updatedMeasurementHistory;
+            if (measurements && measurements.length) {
+                measurements = qm.measurements.processMeasurements(measurements)
+                var sorted = qm.arrayHelper.sortByProperty(measurements, $scope.state.sort)
+                setHistory(sorted.slice(0, $scope.state.limit));
+            } else {
+                var params = getRequestParams();
+                qm.measurements.getLocalMeasurements(params).then(function (combined) {
+                    setHistory(combined)
+                })
+            }
+            $scope.state.moreDataCanBeLoaded = true;
+        }
         function updateNavigationMenuButton(){
             $timeout(function(){
                 qmService.rootScope.setShowActionSheetMenu(function(){
@@ -129,6 +161,7 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
                 return qm.urlHelper.getParam('variableName');
             }
             qmLog.debug("Could not get variableName")
+            return null;
         }
         function getVariableCategoryName(){
             return qm.variableCategoryHelper.getNameFromStateParamsOrUrl($stateParams);
@@ -173,8 +206,7 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
         $scope.editMeasurement = function(measurement){
             //measurement.hide = true;  // Hiding when we go to edit so we don't see the old value when we come back
             qmService.goToState('app.measurementAdd', {
-                measurement: measurement, fromState: $state.current.name,
-                fromUrl: window.location.href
+                measurement: measurement,
             });
         };
         $scope.refreshHistory = function(){
@@ -244,8 +276,23 @@ angular.module('starter').controller('historyAllMeasurementsCtrl', ["$scope", "$
                 $scope.state.noHistory = true;
                 hideLoader();
             }
-            //qmService.showBasicLoader();
-            qm.measurements.getMeasurementsFromApi(params).then(successHandler, errorHandler);
+            var c = getConnector();
+            if(c){
+                qm.measurements.getMeasurementsFromApi(params).then(function (measurements) {
+                    successHandler(measurements)
+                    qm.connectorHelper.update(c.name, function (r){
+                        debugger
+                        if(r.measurements){
+                            setHistory(r.measurements);
+                        } else {
+                            qm.measurements.getMeasurementsFromApi(params).then(successHandler, errorHandler);
+                        }
+                    })
+                }, errorHandler);
+            } else {
+                //qmService.showBasicLoader();
+                qm.measurements.getMeasurementsFromApi(params).then(successHandler, errorHandler);
+            }
         };
         // noinspection DuplicatedCode
         function setupVariableCategoryActionSheet(){

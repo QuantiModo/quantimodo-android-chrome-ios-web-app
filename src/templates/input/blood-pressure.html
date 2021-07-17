@@ -1,0 +1,15 @@
+<div ng-repeat="position in ['Sitting', 'Immediate Standing', '1-Minute Standing']">
+    <div class="item item-divider">{{position}} Blood Pressure </div>
+    <div ng-repeat="type in ['Systolic', 'Diastolic']">
+        <label class="item item-input">
+            <input type="number"
+                   style="padding-right: 0; text-align: left;"
+                   ng-model="bloodPressure.values[position+' '+type+' Blood Pressure']"
+                   id="{{position+type}}systolicValueField"
+                   ng-click="onTextClick($event)"
+                   placeholder="Enter {{type}} value"
+                   class="text-right">
+            <span class="input-label" style="font-size: 10px;">mmHg</span>
+        </label>
+    </div>
+</div>
