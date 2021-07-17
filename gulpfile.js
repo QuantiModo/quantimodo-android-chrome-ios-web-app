@@ -1,4 +1,4 @@
-/* eslint-disable no-process-env */
+/* eslint-disable no-process-env,semi,space-infix-ops,block-spacing,object-shorthand,no-unused-vars,one-var */
 try {
     var dotenv = require('dotenv')
     dotenv.config({path: './secrets/.env'});
@@ -623,6 +623,7 @@ var qmGulp = {
         return qmGulp.staticData.appSettings.appDisplayName;
     },
     getAppHostName: function(){
+        if(process.env.RELEASE_STAGE === "staging"){return "https://staging.quantimo.do";}
         if(process.env.APP_HOST_NAME){return process.env.APP_HOST_NAME;}
         // We can set utopia as env or in the app when necessary because always using it in build process on develop causes too many problems
         //if(qmGulp.buildSettings.buildDebug()){return "https://utopia.quantimo.do";}
