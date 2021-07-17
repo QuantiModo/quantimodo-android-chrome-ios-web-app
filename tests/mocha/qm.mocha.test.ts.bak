@@ -3,7 +3,7 @@ import {assert} from "chai";
 import * as qmGit from "../ts/qm.git";
 import * as qmShell from "../ts/qm.shell"
 import * as fileHelper from "../ts/qm.file-helper";
-import * as qmTests from "../ts/cypress-functions";
+import * as qmTests from "../cypress/cypress-functions";
 import * as urlParser from "url";
 import * as https from "https";
 import * as _str from "underscore.string";

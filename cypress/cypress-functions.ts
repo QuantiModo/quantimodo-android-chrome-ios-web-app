@@ -1,3 +1,4 @@
+// @ts-ignore
 import repoPath from "app-root-path"
 import * as cypress from "cypress"
 import {slackRunner} from "cypress-slack-reporter/bin/slack/slack-alert.js"
@@ -7,17 +8,18 @@ import {merge} from "mochawesome-merge"
 // @ts-ignore
 import marge from "mochawesome-report-generator"
 import * as Q from "q"
+// @ts-ignore
 import rimraf from "rimraf"
-import {loadEnv} from "./env-helper"
-import * as fileHelper from "./qm.file-helper"
+import {loadEnv} from "../ts/env-helper"
+import * as fileHelper from "../ts/qm.file-helper"
 // require hack
 declare function require(path: string): any
 // require untyped library file
 // tslint:disable-next-line:no-var-requires
 const qm = require("../src/js/qmHelpers.js")
-import * as qmGit from "./qm.git"
-import * as qmLog from "./qm.log"
-import {createSuccessFile, deleteEnvFile, deleteSuccessFile, getBuildLink, getCiProvider} from "./test-helpers"
+import * as qmGit from "../ts/qm.git"
+import * as qmLog from "../ts/qm.log"
+import {createSuccessFile, deleteEnvFile, deleteSuccessFile, getBuildLink, getCiProvider} from "../ts/test-helpers"
 
 // https://github.com/motdotla/dotenv#what-happens-to-environment-variables-that-were-already-set
 // loadEnv(".env.local")
@@ -129,13 +131,15 @@ function copyCypressEnvConfigIfNecessary() {
     }
     console.info("Cypress Configuration: " + cypressJsonString)
 }
-function setGithubStatusAndUploadTestResults(failedTests: any[] | null, context: string, cb: (err: any) => void) {
-    // @ts-ignore
+function setGithubStatusAndUploadTestResults(failedTests: any[], context: string, cb: (err: any) => void) {
+    const test = failedTests[0];
     const failedTestTitle = failedTests[0].title[1]
-    // @ts-ignore
-    const errorMessage = failedTests[0].error
-    qmGit.setGithubStatus("failure", context, failedTestTitle + ": " +
-        errorMessage, getReportUrl(), function() {
+    const errorMessage = test.displayError
+    if(!failedTests[0].displayError || failedTests[0].displayError === "undefined"){
+        qmLog.le("No displayError on failedTests[0]: ", failedTests[0])
+    }
+    qmGit.setGithubStatus("failure", context, failedTestTitle + " err: " +
+        failedTests[0].error, getReportUrl(), function() {
         uploadMochawesome().then(function(urls) {
             console.error(errorMessage)
             cb(errorMessage)
@@ -239,7 +243,6 @@ export function runOneCypressSpec(specName: string, cb: ((err: any) => void)) {
     const browser = process.env.CYPRESS_BROWSER || "electron"
     const context = specName.replace("_spec.js", "") + "-" + releaseStage
     qmGit.setGithubStatus("pending", context, `Running ${context} Cypress tests...`)
-    console.info("Running " + specPath + "...")
     // noinspection JSUnresolvedFunction
     cypress.run({
         browser,
@@ -278,6 +281,7 @@ export function runOneCypressSpec(specName: string, cb: ((err: any) => void)) {
             console.error(runtimeError)
             process.exit(1)
         })
+        qmLog.logEndOfProcess(specPath)
     })
 }
 
@@ -303,6 +307,7 @@ function getSpecsPath() {
 }
 
 export function runCypressTestsInParallel(cb?: (err: any) => void) {
+    qmLog.logStartOfProcess("runCypressTestsInParallel")
     deleteSuccessFile()
     try {
         copyCypressEnvConfigIfNecessary()
@@ -338,13 +343,21 @@ export function runCypressTestsInParallel(cb?: (err: any) => void) {
                         if (cb) {
                             cb(false)
                         }
+                        qmLog.logEndOfProcess("runCypressTestsInParallel")
                 })
             })
         })
     })
 }
 
+function moveToFront(specFileNames: string[], first: string) {
+    specFileNames.sort(function (x, y) {
+        return x == first ? -1 : y == first ? 1 : 0;
+    });
+}
+
 export function runCypressTests(cb?: (err: any) => void) {
+    qmLog.logStartOfProcess("runCypressTests")
     deleteSuccessFile()
     try {
         copyCypressEnvConfigIfNecessary()
@@ -359,6 +372,8 @@ export function runCypressTests(cb?: (err: any) => void) {
             if (!specFileNames) {
                 throw new Error("No specFileNames in " + specsPath)
             }
+            moveToFront(specFileNames, "ionic_measurements_spec.js") // Fails a lot
+            moveToFront(specFileNames, "ionic_variables_spec.js") // Fails a lot
             for (let i = 0, p = Promise.resolve(); i < specFileNames.length; i++) {
                 const specName = specFileNames[i]
                 if (releaseStage === "ionic" && specName.indexOf("ionic_") === -1) {
@@ -377,6 +392,7 @@ export function runCypressTests(cb?: (err: any) => void) {
                                     }
                                 })
                         }
+                        qmLog.logEndOfProcess("runCypressTests")
                         resolve()
                     })
                 }))
@@ -417,6 +433,7 @@ function deleteLastFailedCypressTest() {
 }
 // tslint:disable-next-line:unified-signatures
 export function runLastFailedCypressTest(cb: (err: any) => void) {
+    qmLog.logStartOfProcess("runLastFailedCypressTest")
     getLastFailedCypressTest()
         .then(function(name) {
             if (!name) {
