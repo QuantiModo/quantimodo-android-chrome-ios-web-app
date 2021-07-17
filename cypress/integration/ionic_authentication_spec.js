@@ -1,3 +1,4 @@
+/* eslint-disable cypress/no-unnecessary-waiting,cypress/no-assigning-return-values */
 // load type definitions that come with Cypress module
 let selectors = {
   usernameInput: '#username-group > input',
@@ -15,13 +16,13 @@ describe('Authentication', function () {
   let appDisplayName = 'OAuth test client'
   let testUserName = 'testuser'
   let testUserPassword = 'testing123'
-  let API_HOST = Cypress.env('API_HOST')
-  if (!API_HOST) { API_HOST = 'local.quantimo.do' }
-  let authorizePath = `/api/oauth2/authorize?` +
+  let API_HOST = cy.getApiHost()
+  // noinspection SpellCheckingInspection
+    let authorizePath = `/api/oauth2/authorize?` +
         'response_type=code&' +
         'scope=readmeasurements%20writemeasurements&' +
         'state=testabcd&'
-  function goToIntroPage (API_HOST, clientId) {
+  function goToIntroPage (clientId) {
     let url = `/#/app/intro?clientId=${clientId}&logout=true`
     cy.visitIonicAndSetApiUrl(url)
     cy.url().should('contain', 'intro')
@@ -35,7 +36,7 @@ describe('Authentication', function () {
   it.skip('Logs into and out of an OAuth test client app', function () {
     let clientId = 'oauth_test_client'
     let appDisplayName = 'OAuth test client'
-    goToIntroPage(API_HOST, clientId)
+    goToIntroPage(clientId)
     cy.disableSpeechAndSkipIntro()
     cy.get('#circle-page-title').should('contain', appDisplayName)
     cy.get('#skipButtonIntro').click({ force: true })
@@ -72,7 +73,6 @@ describe('Authentication', function () {
     cy.allowUncaughtException(null)
   })
   it.skip('Logs in and out with username and password', function () {
-    if (!Cypress.env('API_HOST')) { cy.log(`Cypress.env('API_HOST') is empty so falling back to ${API_HOST}`) }
     cy.goToApiLoginPageAndLogin(testUserName, testUserPassword)
     cy.disableSpeechAndSkipIntro()
     cy.log('testuser already has reminders so skipping onboarding ang going to inbox')
@@ -86,7 +86,7 @@ describe('Authentication', function () {
     let appDisplayName = 'OAuth test client'
     let baseUrl = Cypress.config('baseUrl')
     cy.log(`baseUrl is ${baseUrl}`)
-    goToIntroPage(API_HOST, clientId)
+    goToIntroPage(clientId)
     cy.disableSpeechAndSkipIntro()
     cy.get('#signUpButton').click({ force: true })
     cy.enterNewUserCredentials(false)
@@ -122,7 +122,8 @@ describe('Authentication', function () {
     cy.get('#email').type('frfdorf_putnamescu_1454115735@tfbnw.net', { force: true })
     cy.get('#pass').click({ force: true })
     cy.get('#pass').type(Cypress.env('FACEBOOK_TEST_PASSWORD'), { force: true })
-    cy.get('#loginbutton').click({ force: true })
+    // noinspection SpellCheckingInspection
+      cy.get('#loginbutton').click({ force: true })
     cy.get('#skipButtonIntro').click({ force: true })
     cy.log('Wont be there if user has not upgraded')
     cy.get('#navBarAvatar').click({ force: true })
