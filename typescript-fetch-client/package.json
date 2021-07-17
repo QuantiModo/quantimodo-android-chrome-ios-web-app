@@ -1,0 +1,26 @@
+{
+  "name": "quantimodo",
+  "version": "1.0.0",
+  "description": "API client for QuantiModo",
+  "author": "Swagger Codegen Contributors",
+  "keywords": [
+    "fetch",
+    "typescript",
+    "swagger-client",
+    "quantimodo"
+  ],
+  "license": "Unlicense",
+  "main": "./dist/index.js",
+  "typings": "./dist/index.d.ts",
+  "scripts" : {
+    "build": "tsc --outDir dist/",
+    "prepublishOnly": "npm run build"
+  },
+  "dependencies": {
+    "portable-fetch": "^3.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "8.10.64",
+    "typescript": "2.9.2"
+  }
+}

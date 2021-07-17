@@ -7,7 +7,7 @@ let chartsPath = `/#/app/charts/${encodeURIComponent(variableName)}`
  * @param {string} variableString
  */
 function verifyAndDeleteMeasurement(variableString){
-    cy.get('#historyItemTitle-0').should('contain', variableString)
+    cy.get('#historyItemTitle-0', {timeout: 10000}).should('contain', variableString)
     cy.get('#historyItemTitle-0').click({force: true})
     cy.get('button.button.destructive').click({force: true})
     cy.log('Waiting for deletion to complete...')
@@ -45,7 +45,7 @@ describe('Variables', function(){
         cy.get('.primary-outcome-variable-history > img:nth-of-type(3)').click({force: true})
         cy.get('#saveButton').click({force: true})
         cy.wait('@post-measurement', {timeout: 30000})
-            .should('have.property', 'status', 201)
+            .its('response.statusCode').should('eq', 201)
         cy.loginWithAccessTokenIfNecessary('/#/app/reminders-inbox', true)
         searchForMoodFromMagnifyingGlassIcon(variableName)
         cy.clickActionSheetButtonContaining('Charts')
