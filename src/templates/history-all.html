@@ -94,14 +94,26 @@
                     ng-click="showActionSheetForMeasurement(historyItem)">
                     {{historyItem.valueUnitVariableName}}
                 </h2>
-                <p id="historyItemBody-{{$index}}"
-                   ng-click="showActionSheetForMeasurement(historyItem)">
+                <p id="historyItemBody-{{$index}}">
+                    <span ng-click="showActionSheetForMeasurement(historyItem)">
                     <span ng-if="historyItem.id">{{historyItem.startAt | timeOfDay}}</span>
-                    {{historyItem.startAt | dayOfWeekAndDate}}
-                    <br>
+                        {{historyItem.startAt | dayOfWeekAndDate}}
+                        <br>
                     <span ng-if="historyItem.noteHtml"
                           ng-bind-html="historyItem.noteHtml"></span>
                     <span ng-if="!historyItem.noteHtml">{{historyItem.note}}</span>
+                    </span>
+                    <span
+                        ng-if="!historyItem.note && historyItem.variableName.indexOf('Blood Pressure') !== -1"
+                          ng-repeat="position in ['Sitting', 'Immediate Standing', '1-Minute Standing']" >
+                        <button
+                            style="display: inline-block;"
+                            ng-click="state.setNote(historyItem, position)"
+                            class="flex items-center shadow border-blue-500 border-2 rounded-full px-1 py-1 text-blue-500 hover:bg-blue-500 hover:text-white"
+                        >
+                            {{position}}
+                        </button>
+                    </span>
                 </p>
                 <div id="history-item-buttons-{{$index}}"
                      class="buttons">

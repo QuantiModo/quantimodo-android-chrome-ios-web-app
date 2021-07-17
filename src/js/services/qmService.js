@@ -1858,14 +1858,12 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     });
                     //$timeout(function() {hideSheetForNotification();}, 20000);
                 },
-                editReminderSettingsByNotification: function(trackingReminderNotification){
-                    trackingReminderNotification.hide = true;
-                    var trackingReminder = trackingReminderNotification;
-                    trackingReminder.id = trackingReminderNotification.trackingReminderId;
+                editReminderSettingsByNotification: function(notification){
+                    var reminder = JSON.parse(JSON.stringify(notification));
+                    notification.hide = true;
+                    reminder.id = notification.trackingReminderId;
                     qmService.goToState('app.reminderAdd', {
-                        reminder: trackingReminder,
-                        fromUrl: window.location.href,
-                        fromState: $state.current.name
+                        reminder: reminder,
                     });
                 },
                 broadcastGetTrackingReminderNotifications: function(){
@@ -2558,7 +2556,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 }
             },
             stateHelper: {
-                previousUrl: null,
                 goBack: function(providedStateParams){
                     qmLog.info("goBack: Called goBack with state params: ", providedStateParams);
                     function skipSearchPages(){
@@ -3339,15 +3336,43 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             return null;
         };
         qmService.goToState = function(to, params, options){
+            qmService.setLastStateAndUrl()
             if(params && params.variableObject && !params.variableName){params.variableName = params.variableObject.name;}
             //qmLog.info('Called goToState: ' + to, null, qmLog.getStackTrace());
             qmLog.info('Going to state ' + to);
             if(to !== "false"){
                 params = params || {};
                 params.fromUrl = window.location.href;
+                params.fromState = $state.current.name;
+                params = qm.objectHelper.snakeToCamelCaseProperties(params);
+                qmService.setCurrentState({name: to, params: params})
                 $state.go(to, params, options);
             }
         };
+        qmService.goToLastState =  function(){
+            var state = qm.storage.getItem(qm.items.lastState, state);
+            if(state && state.name === $state.current.name){
+                qmService.goToDefaultState()
+                return;
+            }
+            var url = qm.storage.getItem(qm.items.lastUrl, window.location.href);
+            if(url.indexOf("?") !== -1){
+                window.location.hef = url;
+            } else {
+                qmService.goToState(state.name, state.params)
+            }
+        }
+        qmService.setLastStateAndUrl = function(){
+            qm.storage.setItem(qm.items.lastState, $state.current);
+            qm.storage.setItem(qm.items.lastUrl, window.location.href);
+        }
+        qmService.setCurrentState = function(state){
+            //debugger
+            qm.storage.setItem(qm.items.currentState, state);
+        }
+        qmService.getCurrentState = function(){
+            return qm.storage.getItem(qm.items.currentState);
+        }
         function getDefaultState(){
             if(qm.appMode.isPhysician()){
                 return qm.staticData.stateNames.physician;
@@ -3703,11 +3728,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 deferred.reject(error);
             });
             return deferred.promise;
-        };
-        qmService.updateConnector = function(name){
-            qm.api.get('api/v3/connectors/' + name + '/update', [], {}, function(){
-            }, function(){
-            });
         };
         qmService.connectConnectorWithParamsDeferred = function(params, lowercaseConnectorName){
             var deferred = $q.defer();
@@ -5800,8 +5820,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                 qmLog.debug('Going to favoriteAdd state', null);
                 qmService.goToState(qm.staticData.stateNames.favoriteAdd, {
                     variableObject: v,
-                    fromState: $state.current.name,
-                    fromUrl: window.location.href,
                     doneState: 'app.favorites'
                 });
                 return;
@@ -5809,8 +5827,6 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
             qm.reminderHelper.addToQueue(tr);
             qmService.goToState(qm.staticData.stateNames.favorites, {
                 trackingReminder: tr,
-                fromState: $state.current.name,
-                fromUrl: window.location.href
             });
             qm.reminderHelper.syncReminders();
         };
