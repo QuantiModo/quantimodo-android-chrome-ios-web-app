@@ -356,6 +356,8 @@ angular.module('starter').controller('ReminderAddCtrl', ["$scope", "$state", "$s
             qmService.showInfoToast(toastMessage);
             qmService.hideLoader();
             if($stateParams.doneState){
+                delete $stateParams.variableCategoryName; // Don't redirect to category inbox
+                delete $stateParams.variableCategoryId; // Don't redirect to category inbox
                 qmService.goToState($stateParams.doneState, $stateParams);
             } else {
                 $scope.goBack(); // We can't go back until we get new notifications
@@ -538,7 +540,8 @@ angular.module('starter').controller('ReminderAddCtrl', ["$scope", "$state", "$s
             if(r && r.variableName){return r.variableName;}
             var v = scope.state.variableObject;
             if(v && v.name){return v.name;}
-            throw "Could not get variable name!";
+            qmLog.errorAndExceptionTestingOrDevelopment("Could not get variable name!");
+            return null;
         }
         function getUnitAbbreviatedName(scope){
             scope = scope || $scope; // Not sure why this is necessary but $scope is undefined sometimes
@@ -546,7 +549,8 @@ angular.module('starter').controller('ReminderAddCtrl', ["$scope", "$state", "$s
             if(r && r.unitAbbreviatedName){return r.unitAbbreviatedName;}
             var v = scope.state.variableObject;
             if(v && v.unitAbbreviatedName){return v.unitAbbreviatedName;}
-            throw "Could not get variable name!";
+            return null;
+            //qmLog.errorAndExceptionTestingOrDevelopment("Could not get getUnitAbbreviatedName!");
         }
         function getUnit(scope){
             scope = scope || $scope; // Not sure why this is necessary but $scope is undefined sometimes

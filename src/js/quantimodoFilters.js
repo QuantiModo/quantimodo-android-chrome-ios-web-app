@@ -254,7 +254,7 @@ angular.module('starter')
         return function(time){
             if(time){
                 var mom = qm.timeHelper.toLocalMoment(time)
-                return mom.format("hA");
+                return mom.format("h:mmA");
             }
             return "";
         };
