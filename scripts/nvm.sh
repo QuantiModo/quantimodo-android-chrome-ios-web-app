@@ -6,15 +6,22 @@ set -e
 PARENT_SCRIPT_PATH="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/$(basename "${BASH_SOURCE[0]}")" && SCRIPT_FOLDER=`dirname ${PARENT_SCRIPT_PATH}`
 cd "${SCRIPT_FOLDER}" && cd .. && export IONIC_PATH="$PWD"
 # shellcheck source=./no-root.sh
+# shellcheck source=./log_start.sh
+cd "${SCRIPT_FOLDER}" && cd .. && export IONIC_PATH="$PWD" && source "$IONIC_PATH"/scripts/log_start.sh "${BASH_SOURCE[0]}"
+# shellcheck source=./no-root.sh
 source "$SCRIPT_FOLDER"/no-root.sh
 sudo chown -R $USER ~/.nvm
 command -v nvm >/dev/null 2>&1 || {
     echo >&2 "nvm is required, but it's not installed.  Trying to install it now...";
-    # shellcheck source=./nvm_load.sh
-    source "$IONIC_PATH"/scripts/nvm_install.sh
+    sudo chown -R "$USER" ~/.nvm || true
+    sudo apt install -y curl
+    curl https://raw.githubusercontent.com/creationix/nvm/master/install.sh | bash;
 }
-# shellcheck source=./nvm_load.sh
-source "$IONIC_PATH"/scripts/nvm_load.sh
+echo "Loading nvm command for shell access..."
+# shellcheck disable=SC2155
+export NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && printf %s "${HOME}/.nvm" || printf %s "${XDG_CONFIG_HOME}/nvm")"
+# shellcheck disable=SC1090
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" # This loads nvm
 set +x
 echo "nvm install $1..."
 nvm install $1
