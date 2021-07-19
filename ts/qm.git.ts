@@ -98,10 +98,15 @@ export const githubStatusStates = {
 // tslint:disable-next-line:max-line-length
 export function setGithubStatus(testState: "error" | "failure" | "pending" | "success", context: string,
                                 description: string, url?: string | null, cb?: ((arg0: any) => void) | undefined) {
+    if(testState === "pending") {qmLog.logStartOfProcess(context)}
+    const message1 = "Setting status on Github: "+ testState +
+        "\n\tdescription: "+ description +
+        "\n\tcontext: " + context
     if (testState === "error") {
-        qmLog.error(description + " " + context)
+        qmLog.error(message1)
+    } else {
+        qmLog.info(message1)
     }
-    qmLog.info("Setting status on Github: "+ description + " " + context)
     description = _str.truncate(description, 135)
     url = url || getBuildLink()
     if(!url) {
@@ -124,6 +129,7 @@ export function setGithubStatus(testState: "error" | "failure" | "pending" | "su
         target_url: url,
     }
     console.log(`${context} - ${description} - ${testState} at ${url}`)
+    if(testState !== "pending") {qmLog.logEndOfProcess(context)}
     getOctoKit().repos.createStatus(params).then((data: any) => {
         if (cb) {
             cb(data)
@@ -167,15 +173,6 @@ export function getBranchName() {
     if (!name) {
         throw new Error("Branch name not set!")
     }
-}
-export function deleteLocalFeatureBranches() {
-    git.branchLocal(function(branches: []) {
-        branches.forEach(function(branch: string) {
-            if(branch.indexOf("feature/") !== -1) {
-                git.deleteLocalBranch(branch)
-            }
-        })
-    })
 }
 export function createFeatureBranch(featureName: string) {
     const branchName = "feature/" + featureName

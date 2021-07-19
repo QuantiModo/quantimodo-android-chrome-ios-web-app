@@ -21,7 +21,7 @@ process.on('unhandledRejection', function(err) {
 var qmGit = require("../../ts/qm.git")
 var qmShell = require("../../ts/qm.shell")
 var fileHelper = global.fileHelper = require("../../ts/qm.file-helper")
-var cypressFunctions = require("../../ts/cypress-functions")
+var cypressFunctions = require("../../cypress/cypress-functions")
 var urlParser = require("url")
 var https = require("https")
 global.fetch = require("../../node_modules/node-fetch/lib/index.js")
