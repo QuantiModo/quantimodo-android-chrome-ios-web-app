@@ -131,6 +131,7 @@ var qmStates = [
     },
     {
         "url": "/measurement-add-search",
+        "cache": false,
         "params": {
             "showAds": true,
             "reminder": null,
@@ -143,7 +144,7 @@ var qmStates = [
             "variableSearchParameters": {
                 "limit": 100,
                 "includePublic": true,
-                "manualTracking": true
+                // Don't do this or blood pressure doesn't show up. Plus we just put manualTracking at the top anyway.  "manualTracking": true
             },
             "hideNavigationMenu": null,
             "doneState": null,
@@ -160,6 +161,7 @@ var qmStates = [
     },
     {
         "url": "/reminder-search",
+        "cache": false,
         "params": {
             "showAds": true,
             "variableCategoryName": null,
@@ -172,7 +174,7 @@ var qmStates = [
             "variableSearchParameters": {
                 "limit": 100,
                 "includePublic": true,
-                "manualTracking": true
+                // Don't do this or blood pressure doesn't show up. Plus we just put manualTracking at the top anyway.  "manualTracking": true
             },
             "hideNavigationMenu": null,
             "skipReminderSettingsIfPossible": null,
@@ -190,6 +192,7 @@ var qmStates = [
     },
     {
         "url": "/favorite-search",
+        "cache": false,
         "params": {
             "showAds": true,
             "variableCategoryName": null,
@@ -203,7 +206,7 @@ var qmStates = [
             "variableSearchParameters": {
                 "limit": 100,
                 "includePublic": true,
-                "manualTracking": true
+                // Don't do this or blood pressure doesn't show up. Plus we just put manualTracking at the top anyway.  "manualTracking": true
             },
             "hideNavigationMenu": null,
             "doneState": null,
@@ -220,7 +223,7 @@ var qmStates = [
     },
     {
         "url": "/measurement-add",
-        "cache": true,
+        "cache": false,
         "params": {
             "showAds": true,
             "trackingReminder": null,
@@ -489,7 +492,7 @@ var qmStates = [
             "variableSearchParameters": {
                 "includePublic": true,
                 "fallbackToAggregatedCorrelations": true,
-                "numberOfCorrelationsAsCause": "(gt)1",
+                //"numberOfCorrelationsAsCause": "(gt)1",  Don't require this or we can't search for variables that haven't been correlated yet and trigger correlation
                 "sort": "-numberOfCorrelationsAsCause"
             },
             "hideNavigationMenu": null,

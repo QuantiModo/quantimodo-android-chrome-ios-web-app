@@ -175,20 +175,12 @@ var qm = {
             var headers = {
                 'X-Client-Id': qm.getClientId(),
                 'X-Platform': qm.platform.getCurrentPlatform(),
+                'X-Timezone': qm.platform.getTimeZone(),
                 'X-App-Version': qm.appsManager.getAppVersion(),
                 'X-Framework': 'ionic',
                 "Content-Type": "application/json;charset=UTF-8",
                 'Accept': "application/json"
             };
-            if(!qm.appMode.isBackEnd() && typeof moment !== "undefined"){
-                if(typeof moment.tz === "undefined"){
-                    qmLog.error("moment.tz is not defined!");
-                } else {
-                    var tz = moment.tz;
-                    var guess = tz.guess();
-                    if(guess){headers['X-Timezone'] = guess;}
-                }
-            }
             var token = qm.auth.getAccessToken();
             if(token){headers['Authorization'] = 'Bearer ' + token;}
             return headers;
@@ -517,7 +509,7 @@ var qm = {
             if(!qm.appMode.isBrowser()){
                 return null;
             }
-            var clientId = qm.stringHelper.getStringBetween(qm.urlHelper.getCurrentUrl(), 's3.amazonaws.com/', '/dev');
+            var clientId = qm.stringHelper.between(qm.urlHelper.getCurrentUrl(), 's3.amazonaws.com/', '/dev');
             return clientId;
         },
         getClientIdFromSubDomain: function(){
@@ -670,8 +662,9 @@ var qm = {
             });
         },
         postResponseSuccessful: function(response, data){
+            if(response.status === 201 || response.status === 204){return true;}
             data = data.data || data;
-            return response.status === 201 || response.status === 204 || data.success === true
+            return data.success === true
         },
         post: function(path, body, successHandler, errorHandler){
             qm.api.getRequestUrl(path, {}, function(url){
@@ -681,13 +674,14 @@ var qm = {
                     xhr.open("POST", url);
                     xhr = qm.api.addXhrHeaders(xhr);
                     xhr.onreadystatechange = function(){//Call a function when the state changes.
-                        if(xhr.readyState === XMLHttpRequest.DONE){
+                        var done = XMLHttpRequest.DONE;
+                        if(xhr.readyState === 4){
                             var fallback = xhr.responseText;
-                            var response = qm.stringHelper.parseIfJsonString(xhr.responseText, fallback);
+                            var response = qm.stringHelper.parseIfJson(xhr.responseText, fallback);
                             if ( qm.api.postResponseSuccessful(xhr, response)) {
                                 if(successHandler){successHandler(response);}
                             } else {
-                                qmLog.error("qm.api.get error from " + url + " request: " + xhr.responseText, response);
+                                qmLog.error("POST " + url + " response: " + xhr.responseText, response);
                                 if(errorHandler){errorHandler(response);}
                             }
                         }
@@ -721,7 +715,7 @@ var qm = {
                 if(!qm.platform.getWindow()){
                     return false;
                 }
-                if(window.designMode){
+                if(qm.appMode.isBuilder()){
                     settingsUrl += '&designMode=true';
                 }
                 qmLog.debug('Getting app settings from ' + settingsUrl);
@@ -754,7 +748,7 @@ var qm = {
                     qmLog.error("qm.api.get error from " + url + " request: " + err + ".  If we couldn't parse json, " +
                         url + " probably doesn't exist", err);
                 }else{
-                    qmLog.error("qm.api.get error from " + url + " request: " + err, null, err);
+                    qmLog.error("GET " + url + " error: " + err, null, err);
                 }
                 if(errorHandler){
                     errorHandler(err);
@@ -766,18 +760,22 @@ var qm = {
             xhr.open('GET', url, true);
             xhr = qm.api.addXhrHeaders(xhr);
             xhr.onreadystatechange = function(){
-                if(xhr.readyState === XMLHttpRequest.DONE){
+                var done = XMLHttpRequest.DONE;
+                if(xhr.readyState === 4){
                     var fallback = null; // Just return null instead of 500 page HTML
-                    var responseObject = qm.stringHelper.parseIfJsonString(xhr.responseText, fallback);
+                    var responseObject = qm.stringHelper.parseIfJson(xhr.responseText, fallback);
                     if ( xhr.status === 200 ) {
                         successHandler(responseObject);
                     } else {
-                        if ( xhr.status === 401 ) {
-                            qmLog.info("qm.api.get error from " + url + " request: " + xhr.responseText, null, responseObject);
+                        var path = qm.urlHelper.urlToPath(url)
+                        var err  = "401 from GET response from "+path;
+                        if(xhr.responseText){err += ": " +xhr.responseText;}
+                        if (xhr.status === 401) {
+                            qmLog.info(err, url, xhr);
                         } else {
-                            qmLog.error("qm.api.get error from " + url + " request: " + xhr.responseText, null, responseObject);
+                            qmLog.error(err, url, xhr);
                         }
-                        if(errorHandler){errorHandler(responseObject);}
+                        if(errorHandler){errorHandler(err);}
                     }
                 }
             };
@@ -998,9 +996,9 @@ var qm = {
             if(clientId){
                 return clientId;
             }
-            clientId = qm.stringHelper.getStringAfter(qm.urlHelper.getCurrentUrl(), 'app/configuration/');
+            clientId = qm.stringHelper.after(qm.urlHelper.getCurrentUrl(), 'app/configuration/');
             if(clientId){
-                clientId = qm.stringHelper.getStringBeforeSubstring('?', clientId, clientId);
+                clientId = qm.stringHelper.before('?', clientId, clientId);
                 return clientId;
             }
             clientId = qm.storage.getItem(qm.items.builderClientId);
@@ -1040,15 +1038,15 @@ var qm = {
         },
         getAppSettingsLocallyOrFromApi: function(successHandler, errorHandler){
             var appSettings = qm.getAppSettings();
+            var builderClientId = qm.appsManager.getBuilderClientId();
             if(appSettings && appSettings.clientId){
-                successHandler(appSettings);
-                return;
+                if(!builderClientId || appSettings.clientId === builderClientId){
+                    successHandler(appSettings);
+                    return;
+                }
             }
             var localStorageKey = qm.items.appSettings;
-            var builderClientId = qm.appsManager.getBuilderClientId();
-            if(builderClientId){
-                localStorageKey = qm.items.appSettingsRevisions;
-            }
+            if(builderClientId){localStorageKey = qm.items.appSettingsRevisions;}
             qm.localForage.getItem(localStorageKey)
                 .then(function(appSettings){
                     if(builderClientId && appSettings && appSettings.length && builderClientId === appSettings[0].clientId){
@@ -1056,7 +1054,7 @@ var qm = {
                         return;
                     }
                     if(qm.platform.isWeb() && qm.urlHelper.isQuantiModoOrQuantiModoDotCom()){
-                        qm.appsManager.getAppSettingsFromApi(null, successHandler, errorHandler);
+                        qm.appsManager.getAppSettingsFromApi(builderClientId, successHandler, errorHandler);
                         return;
                     }
                     var clientIdFromUrl = qm.api.getClientIdFromBuilderQueryOrSubDomain();
@@ -1066,7 +1064,7 @@ var qm = {
                             return;
                         }
                     }
-                    qm.appsManager.getAppSettingsFromApi(null, successHandler, errorHandler);
+                    qm.appsManager.getAppSettingsFromApi(builderClientId, successHandler, errorHandler);
                 });
         },
         getAppSettingsFromMemory: function(){
@@ -1487,30 +1485,43 @@ var qm = {
             }
             return array;
         },
-        sortByProperty: function(arrayToSort, propertyName, direction){
+        sortByProperty: function(arr, propertyName, direction){
             qmLog.debug("Sorting by " + propertyName + "...");
-            if(!qm.arrayHelper.variableIsArray(arrayToSort)){
+            if(!qm.arrayHelper.variableIsArray(arr)){
                 qmLog.info("Cannot sort by " + propertyName + " because it's not an array!");
-                return arrayToSort;
+                return arr;
             }
-            if(arrayToSort.length < 2){
-                return arrayToSort;
+            if(arr.length < 2){
+                return arr;
             }
             if(propertyName.indexOf('-') > -1 || direction === 'desc'){
                 propertyName = propertyName.replace('-', '');
-                arrayToSort.sort(function(a, b){
+                arr.sort(function(a, b){
                     var aVal = a[propertyName];
                     var bVal = b[propertyName];
+                    if(typeof aVal === "string"){
+                        var la = aVal.toLowerCase(), lb = bVal.toLowerCase();
+                        if (la > lb) return -1;
+                        if (la < lb) return 1;
+                        return 0;
+                    }
                     return bVal - aVal;
                 });
             }else{
-                arrayToSort.sort(function(a, b){
+                arr.sort(function(a, b){
                     var aVal = a[propertyName];
                     var bVal = b[propertyName];
+                    if(typeof aVal === "string"){
+                        var la = aVal.toLowerCase(), lb = bVal.toLowerCase();
+                        if (la < lb) return -1;
+                        if (la > lb) return 1;
+                        return 0;
+                    }
                     return aVal - bVal;
                 });
             }
-            return arrayToSort;
+            //var sorted = arr.map(function(a){return a[propertyName];})
+            return arr;
         },
         unsetNullProperties: function(array, except){
             except = except || []
@@ -1804,9 +1815,9 @@ var qm = {
             console.error("FAILED: " + combinedMessage + "\n");
             debugger
             var e = new Error(combinedMessage);
-            e.stack = qm.stringHelper.getStringBeforeSubstring('at Gulp', e.stack, e.stack);
-            e.stack = qm.stringHelper.getStringBeforeSubstring('at Object.runAllTestsForType', e.stack, e.stack);
-            e.stack = qm.stringHelper.getStringAfter('Object.throwTestException', combinedMessage, e.stack);
+            e.stack = qm.stringHelper.before('at Gulp', e.stack, e.stack);
+            e.stack = qm.stringHelper.before('at Object.runAllTestsForType', e.stack, e.stack);
+            e.stack = qm.stringHelper.after('Object.throwTestException', combinedMessage, e.stack);
             throw e;
         },
         equals: function(expected, actual, message){
@@ -1857,9 +1868,9 @@ var qm = {
                 throw name + " should be null but is " + JSON.stringify(value);
             }
         },
-        isInteger: function(value){
+        isInteger: function(value, type, meta){
             if(!Number.isInteger(value)){
-                qmLog.lei("not an integer: ", {value: value})
+                qmLog.le(type+" is not an integer: ", meta|| {value: value})
             }
         }
     },
@@ -1977,7 +1988,7 @@ var qm = {
             qmLog.webAuthDebug("getAndSaveAccessTokenFromCurrentUrl " + qm.urlHelper.getCurrentUrl());
             var accessTokenFromUrl = (qm.urlHelper.getParam('accessToken')) ? qm.urlHelper.getParam('accessToken') : qm.urlHelper.getParam('quantimodoAccessToken');
             if(accessTokenFromUrl && accessTokenFromUrl.indexOf("#") !== -1){ // Sometimes #/app/settings gets appended for some reason
-                accessTokenFromUrl = qm.stringHelper.getStringBeforeSubstring('#', accessTokenFromUrl);
+                accessTokenFromUrl = qm.stringHelper.before('#', accessTokenFromUrl);
             }
             if(accessTokenFromUrl){
                 qmLog.webAuthDebug("Got access token from url");
@@ -3077,6 +3088,16 @@ var qm = {
             connectors = hideUnavailableConnectors(connectors);
             qm.storage.setItem(qm.items.connectors, connectors);
             return connectors;
+        },
+        update: function (name, successHandler) {
+            qm.api.get('api/v3/connectors/' + name + '/update', [], {}, function(r){
+                debugger
+                if(successHandler){
+                    successHandler(r);
+                }
+            }, function(err){
+                qmLog.error(err)
+            });
         }
     },
     cookieHelper: {
@@ -4411,7 +4432,7 @@ var qm = {
         outputCommitMessageAndBranch: function(){
             qm.gitHelper.getCommitMessage(function(commitMessage){
                 qm.gitHelper.setBranchName(function(branchName){
-                    qmLog.info("===== Building " + commitMessage + " on " + branchName + " =====");
+                    qmLog.info("===== \nBuilding \n" + commitMessage + "\non branch: " + branchName + "\n=====");
                 });
             });
         },
@@ -4760,7 +4781,9 @@ var qm = {
         userCorrelations: 'userCorrelations',
         userVariables: 'userVariables',
         variableCategories: 'variableCategories',
-        lastUrl: 'lastUrl'
+        lastState: 'lastState',
+        lastUrl: 'lastUrl',
+        currentState: 'currentState'
     },
     loaders: {
         robots: function(){
@@ -5411,7 +5434,8 @@ var qm = {
         },
         deleteMeasurement: function(toDelete){
             var deferred = Q.defer();
-            qm.assert.isInteger(toDelete.id);
+            if(!toDelete.id){qmLog.info("No id to delete measurement, so I guess it was just created: ", toDelete)}
+            //qm.assert.isInteger(toDelete.id, "measurement id", toDelete);
             //debugger
             qm.measurements.deleteLocally(toDelete);
             qm.toast.infoToast("Deleted " + toDelete.variableName + " measurement");
@@ -5420,12 +5444,15 @@ var qm = {
                 qmLog.errorAndExceptionTestingOrDevelopment("No start time provided to delete measurement: ", toDelete);
             }
             qmLog.info("Deleting "+toDelete.variableName+" measurement from "+startAt+"...")
+            qm.measurements.postMeasurementPromise = deferred.promise // Prevents getting measurements before POST completes
             qm.api.post('api/v3/measurements/delete', toDelete, function(response){
                 deferred.resolve(response);
                 qm.measurements.deleteLocally(toDelete);
+                qm.measurements.postMeasurementPromise = null
             }, function(err){
                 deferred.reject(err);
                 qm.measurements.deleteLocally(toDelete);
+                qm.measurements.postMeasurementPromise = null
             });
             return deferred.promise;
         },
@@ -5472,14 +5499,25 @@ var qm = {
             });
         },
         getMeasurementsFromApi: function(params){
+            function getMeasurements() {
+                qm.api.get('api/v3/measurements', [], params, function (measurements) {
+                    qm.measurements.addToCache(measurements)
+                    deferred.resolve(measurements);
+                }, function (err) {
+                    qmLog.error(err);
+                    deferred.reject(err);
+                })
+            }
+            //debugger
             var deferred = Q.defer();
-            qm.api.get('api/v3/measurements', [], params,function(measurements){
-                qm.measurements.addToCache(measurements)
-                deferred.resolve(measurements);
-            }, function(err){
-                qmLog.error(err);
-                deferred.reject(err);
-            })
+            if(qm.measurements.postMeasurementPromise){  // Prevents getting measurements before POST completes
+                qm.measurements.postMeasurementPromise.finally(function(){
+                    //debugger
+                    getMeasurements();
+                })
+            } else {
+                getMeasurements();
+            }
             return deferred.promise;
         },
         addLocationDataToMeasurement: function(m){
@@ -5621,6 +5659,7 @@ var qm = {
             });
             return deferred.promise;
         },
+        postMeasurementPromise: null,
         postMeasurementQueue: function(){
             var deferred = Q.defer();
             var queueObj = qm.measurements.queue;
@@ -5633,6 +5672,7 @@ var qm = {
                     promises.push(qm.measurements.roundMeasurementTime(m))
                 })
                 Q.all(promises).then(function (){
+                    qm.measurements.postMeasurementPromise = deferred.promise // Prevents getting measurements before POST completes
                     qm.measurements.postMeasurements(queueArr)
                         .then(function(data){
                             qm.measurements.queue = {};
@@ -5645,36 +5685,33 @@ var qm = {
                                 })
                             })
                             deferred.resolve(data);
+                            qm.measurements.postMeasurementPromise = null;
                         }, function(error){
                             debugger
                             qm.measurements.queue = queueObj;
                             deferred.reject(error);
+                            qm.measurements.postMeasurementPromise = null;
                         });
                 })
             }
             return deferred.promise;
         },
-        postBloodPressureMeasurements: function(parameters){
+        postBloodPressureMeasurements: function(data){
             var deferred = Q.defer();
-            if(!parameters.startAt){
-                parameters.startAt = qm.timeHelper.toMySQLTimestamp();
-            }
-            qm.measurements.postMeasurements([
-                {
-                    variableId: 1874,
-                    sourceName: qm.getSourceName(),
-                    startAt: parameters.startAt,
-                    value: parameters.systolicValue,
-                    note: parameters.note
-                },
-                {
-                    variableId: 5554981,
-                    sourceName: qm.getSourceName(),
-                    startAt: parameters.startAt,
-                    value: parameters.diastolicValue,
-                    note: parameters.note
+            if(!data.startAt){data.startAt = qm.timeHelper.toMySQLTimestamp();}
+            var measurements = [];
+            for (var name in data.values){
+                if (data.values.hasOwnProperty(name)) {
+                    measurements.push({
+                        variableName: name,
+                        sourceName: qm.getSourceName(),
+                        startAt: data.startAt,
+                        value: data.values[name],
+                        note: data.note
+                    })
                 }
-            ]).then(function(response){
+            }
+            qm.measurements.postMeasurements(measurements).then(function(response){
                 deferred.resolve(response);
             }, function (err){
                 deferred.reject(err);
@@ -5910,7 +5947,7 @@ var qm = {
                     .toLowerCase();
             }
             if(menuItem.href){
-                var id = qm.stringHelper.getStringBeforeSubstring('?', menuItem.href, menuItem.href);
+                var id = qm.stringHelper.before('?', menuItem.href, menuItem.href);
                 menuItem.id = convertStringToId(id);
             }else{
                 menuItem.id = convertStringToId(menuItem.title);
@@ -7401,6 +7438,8 @@ var qm = {
                 if(ids.indexOf(id) !== -1) {
                     qmLog.errorAndExceptionTestingOrDevelopment("Duplicate notification id: "+id, null, n);
                 }
+                var count = notifications.filter(function(n2){return n2.variableId === n.variableId;}).length;
+                if(count < 2){n.trackAllActions = [];}
                 toKeep.push(n);
                 ids.push(id);
             });
@@ -7576,6 +7615,7 @@ var qm = {
             for(var prop in object){
                 if(object.hasOwnProperty(prop)){
                     var camel = prop.toCamelCase();
+                    if(camel === prop){continue;}
                     object[camel] = object[prop];
                     delete object[prop];
                 }
@@ -7726,10 +7766,7 @@ var qm = {
             if(qm.platform.isAndroid() || qm.platform.isIOS()){
                 return false;
             }
-            if(typeof ionic !== "undefined" && ionic.Platform.isWebView()){
-                return true;
-            }
-            return false;
+            return typeof ionic !== "undefined" && ionic.Platform.isWebView();
         },
         isWebOrChrome: function(){
             return qm.platform.isWeb() || qm.platform.isChromeExtension();
@@ -7886,6 +7923,33 @@ var qm = {
                 }
                 return (qm.platform.browser.isChromeBrowser() || qm.platform.browser.isOpera()) && !!window.CSS;
             }
+        },
+        timezone: null,
+        getTimeZone: function() {
+            var u = qm.getUser();
+            if(u){ // Don't overwrite existing manually defined user time zone
+                var timezone = u.timezone;
+                if(timezone &&
+                    timezone.toUpperCase() !== "UTC" &&
+                    timezone !== "Africa/Abidjan"){ // Not sure where Africa/Abidjan is coming from
+                    return timezone;
+                }
+            }
+            if(qm.platform.timezone){return qm.platform.timezone;} // moment makes to many error logs
+            if(typeof moment === "undefined"){
+                qmLog.error("moment is not defined!");
+                return null;
+            }
+            if(typeof moment.tz === "undefined"){
+                qmLog.error("moment.tz is not defined!");
+                return null;
+            }
+            var tz = moment.tz;
+            var guess = tz.guess();
+            if(!guess){
+                guess = Intl.DateTimeFormat().resolvedOptions().timeZone;
+            }
+            return qm.platform.timezone = guess || null; // moment makes to many error logs
         }
     },
     pouch: {
@@ -7943,8 +8007,15 @@ var qm = {
     qmService: null,
     reminderHelper: {
         defaultLimit: 200, // I have over 150 reminders
-        addToQueue: function(reminder){
-            qm.storage.addToOrReplaceByIdAndMoveToFront(qm.items.trackingReminderSyncQueue, reminder);
+        addToQueue: function(reminders){
+            if(!Array.isArray(reminders)){reminders = [reminders];}
+            for(var i = 0; i < reminders.length; i++){
+                if(!reminders[i].variableName){
+                    qmLog.errorAndExceptionTestingOrDevelopment("Please provide variableName with reminder!", reminders[i])
+                    return;
+                }
+            }
+            qm.storage.addToOrReplaceByIdAndMoveToFront(qm.items.trackingReminderSyncQueue, reminders);
             if(qm.qmService){
                 qm.qmService.reminders.broadcastGetTrackingReminders();
             }
@@ -9457,7 +9528,26 @@ var qm = {
                     qm.chrome.updateChromeBadge(notifications.length);
                 }
             }
-            return qm.notifications.removeDuplicates(notifications);
+            function shouldWeShowZeroButton(trn){
+                return trn.inputType === 'defaultValue' || (trn.inputType === 'value' && trn.defaultValue !== null);
+            }
+            for(var i = 0; i < notifications.length; i++){
+                var n = notifications[i]
+                n.showZeroButton = shouldWeShowZeroButton(notifications[i]);
+                n.trackAllActions.forEach(function (a) {
+                    if(a.callback === "skipAction"){
+                        a.valueUnit = "Skip"
+                        a.longTitle = "Skip all remaining un-tracked past notifications"
+                        a.titleHtml = "<p>Skip All</p>"
+                    } else{
+                        a.valueUnit = a.title.replace(" for all", "");
+                        a.longTitle = "Record "+a.valueUnit + " for all remaining un-tracked past notifications"
+                        a.titleHtml = "<p>"+a.valueUnit+"</p>"+"<p><small>for all</small></p>"
+                    }
+                })
+            }
+            var noDupes = qm.notifications.removeDuplicates(notifications);
+            return noDupes;
         },
         getAsString: function(key){
             var item = qm.storage.getItem(key);
@@ -9607,7 +9697,7 @@ var qm = {
             }
             if(itemFromLocalStorage && typeof itemFromLocalStorage === "string"){
                 qmLog.debug("Parsing " + key + " and setting in globals");
-                qm.globals[key] = qm.stringHelper.parseIfJsonString(itemFromLocalStorage, itemFromLocalStorage);
+                qm.globals[key] = qm.stringHelper.parseIfJson(itemFromLocalStorage, itemFromLocalStorage);
                 qm.api.addVariableCategoryAndUnit(qm.globals[key])
                 qmLog.debug('Got ' + key + ' from localStorage: ' + itemFromLocalStorage.substring(0, 18) + '...');
                 return qm.globals[key];
@@ -9715,27 +9805,23 @@ var qm = {
             }
             return value;
         },
-        parseIfJsonString: function(stringOrObject, defaultValue){
-            defaultValue = defaultValue || null;
-            if(!stringOrObject){
-                return stringOrObject;
-            }
-            if(typeof stringOrObject !== "string"){
-                return stringOrObject;
-            }
+        parseIfJson: function(strObj, fallback){
+            fallback = fallback || null;
+            if(!strObj){return fallback;}
+            if(typeof strObj !== "string"){return strObj;}
             try{
-                return JSON.parse(stringOrObject);
+                var parsed = JSON.parse(strObj);
+                if(parsed === ""){return null;}
+                return parsed;
             }catch (e){
-                return defaultValue;
+                return fallback;
             }
         },
-        getStringBeforeSubstring: function(substring, fullString, defaultResponse){
-            defaultResponse = defaultResponse || fullString;
-            var i = fullString.indexOf(substring);
-            if(i > 0){
-                return fullString.slice(0, i);
-            }
-            return defaultResponse;
+        before: function(needle, str, fallback){
+            fallback = fallback || str;
+            var i = str.indexOf(needle);
+            if(i > 0){return str.slice(0, i);}
+            return fallback;
         },
         toCamelCase: function(string){
             string = string.replace(/-([a-z])/g, function(g){
@@ -9743,19 +9829,14 @@ var qm = {
             });
             return string.toCamelCase();
         },
-        getStringBetween: function(string, firstString, secondString){
-            var between = string.match(firstString + "(.*)" + secondString);
-            if(!between){
-                return null;
-            }
-            console.log(between[1] + " is between " + firstString + " and " + secondString + " in " + string);
-            return between[1];
+        between: function(str, start, end, fallback){
+            var after = qm.stringHelper.after(str, start);
+            if(!after){return fallback || null;}
+            return qm.stringHelper.before(end, after, fallback);
         },
-        getStringAfter: function(fullString, substring, defaultResponse){
-            var array = fullString.split(substring);
-            if(array[1]){
-                return array[1];
-            }
+        after: function(str, needle, defaultResponse){
+            var array = str.split(needle);
+            if(array[1]){return array[1];}
             defaultResponse = defaultResponse || null;
             return defaultResponse;
         },
@@ -9928,6 +10009,10 @@ var qm = {
         }
     },
     studyHelper: {
+        isOwner: function(study){
+            var user = qm.getUser();
+            return study.isOwner = study.userId && user && study.userId === user.id;
+        },
         cached: {},
         getStudiesApiInstance: function(params, functionName){
             qm.api.configureClient(functionName, null, params);
@@ -10280,7 +10365,7 @@ var qm = {
             }
             qm.studyHelper.getStudiesApiInstance({}, arguments.callee.name).getStudies(params, callback);
         },
-        goToStudyPageJoinPageViaStudy: function(study){
+        goToJoinStudy: function(study){
             qm.urlHelper.goToUrl(qm.studyHelper.getStudyJoinUrl(study));
         },
         goToStudyPageViaStudy: function(study){
@@ -10590,7 +10675,7 @@ var qm = {
             try{
                 Toast.fire({
                     icon: 'error',
-                    title: errorMessage
+                    title: qm.stringHelper.truncateIfGreaterThan(errorMessage, 140)
                 }).then(function(result){
                     if (result.value) {
                         if(callback){
@@ -10687,7 +10772,7 @@ var qm = {
         },
         getInputType: function(unitAbbreviatedName, valence, variableName) {
             var inputType = 'value';
-            if (variableName === 'Blood Pressure') {inputType = 'bloodPressure';}
+            if (variableName && variableName.indexOf('Blood Pressure') !== -1) {inputType = 'bloodPressure';}
             if (unitAbbreviatedName === '/5') {
                 inputType = 'oneToFiveNumbers';
                 if (valence === 'positive') {inputType = 'happiestFaceIsFive';}
@@ -10851,11 +10936,11 @@ var qm = {
             var params = {};
             if(baseUrl.indexOf('?') !== -1){
                 params = qm.objectHelper.copyPropertiesFromOneObjectToAnother(qm.urlHelper.getQueryParams(baseUrl), params, false);
-                baseUrl = qm.stringHelper.getStringBeforeSubstring('?', baseUrl);
+                baseUrl = qm.stringHelper.before('?', baseUrl);
             }
             if(pathToAppend.indexOf('?') !== -1){
                 params = qm.objectHelper.copyPropertiesFromOneObjectToAnother(qm.urlHelper.getQueryParams(pathToAppend), params, false);
-                pathToAppend = qm.stringHelper.getStringBeforeSubstring('?', pathToAppend);
+                pathToAppend = qm.stringHelper.before('?', pathToAppend);
             }
             if(qm.stringHelper.getLastCharacter(baseUrl) === '/'){
                 baseUrl = qm.stringHelper.removeLastCharacter(baseUrl);
@@ -10910,7 +10995,17 @@ var qm = {
             state = qm.objectHelper.copyPropertiesFromOneObjectToAnother(params, state, false);
             return state;
         },
-        addUrlParamsToCurrentUrl: function insertParam(key, value){
+        addParamsToCurrentUrl: function(source){
+            for(var prop in source){
+                if(source.hasOwnProperty(prop)){
+                    if(source[prop] === null || typeof source[prop] === "object" || Array.isArray(source[prop])){
+                        continue;
+                    }
+                    qm.urlHelper.addParamToCurrentUrl(prop, source[prop]);
+                }
+            }
+        },
+        addParamToCurrentUrl: function(key, value){
             qmLog.error("This adds params before hash"); // TODO: Fix me
             key = encodeURI(key);
             value = encodeURI(value);
@@ -11025,13 +11120,13 @@ var qm = {
                 return false;
             }
             var url = window.location.origin + window.location.pathname;
-            url = qm.stringHelper.getStringBeforeSubstring('#', url);
-            url = qm.stringHelper.getStringBeforeSubstring('configuration-index.html', url);
-            url = qm.stringHelper.getStringBeforeSubstring('index.html', url);
-            url = qm.stringHelper.getStringBeforeSubstring('android_popup.html', url);
-            url = qm.stringHelper.getStringBeforeSubstring('chrome_default_popup_iframe.html', url);
-            url = qm.stringHelper.getStringBeforeSubstring('firebase-messaging-sw.js', url);
-            url = qm.stringHelper.getStringBeforeSubstring('_generated_background_page.html', url);
+            url = qm.stringHelper.before('#', url);
+            url = qm.stringHelper.before('configuration-index.html', url);
+            url = qm.stringHelper.before('index.html', url);
+            url = qm.stringHelper.before('android_popup.html', url);
+            url = qm.stringHelper.before('chrome_default_popup_iframe.html', url);
+            url = qm.stringHelper.before('firebase-messaging-sw.js', url);
+            url = qm.stringHelper.before('_generated_background_page.html', url);
             return url;
         },
         getAbsoluteUrlFromRelativePath: function(relativePath){
@@ -11055,6 +11150,7 @@ var qm = {
             }
             if(qm.urlHelper.indexOfCurrentUrl("http://") === 0 &&
                 qm.urlHelper.indexOfCurrentUrl(".com:") === -1 &&
+                qm.urlHelper.indexOfCurrentUrl(".test:") === -1 &&
                 qm.urlHelper.indexOfCurrentUrl("http://192.168") === -1 &&
                 qm.urlHelper.indexOfCurrentUrl("http://localhost") === -1){
                 location.href = 'https:' + qm.urlHelper.getCurrentUrl().substring(window.location.protocol.length);
@@ -11189,9 +11285,8 @@ var qm = {
             return window.location.origin + window.location.pathname;
         },
         goToUrl: function(url, reason, newTab){
-            if(!qm.platform.getWindow()){
-                return false;
-            }
+            qm.urlHelper.setLastUrl();
+            if(!qm.platform.getWindow()){return false;}
             if(url.indexOf('mailto') !== -1){ newTab = true; }
             qmLog.info("Going to " + url + " because " + reason);
             if(newTab){
@@ -11251,6 +11346,19 @@ var qm = {
         isQuantiModoOrQuantiModoDotCom: function(){
             var hostname = window.location.hostname;
             return hostname.indexOf('.quantimo.do') !== -1 || hostname.indexOf('.quantimodo.com') !== -1;
+        },
+        goToLastUrl: function(){
+            var url = qm.urlHelper.getLastUrl();
+            window.location.hef = url;
+        },
+        setLastUrl: function(){
+            qm.storage.setItem(qm.items.lastUrl, window.location.href);
+        },
+        getLastUrl: function(){
+            return qm.storage.getItem(qm.items.lastUrl)
+        },
+        urlToPath: function(url){
+            return qm.stringHelper.between(url, "/api/", "?");
         }
     },
     user: null,
@@ -11426,7 +11534,7 @@ var qm = {
                         qm.userHelper.setUser(user);
                         deferred.resolve(user)
                     }else{
-                        var err = "Could not get user from API...";
+                        var err = "getViaXhrOrFetch successHandler was called but we still did not get user from "+url;
                         qmLog.info(err);
                         if(qm.platform.isChromeExtension()){
                             qm.chrome.openLoginWindow();
@@ -11434,6 +11542,7 @@ var qm = {
                         deferred.reject(err)
                     }
                 }, function (err){
+                    if(!err){err = "Empty error from "+url}
                     deferred.reject(err)
                 })
             });
@@ -11514,12 +11623,11 @@ var qm = {
             var combined = cached.concat(fromStatic);
             if(!params){params = {};}
             var processed = qm.arrayHelper.filterByRequestParams(combined, params);
-            if(!params.sort){processed = qm.variablesHelper.defaultVariableSort(processed);}
+            if(!params.sort){processed = qm.variablesHelper.defaultVariableSort(processed, params);}
             return processed;
         },
         getFromLocalStorage: function(params){
             if(!params){params = {};}
-            var cached = qm.commonVariablesHelper.getCached(params);
             var commonVariables = qm.arrayHelper.filterByRequestParams(qm.staticData.commonVariables, params);
             if(!params.sort){commonVariables = qm.variablesHelper.defaultVariableSort(commonVariables);}
             return commonVariables;
@@ -11633,17 +11741,18 @@ var qm = {
         },
         getFromLocalStorage: function(params){
             var deferred = Q.defer();
-            if(!params){params = {};}
-            var cached = qm.userVariables.getCached();
-            var variables = qm.arrayHelper.filterByRequestParams(cached, params);
-            if(variables && variables.length){
-                if(!params.sort){variables = qm.variablesHelper.defaultVariableSort(variables);}
-                deferred.resolve(variables);
-                return deferred.promise;
-            }
+            // Not sure what all this was for
+            //if(!params){params = {};}
+            // var cached = qm.userVariables.getCached();
+            // var variables = qm.arrayHelper.filterByRequestParams(cached, params);
+            // if(variables && variables.length){
+            //     if(!params.sort){variables = qm.variablesHelper.defaultVariableSort(variables);}
+            //     deferred.resolve(variables);
+            //     return deferred.promise;
+            // }
             qm.localForage.getElementsWithRequestParams(qm.items.userVariables, params, function(variables){
                 variables = variables || []
-                if(!params.sort){variables = qm.variablesHelper.defaultVariableSort(variables);}
+                if(!params.sort){variables = qm.variablesHelper.defaultVariableSort(variables, params);}
                 deferred.resolve(variables);
             }, function(error){
                 qmLog.error(error);
@@ -11791,7 +11900,7 @@ var qm = {
             if(params.id || params.name){min = 1;}
             function sortUpdateSubtitlesAndReturnVariables(variables, params){
                 if(!params.sort){
-                    variables = qm.variablesHelper.defaultVariableSort(variables);
+                    variables = qm.variablesHelper.defaultVariableSort(variables, params);
                 } else {
                     variables = qm.arrayHelper.sortByProperty(variables, params.sort);
                 }
@@ -11866,7 +11975,20 @@ var qm = {
             });
             return manualTracking.concat(nonManual);
         },
-        defaultVariableSort: function(variables){
+        putExactMatchFirst: function(variables, q){ // Don't think we need to do this anymore since we sort by number of reminders maybe?
+            if(!variables){
+                qmLog.error("no variables provided to putManualTrackingFirst");
+                return;
+            }
+            var exact = variables.filter(function(variableToCheck){
+                return variableToCheck.name.toLowerCase() === q.toLowerCase();
+            });
+            var inexact = variables.filter(function(variableToCheck){
+                return variableToCheck.name.toLowerCase() !== q.toLowerCase();
+            });
+            return exact.concat(inexact);
+        },
+        defaultVariableSort: function(variables, params){
             if(!variables){
                 qmLog.debug("no variables provided to defaultVariableSort");
                 return null;
@@ -11888,6 +12010,10 @@ var qm = {
                 if(aValue > bValue) return -1;
                 return 0;
             });
+            if(params){
+                var q = params.name || params.searchPhrase || null;
+                if(q){variables = qm.variablesHelper.putExactMatchFirst(variables, q);}
+            }
             return variables;
         },
         getUserAndCommonVariablesFromLocalStorage: function(params){
@@ -12002,6 +12128,14 @@ var qm = {
             var v = qm.userVariables.getCached().find(matches)
             if(!v){v = qm.commonVariablesHelper.getCached().find(matches)}
             return v;
+        },
+        validateVariables: function(variables){
+            if(!Array.isArray(variables)){variables = [variables];}
+            variables.map(function (v){
+                if(v && v.variableId === 1398){
+                    qmLog.errorAndExceptionTestingOrDevelopment("why isn't mood an outcome: "+v.outcome, v)
+                }
+            });
         }
     },
     variableCategoryHelper: {

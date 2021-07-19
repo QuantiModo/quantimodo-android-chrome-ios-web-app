@@ -29,7 +29,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
                 qm.storage.setItem(qm.items.lastUrl, window.location.href);
             });
             $scope.$on('$ionicView.beforeLeave', function(e){
-                qmService.stateHelper.previousUrl = window.location.href;
+                qmService.setLastStateAndUrl($state.current)
             });
             $scope.closeMenu = function(){
                 $ionicSideMenuDelegate.toggleLeft(false);
@@ -304,7 +304,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
                         qmLog.debug('BUTTON CLICKED', null, i);
                         if(i === 0){qmService.goToState('app.reminderAdd', {reminder: favorite});}
                         if(i === 1){qmService.goToState('app.measurementAdd', {trackingReminder: favorite});}
-                        if(i === 2){qmService.goToState('app.charts', {trackingReminder: favorite, fromState: $state.current.name,});}
+                        if(i === 2){qmService.goToState('app.charts', {trackingReminder: favorite,});}
                         if(i === 3){qmService.goToState('app.historyAllVariable', {variableObject: variableObject});}
                         if(i === 4){qmService.goToVariableSettingsByName(favorite.variableName);}
                         return true;
@@ -320,17 +320,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
                 }, 20000);
             };
             $scope.trackBloodPressure = function(){
-                if(!$rootScope.bloodPressure.diastolicValue || !$rootScope.bloodPressure.systolicValue){
-                    $scope.favoriteValidationFailure('Please enter both values for blood pressure.');
-                    return;
-                }
-                $rootScope.bloodPressure.displayTotal = "Recorded " + $rootScope.bloodPressure.systolicValue + "/" + $rootScope.bloodPressure.diastolicValue + ' Blood Pressure';
-                qm.measurements.postBloodPressureMeasurements($rootScope.bloodPressure)
-                    .then(function(){
-                        qmLog.debug('Successfully qmService.postMeasurementByReminder: ' + JSON.stringify($rootScope.bloodPressure), null);
-                    }, function(error){
-                        qmLog.error('Failed to Track by favorite! ', $rootScope.bloodPressure);
-                    });
+                qm.measurements.postBloodPressureMeasurements($rootScope.bloodPressure);
             };
             $scope.showExplanationsPopup = function(parameterOrPropertyName, ev, modelName, title){
                 qmService.help.showExplanationsPopup(parameterOrPropertyName, ev, modelName, title);
@@ -388,7 +378,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
                 qmService.updateEmailAndExecuteCallback(callback);
             };
             $scope.goToStudyPageViaStudy = qm.studyHelper.goToStudyPageViaStudy;
-            $scope.goToJoinStudyPageViaStudy = qm.studyHelper.goToStudyPageJoinPageViaStudy;
+            $scope.goToJoinStudy = qm.studyHelper.goToJoinStudy;
             $scope.showGeneralVariableSearchDialog = function(ev){
                 function selectVariable(variable){
                     $scope.variableObject = variable;

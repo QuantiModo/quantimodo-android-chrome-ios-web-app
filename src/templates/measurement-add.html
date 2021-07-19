@@ -6,11 +6,8 @@
              ng-show="state.measurement.variableName"
              id="measurementAddCard">
             <div id="variable-name"
-                ng-if="!bloodPressure.show"
+                 ng-if="state.measurement.inputType !== 'bloodPressure'"
                  class="item item-divider">{{state.measurement.variableName}}
-            </div>
-            <div ng-if="bloodPressure.show"
-                 class="item item-divider">Blood Pressure
             </div>
             <div class="list margin-bottom-0">
                 <label class="item item-input item-select"
@@ -36,26 +33,9 @@
                            ng-click="onTextClick($event)"
                            placeholder={{state.defaultValuePlaceholderText}}>
                 </label>
-                <label ng-if="state.measurement.inputType === 'bloodPressure'"
-                       class="item item-input">
-                    <input type="number"
-                           ng-model="bloodPressure.systolicValue"
-                           id="systolicValueField"
-                           ng-click="onTextClick($event)"
-                           placeholder="Enter systolic value"
-                           class="text-right">
-                    <span class="input-label">mmHg</span>
-                </label>
-                <label ng-if="state.measurement.inputType === 'bloodPressure'"
-                       class="item item-input">
-                    <input type="number"
-                           ng-model="bloodPressure.diastolicValue"
-                           id="diastolicValueField"
-                           ng-click="onTextClick($event)"
-                           placeholder="Enter diastolic value"
-                           class="text-right">
-                    <span class="input-label">mmHg</span>
-                </label>
+                <div id="bloodPressure" ng-if="state.measurement.inputType === 'bloodPressure'">
+                    <div ng-include="'templates/input/blood-pressure.html'"></div>
+                </div>
                 <div class="primary-outcome-variable-rating-buttons primary-outcome-variable-history col"
                      ng-if="state.measurement.inputType === 'oneToFiveNumbers'">
                     <img id="{{'neutral-rating-with-value-' + option.numericValue}}"
@@ -110,7 +90,7 @@
                         <md-radio-button value="No"> No</md-radio-button>
                     </md-radio-group>
                 </div>
-                <label ng-if="!bloodPressure.show"
+                <label ng-if="state.measurement.inputType !== 'bloodPressure'"
                        class="item item-input item-select">
                     <div class="input-label">Unit</div>
                     <select id="unitSelector"
@@ -178,10 +158,18 @@
                                class="button button-outline button-block icon-left ion-android-done button-positive"
                                ng-click="done()">
                         Record
-                        <span ng-if="state.measurement.unitAbbreviatedName !== 'yes/no' && state.measurement.value">{{state.measurement.value}}</span>
-                        <span ng-if="state.measurement.unitAbbreviatedName === 'yes/no' && state.measurement.value === 1">Yes</span>
-                        <span ng-if="state.measurement.unitAbbreviatedName === 'yes/no' && state.measurement.value === 0">No</span>
-                        <span ng-if="state.measurement.unitAbbreviatedName === 'yes/no' && state.measurement.value !== 1 && state.measurement.value !== 0">{{state.measurement.value}}</span>
+                        <span ng-if="state.measurement.inputType !== 'bloodPressure'">
+                             <span ng-if="state.measurement.unitAbbreviatedName !== 'yes/no' && state.measurement.value">
+                                 {{state.measurement.value}}
+                             </span>
+                            <span ng-if="state.measurement.unitAbbreviatedName === 'yes/no'">
+                                <span ng-if="state.measurement.value == 1">Yes</span>
+                                <span ng-if="state.measurement.value == 0">No</span>
+                                <span ng-if="state.measurement.value != 1 && state.measurement.value != 0">
+                                    {{state.measurement.value}}
+                                </span>
+                            </span>
+                        </span>
                     </md-button>
                 </div>
             </div>

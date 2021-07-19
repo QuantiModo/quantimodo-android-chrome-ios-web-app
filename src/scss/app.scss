@@ -56,3 +56,9 @@ body {
   max-width: 400px;
   margin: auto;
 }
+
+.flex {
+    display: block; // Have to override Tailwind's display:flex with the Angular Material version
+    flex: 1;
+    box-sizing: border-box;
+}
