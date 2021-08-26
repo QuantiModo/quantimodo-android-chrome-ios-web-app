@@ -1,8 +1,10 @@
 #!/bin/bash
 # shellcheck disable=SC2086
 # shellcheck disable=SC2006
-set +x
 set -e
+set -o errexit                  # Exit on most errors (see the manual)
+set -o nounset                  # Disallow expansion of unset variables
+set -o pipefail                 # Use last non-zero exit code in a pipeline
 PARENT_SCRIPT_PATH="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/$(basename "${BASH_SOURCE[0]}")" && SCRIPT_FOLDER=`dirname ${PARENT_SCRIPT_PATH}`
 cd "${SCRIPT_FOLDER}" && cd .. && export IONIC_PATH="$PWD"
 # shellcheck source=./no-root.sh
@@ -23,7 +25,7 @@ export NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && printf %s "${HOME}/.nvm" || pr
 # shellcheck disable=SC1090
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" # This loads nvm
 set +x
-echo "nvm install $1..."
+echo "nvm install version $1..."
 nvm install $1 --reinstall-packages-from=node
 echo "nvm use $1..."
 nvm use $1
