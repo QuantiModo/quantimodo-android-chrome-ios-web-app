@@ -24,7 +24,7 @@ export NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && printf %s "${HOME}/.nvm" || pr
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" # This loads nvm
 set +x
 echo "nvm install $1..."
-nvm install $1
+nvm install $1 --reinstall-packages-from=node
 echo "nvm use $1..."
 nvm use $1
 set -x
