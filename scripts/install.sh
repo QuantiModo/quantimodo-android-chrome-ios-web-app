@@ -18,6 +18,7 @@ if [[ ${NODE_NAME} = "sonicmaster-ubuntu" ]];
         echo "Have to run rebuild node-sass on sonicmaster slave.  TODO: Remove this";
         npm rebuild node-sass;
 fi
+npm install typescript -g
 npm run configure:app
 # shellcheck source=./log_start.sh
 source "$IONIC_PATH"/scripts/log_end.sh "${BASH_SOURCE[0]}"
