@@ -12,7 +12,7 @@ cd "${SCRIPT_FOLDER}" && cd .. && export IONIC_PATH="$PWD" && source "$IONIC_PAT
 source "$SCRIPT_FOLDER"/no-root.sh
 # shellcheck source=./nvm.sh
 source "$SCRIPT_FOLDER"/nvm.sh 10
-set -x && npm install && set +x
+set -x && npm install --loglevel info && set +x
 if [[ ${NODE_NAME} = "sonicmaster-ubuntu" ]];
     then
         echo "Have to run rebuild node-sass on sonicmaster slave.  TODO: Remove this";
