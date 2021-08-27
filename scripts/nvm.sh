@@ -12,7 +12,7 @@ cd "${SCRIPT_FOLDER}" && cd .. && export IONIC_PATH="$PWD"
 cd "${SCRIPT_FOLDER}" && cd .. && export IONIC_PATH="$PWD" && source "$IONIC_PATH"/scripts/log_start.sh "${BASH_SOURCE[0]}"
 # shellcheck source=./no-root.sh
 source "$SCRIPT_FOLDER"/no-root.sh
-sudo chown -R $USER ~/.nvm
+sudo chown -R $USER ~/.nvm || true
 command -v nvm >/dev/null 2>&1 || {
     echo >&2 "nvm is required, but it's not installed.  Trying to install it now...";
     sudo chown -R "$USER" ~/.nvm || true
