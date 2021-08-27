@@ -18,7 +18,7 @@ cp -R $IONIC_PATH/src/* $BUILD_REPO/docs
 cd $BUILD_REPO
 rm $BUILD_REPO/docs/CNAME
 git add -A  &> /dev/null
-git commit -m "$BUILD_URL $CHANGE_URL"
+git commit -m "$BUILD_URL https://github.com/QuantiModo/quantimodo-android-chrome-ios-web-app/commit/$GIT_COMMIT"
 git push
 
 # shellcheck source=./log_start.sh
