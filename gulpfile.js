@@ -1,3 +1,4 @@
+
 /* eslint-disable no-process-env,object-shorthand,semi,block-spacing,comma-dangle,one-var,space-infix-ops,no-unused-vars,no-multi-spaces,no-useless-concat,no-empty */
 const {missingRequiredParameter}  = require("./ts/qm.log");
 const {readJsonFile}  = require("./ts/qm.file-helper");
@@ -8,9 +9,12 @@ const {qmPlatform} = require("./ts/env-helper");
 const {getenvOrException} = require("./ts/env-helper");
 var qmLog = require("./ts/qm.log");
 var pump = require('pump');
-const {getQMClientIdOrException} = require("./ts/env-helper");
-try{
-    loadEnv(".env")
+const {getQMClientIdOrException} = require("./ts/env-helper")
+
+try {
+    var dotenv = require('dotenv')
+    dotenv.config({path: './secrets/.env'});
+
 } catch (e) {
     qmLog.info(e.message);
 }
