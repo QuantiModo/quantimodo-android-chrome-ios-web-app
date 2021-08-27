@@ -1,4 +1,4 @@
-/* eslint-disable no-process-env */
+/* eslint-disable no-process-env,semi,space-infix-ops,block-spacing,object-shorthand,no-unused-vars,one-var */
 try {
     var dotenv = require('dotenv')
     dotenv.config({path: './secrets/.env'});
