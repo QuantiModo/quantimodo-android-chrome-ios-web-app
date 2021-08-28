@@ -76,17 +76,6 @@ var runSequence = require('run-sequence');
 var AWS_ACCESS_KEY_ID = process.env.QM_AWS_ACCESS_KEY_ID || process.env.AWS_ACCESS_KEY_ID; // Netlify has their own
 var AWS_SECRET_ACCESS_KEY = process.env.QM_AWS_SECRET_ACCESS_KEY || process.env.AWS_SECRET_ACCESS_KEY; // Netlify has their own
 var s3Options = {accessKeyId: AWS_ACCESS_KEY_ID, secretAccessKey: AWS_SECRET_ACCESS_KEY};
-var bugsnag = require("bugsnag");
-bugsnag.register("ae7bc49d1285848342342bb5c321a2cf");
-bugsnag.releaseStage = qmLog.getCurrentServerContext();
-process.on('unhandledRejection', function (err) {
-    console.error("Unhandled rejection: " + (err && err.stack || err));
-    bugsnag.notify(err);
-});
-bugsnag.onBeforeNotify(function (notification) {
-    var metaData = notification.events[0].metaData;
-    metaData = qmLog.addMetaData(metaData);
-});
 var qmGit = {
     branchName: null,
     getBranchName: function(){
