@@ -10,7 +10,7 @@ PARENT_SCRIPT_PATH="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/$(basename "${
 cd "${SCRIPT_FOLDER}" && cd .. && export IONIC_PATH="$PWD" && source "$IONIC_PATH"/scripts/log_start.sh "${BASH_SOURCE[0]}"
 # shellcheck source=./no-root.sh
 source "$SCRIPT_FOLDER"/no-root.sh
-sudo chown -R $USER ~/.nvm
+sudo chown -R $USER ~/.nvm || true
 command -v nvm >/dev/null 2>&1 || {
     echo >&2 "nvm is required, but it's not installed.  Trying to install it now...";
     sudo chown -R "$USER" ~/.nvm || true
@@ -24,7 +24,7 @@ export NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && printf %s "${HOME}/.nvm" || pr
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" # This loads nvm
 set +x
 echo "nvm install version $1..."
-nvm install $1 --reinstall-packages-from=node
+nvm install $1
 echo "nvm use $1..."
 nvm use $1
 set -x
