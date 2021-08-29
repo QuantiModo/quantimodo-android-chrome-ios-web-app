@@ -43,11 +43,13 @@
                 </div>
             </div>
         </div>
+<!--      Might want to switch to this later
         <div id="allCaughtUpCard2"
             ng-if="!state.loading && state.numberOfDisplayedNotifications === 0"
             ng-repeat="helpCard in [state.caughtUpCard] | limitTo:1">
             <div ng-include="'templates/fragments/help-info-card-fragment.html'"></div>
         </div>
+-->
         <div id="allCaughtUpCard"
              class="list card"
              ng-if="!state.loading && state.numberOfDisplayedNotifications === 0">
@@ -66,26 +68,23 @@
                         <button class="text-pink-500 bg-transparent border border-solid border-pink-500 hover:bg-pink-500 hover:text-white active:bg-pink-600 font-bold uppercase px-8 py-3 rounded-full outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
                                 style="font-size: 14px;"
                                 ng-click="goToState('app.reminderSearch')">
-                            <i class="ion-android-notifications"> &nbsp;
-                            Add a reminder &nbsp;
-                            </i>
+                            <i class="ion-android-notifications"> &nbsp; Add a reminder &nbsp;</i>
                         </button>
                     </div>
                 </div>
                 <div class="row">
                     <div class="button-bar">
-                        <button class="button button-clear button-royal" style="font-size: 14px;"
+                        <button class="text-pink-500 bg-transparent border border-solid border-pink-500 hover:bg-pink-500 hover:text-white active:bg-pink-600 font-bold uppercase px-8 py-3 rounded-full outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
+                                style="font-size: 14px;"
                                 ng-click="goToState('app.measurementAddSearch')">
-                            <i class="ion-compose">
-                                &nbsp; Record a
-                            measurement &nbsp;
-                            </i>
+                            <i class="ion-compose"> Record a measurement &nbsp </i>
                         </button>
                     </div>
                 </div>
                 <div class="row">
                     <div class="button-bar">
-                        <button class="button button-clear button-calm" style="font-size: 14px;"
+                        <button class="text-pink-500 bg-transparent border border-solid border-pink-500 hover:bg-pink-500 hover:text-white active:bg-pink-600 font-bold uppercase px-8 py-3 rounded-full outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
+                                style="font-size: 14px;"
                                 ng-click="goToState('app.historyAll')">
                             <i class="ion-ios-list-outline">
                                 &nbsp; History
@@ -95,7 +94,7 @@
                 </div>
                 <div class="row">
                     <div class="button-bar">
-                        <button class="button button-clear button-balanced"
+                        <button class="text-pink-500 bg-transparent border border-solid border-pink-500 hover:bg-pink-500 hover:text-white active:bg-pink-600 font-bold uppercase px-8 py-3 rounded-full outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
                                 style="font-size: 14px;"
                                 ng-click="syncNotifications({noCache: true}, 'button clicked')">
                             <i class="ion-refresh">
