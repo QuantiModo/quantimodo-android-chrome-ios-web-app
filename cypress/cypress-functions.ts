@@ -370,6 +370,7 @@ export function runCypressTests(cb?: (err: any) => void) {
         const specsPath = getSpecsPath()
         fs.readdir(specsPath, function(err: any, specFileNames: string[]) {
             if (!specFileNames) {
+                qmLog.logEndOfProcess("runCypressTests")
                 throw new Error("No specFileNames in " + specsPath)
             }
             moveToFront(specFileNames, "ionic_measurements_spec.js") // Fails a lot
@@ -390,9 +391,9 @@ export function runCypressTests(cb?: (err: any) => void) {
                                     if (cb) {
                                         cb(false)
                                     }
+                                    qmLog.logEndOfProcess("runCypressTests")
                                 })
                         }
-                        qmLog.logEndOfProcess("runCypressTests")
                         resolve()
                     })
                 }))
