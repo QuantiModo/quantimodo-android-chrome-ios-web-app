@@ -4188,7 +4188,7 @@ var qm = {
             if(!stringContents){
                 throw filePath + " stringContents not provided to writeToFileWithCallback";
             }
-            qmLog.info("Writing to " + filePath);
+            qmLog.debug("Writing to " + filePath);
             if(typeof stringContents !== "string"){
                 stringContents = JSON.stringify(stringContents);
             }
@@ -4203,7 +4203,7 @@ var qm = {
             return rimraf(filesArray, cb);
         },
         writeFileSync: function(filePath, stringContents){
-            qmLog.info("Writing to " + filePath);
+            qmLog.debug("Writing to " + filePath);
             if(typeof stringContents !== "string"){
                 stringContents = qm.stringHelper.prettyJSONStringify(stringContents);
             }
