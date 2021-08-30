@@ -11,6 +11,7 @@
  * Do not edit the class manually.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.XprofileApi = exports.XprofileApiApiKeys = exports.VariablesApi = exports.VariablesApiApiKeys = exports.UserApi = exports.UserApiApiKeys = exports.UnitsApi = exports.UnitsApiApiKeys = exports.StudiesApi = exports.StudiesApiApiKeys = exports.SharesApi = exports.SharesApiApiKeys = exports.RemindersApi = exports.RemindersApiApiKeys = exports.NotificationsApi = exports.NotificationsApiApiKeys = exports.MessagesApi = exports.MessagesApiApiKeys = exports.MeasurementsApi = exports.MeasurementsApiApiKeys = exports.GroupsApi = exports.GroupsApiApiKeys = exports.FriendsApi = exports.FriendsApiApiKeys = exports.FeedApi = exports.FeedApiApiKeys = exports.ConnectorsApi = exports.ConnectorsApiApiKeys = exports.AuthenticationApi = exports.AuthenticationApiApiKeys = exports.AppSettingsApi = exports.AppSettingsApiApiKeys = exports.AnalyticsApi = exports.AnalyticsApiApiKeys = exports.ActivitiesApi = exports.ActivitiesApiApiKeys = exports.VoidAuth = exports.OAuth = exports.ApiKeyAuth = exports.HttpBasicAuth = exports.XprofileGroupsResponse = exports.XprofileGroup = exports.XprofileFieldsResponse = exports.XprofileField = exports.XprofileDatum = exports.XprofileDataResponse = exports.VoteDelete = exports.Vote = exports.VariableCharts = exports.VariableCategory = exports.Variable = exports.UsersResponse = exports.UserVariableDelete = exports.UserTag = exports.UserBlogsResponse = exports.UserBlog = exports.User = exports.UnitCategory = exports.Unit = exports.TrackingReminderNotificationTrackAllAction = exports.TrackingReminderNotificationPost = exports.TrackingReminderNotificationAction = exports.TrackingReminderNotification = exports.TrackingReminderDelete = exports.TrackingReminder = exports.StudyVotes = exports.StudyText = exports.StudySharing = exports.StudyLinks = exports.StudyJoinResponse = exports.StudyImages = exports.StudyHtml = exports.StudyCreationBody = exports.StudyCharts = exports.Study = exports.ShareInvitationBody = exports.PostUserSettingsResponse = exports.PostUserSettingsDataResponse = exports.PostTrackingRemindersResponse = exports.PostTrackingRemindersDataResponse = exports.PostStudyPublishResponse = exports.PostStudyCreateResponse = exports.PostMeasurementsResponse = exports.PostMeasurementsDataResponse = exports.ParticipantInstruction = exports.Pair = exports.NotificationsResponse = exports.Notification = exports.ModelError = exports.MessagesRecipientsResponse = exports.MessagesRecipient = exports.MessagesNoticesResponse = exports.MessagesNotice = exports.MessagesMessagesResponse = exports.MessagesMessage = exports.MeasurementUpdate = exports.MeasurementSet = exports.MeasurementItem = exports.MeasurementDelete = exports.Measurement = exports.JsonErrorResponse = exports.InputField = exports.Image = exports.GroupsResponse = exports.GroupsMembersResponse = exports.GroupsMember = exports.Group = exports.GetTrackingReminderNotificationsResponse = exports.GetStudiesResponse = exports.GetSharesResponse = exports.GetCorrelationsResponse = exports.GetCorrelationsDataResponse = exports.GetConnectorsResponse = exports.FriendsResponse = exports.Friend = exports.FeedResponse = exports.ExplanationStartTracking = exports.Explanation = exports.DeviceToken = exports.DataSource = exports.Correlation = exports.ConversionStep = exports.ConnectInstructions = exports.CommonResponse = exports.Chart = exports.Card = exports.Button = exports.AuthorizedClients = exports.AppSettingsResponse = exports.AppSettings = exports.Activity = exports.ActivitiesResponse = void 0;
 var localVarRequest = require("request");
 var defaultBasePath = 'https://app.quantimo.do/api';
 // ===============================================
@@ -2872,8 +2873,8 @@ var Measurement = /** @class */ (function () {
             "type": "number"
         },
         {
-            "name": "startTimeString",
-            "baseName": "startTimeString",
+            "name": "startAt",
+            "baseName": "startAt",
             "type": "string"
         },
         {
@@ -3715,8 +3716,8 @@ var Pair = /** @class */ (function () {
             "type": "number"
         },
         {
-            "name": "startTimeString",
-            "baseName": "startTimeString",
+            "name": "startAt",
+            "baseName": "startAt",
             "type": "string"
         },
         {
@@ -8116,7 +8117,7 @@ var ActivitiesApi = /** @class */ (function () {
         set: function (value) {
             this._useQuerystring = value;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Object.defineProperty(ActivitiesApi.prototype, "basePath", {
@@ -8126,7 +8127,7 @@ var ActivitiesApi = /** @class */ (function () {
         set: function (basePath) {
             this._basePath = basePath;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     ActivitiesApi.prototype.setDefaultAuthentication = function (auth) {
@@ -8139,7 +8140,7 @@ var ActivitiesApi = /** @class */ (function () {
         set: function (token) {
             this.authentications.quantimodo_oauth2.accessToken = token;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     /**
@@ -8338,7 +8339,7 @@ var AnalyticsApi = /** @class */ (function () {
         set: function (value) {
             this._useQuerystring = value;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Object.defineProperty(AnalyticsApi.prototype, "basePath", {
@@ -8348,7 +8349,7 @@ var AnalyticsApi = /** @class */ (function () {
         set: function (basePath) {
             this._basePath = basePath;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     AnalyticsApi.prototype.setDefaultAuthentication = function (auth) {
@@ -8361,7 +8362,7 @@ var AnalyticsApi = /** @class */ (function () {
         set: function (token) {
             this.authentications.quantimodo_oauth2.accessToken = token;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     /**
@@ -8580,7 +8581,7 @@ var AppSettingsApi = /** @class */ (function () {
         set: function (value) {
             this._useQuerystring = value;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Object.defineProperty(AppSettingsApi.prototype, "basePath", {
@@ -8590,7 +8591,7 @@ var AppSettingsApi = /** @class */ (function () {
         set: function (basePath) {
             this._basePath = basePath;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     AppSettingsApi.prototype.setDefaultAuthentication = function (auth) {
@@ -8603,7 +8604,7 @@ var AppSettingsApi = /** @class */ (function () {
         set: function (token) {
             this.authentications.quantimodo_oauth2.accessToken = token;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     /**
@@ -8695,7 +8696,7 @@ var AuthenticationApi = /** @class */ (function () {
         set: function (value) {
             this._useQuerystring = value;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Object.defineProperty(AuthenticationApi.prototype, "basePath", {
@@ -8705,7 +8706,7 @@ var AuthenticationApi = /** @class */ (function () {
         set: function (basePath) {
             this._basePath = basePath;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     AuthenticationApi.prototype.setDefaultAuthentication = function (auth) {
@@ -8718,7 +8719,7 @@ var AuthenticationApi = /** @class */ (function () {
         set: function (token) {
             this.authentications.quantimodo_oauth2.accessToken = token;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     /**
@@ -8977,7 +8978,7 @@ var ConnectorsApi = /** @class */ (function () {
         set: function (value) {
             this._useQuerystring = value;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Object.defineProperty(ConnectorsApi.prototype, "basePath", {
@@ -8987,7 +8988,7 @@ var ConnectorsApi = /** @class */ (function () {
         set: function (basePath) {
             this._basePath = basePath;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     ConnectorsApi.prototype.setDefaultAuthentication = function (auth) {
@@ -9000,7 +9001,7 @@ var ConnectorsApi = /** @class */ (function () {
         set: function (token) {
             this.authentications.quantimodo_oauth2.accessToken = token;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     /**
@@ -9360,7 +9361,7 @@ var FeedApi = /** @class */ (function () {
         set: function (value) {
             this._useQuerystring = value;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Object.defineProperty(FeedApi.prototype, "basePath", {
@@ -9370,7 +9371,7 @@ var FeedApi = /** @class */ (function () {
         set: function (basePath) {
             this._basePath = basePath;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     FeedApi.prototype.setDefaultAuthentication = function (auth) {
@@ -9383,7 +9384,7 @@ var FeedApi = /** @class */ (function () {
         set: function (token) {
             this.authentications.quantimodo_oauth2.accessToken = token;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     /**
@@ -9560,7 +9561,7 @@ var FriendsApi = /** @class */ (function () {
         set: function (value) {
             this._useQuerystring = value;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Object.defineProperty(FriendsApi.prototype, "basePath", {
@@ -9570,7 +9571,7 @@ var FriendsApi = /** @class */ (function () {
         set: function (basePath) {
             this._basePath = basePath;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     FriendsApi.prototype.setDefaultAuthentication = function (auth) {
@@ -9583,7 +9584,7 @@ var FriendsApi = /** @class */ (function () {
         set: function (token) {
             this.authentications.quantimodo_oauth2.accessToken = token;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     /**
@@ -9782,7 +9783,7 @@ var GroupsApi = /** @class */ (function () {
         set: function (value) {
             this._useQuerystring = value;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Object.defineProperty(GroupsApi.prototype, "basePath", {
@@ -9792,7 +9793,7 @@ var GroupsApi = /** @class */ (function () {
         set: function (basePath) {
             this._basePath = basePath;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     GroupsApi.prototype.setDefaultAuthentication = function (auth) {
@@ -9805,7 +9806,7 @@ var GroupsApi = /** @class */ (function () {
         set: function (token) {
             this.authentications.quantimodo_oauth2.accessToken = token;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     /**
@@ -10166,7 +10167,7 @@ var MeasurementsApi = /** @class */ (function () {
         set: function (value) {
             this._useQuerystring = value;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Object.defineProperty(MeasurementsApi.prototype, "basePath", {
@@ -10176,7 +10177,7 @@ var MeasurementsApi = /** @class */ (function () {
         set: function (basePath) {
             this._basePath = basePath;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     MeasurementsApi.prototype.setDefaultAuthentication = function (auth) {
@@ -10189,7 +10190,7 @@ var MeasurementsApi = /** @class */ (function () {
         set: function (token) {
             this.authentications.quantimodo_oauth2.accessToken = token;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     /**
@@ -10694,7 +10695,7 @@ var MessagesApi = /** @class */ (function () {
         set: function (value) {
             this._useQuerystring = value;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Object.defineProperty(MessagesApi.prototype, "basePath", {
@@ -10704,7 +10705,7 @@ var MessagesApi = /** @class */ (function () {
         set: function (basePath) {
             this._basePath = basePath;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     MessagesApi.prototype.setDefaultAuthentication = function (auth) {
@@ -10717,7 +10718,7 @@ var MessagesApi = /** @class */ (function () {
         set: function (token) {
             this.authentications.quantimodo_oauth2.accessToken = token;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     /**
@@ -11240,7 +11241,7 @@ var NotificationsApi = /** @class */ (function () {
         set: function (value) {
             this._useQuerystring = value;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Object.defineProperty(NotificationsApi.prototype, "basePath", {
@@ -11250,7 +11251,7 @@ var NotificationsApi = /** @class */ (function () {
         set: function (basePath) {
             this._basePath = basePath;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     NotificationsApi.prototype.setDefaultAuthentication = function (auth) {
@@ -11263,7 +11264,7 @@ var NotificationsApi = /** @class */ (function () {
         set: function (token) {
             this.authentications.quantimodo_oauth2.accessToken = token;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     /**
@@ -11560,7 +11561,7 @@ var RemindersApi = /** @class */ (function () {
         set: function (value) {
             this._useQuerystring = value;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Object.defineProperty(RemindersApi.prototype, "basePath", {
@@ -11570,7 +11571,7 @@ var RemindersApi = /** @class */ (function () {
         set: function (basePath) {
             this._basePath = basePath;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     RemindersApi.prototype.setDefaultAuthentication = function (auth) {
@@ -11583,7 +11584,7 @@ var RemindersApi = /** @class */ (function () {
         set: function (token) {
             this.authentications.quantimodo_oauth2.accessToken = token;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     /**
@@ -11975,7 +11976,7 @@ var SharesApi = /** @class */ (function () {
         set: function (value) {
             this._useQuerystring = value;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Object.defineProperty(SharesApi.prototype, "basePath", {
@@ -11985,7 +11986,7 @@ var SharesApi = /** @class */ (function () {
         set: function (basePath) {
             this._basePath = basePath;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     SharesApi.prototype.setDefaultAuthentication = function (auth) {
@@ -11998,7 +11999,7 @@ var SharesApi = /** @class */ (function () {
         set: function (token) {
             this.authentications.quantimodo_oauth2.accessToken = token;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     /**
@@ -12232,7 +12233,7 @@ var StudiesApi = /** @class */ (function () {
         set: function (value) {
             this._useQuerystring = value;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Object.defineProperty(StudiesApi.prototype, "basePath", {
@@ -12242,7 +12243,7 @@ var StudiesApi = /** @class */ (function () {
         set: function (basePath) {
             this._basePath = basePath;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     StudiesApi.prototype.setDefaultAuthentication = function (auth) {
@@ -12255,7 +12256,7 @@ var StudiesApi = /** @class */ (function () {
         set: function (token) {
             this.authentications.quantimodo_oauth2.accessToken = token;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     /**
@@ -13176,7 +13177,7 @@ var UnitsApi = /** @class */ (function () {
         set: function (value) {
             this._useQuerystring = value;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Object.defineProperty(UnitsApi.prototype, "basePath", {
@@ -13186,7 +13187,7 @@ var UnitsApi = /** @class */ (function () {
         set: function (basePath) {
             this._basePath = basePath;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     UnitsApi.prototype.setDefaultAuthentication = function (auth) {
@@ -13199,7 +13200,7 @@ var UnitsApi = /** @class */ (function () {
         set: function (token) {
             this.authentications.quantimodo_oauth2.accessToken = token;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     /**
@@ -13334,7 +13335,7 @@ var UserApi = /** @class */ (function () {
         set: function (value) {
             this._useQuerystring = value;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Object.defineProperty(UserApi.prototype, "basePath", {
@@ -13344,7 +13345,7 @@ var UserApi = /** @class */ (function () {
         set: function (basePath) {
             this._basePath = basePath;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     UserApi.prototype.setDefaultAuthentication = function (auth) {
@@ -13357,7 +13358,7 @@ var UserApi = /** @class */ (function () {
         set: function (token) {
             this.authentications.quantimodo_oauth2.accessToken = token;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     /**
@@ -13864,7 +13865,7 @@ var VariablesApi = /** @class */ (function () {
         set: function (value) {
             this._useQuerystring = value;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Object.defineProperty(VariablesApi.prototype, "basePath", {
@@ -13874,7 +13875,7 @@ var VariablesApi = /** @class */ (function () {
         set: function (basePath) {
             this._basePath = basePath;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     VariablesApi.prototype.setDefaultAuthentication = function (auth) {
@@ -13887,7 +13888,7 @@ var VariablesApi = /** @class */ (function () {
         set: function (token) {
             this.authentications.quantimodo_oauth2.accessToken = token;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     /**
@@ -14497,7 +14498,7 @@ var XprofileApi = /** @class */ (function () {
         set: function (value) {
             this._useQuerystring = value;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Object.defineProperty(XprofileApi.prototype, "basePath", {
@@ -14507,7 +14508,7 @@ var XprofileApi = /** @class */ (function () {
         set: function (basePath) {
             this._basePath = basePath;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     XprofileApi.prototype.setDefaultAuthentication = function (auth) {
@@ -14520,7 +14521,7 @@ var XprofileApi = /** @class */ (function () {
         set: function (token) {
             this.authentications.quantimodo_oauth2.accessToken = token;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     /**
@@ -15012,4 +15013,3 @@ var XprofileApi = /** @class */ (function () {
     return XprofileApi;
 }());
 exports.XprofileApi = XprofileApi;
-//# sourceMappingURL=api.js.map
