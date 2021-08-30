@@ -9,32 +9,32 @@ angular.module('starter')
         $scope.iFrameStyle = "height:2000px; width:100%;";
         if($state.current.name === 'app.studyCreate'){
             $scope.iFrameStyle = "height:5000px; width:100%;";
-            iFrameUrl = qm.api.getBaseUrl() + '/api/v2/studies?hideMenu=true';
+            iFrameUrl = qm.api.getApiBasePath() + '/api/v2/studies?hideMenu=true';
             $scope.title = 'Create Study';
         }
         if($stateParams.title){
             $scope.title = $stateParams.title;
         }
         if($stateParams.path){
-            iFrameUrl = qm.api.getBaseUrl() + $stateParams.path;
+            iFrameUrl = qm.api.getApiBasePath() + $stateParams.path;
         }
         if($stateParams.iFrameStyle){
             $scope.iFrameStyle = $stateParams.iFrameStyle;
         }
         if(window.location.href.indexOf('search-variables') > -1){
-            iFrameUrl = qm.api.getBaseUrl() + '/embeddable/?plugin=search-variables';
+            iFrameUrl = qm.api.getApiBasePath() + '/embeddable/?plugin=search-variables';
             $scope.title = 'Your Variables';
         }
         if(window.location.href.indexOf('search-common-relationships') > -1){
-            iFrameUrl = qm.api.getBaseUrl() + '/embeddable/?plugin=search-relationships&commonOrUser=common';
+            iFrameUrl = qm.api.getApiBasePath() + '/embeddable/?plugin=search-relationships&commonOrUser=common';
             $scope.title = 'Common Variable Relationships';
         }
         if(window.location.href.indexOf('search-user-relationships') > -1){
-            iFrameUrl = qm.api.getBaseUrl() + '/embeddable/?plugin=search-relationships&commonOrUser=user';
+            iFrameUrl = qm.api.getApiBasePath() + '/embeddable/?plugin=search-relationships&commonOrUser=user';
             $scope.title = 'Your Variable Relationships';
         }
         if(window.location.href.indexOf('import-data') > -1){
-            iFrameUrl = qm.api.getBaseUrl() + '/api/v1/connect/mobile';
+            iFrameUrl = qm.api.getApiBasePath() + '/api/v1/connect/mobile';
             $scope.title = 'Your Variable Relationships';
         }
         qmLog.debug('iframeScreen.init: Going to getAccessTokenFromAnySource');

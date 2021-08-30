@@ -133,7 +133,7 @@ angular.module('starter').controller('ImportCtrl', ["$scope", "$ionicLoading", "
                 qmService.showBasicLoader();
                 var body = {file: file, "connectorName": connector.name};
                 file.upload = Upload.upload({
-                    url: qm.api.getBaseUrl() + '/api/v2/spreadsheetUpload?clientId=' +
+                    url: qm.api.getApiBasePath() + '/api/v2/spreadsheetUpload?clientId=' +
                         $rootScope.appSettings.clientId + "&access_token=" + $rootScope.user.accessToken, data: body
                 });
                 file.upload.then(function(response){

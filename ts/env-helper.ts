@@ -3,7 +3,7 @@ import * as fileHelper from "./qm.file-helper"
 import * as qmLog from "./qm.log"
 
 export const envs = {
-    APP_HOST_NAME: "APP_HOST_NAME",
+    API_BASE_PATH: "API_BASE_PATH",
     AWS_ACCESS_KEY_ID: "AWS_ACCESS_KEY_ID",
     AWS_SECRET_ACCESS_KEY: "AWS_SECRET_ACCESS_KEY",
     BUGSNAG_API_KEY: "BUGSNAG_API_KEY",
@@ -115,8 +115,8 @@ export function getQMClientSecret(): string | null {
     return getenv(envs.QUANTIMODO_CLIENT_SECRET)
 }
 
-export function getAppHostName() {
-    return getenv(envs.APP_HOST_NAME)
+export function getApiBasePath() {
+    return getenv(envs.API_BASE_PATH)
 }
 
 export function getAccessToken(): string {

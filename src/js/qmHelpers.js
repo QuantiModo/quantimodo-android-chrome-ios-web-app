@@ -189,9 +189,9 @@ var qm = {
             params = params || {};
             var qmApiClient = qm.Quantimodo.ApiClient.instance;
             var quantimodo_oauth2 = qmApiClient.authentications.quantimodo_oauth2;
-            qmApiClient.basePath = qm.api.getBaseUrl() + '/api';
+            qmApiClient.basePath = qm.api.getApiBasePath() + '/api';
             quantimodo_oauth2.accessToken = qm.auth.getAccessTokenFromUrlUserOrStorage();
-            var message = "API Request to " + qm.api.getBaseUrl() + " for " + functionName;
+            var message = "API Request to " + qm.api.getApiBasePath() + " for " + functionName;
             if(params.reason){
                 message += " because " + params.reason;
             }
@@ -564,65 +564,56 @@ var qm = {
                 }
             }
         },
-        getBaseUrl: function(){
-            var apiUrl = qm.urlHelper.getParam(qm.items.apiUrl);
-            if(apiUrl && apiUrl !== qm.storage.getItem(qm.items.apiUrl)){
-                qm.storage.setItem(qm.items.apiUrl, apiUrl);
+        getApiBasePath: function(){
+            var apiBasePath = qm.urlHelper.getParam(qm.items.apiBasePath);
+            if(apiBasePath && apiBasePath !== qm.storage.getItem(qm.items.apiBasePath)){
+                qm.storage.setItem(qm.items.apiBasePath, apiBasePath);
             }
-            if(!apiUrl && qm.appMode.isDebug() && qm.platform.isMobile() && (!qm.getUser() || qm.getUser().id === 230)){
-                apiUrl = "https://utopia.quantimo.do";
-            }
-            if(!apiUrl){
-                apiUrl = qm.storage.getItem(qm.items.apiUrl);
+            if(!apiBasePath){
+                apiBasePath = qm.storage.getItem(qm.items.apiBasePath);
             }
             if(qm.appMode.isBrowser() && window.location.host.indexOf('dev-') === 0){
                 return "https://local.quantimo.do";
             }
             if(qm.appMode.isBackEnd()){
-                apiUrl= qm.env.getEnv('API_URL')
-                if(apiUrl){return apiUrl;}
-                var stage = qm.env.getEnv('RELEASE_STAGE')
-                if(stage === "staging"){
-                    apiUrl = "https://staging.quantimo.do";
-                    qmLog.info("Using apiUrl "+apiUrl+" because release stage is staging")
-                    return apiUrl;
-                }
+                apiBasePath = qm.env.getEnv('API_BASE_PATH')
+                if(apiBasePath){return apiBasePath;}
             }
-            if(!apiUrl){
+            if(!apiBasePath){
                 var appSettings = qm.appsManager.getAppSettingsFromMemory();
                 if(appSettings && appSettings.apiUrl){
-                    apiUrl = appSettings.apiUrl;
+                    apiBasePath = appSettings.apiUrl;
                 }
             }
-            if(!apiUrl && !qm.appMode.isBrowser()){
-                apiUrl = "https://app.quantimo.do";
+            if(!apiBasePath && !qm.appMode.isBrowser()){
+                apiBasePath = "https://app.quantimo.do";
             }
-            if(!apiUrl && window.location.origin.indexOf('staging.quantimo.do') !== -1){
-                apiUrl = "https://staging.quantimo.do";
+            if(!apiBasePath && window.location.origin.indexOf('staging.quantimo.do') !== -1){
+                apiBasePath = "https://staging.quantimo.do";
             }
-            if(!apiUrl && window.location.origin.indexOf('local.quantimo.do') !== -1){
-                apiUrl = "https://local.quantimo.do";
+            if(!apiBasePath && window.location.origin.indexOf('local.quantimo.do') !== -1){
+                apiBasePath = "https://local.quantimo.do";
             }
-            if(!apiUrl && window.location.origin.indexOf('utopia.quantimo.do') !== -1){
-                apiUrl = "https://utopia.quantimo.do";
+            if(!apiBasePath && window.location.origin.indexOf('utopia.quantimo.do') !== -1){
+                apiBasePath = "https://utopia.quantimo.do";
             }
-            if(!apiUrl && window.location.origin.indexOf('localhost:8100') !== -1){
-                apiUrl = "https://app.quantimo.do";
+            if(!apiBasePath && window.location.origin.indexOf('localhost:8100') !== -1){
+                apiBasePath = "https://app.quantimo.do";
             } // Ionic serve
-            if(!apiUrl){
-                apiUrl = "https://app.quantimo.do";
+            if(!apiBasePath){
+                apiBasePath = "https://app.quantimo.do";
             }
-            if(apiUrl.indexOf("https://") === -1){
-                apiUrl = "https://" + apiUrl;
+            if(apiBasePath.indexOf("https://") === -1){
+                apiBasePath = "https://" + apiBasePath;
             }
-            apiUrl = apiUrl.replace("https://https", "https");
-            return apiUrl;
+            apiBasePath = apiBasePath.replace("https://https", "https");
+            return apiBasePath;
         },
         getApiUrl: function(){
-            return qm.api.getBaseUrl();
+            return qm.api.getApiBasePath();
         },
         getApiUrlWithoutProtocol: function(){
-            var url = qm.api.getBaseUrl();
+            var url = qm.api.getApiBasePath();
             url = url.replace('https://', '');
             url = url.replace('http://', '');
             return url;
@@ -708,7 +699,7 @@ var qm = {
         getAppSettingsUrl: function(clientId, callback){
             function generateUrl(clientId, clientSecret){
                 // Can't use QM SDK in service worker
-                var settingsUrl = qm.api.getBaseUrl() + '/api/v1/appSettings?clientId=' + clientId;
+                var settingsUrl = qm.api.getApiBasePath() + '/api/v1/appSettings?clientId=' + clientId;
                 if(clientSecret){
                     settingsUrl += "&clientSecret=" + clientSecret;
                 }
@@ -845,7 +836,7 @@ var qm = {
             }
             var url = path;
             if(url.indexOf("http") !== 0){
-                url = addGlobalQueryParameters(qm.api.getBaseUrl() + "/api/" + path);
+                url = addGlobalQueryParameters(qm.api.getApiBasePath() + "/api/" + path);
             }
             if(params){
                 url = qm.urlHelper.addUrlQueryParamsToUrlString(params, url);
@@ -864,7 +855,7 @@ var qm = {
             if(typeof path === "undefined"){
                 path = "";
             }
-            return qm.api.getBaseUrl() + "/" + path;
+            return qm.api.getApiBasePath() + "/" + path;
         },
         getLocalStorageNameForRequest: function(type, route){
             return 'last_' + type + '_' + route.replace('/', '_') + '_request_at';
@@ -2025,7 +2016,7 @@ var qm = {
             return str.replace(/%20([^%20]*)$/, '$1');
         },
         generateV1OAuthUrl: function(register){
-            var url = qm.api.getBaseUrl() + "/api/oauth2/authorize?";
+            var url = qm.api.getApiBasePath() + "/api/oauth2/authorize?";
             // add params
             url += "response_type=code";
             url += "&client_id=" + qm.api.getClientId();
@@ -2081,7 +2072,7 @@ var qm = {
             if(appSettings && appSettings.redirectUri){
                 return appSettings.redirectUri;
             }
-            return qm.api.getBaseUrl() + '/callback/';
+            return qm.api.getApiBasePath() + '/callback/';
         },
         getAccessTokenFromUrlAndSetLocalStorageFlags: function(){
             if(qm.auth.accessTokenFromUrl){
@@ -4719,7 +4710,7 @@ var qm = {
         afterLoginGoToState: 'afterLoginGoToState',
         appList: 'appList',
         aggregatedCorrelations: 'aggregatedCorrelations',
-        apiUrl: 'apiUrl',
+        apiBasePath: 'apiUrl',
         appSettings: 'appSettings',
         appSettingsRevisions: 'appSettingsRevisions',
         authorizedClients: 'authorizedClients',
@@ -11594,7 +11585,7 @@ var qm = {
                     }, errorHandler, params, 'getUsersFromApi');
                 });
             } catch(e) {
-                throw "Could not get users from "+ qm.api.getBaseUrl()+ " because "+e.message
+                throw "Could not get users from "+ qm.api.getApiBasePath()+ " because "+e.message
             }
         },
         updateUserSettings: function(params, successHandler, errorHandler){

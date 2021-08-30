@@ -22,7 +22,7 @@ function getRequestOptions(path: string) {
     if(options.qs.access_token) {
         qmLog.info("Using QUANTIMODO_ACCESS_TOKEN: " + options.qs.access_token.substring(0,4)+"...")
     } else {
-        qmLog.error("Please add your QUANTIMODO_ACCESS_TOKEN environmental variable from " + env.getAppHostName()
+        qmLog.error("Please add your QUANTIMODO_ACCESS_TOKEN environmental variable from " + env.getApiBasePath()
             + "/api/v2/account")
     }
     return options
@@ -45,7 +45,7 @@ api.AppSettingsService.getAppSettings(env.getQMClientIdOrException(), true)
         addBuildInfoToAppSettings()
         qmLog.info("Got app settings for " + qm.getAppDisplayName() + ". You can change your app settings at " +
             getAppEditUrl())
-        const url = env.getAppHostName()
+        const url = env.getApiBasePath()
         if(url) {
             qm.getAppSettings().apiUrl = url.replace("https://", "")
         }

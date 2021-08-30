@@ -33,7 +33,7 @@ angular.module('starter').controller('UpgradeCtrl', ["$scope", "$state", "$ionic
             return;
         }
         if(qm.platform.isChromeExtension()){
-            chrome.tabs.create({url: qm.api.getBaseUrl() + '/upgrade'});
+            chrome.tabs.create({url: qm.api.getApiBasePath() + '/upgrade'});
             window.close();
             return;
         }

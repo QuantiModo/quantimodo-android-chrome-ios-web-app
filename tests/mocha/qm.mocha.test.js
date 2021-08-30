@@ -564,12 +564,8 @@ describe("Measurement", function () {
     })
 })
 describe("API", function (){
-    it("Makes sure api url is app.quantimo.do", function (done) {
-        if(qm.appMode.isStaging()){
-            expect(qm.api.getApiUrl()).to.eq("https://staging.quantimo.do")
-        } else {
-            expect(qm.api.getApiUrl()).to.eq("https://app.quantimo.do")
-        }
+    it("Makes sure api url is API_BASE_PATH", function (done) {
+        expect(qm.api.getApiUrl()).to.eq(process.env.API_BASE_PATH)
         done()
     })
 })
@@ -732,11 +728,11 @@ describe("Ghost Inspector", function () {
         delete process.env.API_URL
         chai.assert.isUndefined(process.env.API_URL)
         var originalReleaseStage = process.env.RELEASE_STAGE
-        process.env.RELEASE_STAGE = "staging"
+        process.env.API_BASE_PATH = "https://staging.quantimo.do"
         var url = th.getApiUrl()
         var stagingUrl = "https://staging.quantimo.do"
         expect(url).to.contain(stagingUrl)
-        expect(qm.api.getBaseUrl()).to.contain(stagingUrl)
+        expect(qm.api.getApiBasePath()).to.contain(stagingUrl)
         if (previouslySetApiUrl) {
             process.env.API_URL = previouslySetApiUrl
         }
