@@ -12851,6 +12851,7 @@ if(typeof window !== "undefined"){
     qm.urlHelper.redirectToHttpsIfNecessary();
 }else{
     module.exports = qm;
+    global.qm = qm;
 }
 if(qm.platform.isChromeExtension()){
     qm.chrome.initialize();
