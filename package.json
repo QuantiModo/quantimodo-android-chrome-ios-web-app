@@ -48,7 +48,7 @@
     "download-file": "0.1.5",
     "eslint": "5.16.0",
     "eslint-config-standard": "16.0.2",
-    "eslint-plugin-cypress": "2.7.0",
+    "eslint-plugin-cypress": "2.12.1",
     "eslint-plugin-cypress-dev": "2.1.0",
     "eslint-plugin-mocha": "9.0.0",
     "expect.js": "0.3.1",
