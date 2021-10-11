@@ -37,7 +37,7 @@
     "cordova-plugin-x-socialsharing": "6.0.3",
     "coveralls": "3.1.1",
     "cross-env": "6.0.3",
-    "cypress": "^8.3.1",
+    "cypress": "8.6.0",
     "cypress-cucumber-preprocessor": "4.2.0",
     "cypress-failed-log": "2.9.2",
     "cypress-intellij-reporter": "0.0.6",
