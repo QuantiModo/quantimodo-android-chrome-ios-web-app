@@ -148,3 +148,4 @@ cypress/**/*.js
 cypress/**/*.map
 /src/data/qmStaticData.js
 /src/data/buildInfo.js
+/vendor/
