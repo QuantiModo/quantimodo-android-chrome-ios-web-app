@@ -1,0 +1,17 @@
+{
+  "name": "qm-redirector",
+  "homepage": "https://github.com/mikepsinn/qm-redirector",
+  "authors": [
+    "Mike P. Sinn <m@quantimodo.com>"
+  ],
+  "description": "",
+  "main": "src/redirector.js",
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}

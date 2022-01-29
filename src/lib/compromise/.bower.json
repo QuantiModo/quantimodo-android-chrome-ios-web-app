@@ -1,0 +1,14 @@
+{
+  "name": "compromise",
+  "homepage": "https://github.com/spencermountain/compromise",
+  "version": "11.14.3",
+  "_release": "11.14.3",
+  "_resolution": {
+    "type": "version",
+    "tag": "v11.14.3",
+    "commit": "d0ff8f932f6d2eec6d4190ab8129c884f81930e6"
+  },
+  "_source": "https://github.com/spencermountain/compromise.git",
+  "_target": "^11.11.0",
+  "_originalSource": "https://github.com/spencermountain/compromise.git"
+}

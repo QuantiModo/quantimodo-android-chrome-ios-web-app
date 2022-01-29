@@ -1,0 +1,14 @@
+{
+  "name": "chat-engine-online-user-search",
+  "homepage": "https://github.com/pubnub/chat-engine-online-user-search",
+  "version": "0.0.8",
+  "_release": "0.0.8",
+  "_resolution": {
+    "type": "version",
+    "tag": "v0.0.8",
+    "commit": "87f816f55b115e65a030abf3c5e9e25797a406da"
+  },
+  "_source": "https://github.com/pubnub/chat-engine-online-user-search.git",
+  "_target": "^0.0.8",
+  "_originalSource": "https://github.com/pubnub/chat-engine-online-user-search.git"
+}

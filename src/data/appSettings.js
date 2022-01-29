@@ -974,6 +974,562 @@ qm.staticData.appSettings ={
 					"showSubMenu": null
 				}
 			],
+			"custom": [
+				{
+					"stateName": "app.remindersInbox",
+					"href": "#/app/reminders-inbox?ionIcon=ion-archive",
+					"url": "/reminders-inbox",
+					"icon": "ion-archive",
+					"subMenu": null,
+					"params": {
+						"ionIcon": "ion-archive",
+						"id": null,
+						"showAds": true,
+						"title": "Reminder Inbox",
+						"reminderFrequency": null,
+						"unit": null,
+						"variableCategoryName": null,
+						"dateTime": null,
+						"value": null,
+						"fromUrl": null,
+						"showHelpCards": true
+					},
+					"title": "Reminder Inbox",
+					"id": "reminders-inbox",
+					"showSubMenu": null
+				},
+				{
+					"stateName": null,
+					"href": null,
+					"url": null,
+					"icon": "ion-android-globe",
+					"subMenu": [
+						{
+							"stateName": "app.variableListCategory",
+							"href": "#/app/variable-list-category/Anything?ionIcon=ion-android-globe&variableCategoryName=Anything",
+							"url": "/variable-list-category/:variableCategoryName",
+							"icon": "ion-android-globe",
+							"subMenu": null,
+							"params": {
+								"ionIcon": "ion-android-globe",
+								"id": null,
+								"variableCategoryName": "Anything",
+								"showAds": true,
+								"trackingReminders": null,
+								"title": "Manage Variables"
+							},
+							"title": "Everything",
+							"id": "variable-list-category-anything",
+							"showSubMenu": null
+						},
+						{
+							"stateName": "app.variableListCategory",
+							"href": "#/app/variable-list-category/Treatments?ionIcon=ion-ios-medkit-outline&variableCategoryName=Treatments",
+							"url": "/variable-list-category/:variableCategoryName",
+							"icon": "ion-ios-medkit-outline",
+							"subMenu": null,
+							"params": {
+								"ionIcon": "ion-ios-medkit-outline",
+								"id": null,
+								"variableCategoryName": "Treatments",
+								"showAds": true,
+								"trackingReminders": null,
+								"title": "Manage Variables"
+							},
+							"title": "Treatments",
+							"id": "variable-list-category-treatments",
+							"showSubMenu": null
+						},
+						{
+							"stateName": "app.variableListCategory",
+							"href": "#/app/variable-list-category/Symptoms?ionIcon=ion-sad-outline&variableCategoryName=Symptoms",
+							"url": "/variable-list-category/:variableCategoryName",
+							"icon": "ion-sad-outline",
+							"subMenu": null,
+							"params": {
+								"ionIcon": "ion-sad-outline",
+								"id": null,
+								"variableCategoryName": "Symptoms",
+								"showAds": true,
+								"trackingReminders": null,
+								"title": "Manage Variables"
+							},
+							"title": "Symptoms",
+							"id": "variable-list-category-symptoms",
+							"showSubMenu": null
+						},
+						{
+							"stateName": "app.variableListCategory",
+							"href": "#/app/variable-list-category/Vital+Signs?ionIcon=ion-ios-pulse&variableCategoryName=Vital+Signs",
+							"url": "/variable-list-category/:variableCategoryName",
+							"icon": "ion-ios-pulse",
+							"subMenu": null,
+							"params": {
+								"ionIcon": "ion-ios-pulse",
+								"id": null,
+								"variableCategoryName": "Vital Signs",
+								"showAds": true,
+								"trackingReminders": null,
+								"title": "Manage Variables"
+							},
+							"title": "Vital Signs",
+							"id": "variable-list-category-vital-signs",
+							"showSubMenu": null
+						},
+						{
+							"stateName": "app.variableListCategory",
+							"href": "#/app/variable-list-category/Emotions?ionIcon=ion-happy-outline&variableCategoryName=Emotions",
+							"url": "/variable-list-category/:variableCategoryName",
+							"icon": "ion-happy-outline",
+							"subMenu": null,
+							"params": {
+								"ionIcon": "ion-happy-outline",
+								"id": null,
+								"variableCategoryName": "Emotions",
+								"showAds": true,
+								"trackingReminders": null,
+								"title": "Manage Variables"
+							},
+							"title": "Emotions",
+							"id": "variable-list-category-emotions",
+							"showSubMenu": null
+						},
+						{
+							"stateName": "app.variableListCategory",
+							"href": "#/app/variable-list-category/Foods?ionIcon=ion-ios-nutrition-outline&variableCategoryName=Foods",
+							"url": "/variable-list-category/:variableCategoryName",
+							"icon": "ion-ios-nutrition-outline",
+							"subMenu": null,
+							"params": {
+								"ionIcon": "ion-ios-nutrition-outline",
+								"id": null,
+								"variableCategoryName": "Foods",
+								"showAds": true,
+								"trackingReminders": null,
+								"title": "Manage Variables"
+							},
+							"title": "Foods",
+							"id": "variable-list-category-foods",
+							"showSubMenu": null
+						},
+						{
+							"stateName": "app.variableListCategory",
+							"href": "#/app/variable-list-category/Physical+Activity?ionIcon=ion-ios-body-outline&variableCategoryName=Physical+Activity",
+							"url": "/variable-list-category/:variableCategoryName",
+							"icon": "ion-ios-body-outline",
+							"subMenu": null,
+							"params": {
+								"ionIcon": "ion-ios-body-outline",
+								"id": null,
+								"variableCategoryName": "Physical Activity",
+								"showAds": true,
+								"trackingReminders": null,
+								"title": "Manage Variables"
+							},
+							"title": "Physical Activity",
+							"id": "variable-list-category-physical-activity",
+							"showSubMenu": null
+						}
+					],
+					"params": {
+						"ionIcon": null,
+						"id": null
+					},
+					"title": "My Variables",
+					"id": "my-variables",
+					"showSubMenu": null
+				},
+				{
+					"stateName": null,
+					"href": null,
+					"url": null,
+					"icon": "ion-ios-list-outline",
+					"subMenu": [
+						{
+							"stateName": "app.historyAll",
+							"href": "#/app/history-all-category/Anything?ionIcon=ion-android-globe&variableCategoryName=Anything",
+							"url": "/history-all",
+							"icon": "ion-android-globe",
+							"subMenu": null,
+							"params": {
+								"ionIcon": "ion-android-globe",
+								"id": null,
+								"showAds": true,
+								"variableCategoryName": "Anything",
+								"connectorName": null,
+								"sourceName": null,
+								"updatedMeasurementHistory": null,
+								"refresh": null,
+								"title": "History"
+							},
+							"title": "All Measurements",
+							"id": "history-all-anything",
+							"showSubMenu": null
+						},
+						{
+							"stateName": "app.historyAllCategory",
+							"href": "#/app/history-all-category/Emotions?ionIcon=ion-happy-outline&variableCategoryName=Emotions",
+							"url": "/history-all-category/:variableCategoryName",
+							"icon": "ion-happy-outline",
+							"subMenu": null,
+							"params": {
+								"ionIcon": "ion-happy-outline",
+								"id": null,
+								"variableCategoryName": "Emotions",
+								"showAds": true,
+								"updatedMeasurementHistory": null,
+								"refresh": null,
+								"title": "History"
+							},
+							"title": "Emotions",
+							"id": "history-all-category-emotions",
+							"showSubMenu": null
+						},
+						{
+							"stateName": "app.historyAllCategory",
+							"href": "#/app/history-all-category/Foods?ionIcon=ion-ios-nutrition-outline&variableCategoryName=Foods",
+							"url": "/history-all-category/:variableCategoryName",
+							"icon": "ion-ios-nutrition-outline",
+							"subMenu": null,
+							"params": {
+								"ionIcon": "ion-ios-nutrition-outline",
+								"id": null,
+								"variableCategoryName": "Foods",
+								"showAds": true,
+								"updatedMeasurementHistory": null,
+								"refresh": null,
+								"title": "History"
+							},
+							"title": "Foods",
+							"id": "history-all-category-foods",
+							"showSubMenu": null
+						},
+						{
+							"stateName": "app.historyAllCategory",
+							"href": "#/app/history-all-category/Symptoms?ionIcon=ion-sad-outline&variableCategoryName=Symptoms",
+							"url": "/history-all-category/:variableCategoryName",
+							"icon": "ion-sad-outline",
+							"subMenu": null,
+							"params": {
+								"ionIcon": "ion-sad-outline",
+								"id": null,
+								"variableCategoryName": "Symptoms",
+								"showAds": true,
+								"updatedMeasurementHistory": null,
+								"refresh": null,
+								"title": "History"
+							},
+							"title": "Symptoms",
+							"id": "history-all-category-symptoms",
+							"showSubMenu": null
+						},
+						{
+							"stateName": "app.historyAllCategory",
+							"href": "#/app/history-all-category/Treatments?ionIcon=ion-ios-medkit-outline&variableCategoryName=Treatments",
+							"url": "/history-all-category/:variableCategoryName",
+							"icon": "ion-ios-medkit-outline",
+							"subMenu": null,
+							"params": {
+								"ionIcon": "ion-ios-medkit-outline",
+								"id": null,
+								"variableCategoryName": "Treatments",
+								"showAds": true,
+								"updatedMeasurementHistory": null,
+								"refresh": null,
+								"title": "History"
+							},
+							"title": "Treatments",
+							"id": "history-all-category-treatments",
+							"showSubMenu": null
+						},
+						{
+							"stateName": "app.historyAllCategory",
+							"href": "#/app/history-all-category/Physical+Activity?ionIcon=ion-ios-body-outline&variableCategoryName=Physical+Activity",
+							"url": "/history-all-category/:variableCategoryName",
+							"icon": "ion-ios-body-outline",
+							"subMenu": null,
+							"params": {
+								"ionIcon": "ion-ios-body-outline",
+								"id": null,
+								"variableCategoryName": "Physical Activity",
+								"showAds": true,
+								"updatedMeasurementHistory": null,
+								"refresh": null,
+								"title": "History"
+							},
+							"title": "Physical Activity",
+							"id": "history-all-category-physical-activity",
+							"showSubMenu": null
+						},
+						{
+							"stateName": "app.historyAllCategory",
+							"href": "#/app/history-all-category/Vital+Signs?ionIcon=ion-ios-pulse&variableCategoryName=Vital+Signs",
+							"url": "/history-all-category/:variableCategoryName",
+							"icon": "ion-ios-pulse",
+							"subMenu": null,
+							"params": {
+								"ionIcon": "ion-ios-pulse",
+								"id": null,
+								"variableCategoryName": "Vital Signs",
+								"showAds": true,
+								"updatedMeasurementHistory": null,
+								"refresh": null,
+								"title": "History"
+							},
+							"title": "Vital Signs",
+							"id": "history-all-category-vital-signs",
+							"showSubMenu": null
+						},
+						{
+							"stateName": "app.historyAllCategory",
+							"href": "#/app/history-all-category/Location?ionIcon=ion-ios-location-outline&variableCategoryName=Location",
+							"url": "/history-all-category/:variableCategoryName",
+							"icon": "ion-ios-location-outline",
+							"subMenu": null,
+							"params": {
+								"ionIcon": "ion-ios-location-outline",
+								"id": null,
+								"variableCategoryName": "Location",
+								"showAds": true,
+								"updatedMeasurementHistory": null,
+								"refresh": null,
+								"title": "History"
+							},
+							"title": "Locations",
+							"id": "history-all-category-location",
+							"showSubMenu": null
+						}
+					],
+					"params": {
+						"ionIcon": null,
+						"id": null
+					},
+					"title": "History",
+					"id": "history",
+					"showSubMenu": null
+				},
+				{
+					"stateName": "app.import",
+					"href": "#/app/import",
+					"url": "/import",
+					"icon": "ion-ios-cloud-download-outline",
+					"subMenu": null,
+					"params": {
+						"ionIcon": "ion-ios-cloud-download-outline",
+						"id": null,
+						"showAds": true,
+						"title": "Import Data"
+					},
+					"title": "Import Data",
+					"id": "import",
+					"showSubMenu": null
+				},
+				{
+					"stateName": null,
+					"href": null,
+					"url": null,
+					"icon": "ion-ios-analytics",
+					"subMenu": [
+						{
+							"stateName": "app.predictorSearch",
+							"href": "#/app/predictor-search?ionIcon=ion-log-in",
+							"url": "/predictor-search",
+							"icon": "ion-log-in",
+							"subMenu": null,
+							"params": {
+								"ionIcon": "ion-log-in",
+								"id": null,
+								"showAds": true,
+								"title": "Outcomes",
+								"variableSearchPlaceholderText": "Search for an outcome...",
+								"helpText": "Search for an outcome like overall mood or a symptom that you want to know the causes of...",
+								"variableCategoryName": null,
+								"nextState": "app.predictorsAll",
+								"doNotShowAddVariableButton": true,
+								"excludeSingularBloodPressure": true,
+								"noVariablesFoundCard": {
+									"body": "I don't have enough data to determine the top predictors of __VARIABLE_NAME__, yet. I generally need about a month of data to produce significant results so start tracking!"
+								},
+								"variableSearchParameters": {
+									"includePublic": true,
+									"fallbackToAggregatedCorrelations": true,
+									"numberOfCorrelationsAsEffect": "(gt)1",
+									"sort": "-numberOfCorrelationsAsEffect",
+									"outcome": true
+								},
+								"hideNavigationMenu": null
+							},
+							"title": "Predictor Search",
+							"id": "predictor-search",
+							"showSubMenu": null
+						},
+						{
+							"stateName": "app.outcomeSearch",
+							"href": "#/app/outcome-search?ionIcon=ion-log-out",
+							"url": "/outcome-search",
+							"icon": "ion-log-out",
+							"subMenu": null,
+							"params": {
+								"ionIcon": "ion-log-out",
+								"id": null,
+								"showAds": true,
+								"title": "Predictors",
+								"variableSearchPlaceholderText": "Search for an predictor...",
+								"helpText": "Search for a predictor like a food or treatment that you want to know the effects of...",
+								"variableCategoryName": null,
+								"nextState": "app.outcomesAll",
+								"doNotShowAddVariableButton": true,
+								"excludeSingularBloodPressure": true,
+								"noVariablesFoundCard": {
+									"body": "I don't have enough data to determine the top outcomes of __VARIABLE_NAME__, yet. I generally need about a month of data to produce significant results so start tracking!"
+								},
+								"variableSearchParameters": {
+									"includePublic": true,
+									"fallbackToAggregatedCorrelations": true,
+									"numberOfCorrelationsAsCause": "(gt)1",
+									"sort": "-numberOfCorrelationsAsCause"
+								},
+								"hideNavigationMenu": null
+							},
+							"title": "Outcome Search",
+							"id": "outcome-search",
+							"showSubMenu": null
+						},
+						{
+							"stateName": "app.studyCreation",
+							"href": "#/app/study-creation?ionIcon=ion-erlenmeyer-flask",
+							"url": "/study-creation",
+							"icon": "ion-erlenmeyer-flask",
+							"subMenu": null,
+							"params": {
+								"ionIcon": "ion-erlenmeyer-flask",
+								"id": null,
+								"showAds": true,
+								"causeVariable": null,
+								"effectVariable": null,
+								"type": null,
+								"study": null,
+								"title": "Create Study"
+							},
+							"title": "Create Study",
+							"id": "study-creation",
+							"showSubMenu": null
+						},
+						{
+							"stateName": "app.studies",
+							"href": "#/app/studies?ionIcon=ion-wand",
+							"url": "/studies",
+							"icon": "ion-wand",
+							"subMenu": null,
+							"params": {
+								"ionIcon": "ion-wand",
+								"id": null,
+								"showAds": true,
+								"aggregated": null,
+								"variableObject": null,
+								"causeVariableName": null,
+								"effectVariableName": null,
+								"requestParams": {
+									"correlationCoefficient": null
+								},
+								"title": "Studies"
+							},
+							"title": "Discoveries",
+							"id": "studies",
+							"showSubMenu": null
+						},
+						{
+							"stateName": "app.votes",
+							"href": "#/app/votes?ionIcon=ion-thumbsup",
+							"url": "/votes",
+							"icon": "ion-thumbsup",
+							"subMenu": null,
+							"params": {
+								"ionIcon": "ion-thumbsup",
+								"id": null,
+								"title": "Your Votes"
+							},
+							"title": "Your Votes",
+							"id": "votes",
+							"showSubMenu": null
+						},
+						{
+							"stateName": "app.studiesCreated",
+							"href": "#/app/studies/created",
+							"url": "/studies/created",
+							"icon": "ion-ios-book",
+							"subMenu": null,
+							"params": {
+								"ionIcon": "ion-ios-book",
+								"id": null,
+								"showAds": true,
+								"aggregated": null,
+								"variableObject": null,
+								"causeVariableName": null,
+								"effectVariableName": null,
+								"created": true,
+								"requestParams": {
+									"correlationCoefficient": null
+								},
+								"title": "Your Studies"
+							},
+							"title": "Your Studies",
+							"id": "studies-created",
+							"showSubMenu": null
+						}
+					],
+					"params": {
+						"ionIcon": null,
+						"id": null
+					},
+					"title": "Discoveries",
+					"id": "discoveries",
+					"showSubMenu": false
+				},
+				{
+					"stateName": "app.chartSearch",
+					"href": "#/app/chart-search?ionIcon=ion-arrow-graph-up-right",
+					"url": "/chart-search",
+					"icon": "ion-arrow-graph-up-right",
+					"subMenu": null,
+					"params": {
+						"ionIcon": "ion-arrow-graph-up-right",
+						"id": null,
+						"showAds": true,
+						"variableCategoryName": null,
+						"fromState": null,
+						"fromUrl": null,
+						"measurement": null,
+						"nextState": "app.charts",
+						"doNotShowAddVariableButton": true,
+						"excludeSingularBloodPressure": true,
+						"variableSearchParameters": {
+							"limit": 100,
+							"includePublic": false
+						},
+						"hideNavigationMenu": null,
+						"title": "Select a Variable"
+					},
+					"title": "Charts",
+					"id": "chart-search",
+					"showSubMenu": null
+				},
+				{
+					"stateName": "app.settings",
+					"href": "#/app/settings?ionIcon=ion-ios-gear-outline",
+					"url": "/settings",
+					"icon": "ion-ios-gear-outline",
+					"subMenu": null,
+					"params": {
+						"ionIcon": "ion-ios-gear-outline",
+						"id": null,
+						"title": "Settings"
+					},
+					"title": "Settings",
+					"id": "settings",
+					"showSubMenu": null
+				}
+			],
 			"id": null
 		},
 		"onboarding": {
@@ -1331,8 +1887,41 @@ qm.staticData.appSettings ={
 	"billingEnabled": null,
 	"buildEnabled": false,
 	"builderUrl": "https://builder.quantimo.do/#/app/configuration/quantimodo?clientId=quantimodo",
+	"clientSecret": "TcQArZOoUecO9O4aBvntUl6v1QzzsU38",
 	"collaborators": null,
 	"id": null,
+	"privateConfig": {
+		"bugsnag_key": "ae7bc49d1285848342342bb5c321a2cf",
+		"client_ids": {
+			"iOS": "quantimodo",
+			"Android": "quantimodo",
+			"Web": "quantimodo",
+			"Chrome": "quantimodo",
+			"Windows": "quantimodo"
+		},
+		"client_secrets": {
+			"iOS": "TcQArZOoUecO9O4aBvntUl6v1QzzsU38",
+			"Android": "TcQArZOoUecO9O4aBvntUl6v1QzzsU38",
+			"Web": "TcQArZOoUecO9O4aBvntUl6v1QzzsU38",
+			"Chrome": "TcQArZOoUecO9O4aBvntUl6v1QzzsU38",
+			"Windows": "TcQArZOoUecO9O4aBvntUl6v1QzzsU38"
+		},
+		"FACEBOOK_APP_ID": "225078261031461",
+		"FACEBOOK_APP_NAME": "QuantiModo",
+		"REVERSED_CLIENT_ID": "com.googleusercontent.apps.1052648855194-djmit92q5bbglkontak0vdc7lafupt0d",
+		"FOURSQUARE_CLIENT_ID": "JTFGDAKRU5T0WHEUT0K0JFAKYUDJRM22M1IVE3HI04EGMECU",
+		"FOURSQUARE_CLIENT_SECRET": "VUPPYPJYJQO04XYNG5DSDJZR2BQ0XWW5OWCEEYTFOOKOY1PY",
+		"GOOGLE_MAPS_API_KEY": "AIzaSyCKicUHwJwH56bXjaKXkVVh2AqrOFE2Ogk",
+		"GCM_SENDER_ID": "1052648855194",
+		"GITHUB_CLIENT_ID": "f14dadca5a8c3bf301bf",
+		"WITHINGS_CLIENT_ID": "e4d28f45e14b8cc97e8c585127db3f2132e61ef0ed20be490e7b5f7417d",
+		"GOOGLE_CLIENT_ID": "1052648855194.apps.googleusercontent.com",
+		"JAWBONE_CLIENT_ID": "10RfjEgKr8U",
+		"RESCUETIME_CLIENT_ID": "b7961429bf2ca6fab2de92681e347ef6c253bf77c1a4c069d964110e43c1de24",
+		"SLICE_CLIENT_ID": "0d243e17",
+		"FITBIT_CLIENT_ID": "2298DS",
+		"RUNKEEPER_CLIENT_ID": "aa7233e520fa4b34aa5f9c3f27b22803"
+	},
 	"redirectUri": "https://app.quantimo.do/ionic/Modo/www/callback/ https://app.quantimo.do/api/v1/connectors/quantimodo/connect https://local.quantimo.do/api/v1/connectors/quantimodo/connect https://staging.quantimo.do/api/v1/connectors/quantimodo/connect http://localhost https://local.quantimo.do/ionic/Modo/www/callback/  https://local.quantimo.do/ionic/Modo/src/callback/  https://staging.quantimo.do/ionic/Modo/www/callback/ ",
 	"authorizationUrl": "https://app.quantimo.do/api/v3/oauth2/authorize?state=abc&client_id=quantimodo&redirect_uri=https%253A%252F%252Fapp.quantimo.do%252Fionic%252FModo%252Fwww%252Fcallback%252F%2Bhttps%253A%252F%252Fapp.quantimo.do%252Fapi%252Fv1%252Fconnectors%252Fquantimodo%252Fconnect%2Bhttps%253A%252F%252Flocal.quantimo.do%252Fapi%252Fv1%252Fconnectors%252Fquantimodo%252Fconnect%2Bhttps%253A%252F%252Fstaging.quantimo.do%252Fapi%252Fv1%252Fconnectors%252Fquantimodo%252Fconnect%2Bhttp%253A%252F%252Flocalhost%2Bhttps%253A%252F%252Flocal.quantimo.do%252Fionic%252FModo%252Fwww%252Fcallback%252F%2B%2Bhttps%253A%252F%252Flocal.quantimo.do%252Fionic%252FModo%252Fsrc%252Fcallback%252F%2B%2Bhttps%253A%252F%252Fstaging.quantimo.do%252Fionic%252FModo%252Fwww%252Fcallback%252F%2B&response_type=code&scope=readmeasurements%2Bwritemeasurements",
 	"users": null,
@@ -1388,7 +1977,8 @@ qm.staticData.appSettings ={
 			"type": null,
 			"userId": null,
 			"visible": null,
-			"webhookUrl": null
+			"webhookUrl": null,
+			"slug": null
 		},
 		{
 			"accessibilityText": "Manage Reminders",
@@ -1423,7 +2013,8 @@ qm.staticData.appSettings ={
 			"type": null,
 			"userId": null,
 			"visible": null,
-			"webhookUrl": null
+			"webhookUrl": null,
+			"slug": null
 		}
 	],
 	"card": null,
@@ -1454,7 +2045,7 @@ qm.staticData.appSettings ={
 	"synonyms": [],
 	"updatedAt": "2021-07-05 16:20:44",
 	"wpPostId": null,
-	"versionNumber": "2.10.705",
-	"androidVersionCode": "2021070577",
-	"builtAt": 1625527985
+	"versionNumber": "2.10.129",
+	"androidVersionCode": "2022012940",
+	"builtAt": 1643470617
 }

@@ -1,0 +1,14 @@
+{
+  "name": "chat-engine",
+  "homepage": "https://github.com/pubnub/chat-engine",
+  "version": "0.9.21",
+  "_release": "0.9.21",
+  "_resolution": {
+    "type": "version",
+    "tag": "0.9.21",
+    "commit": "c025214a76c37cea35d9b63ea70a29a9eb6cc66d"
+  },
+  "_source": "https://github.com/pubnub/chat-engine.git",
+  "_target": "^0.9.15",
+  "_originalSource": "https://github.com/pubnub/chat-engine.git"
+}
