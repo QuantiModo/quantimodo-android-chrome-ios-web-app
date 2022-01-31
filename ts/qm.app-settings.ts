@@ -66,7 +66,7 @@ function writeStaticDataFile() {
     const content = "var staticData = "+ qmLog.prettyJSONStringify(qm.staticData)+
         '; if(typeof window !== "undefined"){window.qm.staticData = staticData;} ' +
         ' else if(typeof qm !== "undefined"){qm.staticData = staticData;} else {module.exports = staticData;} ' +
-        'if(typeof qm !== "undefined"){qm.stateNames = staticData.stateNames;}'
+        'if(typeof qm !== "undefined"){qm.staticData.stateNames = staticData.stateNames;}'
     try {
         fileHelper.writeToFile(env.paths.www.appSettings, content)
     } catch(e) {

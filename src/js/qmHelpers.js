@@ -1154,7 +1154,7 @@ var qm = {
             }  // Don't need to mess with app settings refresh in builder
             qm.storage.setItem(qm.items.appSettings, appSettings);
             for(var propertyName in qm.staticData.buildInfo){
-                if(qm.staticData.buildInfo.hasOwnProperty(propertyName)){
+                if(qm.staticData.buildInfo && qm.staticData.buildInfo.hasOwnProperty(propertyName)){
                     appSettings[propertyName] = qm.staticData.buildInfo[propertyName];
                 }
             }

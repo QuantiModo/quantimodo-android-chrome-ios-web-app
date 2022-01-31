@@ -2,7 +2,7 @@
 /** @namespace window.qmLog */
 /** @namespace window.qm.notifications */
 /** @namespace window.qm.storage */
-/* global chcp $ionicDeploy qm.stateNames chcp qm.stateNames */
+/* global chcp $ionicDeploy qm.staticData.stateNames chcp qm.staticData.stateNames */
 angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$ionicPopup", "$state", "$timeout",
     "$ionicPlatform", "$mdDialog", "$mdToast", "$cordovaGeolocation", "CacheFactory", "$ionicLoading",
     //"Analytics", // Analytics + uBlock origin extension breaks app

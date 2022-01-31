@@ -1932,7 +1932,7 @@ qm.staticData.appSettings ={
 	"homepageUrl": "https://quantimo.do",
 	"iconUrl": "https://quantimodo.s3.amazonaws.com/app_uploads/quantimodo/app_images_appIcon.png",
 	"outcomeVariableId": null,
-	"ownerAvatar": "https://qm-public.sfo2.digitaloceanspaces.com/avatars/bS00KU2JHJT50ei7oPpyTy2SaOcJ8eiqEXIbtllh.png",
+	"ownerAvatar": "https://static.quantimo.do/avatars/bS00KU2JHJT50ei7oPpyTy2SaOcJ8eiqEXIbtllh.png",
 	"ownerDisplayName": "Mike Sinn",
 	"ownerEmail": "m@thinkbynumbers.org",
 	"physician": 0,
