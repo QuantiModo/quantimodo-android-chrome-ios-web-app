@@ -2045,7 +2045,7 @@ qm.staticData.appSettings ={
 	"synonyms": [],
 	"updatedAt": "2021-07-05 16:20:44",
 	"wpPostId": null,
-	"versionNumber": "2.10.129",
-	"androidVersionCode": "2022012940",
-	"builtAt": 1643470617
+	"versionNumber": "2.10.131",
+	"androidVersionCode": "2022013167",
+	"builtAt": 1643667549
 }

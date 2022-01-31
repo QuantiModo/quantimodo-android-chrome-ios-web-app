@@ -331,7 +331,7 @@ var qm = {
             return errorMessage;
         },
         generalErrorHandler: function(error, data, response, options){
-            debugger
+            //debugger
             var url = qm.api.getUrlFromResponse(response);
             var errorMessage = url+"\n\t"+qm.api.getErrorMessageFromResponse(error, response);
             errorMessage = qm.api.getErrorMessageFromResponse(errorMessage, data);
@@ -7362,8 +7362,16 @@ var qm = {
                 if(successHandler){successHandler(response);}
             }, function(err){
                 qm.api.generalErrorHandler(err)
-                saveResponse(err); // Sometimes we still return notifications even with an error
-                if(errorHandler){errorHandler(err);}
+                //saveResponse(err); // Sometimes we still return notifications even with an error
+                //if(errorHandler){errorHandler(err);}
+                qm.api.get('v3/trackingReminderNotifications', body, function(response){
+                    saveResponse(response);
+                    if(successHandler){successHandler(response);}
+                }, function(err){
+                    qm.api.generalErrorHandler(err)
+                    saveResponse(err); // Sometimes we still return notifications even with an error
+                    if(errorHandler){errorHandler(err);}
+                });
             });
         },
         syncIfQueued: function (){
@@ -10648,7 +10656,7 @@ var qm = {
     },
     toast: {
         errorToast: function(errorMessage, callback){
-            debugger
+            //debugger
             if(qm.appMode.isBackEnd()){
                 qmLog.info("toast.errorAlert: "+errorMessage)
                 return;

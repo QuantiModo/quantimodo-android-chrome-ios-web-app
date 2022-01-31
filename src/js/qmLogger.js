@@ -296,7 +296,7 @@ var qmLog = {
         }
     },
     error: function(name, message, errorSpecificMetaData, stackTrace){
-        debugger
+        //debugger
         if(typeof message === 'object' && message !== null){
             errorSpecificMetaData = message;
             message = null;
