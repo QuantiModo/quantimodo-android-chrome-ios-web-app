@@ -34,7 +34,11 @@ let testUserPassword = 'testing123'
 cy.getOAuthAppUrl = function (){
     let oauthAppBaseUrl = Cypress.env('OAUTH_APP_HOST')
     if(oauthAppBaseUrl.indexOf("http") === -1){
-        oauthAppBaseUrl = "https://" + oauthAppBaseUrl
+        if(oauthAppBaseUrl.indexOf("localhost") !== -1) {
+            oauthAppBaseUrl = "http://" + oauthAppBaseUrl
+        } else {
+            oauthAppBaseUrl = "https://" + oauthAppBaseUrl
+        }
     }
     return oauthAppBaseUrl
 }
