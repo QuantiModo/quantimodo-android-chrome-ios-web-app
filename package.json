@@ -201,7 +201,10 @@
     "requireCurlyBraces": null
   },
   "scripts": {
+    "install": "nvm install 10.24.1 && nvm use 10.24.1 && npm install -g gulp bower ionic",
+    "serve": "ionic serve src",
     "cy:open:development": "cypress install && cypress open --config-file cypress/config/cypress.development.json",
+    "cy:open:localhost": "cypress install && cypress open --config-file cypress/config/cypress.localhost.json",
     "cy:open:ionic": "cypress open --config-file cypress/config/cypress.ionic.json",
     "bower": "bower install --allow-root --quiet",
     "build": "bower install --allow-root --quiet && gulp configureAppAfterNpmInstall && npm run types",
@@ -227,6 +230,7 @@
     "cy:report:slack": "npx ts-node cypress/reports/cypress-slack-reporter.ts",
     "cy:run": "npx ts-node cypress/cypress-runner.ts",
     "cy:run:development": "cypress run --browser chrome --config-file cypress/config/cypress.development.json && npm run report:slack",
+    "cy:run:localhost": "cypress run --browser chrome --config-file cypress/config/cypress.localhost.json && npm run report:slack",
     "cy:run:docs": "cypress run --spec cypress/integration/docs_spec.js",
     "cy:run:onboarding:ionic": "cypress run --config-file cypress/config/cypress.ionic.json --spec cypress/integration/ionic_onboarding_spec.js",
     "cy:run:measurements:ionic": "cypress run --config-file cypress/config/cypress.ionic.json --spec cypress/integration/ionic_measurements_spec.js",
