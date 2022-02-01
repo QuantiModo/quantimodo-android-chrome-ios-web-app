@@ -1,0 +1,8 @@
+POST https://local.quantimo.do/api/v3/trackingReminders?access_token=test-token&appVersion=2.10.1209&clientId=quantimodo&XDEBUG_SESSION_START=PHPSTORM&platform=gulp
+Content-Type: application/json
+
+{
+
+}
+
+###
