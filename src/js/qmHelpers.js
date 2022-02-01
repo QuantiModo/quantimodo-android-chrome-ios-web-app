@@ -565,6 +565,9 @@ var qm = {
             }
         },
         getBaseUrl: function(){
+            if(qm.appMode.isBrowser() && window.location.host.indexOf('/dev/') !== -1){
+                return window.location.origin;
+            }
             var apiUrl = qm.urlHelper.getParam(qm.items.apiUrl);
             if(apiUrl && apiUrl !== qm.storage.getItem(qm.items.apiUrl)){
                 qm.storage.setItem(qm.items.apiUrl, apiUrl);
