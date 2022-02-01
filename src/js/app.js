@@ -20,7 +20,7 @@ angular.module('starter',
         'jtt_wikipedia',
         'angular-clipboard',
         //'angular-google-analytics', // Analytics + uBlock origin extension breaks app
-        'angular-google-adsense',
+        //'angular-google-adsense',
         'ngMaterialDatePicker',
         'ngMaterial',
         'ngMessages',
