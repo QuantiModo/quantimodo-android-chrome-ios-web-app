@@ -148,3 +148,4 @@ debug.log
 #cypress/**/*.map
 #/src/data/qmStaticData.js
 #/src/data/buildInfo.js
+/cypress/reports/mocha/assets/
