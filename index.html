@@ -1,15 +1,255 @@
-<!DOCTYPE HTML>
-<html lang="en-US">
-<head>
-  <meta charset="UTF-8">
-  <!--<meta http-equiv="refresh" content="0; url=Modo/www/index.html">-->
-  <script type="text/javascript">
-      window.location = "www/index.html#" + window.location.hash.substring(1);
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport"
+          content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width">
+    <!-- DO NOT CHANGE LINE ENDINGS ON <!DOCTYPE html> LINE OR IT WILL ADD WHITE BAR TO TOP OF ANDROID APP -->
+    <!--  <meta http-equiv="Content-Security-Policy" content="script-src 'self' https://maps.googleapis.com/ https://maps.gstatic.com/ https://mts0.googleapis.com/ https://*.quantimo.do/ https://cdn.rawgit.com/ https://widget.intercom.io/ https://js.intercomcdn.com 'unsafe-inline' 'unsafe-eval'"> -->
+    <meta
+            content="frame-src * gap://ready; default-src * blob:; script-src 'self' 'unsafe-inline' 'unsafe-eval' * blob:; style-src 'self' 'unsafe-inline' * https://cdn.logrocket.io https://cdn.lr-ingest.io; font-src 'self' *.quantimo.do *.cloudfront.net qm-cordova-hot-code-push.s3.amazonaws.com fonts.zohostatic.com css.zohostatic.com https://s3.amazonaws.com/static.quantimo.do/ data: https://fonts.zohostatic.com https://fonts.gstatic.com https://fonts.googleapis.com/; img-src * data:;"
+          http-equiv="Content-Security-Policy">
+    <title></title>
+      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss/dist/tailwind.min.css" >
+    <link href="https://s3.amazonaws.com/static.quantimo.do/dev/src/ionic/src/css/app.css" rel="stylesheet">
+    <!-- Delete me sometime <link href="lib/Ionicons/css/ionicons.min.css" rel="stylesheet">-->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Orbitron:400,700,900" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Yellowtail" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Yellowtail" rel="stylesheet">
+    <link href="https://s3.amazonaws.com/static.quantimo.do/dev/src/ionic/src/css/study.css" rel="stylesheet">
+      <link rel="manifest" href="src/manifest.json">
+      <!-- build:css css/combined.css -->
+      <!-- endbuild -->
+      <!-- inject:css -->
+      <!-- endinject -->
+      <link rel="shortcut icon"
+            href="src/img/icons/icon_16.png">
+      <!-- build:js scripts/combined-head-libraries.js -->
+      <script crossorigin="anonymous"
+              src="https://cdn.lr-ingest.io/LogRocket.min.js"></script>
+      <script src="https://s3.amazonaws.com/static.quantimo.do/dev/src/ionic/src/lib/bugsnag/dist/bugsnag.js"></script>
+      <script src="https://s3.amazonaws.com/static.quantimo.do/dev/src/ionic/src/lib/localforage/dist/localforage.js"></script>
+      <script src="https://s3.amazonaws.com/static.quantimo.do/dev/src/ionic/src/lib/jquery/dist/jquery.min.js"></script>
+      <!--Putting jQuery before Angular to see if it fixes double click issue per https://github.com/angular/angular.js/issues/6251 -->
+      <script src="https://s3.amazonaws.com/static.quantimo.do/dev/src/ionic/src/lib/ionic/js/ionic.bundle.js"></script>
+      <script src="https://s3.amazonaws.com/static.quantimo.do/dev/src/ionic/src/lib/ngCordova/dist/ng-cordova.min.js"></script>
+      <!--<script src="https://s3.amazonaws.com/static.quantimo.do/dev/src/ionic/src/lib/templates.js"></script>-->
+      <script src="https://s3.amazonaws.com/static.quantimo.do/dev/src/ionic/src/lib/oclazyload/dist/ocLazyLoad.min.js"></script>
+      <!--<script src="https://s3.amazonaws.com/static.quantimo.do/dev/src/ionic/src/lib/opbeat-angular/opbeat-angular.min.js"></script>-->
+      <script src="https://s3.amazonaws.com/static.quantimo.do/dev/src/ionic/src/lib/quantimodo/quantimodo-web.js"></script>
+      <script src="https://s3.amazonaws.com/static.quantimo.do/dev/src/ionic/src/js/ionIcons.js"></script>
+    <script src="https://s3.amazonaws.com/static.quantimo.do/dev/src/ionic/src/js/qmLogger.js"></script>
+    <script src="src/js/qmHelpers.js"></script>
+    <script src="https://s3.amazonaws.com/static.quantimo.do/dev/src/ionic/src/data/appSettings.js"></script> <!-- Must come after qmHelpers because we assign to qm.staticData -->
+    <script src="https://s3.amazonaws.com/static.quantimo.do/dev/src/ionic/src/data/connectors.js"></script>
+      <script src="https://s3.amazonaws.com/static.quantimo.do/dev/src/ionic/src/data/qmStates.js"></script>
+      <script src="https://s3.amazonaws.com/static.quantimo.do/dev/src/ionic/src/data/stateNames.js"></script>
+<!--      <script src="https://s3.amazonaws.com/static.quantimo.do/dev/src/ionic/src/data/buildInfo.js"></script>-->
+      <script defer src="https://s3.amazonaws.com/static.quantimo.do/dev/src/ionic/src/data/units.js"></script>
+      <script defer src="https://s3.amazonaws.com/static.quantimo.do/dev/src/ionic/src/data/variableCategories.js"></script>
+      <script defer src="https://s3.amazonaws.com/static.quantimo.do/dev/src/ionic/src/data/commonVariables.js"></script>
+      <script defer src="https://s3.amazonaws.com/static.quantimo.do/dev/src/ionic/src/data/docs.js"></script>
+      <script defer src="https://s3.amazonaws.com/static.quantimo.do/dev/src/ionic/src/data/dialogAgent.js"></script>
+    <script src="https://s3.amazonaws.com/static.quantimo.do/dev/src/ionic/src/js/app.js"></script>
+    <script src="https://s3.amazonaws.com/static.quantimo.do/dev/src/ionic/src/js/services/qmService.js"></script>
+    <!-- Here we inject app builder files not needed in the normal end-user app -->
+    <!-- inject:js -->
+    <!-- endinject -->
+    <script src="https://s3.amazonaws.com/static.quantimo.do/dev/src/ionic/src/js/quantimodoFilters.js"></script>
+    <script src="https://s3.amazonaws.com/static.quantimo.do/dev/src/ionic/src/js/controllers/appCtrl.js"></script>
+    <script src="https://s3.amazonaws.com/static.quantimo.do/dev/src/ionic/src/js/controllers/remindersInboxCtrl.js"></script>
+    <script src="https://s3.amazonaws.com/static.quantimo.do/dev/src/ionic/src/js/controllers/favoritesCtrl.js"></script>
+    <script src="https://s3.amazonaws.com/static.quantimo.do/dev/src/ionic/src/js/controllers/introCtrl.js"></script>
+    <!--<script src="https://s3.amazonaws.com/static.quantimo.do/dev/src/ionic/src/js/controllers/fabric.js"></script> Not sure if this does anything.  We might want to enable for native error logging sometime. -->
+    <script src="https://s3.amazonaws.com/static.quantimo.do/dev/src/ionic/src/js/controllers/variableSettingsCtrl.js"></script>
+    <script src="https://s3.amazonaws.com/static.quantimo.do/dev/src/ionic/src/js/controllers/loginCtrl.js"></script>
+    <script src="https://s3.amazonaws.com/static.quantimo.do/dev/src/ionic/src/js/controllers/patch.js"></script>
+    <script src="https://s3.amazonaws.com/static.quantimo.do/dev/src/ionic/src/js/controllers/welcomeCtrl.js"></script>
+    <script src="https://s3.amazonaws.com/static.quantimo.do/dev/src/ionic/src/js/controllers/trackPrimaryOutcomeCtrl.js"></script>
+    <script src="https://s3.amazonaws.com/static.quantimo.do/dev/src/ionic/src/js/controllers/settingsCtrl.js"></script>
+    <script src="https://s3.amazonaws.com/static.quantimo.do/dev/src/ionic/src/js/controllers/iframeScreenCtrl.js"></script>
+    <script src="https://s3.amazonaws.com/static.quantimo.do/dev/src/ionic/src/js/controllers/studiesCtrl.js"></script>
+    <script src="https://s3.amazonaws.com/static.quantimo.do/dev/src/ionic/src/js/controllers/externalCtrl.js"></script>
+    <script src="https://s3.amazonaws.com/static.quantimo.do/dev/src/ionic/src/js/controllers/historyAllMeasurementsCtrl.js"></script>
+    <script src="https://s3.amazonaws.com/static.quantimo.do/dev/src/ionic/src/js/controllers/importCtrl.js"></script>
+    <script src="https://s3.amazonaws.com/static.quantimo.do/dev/src/ionic/src/js/controllers/variableSearchCtrl.js"></script>
+    <script src="https://s3.amazonaws.com/static.quantimo.do/dev/src/ionic/src/js/controllers/remindersManageCtrl.js"></script>
+    <script src="https://s3.amazonaws.com/static.quantimo.do/dev/src/ionic/src/js/controllers/reminderAddCtrl.js"></script>
+    <script src="https://s3.amazonaws.com/static.quantimo.do/dev/src/ionic/src/js/controllers/measurementAddCtrl.js"></script>
+    <script src="https://s3.amazonaws.com/static.quantimo.do/dev/src/ionic/src/js/controllers/tagAddCtrl.js"></script>
+    <script src="https://s3.amazonaws.com/static.quantimo.do/dev/src/ionic/src/js/controllers/chartsPageCtrl.js"></script>
+    <script src="https://s3.amazonaws.com/static.quantimo.do/dev/src/ionic/src/js/controllers/studyCtrl.js"></script>
+    <script src="https://s3.amazonaws.com/static.quantimo.do/dev/src/ionic/src/js/controllers/mapCtrl.js"></script>
+    <script src="https://s3.amazonaws.com/static.quantimo.do/dev/src/ionic/src/js/controllers/onboardingCtrl.js"></script>
+    <script src="https://s3.amazonaws.com/static.quantimo.do/dev/src/ionic/src/js/controllers/upgradeCtrl.js"></script>
+    <script src="https://s3.amazonaws.com/static.quantimo.do/dev/src/ionic/src/js/controllers/tabsCtrl.js"></script>
+    <script src="https://s3.amazonaws.com/static.quantimo.do/dev/src/ionic/src/js/controllers/studyJoinCtrl.js"></script>
+    <script src="https://s3.amazonaws.com/static.quantimo.do/dev/src/ionic/src/js/controllers/studyCreationCtrl.js"></script>
+    <script src="https://s3.amazonaws.com/static.quantimo.do/dev/src/ionic/src/js/controllers/dataSharingCtrl.js"></script>
+    <script src="https://s3.amazonaws.com/static.quantimo.do/dev/src/ionic/src/js/controllers/chatCtrl.js"></script>
+    <script src="https://s3.amazonaws.com/static.quantimo.do/dev/src/ionic/src/js/controllers/feedCtrl.js"></script>
+    <script src="https://s3.amazonaws.com/static.quantimo.do/dev/src/ionic/src/js/controllers/votesCtrl.js"></script>
+      <script src="https://s3.amazonaws.com/static.quantimo.do/dev/src/ionic/src/js/controllers/searchBarCtrl.js"></script>
+      <script src="https://s3.amazonaws.com/static.quantimo.do/dev/src/ionic/src/js/controllers/searchPageCtrl.js"></script>
+    <script src="https://s3.amazonaws.com/static.quantimo.do/dev/src/ionic/src/js/directives.js"></script>
+      <!-- endbuild -->
+<!--    <script>
+        if (typeof qm === 'undefined') {
+            console.error("Scripts didn't load!");
+            var isTesting = window.location.href.indexOf('staging') !== -1 || window.location.href.indexOf('medimodo.heroku') !== -1;
+            if (!isTesting) {
+                console.error("Loading fallback script from GH pages");
+                document.write(unescape("%3Cscript src='https://quantimodo.quantimo.do/fallback-scripts/combined-head-libraries-fallback.js' type='text/javascript'%3E%3C/script%3E"));
+            }
+        }
+    </script>-->
+    <!-- cordova.js placeholder -->   <!-- cordova script (this will be a 404 during development) -->
+    <!--<script src="https://wchat.freshchat.com/js/widget.js"></script>-->
+<!-- Don't think we need Intercom <script> window.Intercom('boot', {app_id: "wsj1w4xj" });
+          moment().calendar(null, { sameDay: '[Today]', nextDay: '[Tomorrow]', nextWeek: 'dddd', lastDay: '[Yesterday]', lastWeek: '[Last] dddd', sameElse: 'DD/MM/YYYY HH:MM' });
+      </script>-->
+  </head>
+  <body ng-app="starter">
+  <script src="https://s3.amazonaws.com/static.quantimo.do/dev/src/ionic/src/js/psychedelic-loader.js"></script>
+  <script>
+      (function() {
+          // your page initialization code here the DOM will be available here
+          psychedelicLoader.start();
+      })();
   </script>
-  <title>Page Redirection</title>
-</head>
-<body>
-<!-- Note: don't tell people to `click` the link, just tell them that it is a link. -->
-If you are not redirected automatically, follow this <a href='www/index.html'>link to example</a>.
-</body>
+    <ion-nav-view></ion-nav-view>
+    <!-- build:js scripts/combined-body-libraries.js -->
+    <script src="https://s3.amazonaws.com/static.quantimo.do/dev/src/ionic/src/lib/ng-cordova-oauth/dist/ng-cordova-oauth.min.js"></script>
+    <!-- google maps -->
+    <!--<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?&sensor=false"></script>-->
+    <!--<script src="https://maps-api-ssl.google.com/maps/api/js?libraries=places&key=AIzaSyCKicUHwJwH56bXjaKXkVVh2AqrOFE2Ogk"></script>-->
+    <!--<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=GOOGLE_MAPS_API_KEY&libraries=places"></script>-->
+    <script src="https://s3.amazonaws.com/static.quantimo.do/dev/src/ionic/src/lib/moment/min/moment.min.js"></script>
+    <script src="https://s3.amazonaws.com/static.quantimo.do/dev/src/ionic/src/lib/moment-timezone/builds/moment-timezone-with-data.min.js"></script>
+    <script src="https://s3.amazonaws.com/static.quantimo.do/dev/src/ionic/src/lib/angular-moment/angular-moment.js"></script>
+  <script type="text/javascript" src="https://code.highcharts.com/stock/highstock.js"></script>
+  <script type="text/javascript" src="https://code.highcharts.com/modules/sankey.js"></script>
+  <script type="text/javascript" src="https://code.highcharts.com/modules/networkgraph.js"></script>
+  <script type="text/javascript" src="https://code.highcharts.com/stock/modules/data.js"></script>
+  <script type="text/javascript" src="https://code.highcharts.com/stock/modules/exporting.js"></script>
+  <script type="text/javascript" src="https://code.highcharts.com/stock/modules/export-data.js"></script>
+  <script type="text/javascript" src="https://code.highcharts.com/modules/annotations.js"></script>
+  <script type="text/javascript" src="https://s3.amazonaws.com/static.quantimo.do/js/highcharts-themes/highcharts-themes.js"></script>
+    <script src="https://s3.amazonaws.com/static.quantimo.do/dev/src/ionic/src/lib/highcharts-ng/dist/highcharts-ng.js"></script>
+    <script src="https://s3.amazonaws.com/static.quantimo.do/dev/src/ionic/src/lib/ionic-datepicker/dist/ionic-datepicker.bundle.min.js"></script>
+    <script src="https://s3.amazonaws.com/static.quantimo.do/dev/src/ionic/src/lib/ionic-timepicker/dist/ionic-timepicker.bundle.min.js"></script>
+    <script src="https://s3.amazonaws.com/static.quantimo.do/dev/src/ionic/src/lib/pluralize/pluralize.js"></script>
+    <script src="https://s3.amazonaws.com/static.quantimo.do/dev/src/ionic/src/lib/angular-clipboard/angular-clipboard.js"></script>
+    <script src="https://s3.amazonaws.com/static.quantimo.do/dev/src/ionic/src/lib/angular-google-analytics/dist/angular-google-analytics.js"></script>
+    <script src="https://s3.amazonaws.com/static.quantimo.do/dev/src/ionic/src/lib/angular-material-datetimepicker/js/angular-material-datetimepicker.js"></script>
+    <script src="https://s3.amazonaws.com/static.quantimo.do/dev/src/ionic/src/lib/angular-wikipedia-api-factory/dist/angular-wikipedia-api-factory.min.js"></script>
+    <!--<script src="https://s3.amazonaws.com/static.quantimo.do/dev/src/ionic/src/lib/angular-google-adsense/dist/angular-google-adsense.min.js"></script> Need to use renamed script below to deal with AdBlock-->
+<!--    <script src="custom-lib/aga.js"></script>-->
+    <script src="https://s3.amazonaws.com/static.quantimo.do/dev/src/ionic/src/lib/angular-aria/angular-aria.js"></script>
+    <script src="https://s3.amazonaws.com/static.quantimo.do/dev/src/ionic/src/lib/angular-animate/angular-animate.js"></script>
+    <script src="https://s3.amazonaws.com/static.quantimo.do/dev/src/ionic/src/lib/angular-material/angular-material.js"></script>
+    <script src="https://s3.amazonaws.com/static.quantimo.do/dev/src/ionic/src/lib/angular-cache/dist/angular-cache.min.js"></script>
+    <script src="https://s3.amazonaws.com/static.quantimo.do/dev/src/ionic/src/lib/angular-messages/angular-messages.js"></script>
+    <script src="https://s3.amazonaws.com/static.quantimo.do/dev/src/ionic/src/lib/ng-material-floating-button/src/mfb-directive.js"></script>
+    <script src="https://s3.amazonaws.com/static.quantimo.do/dev/src/ionic/src/lib/d3/d3.min.js"></script>
+    <script src="https://s3.amazonaws.com/static.quantimo.do/dev/src/ionic/src/lib/d3-cloud/build/d3.layout.cloud.js"></script>
+    <script src="https://s3.amazonaws.com/static.quantimo.do/dev/src/ionic/src/lib/angular-d3-word-cloud/dist/angular-word-cloud.min.js"></script>
+    <script src="https://s3.amazonaws.com/static.quantimo.do/dev/src/ionic/src/lib/gsap/src/minified/TweenMax.min.js"></script>
+    <script src="https://s3.amazonaws.com/static.quantimo.do/dev/src/ionic/src/lib/ng-file-upload/ng-file-upload.min.js"></script>
+    <script type="text/javascript" src="https://s3.amazonaws.com/static.quantimo.do/dev/src/ionic/src/lib/simple-web-notification/web-notification.js"></script>
+    <script type="text/javascript" src="https://s3.amazonaws.com/static.quantimo.do/dev/src/ionic/src/lib/angular-web-notification/angular-web-notification.js"></script>
+    <script src="https://s3.amazonaws.com/static.quantimo.do/dev/src/ionic/src/lib/firebase/firebase.js"></script>
+    <script src="https://s3.amazonaws.com/static.quantimo.do/dev/src/ionic/src/lib/ngFitText/dist/ng-FitText.min.js"></script>
+    <script src="https://s3.amazonaws.com/static.quantimo.do/dev/src/ionic/src/lib/underscore/underscore-min.js"></script>
+    <script src="https://s3.amazonaws.com/static.quantimo.do/dev/src/ionic/src/lib/annyang/dist/annyang.min.js"></script>
+    <script src="https://s3.amazonaws.com/static.quantimo.do/dev/src/ionic/src/lib/pusher-js/dist/web/pusher.js"></script>
+    <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/SpeechKITT/1.0.0/speechkitt.min.js"></script>-->
+    <script src="https://s3.amazonaws.com/static.quantimo.do/dev/src/ionic/src/lib/svg-morpheus/compile/minified/svg-morpheus.js"></script>
+    <script src="https://s3.amazonaws.com/static.quantimo.do/dev/src/ionic/src/lib/angular-material-icons/angular-material-icons.min.js"></script>
+<!-- Not sure what this is for or why it's always a 404   <script src="https://s3.amazonaws.com/static.quantimo.do/dev/src/ionic/src/lib/chat-engine/dist/chat-engine.js"></script>-->
+    <script src="https://s3.amazonaws.com/static.quantimo.do/dev/src/ionic/src/lib/pouchdb/dist/pouchdb.min.js"></script>
+    <script src="https://s3.amazonaws.com/static.quantimo.do/dev/src/ionic/src/lib/pouchdb-upsert/dist/pouchdb.upsert.js"></script>
+    <script src="https://s3.amazonaws.com/static.quantimo.do/dev/src/ionic/src/lib/quagga/dist/quagga.js"></script>
+    <script src="https://s3.amazonaws.com/static.quantimo.do/dev/src/ionic/src/lib/q/q.js"></script>
+    <!--<script src="https://s3.amazonaws.com/static.quantimo.do/dev/src/ionic/src/js/responsivevoice.js"></script>-->
+    <!--<script src='https://connect.humanapi.co/connect.js'></script>-->
+    <!--<script src='https://app.quantimo.do/api/v1/connect.js'></script>-->
+    <!-- I think we're already including UserVoice in the JavaScript <script>(function(){var uv=document.createElement('script');uv.type='text/javascript';uv.async=true;uv.src='//widget.uservoice.com/zFZhM9zeDpFAXUFUyPKSQ.js';var s=document.getElementsByTagName('script')[0];s.parentNode.insertBefore(uv,s)})()</script>-->
+    <!-- endbuild -->
+<!--    <script>
+        if (typeof Pusher === 'undefined') {
+            console.error("Scripts didn't load!");
+            var isTesting = window.location.href.indexOf('staging') !== -1 || window.location.href.indexOf('medimodo.heroku') !== -1;
+            if (!isTesting) {
+                console.error("Loading fallback script from GH pages");
+                document.write(unescape("%3Cscript src='https://quantimodo.quantimo.do/fallback-scripts/combined-body-libraries-fallback.js' type='text/javascript'%3E%3C/script%3E"));
+            }
+        }
+    </script>-->
+    <script src="https://s3.amazonaws.com/static.quantimo.do/dev/src/ionic/src/lib/compromise/builds/compromise.js"></script> <!-- compromise produces errors when minified for some reason -->
+    <script src="https://s3.amazonaws.com/static.quantimo.do/dev/src/ionic/src/lib/Bravey/build/bravey.js"></script> <!-- Bravey produces errors when minified for some reason -->
+    <script src="https://js.stripe.com/v3/"></script>
+    <!-- Load Facebook SDK for JavaScript -->
+<!--    <div id="fb-root"></div>
+    <script>(function(d, s, id) {
+        var js, fjs = d.getElementsByTagName(s)[0];
+        if (d.getElementById(id)) return;
+        js = d.createElement(s); js.id = id;
+        js.src = 'https://connect.facebook.net/en_US/sdk/xfbml.customerchat.js#xfbml=1&version=v2.12&autoLogAppEvents=1';
+        fjs.parentNode.insertBefore(js, fjs);
+    }(document, 'script', 'facebook-jssdk'));</script>
+
+    &lt;!&ndash; Your customer chat code &ndash;&gt;
+    <div class="fb-customerchat"
+         attribution=setup_tool
+         page_id="348407735253769">
+    </div>-->
+<!--    <script>
+        window.fcWidget.init({
+            token: "c76171b8-cf2e-4fdd-81f3-6cd409d59153",
+            host: "https://wchat.freshchat.com"
+        });
+    </script>-->
+<!--    Keeps getting in the way and people click and just say hello all the time
+<script type="text/javascript">
+        try {
+            var $zoho=$zoho || {};$zoho.salesiq = $zoho.salesiq ||
+            {widgetcode:"86bd2cf1ba17feb4c0621b58a24f913459f527533b917cbfa57b476df1b08f3c", values:{},ready:function(){}};
+            var d=document;s=d.createElement("script");s.type="text/javascript";s.id="zsiqscript";s.defer=true;
+            s.src="https://salesiq.zoho.com/widget";t=d.getElementsByTagName("script")[0];t.parentNode.insertBefore(s,t);
+            d.write("<div id='zsiqwidget'></div>");
+        } catch (error) {
+            console.warn(error);
+        }
+    </script>
+    <script type="text/javascript"
+            src='https://crm.zoho.com/crm/javascript/zcga.js'> </script>
+            -->
+        <!-- Start of Async Drift Code -->
+        <script>
+            !function() {
+                var t;
+                if (t = window.driftt = window.drift = window.driftt || [], !t.init) return t.invoked ? void (window.console && console.error && console.error("Drift snippet included twice.")) : (t.invoked = !0,
+                    t.methods = [ "identify", "config", "track", "reset", "debug", "show", "ping", "page", "hide", "off", "on" ],
+                    t.factory = function(e) {
+                        return function() {
+                            var n;
+                            return n = Array.prototype.slice.call(arguments), n.unshift(e), t.push(n), t;
+                        };
+                    }, t.methods.forEach(function(e) {
+                    t[e] = t.factory(e);
+                }), t.load = function(t) {
+                    var e, n, o, i;
+                    e = 3e5, i = Math.ceil(new Date() / e) * e, o = document.createElement("script"),
+                        o.type = "text/javascript", o.async = !0, o.crossorigin = "anonymous", o.src = "https://js.driftt.com/include/" + i + "/" + t + ".js",
+                        n = document.getElementsByTagName("script")[0], n.parentNode.insertBefore(o, n);
+                });
+            }();
+            drift.SNIPPET_VERSION = '0.3.1';
+            drift.load('pt53uxxsr2gg');
+        </script>
+        <!-- End of Async Drift Code -->
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
+  </body>
 </html>
