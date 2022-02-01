@@ -565,6 +565,7 @@ var qm = {
             }
         },
         getBaseUrl: function(){
+            //return "https://app.quantimo.do";
             if(qm.appMode.isBrowser() && window.location.host.indexOf('/dev/') !== -1){
                 return window.location.origin;
             }
@@ -681,7 +682,7 @@ var qm = {
                         if(xhr.readyState === 4){
                             var fallback = xhr.responseText;
                             var response = qm.stringHelper.parseIfJson(xhr.responseText, fallback);
-                            if ( qm.api.postResponseSuccessful(xhr, response)) {
+                            if ( response && qm.api.postResponseSuccessful(xhr, response)) {
                                 if(successHandler){successHandler(response);}
                             } else {
                                 qmLog.error("POST " + url + " response: " + xhr.responseText, response);
@@ -7329,6 +7330,17 @@ var qm = {
             qm.storage.removeItem(qm.items.notificationsSyncQueue);
             qm.storage.removeItem(qm.items.trackingReminderNotificationSyncScheduled);
             var body = [];
+            if(!queue || !queue.length){
+                qm.api.get('api/v3/trackingReminderNotifications', body, function(response){
+                    saveResponse(response);
+                    if(successHandler){successHandler(response);}
+                }, function(err){
+                    qm.api.generalErrorHandler(err)
+                    saveResponse(err); // Sometimes we still return notifications even with an error
+                    if(errorHandler){errorHandler(err);}
+                });
+                return
+            }
             if(queue){
                 if(!(queue instanceof Array)){queue = [queue];}
                 body = queue.map(function (n){
@@ -7367,14 +7379,7 @@ var qm = {
                 qm.api.generalErrorHandler(err)
                 //saveResponse(err); // Sometimes we still return notifications even with an error
                 //if(errorHandler){errorHandler(err);}
-                qm.api.get('v3/trackingReminderNotifications', body, function(response){
-                    saveResponse(response);
-                    if(successHandler){successHandler(response);}
-                }, function(err){
-                    qm.api.generalErrorHandler(err)
-                    saveResponse(err); // Sometimes we still return notifications even with an error
-                    if(errorHandler){errorHandler(err);}
-                });
+
             });
         },
         syncIfQueued: function (){
