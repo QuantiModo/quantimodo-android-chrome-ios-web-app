@@ -165,7 +165,7 @@
     "mime": "2.4.6",
     "morgan": "1.10.0",
     "ng-material-floating-button": "0.6.2",
-    "node-fetch": "2.6.1",
+    "node-fetch": "2.6.7",
     "path": "0.12.7",
     "plist": "3.0.4",
     "pump": "3.0.0",
