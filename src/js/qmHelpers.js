@@ -10,6 +10,10 @@ String.prototype.toCamelCase = function(){
         return $1.toUpperCase().replace('_', '');
     });
 };
+navigator.getUserMedia = ( navigator.getUserMedia ||
+    navigator.webkitGetUserMedia ||
+    navigator.mozGetUserMedia ||
+    navigator.msGetUserMedia);
 var qm = {
     alert: {
         errorAlert: function(title, text){
