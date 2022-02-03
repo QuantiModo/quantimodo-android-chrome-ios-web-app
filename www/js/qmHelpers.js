@@ -569,7 +569,7 @@ var qm = {
             }
         },
         getBaseUrl: function(){
-            //return "https://app.quantimo.do";
+            //return "https://local.quantimo.do";
             if(qm.appMode.isBrowser() && window.location.host.indexOf('/dev/') !== -1){
                 return window.location.origin;
             }
@@ -7334,17 +7334,17 @@ var qm = {
             qm.storage.removeItem(qm.items.notificationsSyncQueue);
             qm.storage.removeItem(qm.items.trackingReminderNotificationSyncScheduled);
             var body = [];
-            if(!queue || !queue.length){
-                qm.api.get('api/v3/trackingReminderNotifications', body, function(response){
-                    saveResponse(response);
-                    if(successHandler){successHandler(response);}
-                }, function(err){
-                    qm.api.generalErrorHandler(err)
-                    saveResponse(err); // Sometimes we still return notifications even with an error
-                    if(errorHandler){errorHandler(err);}
-                });
-                return
-            }
+            // if(!queue || !queue.length){
+            //     qm.api.get('api/v3/trackingReminderNotifications', [], [],function(response){
+            //         saveResponse(response);
+            //         if(successHandler){successHandler(response);}
+            //     }, function(err){
+            //         qm.api.generalErrorHandler(err)
+            //         saveResponse(err); // Sometimes we still return notifications even with an error
+            //         if(errorHandler){errorHandler(err);}
+            //     });
+            //     return
+            // }
             if(queue){
                 if(!(queue instanceof Array)){queue = [queue];}
                 body = queue.map(function (n){
