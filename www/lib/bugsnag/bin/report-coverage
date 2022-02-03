@@ -1,0 +1,39 @@
+#!/usr/bin/env node
+
+const glob = require('glob')
+const { dirname, join } = require('path')
+const { execSync } = require('child_process')
+const { readFileSync } = require('fs')
+const reports = glob.sync(`${__dirname}/../coverage/*/lcov.info`)
+
+console.log(`
+found ${reports.length} lcov.info file(s)
+${reports.map(path => `  ${path}`).join('\n')}
+`)
+
+const format = () => {
+  return reports.forEach((file, i) => {
+    return execSync(`./bin/cc-test-reporter format-coverage -t lcov -o "./coverage/codeclimate.${i}.json" "${join(dirname(file), '/lcov.info')}"`)
+  })
+}
+
+const sum = () => {
+  return execSync(`./bin/cc-test-reporter sum-coverage -p ${reports.length} -o coverage/codeclimate.json coverage/codeclimate.*.json`)
+}
+
+const upload = () => {
+  return execSync(`./bin/cc-test-reporter upload-coverage`)
+}
+
+try {
+  console.log('running: cc-test-reporter format-coverage…')
+  format()
+  console.log('running: cc-test-reporter sum-coverage…')
+  sum()
+  console.log('running: cc-test-reporter upload-coverage…')
+  console.log(readFileSync('./coverage/codeclimate.json', 'utf8'))
+  upload()
+} catch (e) {
+  console.log(e)
+  process.exit(1)
+}

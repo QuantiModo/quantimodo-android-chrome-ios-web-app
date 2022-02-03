@@ -1,0 +1,307 @@
+<div ng-show="state.loading || !state.variableObject" class="item-text-wrap card-item" style="border-style:hidden; padding: 20px;"><br>
+    <div>
+        <div><h1 style="text-align: center;">Analyzing data...</h1></div>
+        <div style="max-width: 600px; display:block; margin:auto;"
+             ng-include="'templates/loaders/blue-robot-loader.html'"></div>
+    </div>
+    <div ng-show="loadingCharts" ng-include="'templates/spinner.html'"></div>
+</div>
+<div ng-if="state.variableObject">
+    <div id="variablePropertiesCard" class="card variable-settings">
+        <div class="list">
+            <div class="item item-divider ng-binding">Variable Properties</div>
+            <label class="item item-content" style="padding: 6px 10px 5px 16px;">
+                <span class="input-label left-text">Variable Name</span>
+                <span class="input-label right-text " id="variableName">
+                    {{variableName}}
+                </span>
+            </label>
+            <div class="item item-input">
+                <span class="input-label left-span">Custom Display Name</span>
+                <span class="right-span">
+                    <input class="right-input"
+                           placeholder="Enter Optional Alias"
+                           type="text"
+                           ng-model="state.variableObject.alias">
+                </span>
+            </div>
+        </div>
+    </div>
+    <md-card ng-cloak ng-show="state.variableObject">
+        <md-card-title>
+            <md-card-title-text>
+                <span class="md-headline">Display Settings</span>
+                <span class="md-subhead">Modify how the data is displayed in charts and the history pages.</span>
+            </md-card-title-text>
+        </md-card-title>
+        <md-card-content>
+            <div ng-if="state.variableObject.availableUnits" layout="row" layout-align="space-between center">
+                <span>Default Unit</span>
+                <md-select ng-model="state.variableObject.unitId" ng-show="!platform.isMobile">
+                    <md-option ng-repeat="unit in state.variableObject.availableUnits" ng-value="unit.id">
+                        {{unit.name}}
+                    </md-option>
+                </md-select>
+                <select id="unitSelector" ng-model="state.variableObject.unitAbbreviatedName"
+                        ng-show="platform.isMobile"
+                        ng-options="unit.abbreviatedName as unit.name for unit in state.variableObject.availableUnits">
+                </select>
+            </div>
+            <div ng-if="state.variableObject.variableCategoryName" layout="row"
+                 layout-align="space-between center">
+                <span>Variable Category</span>
+                <md-select ng-model="state.variableObject.variableCategoryName" ng-show="!platform.isMobile">
+                    <md-option ng-repeat="variableCategoryName in variableCategoryNames"
+                               ng-value="variableCategoryName">
+                        {{variableCategoryName}}
+                    </md-option>
+                </md-select>
+                <select id="variableCategorySelector" ng-show="platform.isMobile"
+                        ng-model="state.variableObject.variableCategoryName">
+                    <option ng-repeat="variableCategoryName in variableCategoryNames"
+                            ng-value="variableCategoryName">{{variableCategoryName}}
+                    </option>
+                </select>
+            </div>
+        </md-card-content>
+    </md-card>
+    <div ng-include="'templates/fragments/variable-analysis-settings-fragment.html'"></div>
+    <div class="card variable-settings" id="duplicates-card">
+        <div class="item item-divider ng-binding">
+                    <span class="input-label left-span"
+                          ng-click="showExplanationsPopup('joinedUserTagVariables', $event, 'Variable', 'Joined Duplicates')">
+                        Joined Duplicates &nbsp; <i class="icon ion-help-circled"></i>
+                    </span>
+        </div>
+        <!--md-contact-chips don't support on-remove https://github.com/angular/material/issues/10051-->
+        <md-chips ng-model="state.variableObject.joinedUserTagVariables" name="joinedVariable"
+                  ng-click="state.openJoinVariableSearchDialog()"
+                  ng-show="state.variableObject.joinedUserTagVariables && state.variableObject.joinedUserTagVariables.length"
+                  md-contact-name="name"
+                  md-contact-image="pngUrl"
+                  md-on-remove="deleteJoinedVariable($chip)"
+                  md-on-select="deleteJoinedVariable($chip)">
+            <md-chip-template><em>{{$chip.name}}</em></md-chip-template>
+        </md-chips>
+        <md-button class="button button-outline button-block icon-left ion-link button-positive"
+                   ng-click="state.openJoinVariableSearchDialog()">
+            Join a Duplicate Variable
+        </md-button>
+        <div ng-if="state.variableObject.joinedCommonTagVariables && state.variableObject.joinedCommonTagVariables.length">
+            <div class="item item-divider ng-binding">
+                            <span class="input-label left-span"
+                                  ng-click="showExplanationsPopup('joinedCommonTagVariables', $event, 'Variable', 'Common Joined Duplicates')">
+                                Common Joined Duplicates &nbsp; <i class="icon ion-help-circled"></i>
+                            </span>
+            </div>
+            <!--md-contact-chips don't support on-remove https://github.com/angular/material/issues/10051-->
+            <md-chips ng-model="state.variableObject.joinedCommonTagVariables"
+                      md-contact-name="name"
+                      md-contact-image="pngUrl"
+                      name="joinedCommonTagVariables"
+                      readonly="false"
+                      md-on-remove="deleteJoinedVariable($chip)"
+                      >
+                <md-chip-template>
+                    <em ng-click="showVariableActionSheet($chip)">{{$chip.name}}</em>
+                </md-chip-template>
+            </md-chips>
+        </div>
+    </div>
+    <div class="card variable-settings" id="parentUserTagVariables-card">
+        <div class="item item-divider ng-binding">
+                    <span class="input-label left-span"
+                          ng-click="showExplanationsPopup('parentUserTagVariables', $event, 'Variable', 'Parent Categories')">
+                        Parent Categories &nbsp; <i class="icon ion-help-circled"></i>
+                    </span>
+        </div>
+        <!--md-contact-chips don't support on-remove https://github.com/angular/material/issues/10051-->
+        <md-chips ng-model="state.variableObject.parentUserTagVariables" name="parentUserTagVariables"
+                  ng-click="state.openParentVariableSearchDialog($event)"
+                  ng-show="state.variableObject.parentUserTagVariables && state.variableObject.parentUserTagVariables.length"
+                  md-contact-name="name"
+                  md-contact-image="pngUrl"
+                  md-on-remove="deleteTagVariable($chip)" md-on-select="editTag($chip)">
+            <md-chip-template><em>{{$chip.name}}</em></md-chip-template>
+        </md-chips>
+        <md-button class="button button-outline button-block icon-left ion-pricetag button-positive"
+                   ng-click="state.openParentVariableSearchDialog($event)">
+            Add a Parent Category
+        </md-button>
+        <div ng-if="state.variableObject.parentCommonTagVariables && state.variableObject.parentCommonTagVariables.length">
+            <div class="item item-divider ng-binding">
+                        <span class="input-label left-span"
+                              ng-click="showExplanationsPopup('parentCommonTagVariables', $event, 'Variable', 'Common Parent Categories')">
+                            Common Parent Categories &nbsp; <i class="icon ion-help-circled"></i>
+                        </span>
+            </div>
+            <!--md-contact-chips don't support on-remove https://github.com/angular/material/issues/10051-->
+            <md-chips ng-model="state.variableObject.parentCommonTagVariables"
+                      md-contact-name="name"
+                      md-contact-image="pngUrl"
+                      name="parentCommonTagVariables"
+                      readonly="false"
+                      md-on-remove="deleteTagVariable($chip)"
+                      >
+                <md-chip-template><em ng-click="showVariableActionSheet($chip)">{{$chip.name}}</em></md-chip-template>
+            </md-chips>
+        </div>
+    </div>
+    <div class="card variable-settings" id="childUserTagVariables-card">
+        <div class="item item-divider ng-binding">
+                    <span class="input-label left-span"
+                          ng-click="showExplanationsPopup('childUserTagVariables', $event, 'Variable', 'Child Sub-Types')">
+                        Child Sub-Types &nbsp; <i class="icon ion-help-circled"></i>
+                    </span>
+        </div>
+        <!--md-contact-chips don't support on-remove https://github.com/angular/material/issues/10051-->
+        <md-chips ng-model="state.variableObject.childUserTagVariables" name="childUserTagVariables"
+                  ng-click="state.openChildVariableSearchDialog($event)"
+                  md-contact-name="name"
+                  md-contact-image="pngUrl"
+                  ng-show="state.variableObject.childUserTagVariables && state.variableObject.childUserTagVariables.length"
+                  md-on-remove="deleteTaggedVariable($chip)"
+                  md-on-select="editTagged($chip)">
+            <md-chip-template><em>{{$chip.name}}</em></md-chip-template>
+        </md-chips>
+        <md-button class="button button-outline button-block icon-left ion-pricetag button-positive"
+                   ng-click="state.openChildVariableSearchDialog($event)">
+            Add a Child Sub-Type
+        </md-button>
+        <div ng-if="state.variableObject.childCommonTagVariables && state.variableObject.childCommonTagVariables.length">
+            <div class="item item-divider ng-binding">
+                        <span class="input-label left-span"
+                              ng-click="showExplanationsPopup('childCommonTagVariables', $event, 'Variable', 'Common Child Sub-Types')">
+                            Common Child Sub-Types &nbsp; <i class="icon ion-help-circled"></i>
+                        </span>
+            </div>
+            <!--md-contact-chips don't support on-remove https://github.com/angular/material/issues/10051-->
+            <md-chips ng-model="state.variableObject.childCommonTagVariables" name="childCommonTagVariables"
+                      md-contact-name="name"
+                      md-contact-image="pngUrl"
+                      readonly="false"
+                      md-on-remove="deleteTaggedVariable($chip)"
+                      >
+                <md-chip-template><em ng-click="showVariableActionSheet($chip)">{{$chip.name}}</em></md-chip-template>
+            </md-chips>
+        </div>
+    </div>
+    <div ng-show="state.variableObject.unitCategoryName !== 'Rating'" id="ingredients-card"
+         class="card variable-settings">
+        <div class="item item-divider ng-binding">
+                    <span class="input-label left-span"
+                          ng-click="showExplanationsPopup('ingredientUserTagVariables', $event, 'Variable', 'Ingredients')">
+                        Ingredients &nbsp; <i class="icon ion-help-circled"></i>
+                    </span>
+        </div>
+        <!--md-contact-chips don't support on-remove https://github.com/angular/material/issues/10051-->
+        <md-chips ng-model="state.variableObject.ingredientUserTagVariables"
+                  name="ingredientUserTagVariables"
+                  ng-click="state.openIngredientVariableSearchDialog()"
+                  ng-show="state.variableObject.ingredientUserTagVariables && state.variableObject.ingredientUserTagVariables.length"
+                  md-contact-name="tagDisplayText"
+                  md-contact-image="pngUrl"
+                  md-on-remove="deleteTagVariable($chip)"
+                  md-on-select="editTag($chip)">
+            <md-chip-template><em>{{$chip.name}}</em></md-chip-template>
+        </md-chips>
+        <md-button class="button button-outline button-block icon-left ion-pricetag button-positive"
+                   ng-click="state.openIngredientVariableSearchDialog()">
+            Add an Ingredient
+        </md-button>
+        <div ng-if="state.variableObject.ingredientCommonTagVariables && state.variableObject.ingredientCommonTagVariables.length">
+            <div class="item item-divider ng-binding">
+                        <span class="input-label left-span"
+                              ng-click="showExplanationsPopup('ingredientCommonTagVariables', $event, 'Variable', 'Common Ingredients')">
+                            Common Ingredients &nbsp; <i class="icon ion-help-circled"></i>
+                        </span>
+            </div>
+            <!--md-contact-chips don't support on-remove https://github.com/angular/material/issues/10051-->
+            <md-chips ng-model="state.variableObject.ingredientCommonTagVariables"
+                      md-contact-name="tagDisplayText" md-contact-image="pngUrl"
+                      name="ingredientCommonTagVariables"
+                      readonly="false"
+                      md-on-remove="deleteTagVariable($chip)"
+                      >
+                <md-chip-template><em ng-click="showVariableActionSheet($chip)">{{$chip.name}}</em></md-chip-template>
+            </md-chips>
+        </div>
+    </div>
+    <div class="card variable-settings" id="ingredient-of-card"
+         ng-show="state.variableObject.unitCategoryName !== 'Rating'">
+        <div class="item item-divider ng-binding">
+                    <span class="input-label left-span"
+                          ng-click="showExplanationsPopup('ingredientOfUserTagVariables', $event, 'Variable', 'Ingredient Of')">
+                        Ingredient Of &nbsp; <i class="icon ion-help-circled"></i>
+                    </span>
+        </div>
+        <!--md-contact-chips don't support on-remove https://github.com/angular/material/issues/10051-->
+        <md-chips ng-model="state.variableObject.ingredientOfUserTagVariables" name="taggedVariable"
+                  ng-click="state.openIngredientOfVariableSearchDialog()"
+                  ng-show="state.variableObject.ingredientOfUserTagVariables && state.variableObject.ingredientOfUserTagVariables.length"
+                  md-contact-name="tagDisplayText"
+                  md-contact-image="pngUrl"
+                  md-on-remove="deleteTaggedVariable($chip)"
+                  md-on-select="editTagged($chip)">
+            <md-chip-template><em>{{$chip.name}}</em></md-chip-template>
+        </md-chips>
+        <md-button class="button button-outline button-block icon-left ion-pricetag button-positive"
+                   ng-click="state.openIngredientOfVariableSearchDialog()">Add variable containing
+            {{state.variableObject.name}}
+        </md-button>
+        <div ng-if="state.variableObject.ingredientOfCommonTagVariables && state.variableObject.ingredientOfCommonTagVariables.length">
+            <div class="item item-divider ng-binding">
+                        <span class="input-label left-span"
+                              ng-click="showExplanationsPopup('ingredientOfCommonTagVariables', $event, 'Variable', 'Common Ingredient Of')">
+                            Common Ingredient Of &nbsp; <i class="icon ion-help-circled"></i>
+                        </span>
+            </div>
+            <!--md-contact-chips don't support on-remove https://github.com/angular/material/issues/10051-->
+            <md-chips ng-model="state.variableObject.ingredientOfCommonTagVariables"
+                      md-contact-name="tagDisplayText"
+                      md-contact-image="pngUrl"
+                      name="ingredientOfCommonTagVariables"
+                      readonly="false"
+                      md-on-remove="deleteTaggedVariable($chip)"
+                      >
+                <md-chip-template><em ng-click="showVariableActionSheet($chip)">{{$chip.name}}</em></md-chip-template>
+            </md-chips>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col col-50">
+            <md-button class="button button-outline button-block icon-left ion-android-cancel button-assertive"
+                       id="cancelButton"
+                       ng-click="goBack()">
+                Cancel
+            </md-button>
+        </div>
+        <div class="col col-50">
+            <md-button class="button button-outline button-block icon-left ion-android-done button-positive"
+                       id="saveButton"
+                       ng-click="saveVariableSettings(state.variableObject)">
+                {{state.saveButtonText}}
+            </md-button>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <md-button class="button button-outline button-block icon-left ion-android-cancel button-assertive"
+                       id="resetButton"
+                       ng-click="resetVariableToDefaultSettings(state.variableObject)">
+                Reset to Default Settings
+            </md-button>
+        </div>
+    </div>
+    <div id="variable-info card" class="card variable-settings">
+        <div class="list">
+            <div class="item item-divider ng-binding">Additional Info</div>
+            <label class="item item-content" style="padding: 6px 10px 5px 16px;">
+                <span class="input-label left-text">Variable ID</span>
+                <span class="input-label right-text " id="variable-id">
+                    {{state.variableObject.id}}
+                </span>
+            </label>
+        </div>
+    </div>
+</div>

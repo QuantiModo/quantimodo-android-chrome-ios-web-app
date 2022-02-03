@@ -1,0 +1,222 @@
+<!doctype html>
+<html>
+    <head>
+        <title>How are you?</title>
+        <!--suppress CssUnusedSymbol -->
+        <style>
+            body {
+                width: 100%;
+                height: 60px;
+                margin: auto;
+                background: white;
+                text-align: center;
+            }
+
+            .rating-section {
+                width: 100%;
+                opacity: 1;
+                height: 56px;
+                padding-top: 5px;
+                padding-bottom: 1px;
+            }
+
+            .rating-section img {
+                width: 15%;
+                display: inline-block;
+                padding-left: 4px;
+                padding-right: 4px;
+                background-color: #FFFFFF;
+                transition: all 200ms linear;
+            }
+
+            .rating-section img:hover {
+                -webkit-filter: brightness(110%) saturate(125%);
+            }
+
+            #loader {
+                display: none;
+                transition: opacity 400ms linear;
+                margin: auto;
+                padding-top: 10px;
+                background-color: #edeaec;
+            }
+
+            .invisible {
+                -webkit-animation-name: fadeOut;
+                -webkit-animation-duration: 0.4s;
+                -webkit-animation-iteration-count: 1;
+                -webkit-animation-timing-function: ease;
+                -webkit-animation-fill-mode: forwards;
+            }
+
+            @-webkit-keyframes fadeOut {
+                from {
+                    -webkit-transform: rotate(0deg) scale(1) skew(0deg);
+                    opacity: 1;
+                }
+                to {
+                    -webkit-transform: rotate(0deg) scale(0.98) skew(0deg);
+                    opacity: 0;
+                }
+            }
+
+            .visible {
+                -webkit-animation-name: fadeIn;
+                -webkit-animation-duration: 0.3s;
+                -webkit-animation-iteration-count: 1;
+                -webkit-animation-timing-function: ease;
+                -webkit-animation-fill-mode: forwards;
+            }
+
+            @-webkit-keyframes fadeIn {
+                from {
+                    -webkit-transform: rotate(0deg) scale(1.02) skew(0deg);
+                    opacity: 0;
+                }
+                to {
+                    -webkit-transform: rotate(0deg) scale(1) skew(0deg);
+                    opacity: 1;
+                }
+            }
+
+            .btn-xl {
+                width: 52px;
+                height: 52px;
+                border-radius: 26px;
+                background-color: white;
+                line-height: 1.33;
+                transition: all 200ms linear;
+                font-family: "Comic Sans MS", cursive, sans-serif;
+            }
+
+            .btn-xl:focus {
+                outline: none;
+            }
+
+            .btn-xl:hover {
+                -webkit-filter: brightness(110%) saturate(125%);
+            }
+        </style>
+        <!--suppress HtmlUnknownTarget -->
+        <script src="cordova.js"></script>
+        <!-- build:js scripts/popup-combined-head-libraries.js -->
+        <script src="lib/q/q.js"></script>
+        <script src="lib/bugsnag/dist/bugsnag.js"></script>
+        <script src="lib/quantimodo/quantimodo-web.js"></script>
+        <script src="lib/localforage/dist/localforage.js"></script>
+        <script src="lib/underscore/underscore-min.js"></script>
+        <script src="js/qmLogger.js"></script>
+        <script src="js/qmHelpers.js"></script>
+        <script src="data/appSettings.js"></script> <!-- Must come after qmHelpers because we assign to qm.staticData -->
+      <script src="data/qmStates.js"></script>
+      <script src="data/stateNames.js"></script>
+      <script src="data/buildInfo.js"></script>
+      <script defer src="data/units.js"></script>
+      <script defer src="data/variableCategories.js"></script>
+      <script defer src="data/commonVariables.js"></script>
+      <script defer src="data/docs.js"></script>
+      <script defer src="data/dialogAgent.js"></script>
+        <script src="js/popup.js"></script>
+        <!-- endbuild -->
+    </head>
+    <body>
+        <!--<img style="width: 24px; left:10px; position: absolute;" src="https://app.quantimo.do/ionic/Modo/www/img/intro/inbox.svg" id="buttonInbox">-->
+        <p style="text-align: center; font-size: 20px;"
+           id="question">
+            How are you?
+        </p>
+        <section id="faceRatingButtons"
+                 class="rating-section">
+            <img src="img/rating/face_rating_button_256_depressed.png"
+                 id="buttonMoodDepressed"
+                 alt="Rate 5 out of 5"
+                 title="Worst"><span>&nbsp;</span>
+            <img src="img/rating/face_rating_button_256_sad.png"
+                 id="buttonMoodSad"
+                 alt="Rate 5 out of 5"
+                 title="Bad"><span>&nbsp;</span>
+            <img src="img/rating/face_rating_button_256_ok.png"
+                 id="buttonMoodOk"
+                 alt="Rate 5 out of 5"
+                 title="OK"><span>&nbsp;</span>
+            <img src="img/rating/face_rating_button_256_happy.png"
+                 id="buttonMoodHappy"
+                 alt="Rate 5 out of 5"
+                 title="Good"><span>&nbsp;</span>
+            <img src="img/rating/face_rating_button_256_ecstatic.png"
+                 id="buttonMoodEcstatic"
+                 alt="Rate 5 out of 5"
+                 title="Best">
+        </section>
+        <section id="numericRatingButtons" class="rating-section">
+            <img src="img/rating/numeric_rating_button_256_1.png"
+                 id="button1"
+                 alt="Rate 1 out of 5"
+                 title="Weakest"><span>&nbsp;</span>
+            <img src="img/rating/numeric_rating_button_256_2.png"
+                 id="button2"
+                 alt="Rate 2 out of 5"
+                 title="Weak"><span>&nbsp;</span>
+            <img src="img/rating/numeric_rating_button_256_3.png"
+                 id="button3"
+                 alt="Rate 3 out of 5"
+                 title="Moderate"><span>&nbsp;</span>
+            <img src="img/rating/numeric_rating_button_256_4.png"
+                 id="button4"
+                 alt="Rate 4 out of 5"
+                 title="Strong"><span>&nbsp;</span>
+            <img src="img/rating/numeric_rating_button_256_5.png"
+                 id="button5"
+                 alt="Rate 5 out of 5"
+                 title="Strongest">
+        </section>
+        <section id="lastValueSection"
+                 class="rating-section">
+            <button id="lastValueButton"
+                    style="color: #337ab7; border: 3px solid #337ab7;"
+                    class="btn-xl">
+                <span id="lastValue">How are you?</span>
+            </button>
+            <button id="secondToLastValueButton"
+                    style="color: #5cb85c; border: 3px solid #5cb85c;"
+                    type="button"
+                    class="btn btn-success btn-circle btn-xl">
+                <span id="secondToLastValue">How are you?</span>
+            </button>
+            <button id="thirdToLastValueButton"
+                    style="color: #5bc0de; border: 3px solid #5bc0de;"
+                    type="button"
+                    class="btn btn-info btn-circle btn-xl">
+                <span id="thirdToLastValue">How are you?</span>
+            </button>
+            <button id="snoozeButton"
+                    title="Snooze and ask me later"
+                    style="color: #f0ad4e; border: 3px solid #f0ad4e;"
+                    type="button"
+                    class="btn-xl">
+                z<sup> z<sup> z</sup></sup>
+            </button>
+            <button id="skipButton"
+                    title="Skip this time"
+                    style="color: #d9534f; border: 3px solid #d9534f; font-size: 24px;"
+                    type="button"
+                    class="btn btn-danger btn-circle btn-xl">X
+            </button>
+            <button id="buttonInbox"
+                    title="Go to Full Inbox for More Options"
+                    style="color: #5cb85c; border: 3px solid #5cb85c; font-size: 24px;"
+                    type="button"
+                    class="btn btn-success btn-circle btn-xl">
+                ?
+            </button>
+        </section>
+        <section id="loader">
+            <!--<img src="img/loaders/rainbow-loader.gif" id="popTartCat">-->
+            <img style="max-height: 100%"
+                 src="img/loaders/purple-upload-check-loader_cropped_56px.gif"
+                 id="purpleLoader"
+                 alt="Loading Image">
+            <!--<img src="img/loaders/pop_tart_cat_blue_background.gif" id="popTartCat">-->
+        </section>
+    </body>
+</html>

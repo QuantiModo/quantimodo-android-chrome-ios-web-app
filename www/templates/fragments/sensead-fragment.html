@@ -1,0 +1,24 @@
+<div ng-if="showAdSense"
+     style="text-align: center; cursor: pointer;">
+    <h4 id="removeAds"
+        ng-click="goToState('app.upgrade')"
+        ng-if="appSettings.additionalSettings.monetizationSettings.subscriptionsEnabled.value">
+        <i class="ion-star">&nbsp; Remove Ads</i>
+    </h4>
+    <div ng-if="platform.isWeb">
+        <!--<adsense ad-client="ca-pub-2427218021515520" ad-slot="5093178896" inline-style="display:inline-block;width:100%;"
+                ad-format="auto" <- Causes  No slot size for availableWidth=0 error></adsense>-->
+        <!--
+        DON'T USE AUTO FORMAT BECAUSE IT TAKES UP HALF THE SCREEN ON MOBILE WEB
+        <adsense ad-client="ca-pub-2427218021515520" ad-slot="5093178896"
+                         inline-style="display:inline-block;width:100%;" ad-format="auto"></adsense>-->
+        <!-- 160 x 600 Vertical Sidebar -->
+        <ins class="adsbygoogle"
+             data-ad-client="ca-pub-2427218021515520"
+             data-ad-slot="4178266359"
+             style="display:inline-block;width:160px;height:600px"></ins>
+        <script>
+            (adsbygoogle = window.adsbygoogle || []).push({});
+        </script>
+    </div>
+</div>

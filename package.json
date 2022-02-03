@@ -18,6 +18,8 @@
     "@ionic/v1-toolkit": "3.2.15",
     "@slack/types": "1.9.0",
     "@slack/webhook": "5.0.3",
+    "@types/fs-extra": "^9.0.13",
+    "@types/wrench": "0.0.29",
     "angular": "latest",
     "aws-sdk": "2.948.0",
     "aws-sdk-mock": "4.5.0",
@@ -72,6 +74,7 @@
     "pkg-fetch": "3.2.2",
     "power-assert": "1.6.1",
     "prettier": "1.19.1",
+    "recursive-copy": "^2.0.13",
     "rewire": "5.0.0",
     "rimraf": "3.0.0",
     "semantic-release": "17.4.4",
@@ -83,6 +86,7 @@
     "ts-loader": "6.2.1",
     "tslint": "5.20.1",
     "underscore.string": "3.3.5",
+    "wrench": "^1.5.9",
     "yaml-lint": "1.2.4"
   },
   "dependencies": {
@@ -172,6 +176,7 @@
     "pump": "3.0.0",
     "q": "1.5.1",
     "quantimodo": "5.12.0",
+    "replace-in-file": "^6.3.2",
     "request": "2.88.2",
     "request-promise": "4.2.6",
     "run-sequence": "2.2.1",

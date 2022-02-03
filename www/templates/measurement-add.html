@@ -1,0 +1,196 @@
+<ion-view hide-nav-bar="hideNavigationMenu">
+    <ion-nav-title>{{state.title}}</ion-nav-title>
+    <ion-content ng-class="{ isBrowserView : platform.isWeb == true }">
+        <div class="card"
+             style="overflow: visible"
+             ng-show="state.measurement.variableName"
+             id="measurementAddCard">
+            <div id="variable-name"
+                 ng-if="state.measurement.inputType !== 'bloodPressure'"
+                 class="item item-divider">{{state.measurement.variableName}}
+            </div>
+            <div class="list margin-bottom-0">
+                <label class="item item-input item-select"
+                       ng-show="state.showVariableCategorySelector">
+                    <div class="input-label"
+                         style="white-space:normal; width: 60%">Select Category
+                    </div>
+                    <select id="variableCategorySelector"
+                            ng-model="state.measurement.variableCategoryName"
+                            ng-change="variableCategorySelectorChange(state.measurement.variableCategoryName)">
+                        <option ng-repeat="variableCategoryName in state.variableCategoryNames"
+                                value="{{variableCategoryName}}">{{variableCategoryName}}
+                        </option>
+                    </select>
+                </label>
+                <label ng-if="state.measurement.inputType === 'value' || state.measurement.inputType === 'slider' || state.measurement.inputType === 'oneToTen'"
+                       class="item item-input">
+                    <div class="input-label">{{state.defaultValueLabel}}</div>
+                    <input type="number"
+                           class="text-right"
+                           ng-model="state.measurement.value"
+                           id="defaultValue"
+                           ng-click="onTextClick($event)"
+                           placeholder={{state.defaultValuePlaceholderText}}>
+                </label>
+                <div id="bloodPressure" ng-if="state.measurement.inputType === 'bloodPressure'">
+                    <div ng-include="'templates/input/blood-pressure.html'"></div>
+                </div>
+                <div class="primary-outcome-variable-rating-buttons primary-outcome-variable-history col"
+                     ng-if="state.measurement.inputType === 'oneToFiveNumbers'">
+                    <img id="{{'neutral-rating-with-value-' + option.numericValue}}"
+                         ng-repeat="option in numericRatingOptions"
+                         ng-click="selectPrimaryOutcomeVariableValue($event, option.numericValue)"
+                         title="{{option.numericValue}}/5"
+                         ng-src="{{option.img}}"
+                         ng-class="{'active-primary-outcome-variable-rating-button' :
+                         option.numericValue === state.measurement.value}">
+                </div>
+                <div class="primary-outcome-variable-rating-buttons primary-outcome-variable-history col"
+                     ng-if="state.measurement.inputType === 'happiestFaceIsFive'">
+                    <img id="{{'positive-rating-with-value-' + option.numericValue}}"
+                         ng-repeat="option in positiveRatingOptions"
+                         ng-click="selectPrimaryOutcomeVariableValue($event, option.numericValue)"
+                         title="{{option.numericValue}}/5"
+                         ng-src="{{option.img}}"
+                         ng-class="{'active-primary-outcome-variable-rating-button' :
+                         option.numericValue === state.measurement.value}">
+                </div>
+                <div class="primary-outcome-variable-rating-buttons primary-outcome-variable-history col"
+                     ng-if="state.measurement.inputType === 'saddestFaceIsFive'">
+                    <img id="{{'negative-rating-with-value-' + option.numericValue}}"
+                         ng-repeat="option in negativeRatingOptions"
+                         ng-click="selectPrimaryOutcomeVariableValue($event, option.numericValue)"
+                         title="{{option.numericValue}}/5"
+                         ng-src="{{option.img}}"
+                         ng-class="{'active-primary-outcome-variable-rating-button' :
+                         option.numericValue === state.measurement.value}">
+                </div>
+                <!--<div ng-if="state.measurement.inputType === 'slider' || state.measurement.inputType === 'oneToTen'">-->
+                <!--<div class="row" >-->
+                <!--<div style="width: 100%" class="range range-positive">-->
+                <!--{{state.measurement.minimumAllowedValue}}-->
+                <!--<input ng-model="state.measurement.value" type="range" name="valueSlider"-->
+                <!--min="{{state.measurement.minimumAllowedValue}}" max="{{state.measurement.maximumAllowedValue}}" value="{{state.measurement.value}}">-->
+                <!--{{state.measurement.maximumAllowedValue}}-->
+                <!--</div>-->
+                <!--</div>-->
+                <!--</div>-->
+                <div id="yes-no-input"
+                     ng-if="state.measurement.inputType === 'yesOrNo'"
+                     class="item">
+                    Value
+                    <md-radio-group ng-model="state.measurement.value"
+                                    layout="row"
+                                    ng-init="state.measurement.value = 1"
+                                    style="float: right">
+                        <md-radio-button value="Yes"
+                                         class="md-primary">Yes
+                        </md-radio-button>
+                        <md-radio-button value="No"> No</md-radio-button>
+                    </md-radio-group>
+                </div>
+                <label ng-if="state.measurement.inputType !== 'bloodPressure'"
+                       class="item item-input item-select">
+                    <div class="input-label">Unit</div>
+                    <select id="unitSelector"
+                            ng-model="state.measurement.unitAbbreviatedName"
+                            ng-options="unit.abbreviatedName as unit.name for unit in state.units"
+                            ng-change="unitSelected()">
+                    </select>
+                </label>
+                <label id="date-input"
+                       class="item item-input">
+                    <div class="input-label"> Date</div>
+                    <input time="false"
+                           date="true"
+                           mdc-datetime-picker
+                           type="text"
+                           id="date2342"
+                           placeholder="Date"
+                           style="cursor: pointer;  background-color: white;"
+                           format="ddd, MMM Do YYYY"
+                           ng-model="state.selectedDate"
+                           class="md-input text-right">
+                </label>
+                <label id="time-input"
+                       class="item item-input">
+                    <div class="input-label"> Time</div>
+                    <input style="cursor: pointer; background-color: white;"
+                           mdc-datetime-picker=""
+                           date="false"
+                           time="true"
+                           type="text"
+                           id="materialFirstReminderStartTime"
+                           short-time="true"
+                           placeholder="Time"
+                           min-date="minDate"
+                           format="h:mm A"
+                           ng-model="state.selectedDate"
+                           class="md-input text-right">
+                </label>
+                <label class="item item-input"
+                       ng-if="!state.measurement.note || state.measurement.note.indexOf('href=') === -1">
+                    <div class="input-label"
+                         style="max-width: 50px;">Note
+                    </div>
+                    <!-- Need left align or action button gets in the way-->
+                    <input type="text"
+                           style="text-align: left"
+                           ng-model="state.measurement.note"
+                           id="note"
+                           placeholder="Enter note here..."
+                           class="text-right up-top">
+                </label>
+                <div class="item"
+                     ng-if="state.measurement.note.indexOf('href=') !== -1"
+                     ng-bind-html="state.measurement.note"></div>
+            </div>
+            <div class="row">
+                <div class="col col-50">
+                    <md-button id="cancelButton"
+                               class="button button-outline button-block icon-left ion-android-cancel button-assertive"
+                               ng-click="cancel()">Cancel
+                    </md-button>
+                </div>
+                <div class="col col-50">
+                    <md-button id="saveButton"
+                               class="button button-outline button-block icon-left ion-android-done button-positive"
+                               ng-click="done()">
+                        Record
+                        <span ng-if="state.measurement.inputType !== 'bloodPressure'">
+                             <span ng-if="state.measurement.unitAbbreviatedName !== 'yes/no' && state.measurement.value">
+                                 {{state.measurement.value}}
+                             </span>
+                            <span ng-if="state.measurement.unitAbbreviatedName === 'yes/no'">
+                                <span ng-if="state.measurement.value == 1">Yes</span>
+                                <span ng-if="state.measurement.value == 0">No</span>
+                                <span ng-if="state.measurement.value != 1 && state.measurement.value != 0">
+                                    {{state.measurement.value}}
+                                </span>
+                            </span>
+                        </span>
+                    </md-button>
+                </div>
+            </div>
+            <div ng-hide="state.hideRemindMeButton"
+                 class="row">
+                <md-button id="reminderButton"
+                           ng-click="goToAddReminder()"
+                           class="button button-outline icon-left ion-android-notifications button-positive button-block">
+                    Remind me to track
+                </md-button>
+            </div>
+            <div ng-show="state.measurement.id"
+                 class="row">
+                <md-button id="deleteButton"
+                           ng-click="deleteMeasurementFromMeasurementAddCtrl()"
+                           class="button button-outline icon-left ion-trash-a button-assertive button-block">
+                    Delete Measurement
+                </md-button>
+            </div>
+        </div>
+    </ion-content>
+    <div ng-hide="hideNavigationMenu"
+         ng-include="'templates/fragments/floating-material-action-button-fragment.html'"></div>
+</ion-view>

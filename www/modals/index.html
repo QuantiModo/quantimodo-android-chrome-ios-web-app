@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Modal Demos</title>
+    <link href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-borderless@3/borderless.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@9/dist/sweetalert2.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.2/jquery.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.min.js" defer></script>
+    <script src="../../lib/quantimodo/quantimodo-web.js"></script>
+    <script src="../js/ionIcons.js"></script>
+    <script src="../js/qmLogger.js"></script>
+    <script src="../js/qmHelpers.js"></script>
+    <script src="../data/appSettings.js"></script> <!-- Must come after qmHelpers because we assign to qm.staticData -->
+    <script src="../data/qmStates.js"></script>
+    <script src="../data/stateNames.js"></script>
+    <script src="../data/buildInfo.js"></script>
+    <script defer src="../data/units.js"></script>
+    <script defer src="../data/variableCategories.js"></script>
+    <script defer src="../data/commonVariables.js"></script>
+    <script defer src="../data/docs.js"></script>
+    <script defer src="../data/dialogAgent.js"></script>
+</head>
+<body>
+    <button id="popup-button">Popup</button>
+    <button id="full-inbox-button">Full Inbox</button>
+    <button id="compact-inbox-button">Compact Inbox</button>
+    <script src="modals.js" defer></script>
+</body>
+</html>

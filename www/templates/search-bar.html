@@ -1,0 +1,38 @@
+<div ng-app="searchBarApp">
+    <div ng-controller="searchCtrl as ctrl">
+        <md-toolbar>
+            <!-- Pre-Search Bar -->
+            <div id="search-bar" ng-show="ctrl.showPreSearchBar()" class="md-toolbar-tools">
+
+                <h2>Search Bar App</h2>
+                <span flex></span>
+
+                <!-- Search button (initiates search) -->
+                <md-button ng-click="ctrl.initiateSearch()">
+                    <md-icon>search</md-icon>
+                    <span>Search</span>
+                </md-button>
+
+            </div>
+
+            <!-- Search bar -->
+            <div ng-show="ctrl.showSearchBar()" class="md-toolbar-tools search-bar">
+
+                <md-button class="md-icon-button" ng-click="ctrl.submit()">
+                    <md-icon>search</md-icon>
+                </md-button>
+
+                <!-- Input Text -->
+                <md-input-container flex>
+                    <!-- <label for="search">Search</label> -->
+                    <input id="search-input" type="text" ng-model="search" />
+                </md-input-container>
+
+                <md-button class="md-icon-button" ng-click="ctrl.endSearch()">
+                    <md-icon>close</md-icon>
+                </md-button>
+            </div>
+
+        </md-toolbar>
+    </div>
+</div>

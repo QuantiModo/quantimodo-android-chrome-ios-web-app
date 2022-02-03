@@ -1,0 +1,46 @@
+<ion-view hide-nav-bar="hideNavigationMenu">
+    <ion-nav-title>Import Data</ion-nav-title>
+    <ion-content scroll="true"
+                 overflow-scroll="true"
+                 ng-class="{ isBrowserView : platform.isWeb == true }">
+        <ion-refresher on-refresh="refreshConnectors()"></ion-refresher>
+        <div id="importHelpCard"
+             ng-show="showImportHelpCard && !state.connector"
+             ng-click="hideImportHelpCard()"
+             ng-include="'templates/fragments/help-info-card-fragment.html'"></div>
+        <div id="loadingCard"
+             class="card"
+             ng-show="!state.connectors && !state.connector"
+             style="border-radius: 15px;">
+            <div class="item">
+                <div class="row" style="text-align: center; margin: auto;">
+                    <ion-spinner></ion-spinner>
+                    <p style=" text-align: center; line-height: normal; font-size: 18px;">
+                        &nbsp &nbsp Loading services...
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div ng-if="state.connectors && !state.connector"
+             id="connectors-list"
+             class="list">
+            <div ng-include="'templates/input/filter-search-field.html'"></div>
+            <div ng-if="!connector.hide"
+                 class="item"
+                 ng-repeat="connector in state.connectors | filter:state.searchText">
+                <div ng-include="'templates/items/data-source-item.html'"></div>
+            </div>
+        </div>
+        <div ng-include="'templates/buttons/clear-filters-button.html'"></div>
+    </ion-content>
+    <div ng-click="goBack()"
+         ng-if="hideNavigationMenu && !state.connector"
+         style="cursor:pointer;"
+         class="bar bar-footer bar-balanced">
+        <div class="title">
+            <i class="icon ion-reply"></i> &nbsp; &nbsp;
+            Done connecting data sources
+        </div>
+    </div>
+    <div ng-include="'templates/fragments/floating-material-action-button-fragment.html'"></div>
+</ion-view>

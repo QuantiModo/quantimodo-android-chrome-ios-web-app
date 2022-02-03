@@ -1,0 +1,17 @@
+.sub-menu {
+  padding-left: 25px;
+}
+.menu-avatar {
+  height: 30px;
+  border-radius: 50%;
+}
+// Hack to deal with case when side menu is disabled, expose-aside-when="large" still triggers
+// https://github.com/ionic-team/ionic/issues/2210
+ion-side-menu.menu-disabled {
+  width: auto !important;
+  transform: initial !important;
+}
+ion-side-menu-content.menu-disabled {
+  width: auto !important;
+  transform: initial !important;
+}

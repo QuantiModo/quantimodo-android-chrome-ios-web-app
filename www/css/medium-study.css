@@ -1,0 +1,81 @@
+/*noinspection CssUnknownTarget*/
+@import url(https://fonts.googleapis.com/css?family=Droid+Sans);
+.css-parser-hack {
+    --x-height-multiplier: 0.342;
+}
+/*For some reason parser ignores first rule*/
+.study-title {
+    --x-height-multiplier: 0.342;
+    --baseline-multiplier: 0.22;
+    letter-spacing: -.02em;
+    font-weight: 700;
+    font-style: normal;
+    /*font-size: 42px;*/
+    margin-left: -2.63px;
+    line-height: 1.04;
+}
+.study-section-body {
+    --x-height-multiplier: 0.375;
+    --baseline-multiplier: 0.17;
+    font-weight: 400;
+    font-style: normal;
+    font-size: 21px;
+    line-height: 1.58;
+    letter-spacing: -.003em;
+}
+.study-section-header {
+    --x-height-multiplier: 0.342;
+    --baseline-multiplier: 0.22;
+    letter-spacing: -.02em;
+    font-weight: 700;
+    font-style: normal;
+    letter-spacing: 0;
+    font-size: 34px;
+    margin-left: -2.13px;
+    line-height: 1.15;
+    letter-spacing: -.015em;
+}
+.study-caption {
+    --x-height-multiplier: 0.342 !important;
+    --baseline-multiplier: 0.22 !important;
+    letter-spacing: -.02em !important;
+    font-weight: 400 !important;
+    font-style: normal !important;
+    font-size: 16px !important;
+    line-height: 20px !important;
+    -webkit-transform: translateY(1.52px);
+    transform: translateY(1.52px);
+}
+/* Take care of image borders and formatting */
+img {
+    max-width: 600px;
+    outline: none;
+    text-decoration: none;
+    -ms-interpolation-mode: bicubic;
+    margin: auto;
+}
+a {
+    text-decoration: none;
+    border: 0;
+    outline: none;
+}
+a img {
+    border: none;
+}
+
+.headline {
+    color: #ffffff;
+    font-size: 24px;
+}
+.force-full-width {
+    width: 100% !important;
+}
+.force-width-80 {
+    width: 80% !important;
+}
+.pusher {
+    width: 55px;
+}
+.steps {
+    width: 43px;
+}

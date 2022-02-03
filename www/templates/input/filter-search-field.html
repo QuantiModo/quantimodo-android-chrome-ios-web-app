@@ -1,0 +1,10 @@
+<div id="filter-search-div" class="item-input-inset">
+    <label class="item-input-wrapper">
+        <i class="icon ion-ios7-search placeholder-icon"></i>
+        <input id="filter-box" type="search" placeholder="Filter by name or type" ng-model="state.searchText"
+               style="width: 100%" autocomplete="off">
+        <a id="clear-search" ng-if="state.searchText != ''" style="cursor: pointer;" on-touch="state.searchText=''">
+            <i class="icon ion-close-round placeholder-icon"></i>
+        </a>
+    </label>
+</div>

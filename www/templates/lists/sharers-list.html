@@ -1,0 +1,40 @@
+<div id="patient-list" style="max-height: 100%">
+    <md-progress-linear md-mode="indeterminate" ng-if="state.loading"></md-progress-linear>
+    <div ng-if="state.loading" ng-cloak>
+        <br> <br>
+        <h1 style="text-align: center;">Loading your {{appSettings.appDesign.aliases.active.patientAlias}}s... </h1><br>
+        <div ng-include="'templates/spinner.html'"></div>
+    </div>
+    <div ng-if="state.card && !state.card.hide" ng-include="'templates/cards/blue-card.html'" ng-model="state.card"></div>
+    <md-list class="md-dense" flex>
+        <md-list-item ng-repeat="clientUser in state.users" class="noright">
+            <img alt="{{ clientUser.displayName }}"
+                ng-click="switchToPatientInNewTab(clientUser)"
+                style="cursor: pointer;"
+                ng-src="{{ clientUser.avatarImage }}"
+                class="md-avatar"/>
+            <div class="md-list-item-text" ng-click="switchToPatientInNewTab(clientUser)" style="cursor: pointer;">
+                <h3>Switch to {{ clientUser.displayName }} </h3>
+                <md-tooltip md-direction="down">
+                    User ID {{ clientUser.id }} {{ clientUser.userEmail }} (last active {{clientUser.lastActive}})
+                </md-tooltip>
+            </div>
+            <md-button ng-if="clientUser.email" class="md-secondary md-icon-button" style="font-size: 30px;"
+                        ng-click="sendEmail(appSettings.appDisplayName, clientUser.email)" aria-label="email">
+                <md-icon class="ion-paper-airplane">
+                    <md-tooltip md-direction="down">Send Message</md-tooltip>
+                </md-icon>
+            </md-button>
+        </md-list-item>
+    </md-list>
+    <div style="text-align: center;">
+        <div ng-if="state.users && !state.users.length" ng-cloak>
+            <h2 style="text-align: center; padding: 10px;">You haven't invited any
+                {{appSettings.appDesign.aliases.active.patientAlias}}s yet! </h2>
+        </div>
+        <md-button class="md-raised md-primary icon icon-left ion-plus-round"
+                   ng-click="state.invitePatient()">
+            &nbsp; Invite New {{appSettings.appDesign.aliases.active.patientAlias | capitalizeFirstLetter}}
+        </md-button>
+    </div>
+</div>

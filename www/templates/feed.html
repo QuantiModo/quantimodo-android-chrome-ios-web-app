@@ -1,0 +1,20 @@
+<ion-view hide-nav-bar="false">
+    <ion-nav-title>{{state.title}}</ion-nav-title>
+    <ion-content scroll="true" overflow-scroll="true">
+        <ion-refresher on-refresh="state.refreshFeed()"></ion-refresher>
+        <md-progress-linear ng-show="state.loading" md-mode="indeterminate"></md-progress-linear>
+        <div class="card" ng-show="state.loading">
+            <div class="item">
+                <div class="row" style="text-align: center; margin: auto;">
+                    <ion-spinner></ion-spinner>
+                    <p style=" text-align: center; line-height: normal; font-size: 18px;">&nbsp &nbsp Refreshing... </p>
+                </div>
+            </div>
+        </div>
+        <md-list flex>
+            <div ng-include="'templates/card.html'" style="width:100%;" ng-repeat="card in state.cards" ng-hide="card.hide"></div>
+        </md-list>
+    </ion-content>
+    <div ng-hide="hideNavigationMenu"
+         ng-include="'templates/fragments/floating-material-action-button-fragment.html'"></div>
+</ion-view>

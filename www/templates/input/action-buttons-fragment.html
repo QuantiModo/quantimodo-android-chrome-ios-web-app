@@ -1,0 +1,13 @@
+<p ng-if="trackingReminderNotification.actionArray && trackingReminderNotification.actionArray.length > 3"
+    style="text-align: center;">
+    Recent Values
+</p>
+<span class="buttons" ng-repeat="actionItem in trackingReminderNotification.actionArray">
+    <button class="button button-assertive"
+            ng-if="actionItem.action === 'track'"
+            on-hold="trackAllWithConfirmation(trackingReminderNotification, actionItem.modifiedValue, $event)"
+            ng-click="track(trackingReminderNotification, actionItem.modifiedValue, $event)">
+        <md-tooltip md-direction="down" ng-if="!platform.isMobile" class="hide-xs">{{actionItem.longTitle}}</md-tooltip>
+        {{actionItem.title}}
+    </button>
+</span>

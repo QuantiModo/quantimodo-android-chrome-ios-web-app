@@ -1,0 +1,12 @@
+<div ng-if="!study.userId || (user && study.userId !== user.id)"
+     class="row"
+     ng-init="study = study || state.study">
+    <div class="button-bar">
+        <button id="join-{{study.id}}"
+            class="button button-clear button-assertive"
+                style="font-size: 22px;"
+                ng-click="goToState('app.studyJoin', {study: study})">
+            <i class="ion-ios-flask"> &nbsp; Join this Study &nbsp;</i>
+        </button>
+    </div>
+</div>

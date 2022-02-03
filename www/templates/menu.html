@@ -1,0 +1,257 @@
+<ion-side-menus enable-menu-with-back-views="true"
+                id="app-container">
+    <ion-side-menu-content ng-class="{'menu-disabled': hideNavigationMenu}">
+        <ion-nav-bar id="top-nav-bar"
+                     class="{{appSettings.appDesign.ionNavBarClass}}"
+                     ng-show="hideNavigationMenu === false || appSettings.designMode">
+            <ion-nav-buttons side="left">
+                <button id="menu-toggle-button"
+                        ng-hide="hideMenuButton"
+                        class="button button-icon button-clear ion-navicon"
+                        menu-toggle="left">
+                </button>
+                <button id="menu-close-button"
+                        ng-show="showCloseMenuButton"
+                        class="button button-icon ion-android-close"
+                        ng-click="closeMenu()">
+                </button>
+                <button id="menu-back-button"
+                        style="padding: 0;"
+                        ng-hide="hideBackButton"
+                        class="button button-icon ion-android-arrow-back"
+                        ng-click="goBack()">
+                </button>
+                <button id="demo-link-button"
+                        ng-if="appSettings.designMode"
+                        class="button button-icon ion-link"
+                        ng-click="copyDemoLink()">
+                    <md-tooltip>Copy Demo Link To Clipboard</md-tooltip>
+                </button>
+                <!-- Gets cut off so hiding until I have time to implement this: http://ionicframework.com/docs/api/directive/ionHeaderBar/ Also, now back button goes home if we don't have a back view so we don't need a home button
+                <button ng-hide="hideHomeButton" class="button button-icon ion-home" ng-click="goToState('app.remindersInbox')"> </button>
+                -->
+            </ion-nav-buttons>
+            <ion-nav-buttons side="right">
+                <div class="buttons">
+                    <div id="physician"
+                         style="cursor:pointer;"
+                         ng-click="switchBackToPhysician()"
+                         ng-if="physicianUser">
+                        <md-tooltip md-direction="down">Switch back to your account from {{user.displayName}}
+                        </md-tooltip>
+                        <a ng-if="user && user.avatar"
+                           class="button button-clear">
+                            <img class="menu-avatar"
+                                 id="patientAvatarRight"
+                                 ng-src="{{user.avatar}}">
+                        </a>
+                        <button id="switch-button-right"
+                                class="button button-icon ion-arrow-swap"></button>
+                    </div>
+                    <!-- Mic button is too crowded for navigation menu and chat page is still buggy
+                    <button id="menu-mic-button" class="button button-icon ion-mic-a" ng-if="micAvailable"-->
+                    <!--ng-click="goToState('app.chat')"></button>
+            -->
+                    <a ng-if="popOutUrl"
+                       href="{{popOutUrl}}"
+                       target="_blank">
+                        <button class="button button-icon ion-android-open">
+                            <md-tooltip md-direction="down">Pop Out</md-tooltip>
+                        </button>
+                    </a>
+                    <a id="navBarAvatar"
+                       href="#/app/settings"
+                       ng-if="!physicianUser && user && user.avatar && !platform.isMobile"
+                       class="button button-clear hide-xs">
+                        <img class="menu-avatar"
+                             ng-src="{{user.avatar}}">
+                    </a>
+                    <button id="menu-search-button"
+                            style="padding: 0;"
+                            class="button button-icon ion-ios-search"
+                            ng-click="showGeneralVariableSearchDialog($event)"></button>
+                    <a ng-if="finishUrl"
+                       href="{{finishUrl}}">
+                        <button id="menu-finish-button"
+                                ng-show="finishUrl"
+                                class="button button-icon ion-android-close"></button>
+                    </a>
+                    <button id="menu-help-button"
+                            style="padding: 0;"
+                            class="button button-icon ion-ios-help-outline"
+                            ng-hide="stateParams.helpText || hideHelpButton"
+                            ng-click="goToState('app.help')">
+                        <md-tooltip md-direction="down">Get Help</md-tooltip>
+                    </button>
+                    <button id="menu-showMaterialAlert-button"
+                            style="padding: 0;"
+                            class="button button-icon ion-ios-help-outline"
+                            ng-show="stateParams.helpText"
+                            ng-click="showMaterialAlert(stateParams.title, stateParams.helpText, $event)">
+                        <md-tooltip md-direction="down">Get Help</md-tooltip>
+                    </button>
+                    <button id="menu-more-button"
+                            class="button button-icon ion-android-more-vertical"
+                            ng-show="showActionSheetMenu"
+                            ng-click="showActionSheetMenu()"></button>
+                </div>
+            </ion-nav-buttons>
+        </ion-nav-bar>
+        <div id="splash-screen"
+             class="splash-wrapper"
+             style="width: 100%; position: absolute; height: 100%; z-index: 0;">
+            <a href="https://help.quantimo.do"
+               style="text-decoration: none; cursor:pointer;">
+                <div id="splash-logo">
+                    <div id="splash-text"
+                         style="margin-top: 20%">
+                        <div class="splash-h1"
+                             style="font-size: 60px; z-index: 0;">Offline
+                        </div>
+                        <div class="splash-h2"
+                             style="font-size: 60px; z-index: 0;">Please reload!
+                        </div>
+                    </div>
+                </div>
+            </a>
+            <div class="splash-grid"
+                 style="z-index: 0;"></div>
+        </div>
+        <div class="col"
+             ng-show="hideNavigationMenu && offlineConnectionErrorShowing;"
+             style="top:0px!important;"
+             ng-class="{'connection-error-indicator':offlineConnectionErrorShowing}"> <span>
+            <i class="icon ion-connection-bars"></i> Currently Offline</span>
+        </div>
+        <div class="col"
+             ng-show="!hideNavigationMenu && offlineConnectionErrorShowing;"
+             ng-class="{'connection-error-indicator':offlineConnectionErrorShowing}"><span> <i
+                class="icon ion-connection-bars"></i> Currently Offline</span>
+        </div>
+        <ion-nav-view name="menuContent">
+            <canvas id="canvas"
+                    style="position: absolute; top: 50%; transform: translateY(-50%); width: 100%; height: 400px; z-index: 30; pointer-events: none; "></canvas>
+        </ion-nav-view>
+    </ion-side-menu-content>
+    <ion-side-menu id="side-menu"
+                   side="left"
+                   is-enabled="!hideNavigationMenu"
+                   expose-aside-when="large"
+                   ng-class="{'menu-disabled': hideNavigationMenu}">
+        <ion-header-bar class="bar-positive">
+            <div id="menu-avatar"
+                 style="cursor:pointer;"
+                 ng-click="goToState('app.settings')"
+                 ng-if="!appSettings.designMode && !physicianUser && user && user.displayName && (user.stripeActive || !appSettings.additionalSettings.monetizationSettings.subscriptionsEnabled.value)">
+                <a ng-if="user && user.avatar"
+                   class="button button-clear">
+                    <img class="menu-avatar"
+                         id="menuAvatar"
+                         ng-src="{{user.avatar}}">
+                </a>
+                <h1 class="title"
+                    style="position: fixed; bottom: 0;">{{user.displayName}}
+                </h1>
+            </div>
+            <div id="menu-physician"
+                 style="cursor:pointer;"
+                 ng-click="switchBackToPhysician()"
+                 ng-if="!appSettings.designMode && physicianUser">
+                <md-tooltip md-direction="down">Switch back to your account</md-tooltip>
+                <a ng-if="user && user.avatar"
+                   class="button button-clear">
+                    <img class="menu-avatar"
+                         id="patientAvatar"
+                         ng-src="{{user.avatar}}">
+                </a>
+                <h1 class="title"
+                    style="position: fixed; bottom: 0;">{{user.displayName}}
+                </h1>
+                <button id="switch-button"
+                        class="button button-icon ion-arrow-swap"></button>
+            </div>
+            <div id="menu-upgrade"
+                 style="cursor:pointer;"
+                 ng-if="!appSettings.designMode && !physicianUser && user && user.displayName && !user.stripeActive && appSettings.additionalSettings.monetizationSettings.subscriptionsEnabled.value"
+                 ng-click="goToState('app.upgrade')">
+                <button class="button button-icon ion-android-star-outline"></button>
+                <h1 class="title"
+                    style="position: fixed; bottom: 0;">{{appSettings.appDisplayName}} Plus
+                </h1>
+            </div>
+            <div id="menu-builder"
+                 style="cursor:pointer;"
+                 ng-if="appSettings.designMode"
+                 ng-click="goToState('app.configuration')">
+                <button class="button button-icon ion-android-star-outline"></button>
+                <h1 class="title"
+                    style="position: fixed; bottom: 0;">App Builder
+                </h1>
+            </div>
+        </ion-header-bar>
+        <ion-content>
+            <ion-list id="menu-list">
+                <div ng-repeat="menuItem in appSettings.appDesign.menu.active">
+                    <ion-item id="menu-item-{{menuItem.id}}"
+                              ng-click="closeMenuIfNeeded(menuItem)"
+                              ng-href="{{menuItem.href}}">
+                        <i ng-if="menuItem.showSubMenu && menuItem.subMenu"
+                           class="ion-chevron-down">&nbsp;
+                            {{menuItem.title}}
+                        </i>
+                        <i ng-if="!menuItem.showSubMenu || !menuItem.subMenu"
+                           class="{{menuItem.icon}}">&nbsp;
+                            {{menuItem.title}}
+                        </i>
+                    </ion-item>
+                    <ion-item id="menu-item-{{menuItem.id + '-design'}}"
+                              ng-if="false && appSettings.designMode">
+                        <span ng-href="{{menuItem.href}}"
+                              ng-click="closeMenuIfNeeded(menuItem)">
+                            <i ng-if="menuItem.showSubMenu && menuItem.subMenu"
+                               class="ion-chevron-down">&nbsp; {{menuItem.title}}</i>
+                            <i ng-if="!menuItem.showSubMenu || !menuItem.subMenu"
+                               class="{{menuItem.icon}}">&nbsp; {{menuItem.title}}</i>
+                        </span>
+                        <span ng-if="appSettings.designMode">
+                            &nbsp&nbsp
+                            <i ng-click="openEditAppSettingsModal('menu', menuItem)"
+                               class="icon ion-edit">
+                                <md-tooltip md-direction="right">Edit Menu Item</md-tooltip>
+                            </i>
+                            &nbsp&nbsp
+                            <i ng-click="addAppComponentElement('menu', menuItem)"
+                               class="icon ion-ios-copy-outline">
+                                <md-tooltip md-direction="right">Duplicate Menu Item</md-tooltip>
+                            </i>
+                            &nbsp&nbsp
+                            <i ng-click="deleteAppComponentElement('menu', menuItem)"
+                               class="icon ion-trash-a">
+                                 <md-tooltip md-direction="right">Delete Menu Item</md-tooltip>
+                            </i>
+                        </span>
+                    </ion-item>
+                    <ion-item ng-repeat="subMenuItem in menuItem.subMenu"
+                              id="submenu-item-{{subMenuItem.id}}"
+                              ng-href="{{subMenuItem.href}}"
+                              ng-show="menuItem.showSubMenu"
+                              ng-class="{'sub-menu': true}">
+                        <!--Don't use menu-close instead of menu-toggle because it clears the state history-->
+                        <i class="{{subMenuItem.icon}}"
+                           menu-toggle>&nbsp; {{subMenuItem.title}}
+                        </i>
+                    </ion-item>
+                </div>
+                <ion-item ng-show="appSettings.designMode"
+                          ng-href="#/app/configuration"
+                          id="configurationMenuItem">
+                    <i
+                            class="ion-edit"
+                            menu-toggle>&nbsp; App Builder
+                    </i>
+                </ion-item>
+            </ion-list>
+            <span ng-include="'templates/fragments/sensead-fragment.html'"></span>
+        </ion-content>
+    </ion-side-menu>
+</ion-side-menus>

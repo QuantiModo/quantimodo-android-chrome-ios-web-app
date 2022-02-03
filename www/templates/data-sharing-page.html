@@ -1,0 +1,209 @@
+<ion-view hide-nav-bar="hideNavigationMenu">
+    <ion-nav-title>Data Sharing</ion-nav-title>
+    <ion-content scroll="true"
+                 overflow-scroll="true"
+                 ng-class="{ isBrowserView : platform.isWeb == true }">
+        <ion-refresher on-refresh="refreshAuthorizedClients()"></ion-refresher>
+        <div id="helpCard"
+             ng-show="state.showHelpCard"
+             ng-click="state.hideHelpCard()"
+             ng-include="'templates/fragments/help-info-card-fragment.html'">
+        </div>
+        <div ng-include="'templates/input/filter-search-field.html'">
+        </div>
+        <div ng-cloak>
+            <md-content>
+                <md-progress-linear md-mode="indeterminate"
+                                    ng-if="!state.authorizedClients">
+                </md-progress-linear>
+                <md-card id="individuals-card">
+                    <md-toolbar>
+                        <div class="md-toolbar-tools">
+                            Individuals with Access to Your Data
+                            <span flex></span>
+                        </div>
+                    </md-toolbar>
+                    <md-content layout-padding>
+                        <form name="invitationForm">
+                            <md-input-container class="md-block">
+                                <label>Enter email of person to share with</label>
+                                <input id="invitation-email-input"
+                                       required
+                                       type="email"
+                                       name="emailAddress"
+                                       ng-model="state.invitation.emailAddress"
+                                       minlength="10"
+                                       maxlength="100"
+                                       ng-pattern="/^.+@.+\..+$/"/>
+                                <div class="hint">Enter an email to share your measurements with a friend, family
+                                    member, or health-care provider
+                                </div>
+                                <div id="invitation-email-error"
+                                     ng-messages="invitationForm.emailAddress.$error"
+                                     role="alert">
+                                    <div ng-message-exp="['required', 'minlength', 'maxlength', 'pattern']">
+                                        Your email must be between 10 and 100 characters long and look like an e-mail
+                                        address.
+                                    </div>
+                                </div>
+                                <div id="send-invitation-button"
+                                     style="text-align: center;"
+                                     ng-if="state.invitation.emailAddress">
+                                    <md-button class="icon icon-left ion-plus-round"
+                                               ng-click="state.sendSharingInvitation()">&nbsp;
+                                        Send Invitation
+                                    </md-button>
+                                </div>
+                            </md-input-container>
+                        </form>
+                    </md-content>
+                    <md-list id="individuals-list"
+                             class="md-dense"
+                             ng-if="state.authorizedClients.individuals && state.authorizedClients.individuals.length"
+                             flex>
+                        <md-list-item
+                                id="individual-item"
+                                ng-repeat="client in state.authorizedClients.individuals | orderBy : 'appDisplayName' | filter:state.searchText"
+                                ng-click="openUrl(client.homepageUrl)"
+                                ng-if="!client.hide"
+                                class="noright">
+                            <img alt="{{ client.appDisplayName }}"
+                                 ng-src="{{ client.iconUrl }}"
+                                 class="md-avatar"/>
+                            <div class="md-list-item-text">
+                                <h4>{{ client.appDisplayName }}</h4>
+                                <p>{{ client.appDescription }}</p>
+                            </div>
+                            <md-button id="individual-more-details-button"
+                                       class="md-secondary md-icon-button"
+                                       style="font-size: 30px;"
+                                       ng-click="openUrl(client.homepageUrl)"
+                                       aria-label="preview">
+                                <md-icon class="ion-android-open">
+                                    <md-tooltip md-direction="down">More Details</md-tooltip>
+                                </md-icon>
+                            </md-button>
+                            <md-button id="revoke-individual-access-button"
+                                       class="md-secondary md-icon-button"
+                                       style="font-size: 30px;"
+                                       ng-click="state.revokeAccess(client)"
+                                       aria-label="delete">
+                                <md-icon
+                                        class="ion-close-round">
+                                    <md-tooltip md-direction="down">Revoke Access</md-tooltip>
+                                </md-icon>
+                            </md-button>
+                        </md-list-item>
+                    </md-list>
+                </md-card>
+                <md-card id="studies-card">
+                    <md-toolbar>
+                        <div class="md-toolbar-tools">
+                            Studies
+                            <span flex></span>
+                            <md-button id="join-study-button"
+                                       class="icon icon-left ion-plus-round"
+                                       ng-click="goToState('app.studiesOpen')">
+                                &nbsp; Join a Study
+                            </md-button>
+                        </div>
+                    </md-toolbar>
+                    <md-list id="studies-list"
+                             class="md-dense"
+                             flex>
+                        <md-list-item
+                                id="study-item"
+                                ng-repeat="client in state.authorizedClients.studies | orderBy : 'appDisplayName' | filter:state.searchText"
+                                ng-click="openUrl(client.homepageUrl)"
+                                ng-if="!client.hide"
+                                class="noright">
+                            <img alt="{{ client.appDisplayName }}"
+                                 ng-src="{{ client.iconUrl }}"
+                                 class="md-avatar"/>
+                            <div class="md-list-item-text">
+                                <h4>{{ client.appDisplayName }}</h4>
+                                <p>{{ client.appDescription }}</p>
+                            </div>
+                            <md-button id="study-more-details-button"
+                                       class="md-secondary md-icon-button"
+                                       style="font-size: 30px;"
+                                       ng-click="openUrl(client.homepageUrl)"
+                                       aria-label="preview">
+                                <md-icon class="ion-android-open">
+                                    <md-tooltip md-direction="down">More Details</md-tooltip>
+                                </md-icon>
+                            </md-button>
+                            <md-button id="study-revoke-access-button"
+                                       class="md-secondary md-icon-button"
+                                       style="font-size: 30px;"
+                                       ng-click="state.revokeAccess(client)"
+                                       aria-label="delete">
+                                <md-icon class="ion-close-round">
+                                    <md-tooltip md-direction="down">Revoke Access</md-tooltip>
+                                </md-icon>
+                            </md-button>
+                        </md-list-item>
+                    </md-list>
+                    <md-button ng-if="!state.authorizedClients.studies || !state.authorizedClients.studies.length"
+                               class="icon icon-left ion-plus-round"
+                               ng-click="goToState('app.studies')">&nbsp; Join a
+                        Study
+                    </md-button>
+                </md-card>
+                <md-card id="apps-card">
+                    <md-toolbar>
+                        <div class="md-toolbar-tools">
+                            Apps
+                            <span flex></span>
+                            <md-button class="icon icon-left ion-plus-round"
+                                       ng-click="goToState('app.studies')">&nbsp;
+                                Find an App
+                            </md-button>
+                        </div>
+                    </md-toolbar>
+                    <md-list class="md-dense"
+                             flex>
+                        <md-list-item id="app-{{client.clientId}}"
+                                      ng-repeat="client in state.authorizedClients.apps | orderBy : 'appDisplayName' | filter:state.searchText"
+                                      ng-click="openUrl(client.homepageUrl)"
+                                      ng-if="!client.hide"
+                                      class="noright">
+                            <img alt="{{ client.appDisplayName }}"
+                                 ng-src="{{ client.iconUrl }}"
+                                 class="md-avatar"/>
+                            <div class="md-list-item-text">
+                                <h4>{{ client.appDisplayName }}</h4>
+                                <p>{{ client.appDescription }}</p>
+                            </div>
+                            <md-button id="client-homepageUrl"
+                                       class="md-secondary md-icon-button"
+                                       style="font-size: 30px;"
+                                       ng-click="openUrl(client.homepageUrl)"
+                                       aria-label="preview">
+                                <md-icon class="ion-android-open">
+                                    <md-tooltip md-direction="down">More Details</md-tooltip>
+                                </md-icon>
+                            </md-button>
+                            <md-button id="app-revokeAccess"
+                                       class="md-secondary md-icon-button"
+                                       style="font-size: 30px;"
+                                       ng-click="state.revokeAccess(client)"
+                                       aria-label="delete">
+                                <md-icon class="ion-close-round">
+                                    <md-tooltip md-direction="down">Revoke Access</md-tooltip>
+                                </md-icon>
+                            </md-button>
+                        </md-list-item>
+                        <md-button ng-if="!state.authorizedClients.apps || !state.authorizedClients.apps.length"
+                                   class="icon icon-left ion-plus-round"
+                                   ng-click="goToState('app.studies')">&nbsp;
+                            Find an App
+                        </md-button>
+                    </md-list>
+                </md-card>
+            </md-content>
+        </div>
+    </ion-content>
+    <div ng-hide="hideNavigationMenu"
+         ng-include="'templates/fragments/floating-material-action-button-fragment.html'"></div>
+</ion-view>

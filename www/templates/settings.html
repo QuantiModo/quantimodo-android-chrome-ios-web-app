@@ -1,0 +1,191 @@
+<ion-view hide-nav-bar="hideNavigationMenu">
+    <ion-nav-title>Settings</ion-nav-title>
+    <ion-content ng-class="{ isBrowserView : platform.isWeb == true }">
+        <div id="upgrade"
+             ng-if="user && !user.stripeActive && appSettings.additionalSettings.monetizationSettings.subscriptionsEnabled.value"
+             class="list card" ng-click="goToState('app.upgrade')">
+            <a class="item"><i class="icon ion-ios-color-wand"></i> &nbsp; {{appSettings.appDisplayName}} Plus</a>
+        </div>
+        <div id="logout" class="list card">
+            <a href="" ng-show="!user"
+               ng-click="completelyResetAppStateAndSendToLogin('clicked sign in in settings page')" class="item ">
+                Account <p>Tap to sign in</p>
+            </a>
+            <a id="userName" href="" ng-show="user" ng-click="logout($event)" class="item ">
+                <i class="icon ion-person"></i> &nbsp Signed in as {{user.displayName}}
+                <p>Tap to sign out</p>
+            </a>
+        </div>
+        <div id="contact-us" class="list card">
+            <a ng-click="contactUs()" class="item ">
+                <i class="icon ion-help-buoy"></i> &nbsp; Help & Feedback
+            </a>
+            <a id="bug-report" class="item" ng-click="sendBugReport()"> <i class="icon ion-bug"></i> &nbsp; Submit Bug
+                Report </a>
+        </div>
+        <div id="primary-outcome" class="list card">
+            <div class="item item-divider" ng-click="showHelpInfoPopup('primaryOutcomeVariable', $event)">
+                Primary Outcome Variable &nbsp; <i class="icon ion-information-circled"></i>
+            </div>
+            <a ng-if="user.primaryOutcomeVariableName" ng-click="state.updatePrimaryOutcomeVariable()" class="item">
+                {{ user.primaryOutcomeVariableName }}
+            </a>
+            <a ng-if="!user.primaryOutcomeVariableName" ng-click="state.updatePrimaryOutcomeVariable()" class="item">
+                Select an Outcome to Optimize
+            </a>
+        </div>
+        <div id="add-email-address" class="list card" ng-show="user && !user.email">
+            <a ng-click="updateEmailAndExecuteCallback()" class="item ">
+                <i class="icon ion-email"></i> &nbsp Add Your Email Address
+                <p style="white-space: normal">So you'll never lose access to your account</p>
+            </a>
+        </div>
+        <div ng-include="'templates/fragments/push-preferences-fragment.html'"></div>
+        <div ng-include="'templates/fragments/email-preferences-fragment.html'"></div>
+        <div id="location-tracking" ng-show="user" class="card sign-in">
+            <div class="item item-divider" ng-click="showHelpInfoPopup('locationAndWeatherTracking', $event)">
+                Location Tracking &nbsp; <i class="icon ion-information-circled"></i>
+            </div>
+            <ion-toggle ng-model="user.trackLocation" ng-change="trackLocationWithMeasurementsChange($event)">
+                <div><i class="icon ion-map"></i> &nbsp
+                    <span ng-if="!platform.isMobile">Record with Measurements</span>
+                    <span ng-if="platform.isMobile">with Measurements</span>
+                    &nbsp
+                </div>
+            </ion-toggle>
+            <ion-toggle ng-model="backgroundLocationTracking" ng-change="backgroundLocationChange()">
+                <div><i class="icon ion-map"></i> &nbsp
+                    <span ng-if="!platform.isMobile">Ongoing Background Recording</span>
+                    <span ng-if="platform.isMobile">Background Recording</span>
+                    &nbsp
+                </div>
+            </ion-toggle>
+        </div>
+        <div id="export-data" class="list card">
+            <div class="item item-divider"> &nbsp Your Data</div>
+            <!-- PDF Export doesn't work
+            <a href="" ng-click="exportMeasurements('pdf)" class="item ">
+              Export as PDF File
+            </a>
+            <a href="" ng-click="exportMeasurements('xls)" class="item ">
+                Export as XLS File
+            </a>
+            -->
+            <a id="manage-data-sharing" ng-click="goToState('app.dataSharing')" class="item ">
+                <i class="icon ion-email"></i> &nbsp Manage Data Sharing
+                <p style="white-space: normal">Invite or revoke access for individuals and studies</p>
+            </a>
+            <a ng-click="exportMeasurements('csv')" class="item "> <i class="icon ion-ios-download"></i> Export
+                Measurements as CSV File </a>
+            <div id="share-all-data" ng-show="user && user.administrator">
+                <div class="item item-divider" ng-click="showHelpInfoPopup('shareAllData', $event, 'User')">
+                    Make All Data Public &nbsp; <i class="icon ion-information-circled"></i>
+                </div>
+                <ion-toggle ng-model="user.shareAllData" ng-change="shareAllDataChange($event)">
+                    <div ng-if="user.shareAllData"><i class="icon ion-share"></i> &nbsp All Measurements are Public
+                        &nbsp
+                    </div>
+                    <div ng-if="!user.shareAllData"><i class="icon ion-share"></i> &nbsp Measurements are Private &nbsp
+                    </div>
+                </ion-toggle>
+            </div>
+            <div id="clear-local-storage" ng-if="!user" class="item item-text-wrap">
+                <button class="button button-outline button-block icon-left ion-trash-a button-assertive"
+                        ng-click="logout($event)">
+                    Clear all user data
+                </button>
+            </div>
+        </div>
+
+        <!--  iOS users can't get back to the app and it doesn't work if the avatar is from Google or Facebook
+                <div class="card" ng-if="user && user.avatar && user.email">
+                    <a class="item item-avatar"
+                       href="https://en.gravatar.com/emails/">
+                        <img ng-src="{{user.avatar}}">
+                        <h2>Update Avatar</h2>
+                        <p>for {{user.email}}</p>
+                    </a>
+                </div>
+                -->
+
+        <!--
+                <div ng-if="user" class="card sign-in" >
+                    <div class="item item-text-wrap">
+                        <button class="button button-outline button-block icon-left ion-refresh button-assertive" ng-click="refreshUser()">
+                            Refresh User Settings
+                        </button>
+                    </div>
+                </div>
+        -->
+        <div id="preview-builds" ng-if="platform.isAndroid" class="card">
+            <div class="item item-divider"><i class="icon ion-erlenmeyer-flask"></i> &nbsp Beta Program</div>
+            <ion-toggle ng-model="user.getPreviewBuilds" ng-change="getPreviewBuildsChange()"> Request to Join
+            </ion-toggle>
+            <!--            <a ng-if="platform.isAndroid" class="item" ng-click="updateApp()">
+                            <i class="icon ion-android-download"></i> &nbsp; Update App
+                        </a>-->
+        </div>
+        <div id="beta-download" ng-if="platform.isAndroid" class="list card"
+             ng-click="openUrl(appSettings.appStatus.betaDownloadLinks.androidRelease, 'yes', '_system')">
+            <a class="item"><i class="icon ion-social-android"></i>&nbsp;Download Beta Version</a>
+        </div>
+        <div id="beta-download-chrome" ng-if="platform.isChromeExtension" class="list card"
+             ng-click="openUrl(appSettings.appStatus.betaDownloadLinks.chromeExtension)">
+            <a class="item"><i class="icon ion-social-chrome"></i>&nbsp;Download Beta Version</a>
+        </div>
+        <div id="debug-mode" class="card sign-in">
+            <div class="item item-divider">Debug Mode &nbsp;</div>
+            <ion-toggle ng-model="debugMode" ng-change="toggleDebugMode()">
+                <div ng-if="debugMode"><i class="icon ion-bug"></i> &nbsp Enabled &nbsp</div>
+                <div ng-if="!debugMode"><i class="icon ion-bug"></i> &nbsp Disabled &nbsp</div>
+            </ion-toggle>
+        </div>
+        <div id="upgrade-toggle" class="card sign-in" ng-if="user.administrator">
+            <div class="item item-divider">Upgrade &nbsp;</div>
+            <ion-toggle ng-model="user.stripeActive" ng-change="upgradeToggle()">
+                <div ng-if="user.stripeActive"><i class="icon ion-cash"></i> &nbsp Premium Mode &nbsp</div>
+                <div ng-if="!user.stripeActive"><i class="icon ion-cash"></i> &nbsp Free Mode &nbsp</div>
+            </ion-toggle>
+        </div>
+        <div id="time-zone" class="card sign-in" ng-if="user">
+            <div class="item item-divider"><i class="icon ion-clock"></i>&nbsp; Your Time Zone &nbsp;</div>
+            <div class="item">
+                <md-input-container style="margin: 0 0;">
+                    <md-select ng-model="user.timezone" ng-change="state.updateTimezone()">
+                        <md-option><em>None</em></md-option>
+                        <md-option ng-repeat="timezone in state.timezones" ng-value="timezone">
+                            {{timezone}}
+                        </md-option>
+                    </md-select>
+                </md-input-container>
+            </div>
+        </div>
+        <div id="user-description" class="list card" ng-show="user">
+            <a ng-click="state.showBioModalPromptPopup($event)" class="item ">
+                <i class="icon ion-email"></i> &nbsp Edit Your Bio
+                <p ng-if="!user.description" style="white-space: normal">Displayed on studies that you publish</p>
+                <p ng-if="user.description" style="white-space: normal">{{user.description}}</p>
+            </a>
+        </div>
+        <div id="delete-account" style="text-align: center;">
+            <md-button ng-if="user" ng-click="openDeleteUserAccountDialog($event)">
+                Delete Account
+            </md-button>
+        </div>
+        <div id="downgrade-button" ng-if="user && user.stripeActive" class="list card" ng-click="downgrade()">
+            <a class="item"> <i class="icon ion-ios-color-wand"></i> &nbsp; Downgrade to Lite </a>
+        </div>
+        <div id="image-credits" class="list card"
+             ng-click="openUrl('https://app.quantimo.do/api/v2/image-credits')">
+            <a class="item"><i class="icon ion-ios-camera-outline"></i>&nbsp;Image Credits</a>
+        </div>
+        <div id="dialog-flow" class="list card">
+            <a class="item"
+               href="https://assistant.google.com/services/invoke/uid/000000d5ea7143b3?intent=Record%20Measurement%20Intent">
+                <i class="icon ion-ios-camera-outline"></i>
+                🅖 Ask Dr. Modo to Record a Measurement
+            </a>
+        </div>
+        <br>
+    </ion-content>
+</ion-view>

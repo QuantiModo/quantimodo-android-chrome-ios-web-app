@@ -1,0 +1,64 @@
+@import '../lib/ionic/scss/ionic';
+@import	'../lib/angular-material/angular-material.scss';
+@import '../lib/angular-material-datetimepicker/css/material-datetimepicker';
+@import '../lib/highcharts-ng/dist/highcharts-ng.css'; // Fixes width issues
+@import 'partials/style';
+@import 'partials/mfb';
+@import 'partials/animated-microphone-search-input';
+@import 'partials/autocomplete';
+@import 'partials/buttons';
+@import 'partials/chat';
+@import 'partials/circle-page';
+@import 'partials/date-picker';
+@import 'partials/equalizer-audio-visualizer';
+@import 'partials/fab-progress';
+@import 'partials/heart';
+@import 'partials/highcharts';
+@import 'partials/history';
+@import 'partials/loading';
+@import 'partials/menu';
+@import 'partials/popup';
+@import 'partials/primary-outcome';
+@import 'partials/reminder-add';
+@import 'partials/slider';
+@import 'partials/splash';
+@import 'partials/status-bar';
+@import 'partials/talking-robot';
+@import 'partials/variable-settings';
+body {
+  background-color: black;
+}
+#fc_frame, #fc_frame.fc-widget-normal {
+  left: 15px !important;     // FreshChat on left to avoid FAB overlap
+  z-index: 10 !important;  // Don't cover toasts or action sheet
+}
+.siq_bR {
+  left: 10px !important;     // ZOHO on left to avoid FAB overlap
+  z-index: 10 !important;  // Don't cover toasts or action sheet
+}
+
+.zsiq_custommain {
+  z-index: 10 !important; } // Trying to put ZOHO button behind search modal, but NOTHING WORKS!
+
+.zsiq_floatmain {
+  z-index: 10 !important; } // Trying to put ZOHO button behind search modal, but NOTHING WORKS!
+
+.zsiq_custommain, .zsiq_floatmain {
+  z-index: 10 !important; }  // Trying to put ZOHO button behind search modal, but NOTHING WORKS!
+
+.zsiq_custommain img, .zsiq_float {
+  display: inline-block;
+  cursor: pointer;
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.3), 0 4px 8px rgba(0, 0, 0, 0.3);
+  border-radius: 50%; }
+
+#payment-form {
+  max-width: 400px;
+  margin: auto;
+}
+
+.flex {
+    display: block; // Have to override Tailwind's display:flex with the Angular Material version
+    flex: 1;
+    box-sizing: border-box;
+}

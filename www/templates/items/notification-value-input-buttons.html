@@ -1,0 +1,97 @@
+<span id="last-values-buttons"
+      class="row"
+      ng-if="trackingReminderNotification.inputType === 'value'"
+      style="display: flex; justify-content: center;">
+    <span ng-include="'templates/input/action-buttons-fragment.html'"></span>
+</span>
+<div id="numericRatingOptions"
+     class="primary-outcome-variable-reporting"
+     ng-if="trackingReminderNotification.inputType === 'oneToFiveNumbers'">
+    <div class="primary-outcome-variable-rating-buttons">
+        <img id="{{'numericRatingOptions' + option.numericValue}}"
+             ng-repeat="option in numericRatingOptions"
+             on-hold="trackAllWithConfirmation(trackingReminderNotification, option.numericValue, $event)"
+             ng-click="track(trackingReminderNotification, option.numericValue, $event)"
+             title="{{option.numericValue}}/5"
+             ng-src="{{option.img}}">
+    </div>
+</div>
+<div id="happiestFaceIsFive"
+     class="primary-outcome-variable-reporting"
+     ng-if="trackingReminderNotification.inputType === 'happiestFaceIsFive'">
+    <div class="primary-outcome-variable-rating-buttons">
+        <img id="{{'positiveRatingOptions' + option.numericValue}}"
+             ng-repeat="option in positiveRatingOptions"
+             on-hold="trackAllWithConfirmation(trackingReminderNotification, option.numericValue, $event)"
+             ng-click="track(trackingReminderNotification, option.numericValue, $event)"
+             title="{{option.numericValue}}/5"
+             ng-src="{{option.img}}">
+    </div>
+</div>
+<div id="saddestFaceIsFive"
+     class="primary-outcome-variable-reporting"
+     ng-if="trackingReminderNotification.inputType === 'saddestFaceIsFive'">
+    <div class="primary-outcome-variable-rating-buttons">
+        <img id="{{'negativeRatingOptions' + option.numericValue}}"
+             ng-repeat="option in negativeRatingOptions"
+             on-hold="trackAllWithConfirmation(trackingReminderNotification, option.numericValue, $event)"
+             ng-click="track(trackingReminderNotification, option.numericValue, $event)"
+             title="{{option.numericValue}}/5"
+             ng-src="{{option.img}}">
+    </div>
+</div>
+<div id="yes-no-buttons"
+     class="row"
+     ng-if="trackingReminderNotification.inputType === 'yesOrNo'">
+    <div class="buttons"
+         style="margin: auto;">
+        <button class="button button-assertive"
+                style="text-overflow: clip; font-size: 14px;"
+                on-hold="trackAllWithConfirmation(trackingReminderNotification, 0, $event)"
+                ng-click="track(trackingReminderNotification, 0, $event)">
+            <i class="ion-close-round"> &nbsp; NO &nbsp</i>
+        </button>
+        <button class="button button-balanced"
+                style="text-overflow: clip; font-size: 14px;"
+                on-hold="trackAllWithConfirmation(trackingReminderNotification, 1, $event)"
+                ng-click="track(trackingReminderNotification, 1, $event)">
+            <i class="ion-android-done"> &nbsp; YES &nbsp</i>
+        </button>
+    </div>
+</div>
+<div id="one-to-ten-slider"
+     ng-if="trackingReminderNotification.inputType === 'oneToTen'">
+    <div class="row">
+        <div class="buttons"
+             style="margin: auto;">
+            <button class="button button-calm"
+                    style="text-overflow: clip; font-size: 16px;"
+                    on-hold="trackAllWithConfirmation(trackingReminderNotification, trackingReminderNotification.modifiedValue, $event)"
+                    ng-click="trackByValueField(trackingReminderNotification, $event)">
+                <i class="ion-android-done">&nbsp; Record
+                                            {{trackingReminderNotification.modifiedValue}}{{trackingReminderNotification.unitAbbreviatedName}} &nbsp
+                </i>
+            </button>
+        </div>
+    </div>
+    <div id="one-to-ten-slider-row"
+         class="row">
+        <div style="width: 100%"
+             class="range range-positive">
+            {{trackingReminderNotification.minimumAllowedValue}}
+            <input ng-model="trackingReminderNotification.modifiedValue"
+                   type="range"
+                   name="valueSlider"
+                   min="{{trackingReminderNotification.minimumAllowedValue}}"
+                   max="{{trackingReminderNotification.maximumAllowedValue}}"
+                   value="{{trackingReminderNotification.modifiedValue}}">
+            {{trackingReminderNotification.maximumAllowedValue}}
+        </div>
+    </div>
+</div>
+<span id="action-buttons-instead-of-slider-for-some-reason"
+      class="row"
+      ng-if="trackingReminderNotification.inputType === 'slider'"
+      style="display: flex; justify-content: center;">
+    <span ng-include="'templates/input/action-buttons-fragment.html'"></span>
+</span>

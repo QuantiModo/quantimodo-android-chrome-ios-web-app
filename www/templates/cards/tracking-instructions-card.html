@@ -1,0 +1,21 @@
+<md-card>
+    <md-card-header>
+        <md-card-avatar>
+            <img src="{{variable.pngUrl}}"/>
+        </md-card-avatar>
+        <md-card-header-text>
+            <span class="m-subhead">How to Track</span>
+            <span class="md-title">{{variable.name}}</span>
+        </md-card-header-text>
+    </md-card-header>
+    <md-card-content>
+        <div ng-bind-html="variable.trackingInstructionsCard.htmlContent"></div>
+    </md-card-content>
+    <md-card-actions layout="column" layout-align="start">
+        <md-button id="{{button.title}}" aria-label="{{button.title}}"
+                   href="{{button.link}}"
+                   ng-repeat="button in variable.trackingInstructionsCard.buttons">
+            <i class="{{button.ionIcon}}"> &nbsp;{{button.text}}</i>
+        </md-button>
+    </md-card-actions>
+</md-card>

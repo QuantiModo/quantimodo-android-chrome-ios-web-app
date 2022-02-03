@@ -1,0 +1,35 @@
+$item-height: 49px;
+$font-size: 16px;
+$text-color: rgb(68,68,68);
+
+#additionalTimeButton {
+	height: $item-height;
+	padding: 10px 16px;
+	line-height: 28px;
+}
+
+#materialFirstReminderStartTime,
+#materialSecondReminderStartTime,
+#materialThirdReminderStartTime {
+	font-size: $font-size;
+	color: $text-color;
+}
+
+.margin-bottom-0 > .row {
+	height: $item-height;
+	border-bottom: 1px solid #DDD;
+	padding-left: 0;
+}
+
+.more-options-padding {
+	padding: 10px 0px 10px 16px;
+}
+
+.row.labeled-control > .date-padding-fix {
+	padding: 2px;
+	line-height: 36px;
+}
+
+.button-row-margin {
+	margin-top: 20px;
+}

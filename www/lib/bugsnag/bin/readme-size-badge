@@ -1,0 +1,28 @@
+#!/usr/bin/env node
+
+const uglify = require('uglify-js')
+const { gzipSync } = require('zlib')
+const { readFileSync, writeFileSync } = require('fs')
+const { resolve } = require('path')
+const { execSync } = require('child_process')
+
+const getSize = bundle => {
+  const compressed = uglify.minify(bundle.toString(), { ie8: true })
+  if (compressed.error) throw compressed.error
+  const gzipped = gzipSync(compressed.code)
+  const kb = (gzipped.length / 1000).toFixed(2)
+  return kb
+}
+
+const insert = kb => {
+  const readme = readFileSync(resolve(__dirname, '../README.md'), 'utf8')
+  const replaced = readme.replace(
+    /(!\[).+(kB\]\(https:\/\/img.shields.io\/badge\/size-).*(kB-green.svg\))/,
+    `$1${kb}$2${kb}$3`
+  )
+  writeFileSync(resolve(__dirname, '../README.md'), replaced, 'utf8')
+}
+
+const kb = getSize(execSync('./bin/bundle'))
+insert(kb)
+console.log(`inserted compressed/gzipped size (${kb}kB) into readme`)

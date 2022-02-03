@@ -1,0 +1,35 @@
+/*
+Cool animations at http://ianlunn.github.io/Hover/
+*/
+// START MATERIAL PROGRESS BUTTON
+md-fab-progress {
+  position: relative;
+  display: inline-block;
+  .md-button.md-fab {
+    margin: 6px;
+    transition: background 250ms linear;
+    .icon-done {
+      display: none;
+    }
+    &.is-done {
+      background: green;
+      .icon {
+        display: none;
+      }
+      .icon-done {
+        display: block;
+      }
+    }
+  }
+  md-progress-circular {
+    position: absolute;
+    top: 0;
+    left: 0;
+    opacity: 0;
+    transition: opacity 250ms linear;
+    &.is-active {
+      opacity: 1;
+    }
+  }
+}
+// END MATERIAL PROGRESS BUTTON

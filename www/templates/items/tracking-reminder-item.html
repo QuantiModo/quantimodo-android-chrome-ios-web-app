@@ -1,0 +1,41 @@
+<div id="reminder-item"
+     class="row">
+    <div id="ionIcon-section"
+         ng-if="!trackingReminder.pngUrl"
+         ng-click="showActionSheet(trackingReminder)"
+         class="col col-20"
+         style="padding-top: 0px;">
+        <i id="ionIcon"
+           style="font-size: 40px;"
+           class="icon positive {{trackingReminder.ionIcon}}">
+        </i>
+    </div>
+    <div id="png-section"
+         ng-if="trackingReminder.pngUrl"
+         ng-click="showActionSheet(trackingReminder)"
+         class="col col-20"
+         style="padding-top: 0px;">
+        <img style=" width: 40px; height: 40px"
+             ng-src="{{trackingReminder.pngUrl}}"
+             alt="Reminder Image">
+    </div>
+    <div id="variableName-valueAndFrequencyTextDescriptionWithTime"
+         ng-click="showActionSheet(trackingReminder)"
+         class="col col-70">
+        <h2 id="variableName"
+                style="white-space: normal; line-height: normal;">
+            {{trackingReminder.variableName}}
+        </h2>
+        <p id="valueAndFrequencyTextDescriptionWithTime"
+                style="white-space: normal;">
+            {{trackingReminder.valueAndFrequencyTextDescriptionWithTime}}
+        </p>
+    </div>
+    <div id="showActionSheet"
+            ng-click="showActionSheet(trackingReminder)"
+         class="col col-10">
+        <i style="font-size: 20px;"
+           class="icon positive ion-more">
+        </i>
+    </div>
+</div>

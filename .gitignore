@@ -92,7 +92,7 @@ gradlew.bat
 local.properties
 gradle/
 success
-www/*
+!www/*
 !/www/gitkeep
 #/src/qm-amazon/
 #dist/

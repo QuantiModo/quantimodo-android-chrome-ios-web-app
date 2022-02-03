@@ -1,0 +1,31 @@
+<md-dialog class="opaque-on-ios" aria-label="{{ctrl.title}}" style="overflow: visible;">
+    <!--opacity: 1 here doesn't fix transparency on on iPhone5-->
+    <form ng-cloak style="overflow: visible">
+        <md-toolbar>
+            <div class="md-toolbar-tools">
+                <md-button id="search-help-button" class="md-icon-button" ng-click="ctrl.getHelp()">
+                    <md-icon md-svg-src="img/material-icons/ic_help_outline_white_24px.svg" aria-label="Help"></md-icon>
+                </md-button>
+                <img src="img/robots/robot-head.svg"
+                     style=" width: 75px; height: 75px; position: absolute; top: -125%; left: 50%; margin-left: -37.5px;">
+                <h2 style="color: rgba(255,255,255,0.75); text-align: center; padding: 10px; width: 100%" data-fittext
+                    data-fittext-max="24px">{{ctrl.title}}</h2>
+                <md-button class="md-icon-button" ng-click="ctrl.cancel()" style="right: 0">
+                    <md-icon md-svg-src="img/material-icons/ic_close_24px.svg" aria-label="Close dialog"></md-icon>
+                </md-button>
+            </div>
+        </md-toolbar>
+        <md-dialog-content>
+            <div class="md-dialog-content">
+                <div style="text-align: center">
+                    <div ng-bind-html="ctrl.textContent"></div>
+                </div>
+            </div>
+        </md-dialog-content>
+        <md-dialog-actions layout="row">
+            <md-button id="helpButton" ng-click="answer('help')"> More Help</md-button>
+            <md-button id="okButton" ng-click="answer('ok')"> OK</md-button>
+        </md-dialog-actions>
+    </form>
+</md-dialog>
+<!-- Open a dialog over the app's content. Press escape or click outside to close the dialog and send focus back to the triggering button.-->

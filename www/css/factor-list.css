@@ -1,0 +1,67 @@
+.variable-name {
+    float: left;
+    color: white;
+    margin-top: 1%;
+    font-size: 4vw;
+    font-family: 'Source Sans Pro', sans-serif;
+    max-width: 50%;
+    vertical-align: middle;
+}
+@media screen and (min-width: 320px) {
+    .variable-name {
+        font-size: calc(15px + 5 * ((100vw - 320px) / 680));
+    }
+}
+@media screen and (min-width: 1000px) {
+    .variable-name {
+        font-size: 22px;
+    }
+}
+.factor-bar {
+    height: 60px;
+    border-radius: 90px 90px 90px 90px;
+    margin-left: 0;
+    opacity: 1;
+    transition: all 0.3s;
+}
+.factor-image-block {
+    float: left;
+    width: 46px;
+    height: 46px;
+    background: #fff;
+    border-radius: 50%;
+    cursor: pointer;
+    border-width: 7px;
+    border-style: solid;
+}
+.factor-image {
+    padding: 10%;
+    width: 40px;
+    height: 40px;
+}
+.percent-text {
+    float: right;
+    margin-right: 10px;
+    color: white;
+    margin-top: 0.6em;
+    font-size: 20px;
+    font-family: 'Source Sans Pro', sans-serif;
+    font-weight: bold;
+}
+.factors-page-wrapper {
+    /* margin: 0 auto; */
+    /* max-width: 1024px; */
+}
+.factor-bar-container {
+    align-items: center;
+    padding-bottom: 10px;
+    height: 60px;
+}
+.factors-title{
+    font-size: 28px;
+    margin-bottom: 0.5em;
+    font-family: 'Source Sans Pro', sans-serif;
+    font-weight: bold;
+    font-style: italic;
+    letter-spacing: -2px;
+}

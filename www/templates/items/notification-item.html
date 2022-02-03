@@ -1,0 +1,134 @@
+<div id="notification-icon"
+     ng-click="showActionSheetForNotification(trackingReminderNotification, $event)"
+     class="row">
+    <div class="col col-20"
+         style="padding-top: 0;">
+        <i ng-if="!trackingReminderNotification.pngPath"
+           style="font-size: 40px;"
+           class="icon positive {{trackingReminderNotification.ionIcon}}">
+        </i>
+        <img alt="{{trackingReminderNotification.title}}"
+             ng-if="trackingReminderNotification.pngPath"
+             ng-src="{{trackingReminderNotification.pngPath}}"
+             style="max-width: 40px;">
+    </div>
+    <div id="notification-title"
+         class="col col-70">
+        <h2 style="white-space: normal; line-height: normal; ">
+            {{trackingReminderNotification.title}}
+        </h2>
+        <p style="white-space: normal;">{{
+            trackingReminderNotification.trackingReminderNotificationTimeLocalHumanString}}
+        </p>
+    </div>
+    <div id="notification-more"
+         class="col col-10">
+        <i style="font-size: 20px; cursor: pointer;"
+           class="icon positive ion-more"></i>
+    </div>
+</div>
+<div id="skip-note-settings-buttons" class="button-bar">
+    <button id="notification-skip"
+            class="button button-clear button-assertive"
+            style="text-overflow: clip; font-size: 12px;"
+            on-hold="skipAllForVariable(trackingReminderNotification, $event)"
+            ng-click="skip(trackingReminderNotification, $event)">
+        <i class="ion-android-cancel"> &nbsp; Skip</i>
+    </button>
+    <button id="notification-snooze"
+            class="button button-clear button-royal"
+            ng-if="trackingReminderNotification.unitAbbreviatedName != '/5'"
+            style="text-overflow: clip; font-size: 12px;"
+            ng-click="snooze(trackingReminderNotification, $event)">
+        <i class="ion-android-notifications-off"> &nbsp; Snooze</i>
+    </button>
+<!--    <button id="notification-edit"
+            class="button button-clear button-royal"
+            ng-if="trackingReminderNotification.unitAbbreviatedName == '/5'"
+            style="text-overflow: clip; font-size: 12px;"
+            ng-click="editMeasurement(trackingReminderNotification)">
+        <i class="ion-edit"> &nbsp; Note</i>
+    </button>-->
+    <button id="notification-settings"
+            class="button button-clear button-calm"
+            ng-click="editReminderSettingsByNotification(trackingReminderNotification)"
+            style="text-overflow: clip;  font-size: 12px;">
+        <i class="ion-settings"> &nbsp; Settings</i>
+    </button>
+</div>
+<div id="value-input-field-row"
+     class="row"
+     ng-if="trackingReminderNotification.inputType === 'value'"
+     style="display: flex; justify-content: center;">
+    <label id="value-input-field-label"
+           class="item-input"
+           style="display: flex; justify-content: center;">
+        Enter Value
+        <input id="emptyValueField"
+               type="number"
+               ng-model="trackingReminderNotification.modifiedValue"
+               ng-click="onTextClick($event)"
+               placeholder="Value"
+               style="
+                    text-align: center;
+                    max-width: 100px;
+                    padding-right: 0;
+                    border: 2px solid red;
+                    border-radius: 4px;
+                    margin: 5px;
+            ">
+        <span id="value-field-unit-name"
+              on-tap="trackByValueField(trackingReminderNotification, $event)">
+        {{trackingReminderNotification.unitAbbreviatedName}} &nbsp
+    </span>
+    </label>
+    <button id="record-value-field-button"
+            class="button button-assertive"
+            style="border-radius: 74px;"
+            ng-click="trackByValueField(trackingReminderNotification, $event)">
+        <i class="icon ion-checkmark-round">
+            <span class="hide-xs">
+                &nbsp Record
+            </span>
+        </i>
+    </button>
+</div>
+<div ng-include="'templates/items/notification-value-input-buttons.html'"></div>
+<div id="other-value-time-note-button-row"
+     class="row">
+    <div class="button-bar">
+        <button id="other-value-time-note-button"
+                class="button button-clear button-calm"
+                style="text-overflow: clip; font-size: 14px;"
+                ng-click="editMeasurement(trackingReminderNotification)">
+            <i class="ion-edit" ng-if="trackingReminderNotification.inputType === 'bloodPressure'">
+                &nbsp; Record Measurements
+            </i>
+            <span ng-if="trackingReminderNotification.inputType !== 'bloodPressure'">
+                <i class="ion-edit" ng-if="trackingReminderNotification.inputType !== 'value'">
+                    &nbsp; Edit Time or Note
+                </i>
+                <i class="ion-edit" ng-if="trackingReminderNotification.inputType === 'value'">
+                    &nbsp; Edit Time or Note
+                </i>
+            </span>
+        </button>
+    </div>
+</div>
+<div id="track-all-button-section"
+     ng-if="state.showTrackAllButtons && trackingReminderNotification.trackAllActions.length > 1">
+    <p style="text-align: center; padding: 2px;">Record same value for all remaining past notifications</p>
+    <span id="track-all-buttons"
+          style="display: flex; justify-content: center;">
+        <span class="buttons" ng-repeat="a in trackingReminderNotification.trackAllActions">
+            &nbsp;
+            <button class="button button-calm"
+                    on-hold="trackAll(trackingReminderNotification, a.modifiedValue, $event)"
+                    ng-click="trackAll(trackingReminderNotification, a.modifiedValue, $event)">
+                <md-tooltip md-direction="down" ng-if="!platform.isMobile" class="hide-xs">{{a.longTitle}}</md-tooltip>
+                {{a.valueUnit}}
+            </button>
+        </span>
+    </span>
+    <p style="text-align: center; padding: 2px;">FOR ALL REMAINING</p>
+</div>

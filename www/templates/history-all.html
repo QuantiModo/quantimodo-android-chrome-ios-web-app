@@ -1,0 +1,165 @@
+<ion-view hide-nav-bar="hideNavigationMenu">
+    <ion-nav-title>{{state.title}}</ion-nav-title>
+    <ion-content ng-class="{ isBrowserView : platform.isWeb == true }">
+        <ion-refresher on-refresh="refreshHistory()"
+                       style="text-align: center; margin: auto;">
+        </ion-refresher>
+        <div id="no-history-section"
+             class="list card"
+             ng-show="state.noHistory && (!state.history || !state.history.length)">
+            <div class="item"
+                 style="padding-bottom:10px;">
+                <p style=" text-align: center; line-height: normal; font-size: 25px;">No Measurements</p>
+                <div class="row">
+                    <div class="col"
+                         style="padding-top: 0px;">
+                        <i style="text-align: center; font-size: 60px;"
+                           class="icon positive ion-android-sad"></i>
+                    </div>
+                    <div class="col col-75">
+                        <h2 style="white-space: normal; text-align: justify; line-height: normal; ">
+                            Add a reminder and start tracking!
+                        </h2>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="button-bar">
+                        <button class="button button-clear button-balanced"
+                                style="font-size: 14px;"
+                                ng-click="goToState('app.reminderSearch')">
+                            <i class="ion-android-notifications"> &nbsp;
+                                Add a reminder &nbsp;
+                            </i>
+                        </button>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="button-bar">
+                        <button class="button button-clear button-royal"
+                                style="font-size: 14px;"
+                                ng-click="goToState('app.measurementAddSearch')">
+                            <i class="ion-compose"> &nbsp; Record a measurement &nbsp;</i>
+                        </button>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="button-bar">
+                        <button class="button button-clear button-calm"
+                                style="font-size: 14px;"
+                                ng-click="goToState('app.import')">
+                            <i class="ion-ios-list-outline"> &nbsp; Import Data
+                                &nbsp;
+                            </i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="location-section"
+             ng-show="state.showLocationToggle"
+             class="card sign-in">
+            <ion-toggle ng-model="user.trackLocation"
+                        ng-change="trackLocationWithMeasurementsChange($event)">
+                <i class="icon ion-map"></i>
+                &nbspTrack
+                my location
+            </ion-toggle>
+        </div>
+        <div id="helpCard"
+             ng-if="!hideHistoryPageInstructionsCard && !(state.noHistory && (!state.history || !state.history.length))"
+             ng-click="setLocalStorageFlagTrue('hideHistoryPageInstructionsCard')"
+             ng-include="'templates/fragments/help-info-card-fragment.html'"></div>
+        <ion-list id="historyList">
+            <!-- Not sure why orderBy was necessary but it breaks alternative sorting <div ng-repeat="historyItem in state.history | orderBy: 'startTimeEpoch':true track by $index" -->
+            <div id="historyItem-{{$index}}"
+                 ng-repeat="historyItem in state.history track by $index"
+                 ng-hide="historyItem.hide"
+                 data-measurementid="{{historyItem.id}}"
+                 class="item item-avatar item-button-right">
+                <i id="historyItemIcon-{{$index}}"
+                   class="icon positive {{historyItem.icon}} icon-positive"
+                   ng-click="showActionSheetForMeasurement(historyItem)"
+                   ng-if="!historyItem.pngPath"
+                   style="position: absolute; top: 15px; left: 15px; font-size: 36px; max-width: 40px; max-height: 40px; width: 100%; border-radius: 4px;">
+                </i>
+                <img id="history-item-image-{{$index}}"
+                     ng-if="historyItem.pngPath"
+                     ng-src="{{historyItem.pngPath}}"
+                     style="border-radius: 0"
+                     ng-click="showActionSheetForMeasurement(historyItem)">
+                <p id="hidden-measurement-id-{{$index}}"
+                   ng-hide="true">{{historyItem.id}}</p>
+                <h2 id="historyItemTitle-{{$index}}"
+                    style="font-weight:bold; white-space:normal; line-height: normal; max-width: 90%"
+                    ng-click="showActionSheetForMeasurement(historyItem)">
+                    {{historyItem.valueUnitVariableName}}
+                </h2>
+                <p id="historyItemBody-{{$index}}">
+                    <span ng-click="showActionSheetForMeasurement(historyItem)">
+                    <span ng-if="historyItem.id">{{historyItem.startAt | timeOfDay}}</span>
+                        {{historyItem.startAt | dayOfWeekAndDate}}
+                        <br>
+                    <span ng-if="historyItem.noteHtml"
+                          ng-bind-html="historyItem.noteHtml"></span>
+                    <span ng-if="!historyItem.noteHtml">{{historyItem.note}}</span>
+                    </span>
+                    <span
+                        ng-if="!historyItem.note && historyItem.variableName.indexOf('Blood Pressure') !== -1"
+                          ng-repeat="position in ['Sitting', 'Immediate Standing', '1-Minute Standing']" >
+                        <button
+                            style="display: inline-block;"
+                            ng-click="state.setNote(historyItem, position)"
+                            class="flex items-center shadow border-blue-500 border-2 rounded-full px-1 py-1 text-blue-500 hover:bg-blue-500 hover:text-white"
+                        >
+                            {{position}}
+                        </button>
+                    </span>
+                </p>
+                <div id="history-item-buttons-{{$index}}"
+                     class="buttons">
+                    <button id="buy-now-button-{{$index}}"
+                            ng-if="historyItem.productUrl && !appSettings.additionalSettings.monetizationSettings.hideBuyNowButtons.value"
+                            class="button button-assertive"
+                            ng-click="openUrl(historyItem.productUrl, 'yes', '_system')">
+                        <md-tooltip md-direction="down">Buy Now</md-tooltip>
+                        <i class="icon ion-bag"></i>
+                    </button>
+                    <button id="action-sheet-button-{{$index}}"
+                            ng-if="!platform.isMobile"
+                            class="button button-dark"
+                            ng-click="showActionSheetForMeasurement(historyItem)">
+                        <md-tooltip md-direction="down">More options</md-tooltip>
+                        <i class="icon ion-more"></i>
+                    </button>
+                </div>
+            </div>
+        </ion-list>
+        <div id="loader-card"
+             class="card"
+             ng-show="state.loading"
+             style="border-radius: 15px;">
+            <div class="item">
+                <div class="row" style="text-align: center; margin: auto;">
+                    <ion-spinner></ion-spinner>
+                    <p style=" text-align: center; line-height: normal; font-size: 18px;">&nbsp &nbsp
+                        {{state.loadingText}}
+                    </p>
+                </div>
+            </div>
+        </div>
+        <!--Infinite scroll doesn't work on web for some reason.  Various solutions like collection-repeat cause double scroll bar-->
+        <div style="text-align: center;"
+             ng-if="state.moreDataCanBeLoaded && !platform.isMobile && !state.loading">
+            <md-button class="md-raised md-primary"
+                       ng-click="getHistory()">
+                <i class="icon ion-refresh"></i>&nbsp; Load
+                More
+            </md-button>
+        </div>
+        <ion-infinite-scroll ng-if="state.moreDataCanBeLoaded"
+                             on-infinite="getHistory()"
+                             distance="10%">
+        </ion-infinite-scroll>
+    </ion-content>
+    <div ng-include="'templates/fragments/floating-material-action-button-fragment.html'"></div>
+</ion-view>
