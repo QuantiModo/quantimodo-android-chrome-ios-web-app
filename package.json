@@ -66,7 +66,7 @@
     "mocha-junit-reporters": "1.23.6",
     "mocha-multi-reporters": "1.5.1",
     "mochawesome": "4.1.0",
-    "mochawesome-merge": "2.1.0",
+    "mochawesome-merge": "4.0.0",
     "mochawesome-report-generator": "4.0.1",
     "openapi-typescript-codegen": "0.9.3",
     "pkg-fetch": "3.2.2",
@@ -186,7 +186,7 @@
     "vinyl-source-stream": "2.0.0",
     "xcode": "3.0.1",
     "xml2js": "0.4.23",
-    "yargs": "15.0.2"
+    "yargs": "15.3.0"
   },
   "eslintConfig": {
     "env": {
