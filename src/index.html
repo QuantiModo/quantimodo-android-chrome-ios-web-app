@@ -9,7 +9,8 @@
     <meta content="frame-src * gap://ready; default-src * blob:; script-src 'self' 'unsafe-inline' 'unsafe-eval' * blob:; style-src 'self' 'unsafe-inline' * https://cdn.logrocket.io https://cdn.lr-ingest.io; font-src 'self' *.quantimo.do *.cloudfront.net qm-cordova-hot-code-push.s3.amazonaws.com fonts.zohostatic.com css.zohostatic.com data: https://fonts.zohostatic.com https://fonts.gstatic.com https://fonts.googleapis.com/; img-src * data:;"
           http-equiv="Content-Security-Policy">
     <title></title>
-      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss/dist/tailwind.min.css" >
+<!--      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss/dist/tailwind.min.css" >-->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/daisyui/2.13.6/full.css" integrity="sha512-NfIyKsjTWoxRLLG+7/BQAXECFVuuqpMDtcu8/tGytT7Cen9RVwuWQ5HMkap78EMHTc7q4vNSBWLTJ/HxJCcfsg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link href="css/app.css" rel="stylesheet">
     <!-- Delete me sometime <link href="lib/Ionicons/css/ionicons.min.css" rel="stylesheet">-->
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
@@ -43,7 +44,7 @@
     <script src="data/appSettings.js"></script> <!-- Must come after qmHelpers because we assign to qm.staticData -->
       <script src="data/qmStates.js"></script>
       <script src="data/stateNames.js"></script>
-      <script src="data/buildInfo.js"></script>
+      <script defer src="data/buildInfo.js"></script>
       <script defer src="data/units.js"></script>
       <script defer src="data/variableCategories.js"></script>
       <script defer src="data/commonVariables.js"></script>

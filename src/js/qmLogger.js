@@ -709,7 +709,7 @@ var qmLog = {
             if(qm.getAppSettings()){
                 options.appVersion = qm.getAppSettings().androidVersionCode;
             }
-            if(qm.staticData.buildInfo.gitCommitShaHash){
+            if(qm.staticData.buildInfo && qm.staticData.buildInfo.gitCommitShaHash){
                 options.appVersion = qm.staticData.buildInfo.gitCommitShaHash;
             }
             if(qm.platform.getWindow()){
