@@ -48,7 +48,7 @@ angular.module('starter',
                 });
             }
             if(!qm.urlHelper.onQMSubDomain()){
-                qm.appsManager.loadPrivateConfigFromJsonFile();
+                //qm.appsManager.loadPrivateConfigFromJsonFile();
             }
             qmService.showBlackRingLoader();
             if(qm.urlHelper.getParam('logout')){
