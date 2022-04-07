@@ -171,7 +171,7 @@
     "request-promise": "4.2.6",
     "run-sequence": "2.2.1",
     "shelljs": "0.8.4",
-    "simple-git": "1.126.0",
+    "simple-git": "3.3.0",
     "superagent": "6.1.0",
     "sw-precache": "5.2.1",
     "ts-node": "10.0.0",
