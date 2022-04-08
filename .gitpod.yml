@@ -1,5 +1,6 @@
-image:
-  file: .gitpod.Dockerfile
+
+# image:
+#   file: .gitpod.Dockerfile
 tasks:
   - command: gp await-port 3000 && sleep 3 && gp preview $(gp url 3000)/src/index.html
   - init: npm install -g eslint bower && npm install
@@ -7,3 +8,14 @@ tasks:
 ports:
   - port: 3000
     onOpen: ignore
+
+vscode:
+  extensions:
+    - yandeu.five-server
+    - codezombiech.gitignore
+    - esbenp.prettier-vscode
+    - christian-kohler.path-intellisense
+    - eg2.vscode-npm-script
+    - christian-kohler.npm-intellisense
+    - buianhthang.gitflow
+    - KnisterPeter.vscode-github

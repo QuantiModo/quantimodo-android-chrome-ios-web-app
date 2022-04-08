@@ -5,6 +5,7 @@
 
 An app for collecting, aggregating, and analyzing health data to identify the most effective ways to optimize your health and happiness. 
 
+=======
 ## Table of Contents
 
 <details>
@@ -30,9 +31,13 @@ An app for collecting, aggregating, and analyzing health data to identify the mo
 Explore the Demo [QUANTIMO](https://web.quantimo.do)
 
 ## The API
+
 For more info about the types of data you can store and get from the QuantiModo API, try out our
 [Interactive API Explorer](https://app.curedao.org/docs)
 
+## API
+For more info about the types of data you can store and get from the API, try out our
+[Interactive API Explorer](https://curedao.readme.io) with the access token `demo`
 
 ## Screenshots
 
@@ -81,7 +86,7 @@ For more info about the types of data you can store and get from the QuantiModo 
 - :wrench: Fork the project
 
 **Step 2**
-- :octocat: Clone the project
+- :octocat: Clone your forked version
 
 ```bash
 $ git clone https://github.com/your_username/curobot.git
@@ -89,22 +94,26 @@ $ git clone https://github.com/your_username/curobot.git
 
 **Step 3**
 :hammer: Install [Node.js](http://nodejs.org/).  (Windows Developers: We recommend [Visual Studio Community](https://taco.visualstudio.com/), which automatically installs everything you need!)
-
-**Step 4**
-:hammer: Install the latest Cordova and Ionic command-line tools in your terminal with `npm install -g gulp cordova@6.5.0 ionic@2.2.3 bower`.
-(Mac Users:  Avoid using `sudo` with your npm commands if possible as it tends to cause problems.)
+Install the FiveServer VSCode extension
 
 **Step 5**
- :running: Run `npm install -g bower` in the root of this repository.
+ :running: Run `npm install` and `npm run bower` in the root of this repository.
 
 **Step 6**
 :ticket: Create your application and get your client ID [here](https://builder.quantimo.do).
 
 **Step 7**
-:running: Run `gulp devSetup` in the root of this repository, follow the prompts, and you should see your app at
-[http://localhost:8100/#/](http://localhost:8100/#/) or similar.
+Make a copy of .env.example in the root called .env and add your client id to it
 
 **Step 8**
+3. Right click on src/index.html and click "Open with FiveServer"
+
+
+**Step 8 (optional if you need to build the mobile apps)**
+:hammer: Install the latest Cordova and Ionic command-line tools in your terminal with `npm install -g gulp cordova@6.5.0 ionic@2.2.3 bower`.
+(Mac Users:  Avoid using `sudo` with your npm commands if possible as it tends to cause problems.)
+
+**Step 9**
  :raising_hand: Need help?  Please [create an issue](/issues) or [contact us](http://help.quantimo.do)
 
 ## Known issues

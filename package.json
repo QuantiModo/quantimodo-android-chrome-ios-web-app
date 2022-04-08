@@ -176,7 +176,7 @@
     "request-promise": "4.2.6",
     "run-sequence": "2.2.1",
     "shelljs": "0.8.4",
-    "simple-git": "1.126.0",
+    "simple-git": "3.3.0",
     "superagent": "6.1.0",
     "sw-precache": "5.2.1",
     "sweetalert2": "10.16.9",
@@ -201,7 +201,7 @@
     "requireCurlyBraces": null
   },
   "scripts": {
-    "install": "nvm install 10.24.1 && nvm use 10.24.1 && npm install -g gulp bower ionic",
+    "install:global:packages": "nvm install 10.24.1 && nvm use 10.24.1 && npm install -g gulp bower ionic",
     "serve": "ionic serve src",
     "cy:open:development": "cypress install && cypress open --config-file cypress/config/cypress.development.json",
     "cy:open:localhost": "cypress install && cypress open --config-file cypress/config/cypress.localhost.json",
