@@ -106,10 +106,9 @@ Install the FiveServer VSCode extension
 Make a copy of .env.example in the root called .env and add your client id to it
 
 **Step 8**
-3. Right click on src/index.html and click "Open with FiveServer"
+Right click on src/index.html and click "Open with FiveServer"
 
-
-**Step 8 (optional if you need to build the mobile apps)**
+**Step 9 (optional if you need to build the mobile apps)**
 :hammer: Install the latest Cordova and Ionic command-line tools in your terminal with `npm install -g gulp cordova@6.5.0 ionic@2.2.3 bower`.
 (Mac Users:  Avoid using `sudo` with your npm commands if possible as it tends to cause problems.)
 
