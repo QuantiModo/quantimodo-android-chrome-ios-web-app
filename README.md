@@ -93,8 +93,7 @@ $ git clone https://github.com/your_username/curobot.git
 ```
 
 **Step 3**
-:hammer: Install [Node.js](http://nodejs.org/).  (Windows Developers: We recommend [Visual Studio Community](https://taco.visualstudio.com/), which automatically installs everything you need!)
-Install the FiveServer VSCode extension
+:hammer: Install [Node.js](http://nodejs.org/).  (Windows Developers: We recommend [Visual Studio Code](https://code.visualstudio.com/) with the [recommended extensions](.vscode/extensions.json), which automatically installs everything you need!)
 
 **Step 5**
  :running: Run `npm install` and `npm run bower` in the root of this repository.
@@ -115,10 +114,7 @@ Right click on src/index.html and click "Open with FiveServer"
 **Step 9**
  :raising_hand: Need help?  Please [create an issue](/issues) or [contact us](http://help.quantimo.do)
 
-## Known issues
-to be added ...
-
-## Getting involved
+## Get Involved
 
 [CONTRIBUTING](https://www.curedao.org/join-us)
 
