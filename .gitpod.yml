@@ -7,7 +7,7 @@ tasks:
     command: npm -g install bower && bower install
 ports:
   - port: 5555
-    onOpen: open-preview
+    onOpen: open-browser
 vscode:
   extensions:
     - yandeu.five-server

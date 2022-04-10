@@ -1,5 +1,5 @@
 <!-- PROJECT TITLE -->
-  <h1 align="center">CuRoBoT</h1>
+<h1 align="center">CuRoBoT</h1>
 
 An app for collecting, aggregating, and analyzing health data to identify the most effective ways to optimize your health and happiness. 
 
@@ -8,24 +8,28 @@ An app for collecting, aggregating, and analyzing health data to identify the mo
 
 - [Project Demo](#demo)
 - [API](#api)
-- [Features and Screenshots](#screenshots)
+- [Features and Screenshots](#features-and-screenshots)
 - [Technology Stack](#technology-stack)
 - [Local Development](#local-development)
-- [Getting Involved](#getting-involved)
+- [Getting Involved](#get-involved)
 - [License](#license)
 
 </details>
 
-## Project Demo
+## Demo
 
 Try the [demo](https://app.curedao.org)
 
-## The API
+## API
 
 For more info about the types of data you can store and get from the API, try out our
 [Interactive API Explorer](https://curedao.readme.io) with the access token `demo`.
 
 ## Quick Start
+
+:wrench: Fork the project, click the button below, and allow Gitpod to open port 5555.  It should then open the 
+project in a new tab. 
+
 [![Open in Gitpod](https://camo.githubusercontent.com/1eb1ddfea6092593649f0117f7262ffa8fbd3017/68747470733a2f2f676974706f642e696f2f627574746f6e2f6f70656e2d696e2d676974706f642e737667)](https://gitpod-referer.now.sh/api/gitpod-referer-redirect)
 
 ## Local Development
