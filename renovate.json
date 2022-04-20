@@ -9,7 +9,8 @@
     "package.json",
     "src/package.json",
     "tests/package.json",
-    "src/js/angular-material-datetimepicker/**"
+    "src/js/angular-material-datetimepicker/**",
+    "*"
   ],
   "packageRules": [
     {
