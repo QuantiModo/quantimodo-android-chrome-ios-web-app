@@ -20,7 +20,7 @@
     "portable-fetch": "^3.0.0"
   },
   "devDependencies": {
-    "@types/node": "8.10.64",
+    "@types/node": "16.11.27",
     "typescript": "2.9.2"
   }
 }
