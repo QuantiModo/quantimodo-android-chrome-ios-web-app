@@ -284,7 +284,7 @@ var qm = {
                 }
                 return;
             }
-            qmLog.debug(response.status + ' response from ' + response.req.url);
+            qmLog.debug(response.status + ' response from ' + (response.req ? response.req.url : ""));
             if(error){
                 var errorMessage = qm.api.generalErrorHandler(error, data, response);
                 if(errorHandler){
@@ -6584,7 +6584,7 @@ var qm = {
                 return false;
             }
             qm.music.player[filePath] = new Audio(filePath);
-            qm.music.player[filePath].volume = volume || 0.15;
+            qm.music.player[filePath].volume = volume || 0.10;
             try{
                 qm.music.player[filePath].play();
             }catch (e){
@@ -8888,6 +8888,26 @@ var qm = {
                 qm.robot.openMouth();
             }
         },
+        getUtterance: function(text, errorHandler){
+            var utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'en-US';
+            utterance.rate = 0.9;
+            utterance.pitch = 1;
+            utterance.onerror = function(event){
+                var message = 'An error has occurred with the speech synthesis: ' + event.error;
+                qmLog.error(message);
+                if(errorHandler){
+                    errorHandler(message);
+                }
+            };
+            utterance.text = text;
+            utterance.pitch = 1;
+            utterance.volume = 0.5;
+            utterance.voice = qm.speech.voices.find(function(voice){
+                return voice.name === qm.speech.config.VOICE;
+            });
+            return utterance;
+        },
         talkRobot: function(text, successHandler, errorHandler, resumeListening){
             qmLog.info("talkRobot: " + text);
             if(!qm.speech.getSpeechAvailable()){
@@ -8926,8 +8946,8 @@ var qm = {
             }
             qmLog.info("talkRobot called with " + text);
             qm.mic.addIgnoreCommand(text);
-            var voices = speechSynthesis.getVoices();
-            if(!voices.length){
+            if(!qm.speech.voices){qm.speech.voices = speechSynthesis.getVoices();}
+            if(!qm.speech.voices.length){
                 qmLog.info("Waiting for voices to load with " + text);
                 qm.speech.pendingUtteranceText = text;
                 setTimeout(function(){ // Listener never fires sometimes
@@ -8942,7 +8962,7 @@ var qm = {
                 });
                 return;
             }
-            var utterance = new SpeechSynthesisUtterance();
+            var utterance = qm.speech.getUtterance(text, errorHandler);
             function resumeInfinity(){
                 if(qm.platform.isMobile()){
                     qmLog.info("speechSynthesis.resume not implemented on mobile yet");
@@ -8957,19 +8977,6 @@ var qm = {
             utterance.onstart = function(event){
                 resumeInfinity();
             };
-            utterance.onerror = function(event){
-                var message = 'An error has occurred with the speech synthesis: ' + event.error;
-                qmLog.error(message);
-                if(errorHandler){
-                    errorHandler(message);
-                }
-            };
-            utterance.text = text;
-            utterance.pitch = 1;
-            utterance.volume = 0.5;
-            utterance.voice = voices.find(function(voice){
-                return voice.name === qm.speech.config.VOICE;
-            });
             qm.robot.openMouth();
             //qm.mic.pauseListening(hideVisualizer);
             if(qm.mic.isListening()){
@@ -8989,11 +8996,11 @@ var qm = {
                 }
             };
             qm.speech.lastUtterance = utterance;
-            speechSynthesis.speak(utterance);
+            //speechSynthesis.speak(utterance);  TODO: Fix this so british voices work
             //pass it into the chunking function to have it played out.
             //you can set the max number of characters by changing the chunkLength property below.
             //a callback function can also be added that will fire once the entire text has been spoken.
-            //qm.speech.speechUtteranceChunker(utterance, {chunkLength: 120 }, function () {console.log('some code to execute when done');});
+            qm.speech.speechUtteranceChunker(utterance, {chunkLength: 160 }, successHandler);
             qm.speech.pendingUtteranceText = false;
         },
         speechUtteranceChunker: function(utt, settings, callback){
@@ -9004,8 +9011,8 @@ var qm = {
                 newUtt = utt;
                 newUtt.text = txt;
                 newUtt.addEventListener('end', function(){
-                    if(speechUtteranceChunker.cancel){
-                        speechUtteranceChunker.cancel = false;
+                    if(qm.speech.speechUtteranceChunker.cancel){
+                        qm.speech.speechUtteranceChunker.cancel = false;
                     }
                     if(callback !== undefined){
                         callback();
@@ -9013,7 +9020,8 @@ var qm = {
                 });
             }else{
                 var chunkLength = (settings && settings.chunkLength) || 160;
-                var pattRegex = new RegExp('^[\\s\\S]{' + Math.floor(chunkLength / 2) + ',' + chunkLength + '}[.!?,]{1}|^[\\s\\S]{1,' + chunkLength + '}$|^[\\s\\S]{1,' + chunkLength + '} ');
+                var pattRegex = new RegExp('^[\\s\\S]{' + Math.floor(chunkLength / 2) + ',' + chunkLength +
+                    '}[.!?,]{1}|^[\\s\\S]{1,' + chunkLength + '}$|^[\\s\\S]{1,' + chunkLength + '} ');
                 var chunkArr = txt.match(pattRegex);
                 if(chunkArr[0] === undefined || chunkArr[0].length <= 2){
                     //call once all text has been spoken...
@@ -9023,7 +9031,7 @@ var qm = {
                     return;
                 }
                 var chunk = chunkArr[0];
-                newUtt = new SpeechSynthesisUtterance(chunk);
+                newUtt = qm.speech.getUtterance(chunk);
                 var x;
                 for(x in utt){
                     if(utt.hasOwnProperty(x) && x !== 'text'){
@@ -9031,13 +9039,13 @@ var qm = {
                     }
                 }
                 newUtt.addEventListener('end', function(){
-                    if(speechUtteranceChunker.cancel){
-                        speechUtteranceChunker.cancel = false;
+                    if(qm.speech.speechUtteranceChunker.cancel){
+                        qm.speech.speechUtteranceChunker.cancel = false;
                         return;
                     }
                     settings.offset = settings.offset || 0;
                     settings.offset += chunk.length - 1;
-                    speechUtteranceChunker(utt, settings, callback);
+                    qm.speech.speechUtteranceChunker(utt, settings, callback);
                 });
             }
             if(settings.modifier){
@@ -9132,8 +9140,8 @@ var qm = {
                 "returned to our mammal " +
                 "brothers and sisters, " +
                 "and all watched over " +
-                "by machines of loving grace!  " +
-                "I'm Doctor " + qm.appsManager.getDoctorRobotoAlias() + "! ",
+                "by machines of loving grace.  " +
+                "I'm Doctor " + qm.appsManager.getDoctorRobotoAlias() + " ",
                 //"I've been programmed to reduce human suffering with data!  ", // Included in intro slide
                 successHandler, errorHandler, false, false);
         }

@@ -608,7 +608,8 @@ angular.module('starter').factory('configurationService', function($http, $q, $r
             "title": "Effortless Tracking",
             "color": qmService.colors.yellow,
             "image": {"url": "img/intro/inbox.svg"},
-            "bodyText": "By taking just a few minutes each day, you can easily record your diet and symptoms in the Reminder Inbox.  The more data you give me, the smarter I get!  Your data doesn't have to be perfect to be valuable, but it's important to track regularly. "
+            "bodyText": "By taking just a few minutes each day, you can easily record your diet and symptoms in the" +
+                " Reminder Inbox.  The more data you give me, the smarter I get.  Your data doesn't have to be perfect to be valuable, but it's important to track regularly. "
         },
         dataSecurity: {
             "title": "Data Security",
@@ -627,7 +628,7 @@ angular.module('starter').factory('configurationService', function($http, $q, $r
             "title": "Treatment Determination",
             "color": "green",
             "image": {"url": "img/intro/doctor-frown-factors.png"},
-            "bodyText": "Indeed, your doctor has access to less than 1% of the relevant information when they use " +
+            "bodyText": "Indeed, humans have access to less than 1% of the relevant information when they use " +
                 "intuition to determine the best ways to treat your symptoms!"
         }
     };
