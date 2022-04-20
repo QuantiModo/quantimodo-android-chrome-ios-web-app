@@ -296,7 +296,7 @@ var qmLog = {
         }
     },
     error: function(name, message, errorSpecificMetaData, stackTrace){
-        debugger
+        //debugger
         if(typeof message === 'object' && message !== null){
             errorSpecificMetaData = message;
             message = null;
@@ -598,12 +598,13 @@ var qmLog = {
             qmLog.globalMetaData.local_storage = qm.storage.getLocalStorageList();
         } // Too slow to do for every error
         qmLog.globalMetaData.api = {log: qm.api.requestLog, ApiUrl: qm.api.getApiUrl()};
-        if(qm.getAppSettings()){
+        var as = qm.getAppSettings();
+        if(as){
             qmLog.globalMetaData.api.client_id = qm.api.getClientId();
             qmLog.globalMetaData.build = {
-                build_server: qm.getAppSettings().buildServer,
-                build_link: qm.getAppSettings().buildLink,
-                build_at: qm.timeHelper.getTimeSinceString(qm.getAppSettings().builtAt),
+                build_server: as.buildServer,
+                build_link: as.buildLink,
+                build_at: qm.timeHelper.getTimeSinceString(as.builtAt),
             };
         }
         qmLog.globalMetaData.test_app_url = getTestUrl();

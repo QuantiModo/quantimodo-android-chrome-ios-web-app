@@ -1,0 +1,26 @@
+{
+  "name": "qm-redirector",
+  "homepage": "https://github.com/mikepsinn/qm-redirector",
+  "authors": [
+    "Mike P. Sinn <m@quantimodo.com>"
+  ],
+  "description": "",
+  "main": "src/redirector.js",
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "_release": "a1f6ca5766",
+  "_resolution": {
+    "type": "branch",
+    "branch": "master",
+    "commit": "a1f6ca5766b97ceafc4312556d779c29f530ff66"
+  },
+  "_source": "https://github.com/mikepsinn/qm-redirector.git",
+  "_target": "*",
+  "_originalSource": "qm-redirector"
+}

@@ -1,0 +1,39 @@
+{
+  "name": "simple-web-notification",
+  "version": "2.0.1",
+  "description": "Web Notifications made easy.",
+  "authors": [
+    "Sagie Gur-Ari <sagiegurari@gmail.com>"
+  ],
+  "license": "Apache-2.0",
+  "homepage": "http://github.com/sagiegurari/simple-web-notification",
+  "keywords": [
+    "notifications",
+    "web notifications"
+  ],
+  "main": "web-notification.js",
+  "ignore": [
+    "node_modules",
+    "bower_components",
+    ".github",
+    "project",
+    "test",
+    "tests",
+    "example",
+    "target",
+    ".travis.yml",
+    ".atom.*.yml",
+    "Gruntfile.js"
+  ],
+  "dependencies": {},
+  "devDependencies": {},
+  "_release": "2.0.1",
+  "_resolution": {
+    "type": "version",
+    "tag": "2.0.1",
+    "commit": "b31f9f589af4d535740aad66c7e23ba06b97ca11"
+  },
+  "_source": "https://github.com/sagiegurari/simple-web-notification.git",
+  "_target": "*",
+  "_originalSource": "simple-web-notification"
+}

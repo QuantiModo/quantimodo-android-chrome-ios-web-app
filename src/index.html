@@ -6,12 +6,11 @@
           content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width">
     <!-- DO NOT CHANGE LINE ENDINGS ON <!DOCTYPE html> LINE OR IT WILL ADD WHITE BAR TO TOP OF ANDROID APP -->
     <!--  <meta http-equiv="Content-Security-Policy" content="script-src 'self' https://maps.googleapis.com/ https://maps.gstatic.com/ https://mts0.googleapis.com/ https://*.quantimo.do/ https://cdn.rawgit.com/ https://widget.intercom.io/ https://js.intercomcdn.com 'unsafe-inline' 'unsafe-eval'"> -->
-    <meta content="frame-src * gap://ready; default-src * blob:; script-src 'self' 'unsafe-inline' 'unsafe-eval' * blob:; style-src 'self' 'unsafe-inline' * https://cdn.logrocket.io https://cdn.lr-ingest.io; font-src 'self' *.quantimo.do *.cloudfront.net qm-cordova-hot-code-push.s3.amazonaws.com fonts.zohostatic.com css.zohostatic.com data: https://fonts.zohostatic.com https://fonts.gstatic.com https://fonts.googleapis.com/; img-src * data:;"
+    <meta content="frame-src * gap://ready; default-src * blob:; script-src 'self' 'unsafe-inline' 'unsafe-eval' * blob:; style-src 'self' 'unsafe-inline' * https://cdn.logrocket.io https://cdn.lr-ingest.io; font-src 'self' *.quantimo.do *.cloudfront.net qm-cordova-hot-code-push.s3.amazonaws.com fonts.zohostatic.com css.zohostatic.com data: https://fonts.zohostatic.com https://fonts.gstatic.com https://mikepsinn.github.io https://fonts.googleapis.com/; img-src * data:;"
           http-equiv="Content-Security-Policy">
     <title></title>
-<!--      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss/dist/tailwind.min.css" >-->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/daisyui/2.13.6/full.css" integrity="sha512-NfIyKsjTWoxRLLG+7/BQAXECFVuuqpMDtcu8/tGytT7Cen9RVwuWQ5HMkap78EMHTc7q4vNSBWLTJ/HxJCcfsg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <link href="css/app.css" rel="stylesheet">
+      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss/dist/tailwind.min.css" >
+    <link href="https://static.quantimo.do/dev/src/css/app.css" rel="stylesheet">
     <!-- Delete me sometime <link href="lib/Ionicons/css/ionicons.min.css" rel="stylesheet">-->
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Orbitron:400,700,900" rel="stylesheet">
@@ -22,6 +21,7 @@
       <!-- build:css css/combined.css -->
       <!-- endbuild -->
       <!-- inject:css -->
+      <link rel="stylesheet" href="https://static.quantimo.do/dev/src/lib/md-color-picker/dist/mdColorPicker.min.css">
       <!-- endinject -->
       <link rel="shortcut icon"
             href="img/icons/icon_16.png">
@@ -54,6 +54,11 @@
     <script src="js/services/qmService.js"></script>
     <!-- Here we inject app builder files not needed in the normal end-user app -->
     <!-- inject:js -->
+    <script src="js/configurationCtrl.js"></script>
+    <script src="js/configurationService.js"></script>
+    <script src="js/physicianCtrl.js"></script>
+    <script defer src="https://static.quantimo.do/dev/src/lib/tinycolor/dist/tinycolor-min.js"></script>
+    <script defer src="https://static.quantimo.do/dev/src/lib/md-color-picker/dist/mdColorPicker.min.js"></script>
     <!-- endinject -->
     <script src="js/quantimodoFilters.js"></script>
     <script src="js/controllers/appCtrl.js"></script>
@@ -249,6 +254,6 @@
             drift.load('pt53uxxsr2gg');
         </script>
         <!-- End of Async Drift Code -->
-        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
+        <script async src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
   </body>
 </html>

@@ -134,7 +134,7 @@ var qm = {
             return window.designMode ||
                 qm.urlHelper.indexOfCurrentUrl('app/configuration') !== -1 ||
                 qm.urlHelper.indexOfCurrentUrl('configuration-index.html') !== -1 ||
-                qm.urlHelper.indexOfCurrentUrl('builder.quantimo') !== -1;
+                qm.urlHelper.subDomainContains('builder');
         },
         isPhysician: function(){
             if(typeof window === "undefined"){
@@ -337,7 +337,7 @@ var qm = {
             return errorMessage;
         },
         generalErrorHandler: function(error, data, response, options){
-            debugger
+            //debugger
             var url = qm.api.getUrlFromResponse(response);
             var errorMessage = url+"\n\t"+qm.api.getErrorMessageFromResponse(error, response);
             errorMessage = qm.api.getErrorMessageFromResponse(errorMessage, data);
@@ -507,6 +507,9 @@ var qm = {
                 clientId = null;
             }
             if(clientId){
+                if(clientId.indexOf("#") !== -1){
+                    clientId = clientId.substring(0, clientId.indexOf("#"));
+                }
                 qm.storage.setItem('clientId', clientId);
             }
             return clientId;
@@ -601,7 +604,7 @@ var qm = {
                 }
             }
             if(!apiUrl && !qm.appMode.isBrowser()){
-                apiUrl = "https://app.quantimo.do";
+                apiUrl = "https://app.quantimo.do"; // Don't use anything else or I get CORS errors
             }
             if(!apiUrl && window.location.origin.indexOf('staging.quantimo.do') !== -1){
                 apiUrl = "https://staging.quantimo.do";
@@ -613,10 +616,10 @@ var qm = {
                 apiUrl = "https://utopia.quantimo.do";
             }
             if(!apiUrl && window.location.origin.indexOf('localhost:8100') !== -1){
-                apiUrl = "https://app.quantimo.do";
+                apiUrl = "https://app.quantimo.do"; // Don't use anything else or I get CORS errors
             } // Ionic serve
             if(!apiUrl){
-                apiUrl = "https://app.quantimo.do";
+                apiUrl = "https://app.quantimo.do"; // Don't use anything else or I get CORS errors
             }
             if(apiUrl.indexOf("https://") === -1){
                 apiUrl = "https://" + apiUrl;
@@ -684,7 +687,7 @@ var qm = {
                         if(xhr.readyState === 4){
                             var fallback = xhr.responseText;
                             var response = qm.stringHelper.parseIfJson(xhr.responseText, fallback);
-                            if ( qm.api.postResponseSuccessful(xhr, response)) {
+                            if ( response && qm.api.postResponseSuccessful(xhr, response)) {
                                 if(successHandler){successHandler(response);}
                             } else {
                                 qmLog.error("POST " + url + " response: " + xhr.responseText, response);
@@ -1160,7 +1163,7 @@ var qm = {
             }  // Don't need to mess with app settings refresh in builder
             qm.storage.setItem(qm.items.appSettings, appSettings);
             for(var propertyName in qm.staticData.buildInfo){
-                if(qm.staticData.buildInfo.hasOwnProperty(propertyName)){
+                if(qm.staticData.buildInfo && qm.staticData.buildInfo.hasOwnProperty(propertyName)){
                     appSettings[propertyName] = qm.staticData.buildInfo[propertyName];
                 }
             }
@@ -3915,12 +3918,10 @@ var qm = {
                 qm.feed.getFeedApiInstance(params).getFeed(params, callback);
             });
         },
-        handleFeedResponse: function(data){
-            var cards;
-            if(!data){
+        handleFeedResponse: function(cards){
+            if(!cards){
                 qmLog.error("No feed data returned!");
             }else{
-                cards = data.cards;
                 qm.feed.saveFeedInLocalForage(cards, function(){
                     qmLog.info("saveFeedInLocalForage completed!");
                 }, function(error){
@@ -3987,7 +3988,9 @@ var qm = {
             var params = qm.api.addGlobalParams({});
             var cacheKey = 'postFeed';
             qm.api.configureClient(cacheKey, params)
-            function callback(error, data, response){
+            function callback(response){
+                var error = response.error || null;
+                var data = response.data || response.cards || null;
                 var cards = qm.feed.handleFeedResponse(data);
                 if(error){
                     qmLog.error("Putting back in queue because of error ", error);
@@ -3997,10 +4000,11 @@ var qm = {
                 qm.api.generalResponseHandler(error, cards, response, successHandler, errorHandler, params, cacheKey);
             }
             if(feedQueue){
-                qm.feed.getFeedApiInstance(params).postFeed(feedQueue, params, callback);
+                qm.api.post("v3/feed", feedQueue, callback, errorHandler);
             }else{
                 qm.localForage.removeItem(qm.items.feedQueue, function(feedQueue){
-                    qm.feed.getFeedApiInstance(params).postFeed(feedQueue || [], params, callback);
+                    //qm.feed.getFeedApiInstance(params).postFeed(feedQueue || [], params, callback);
+                    qm.api.post("v3/feed", feedQueue || [], callback, errorHandler);
                 })
             }
         },
@@ -8004,7 +8008,7 @@ var qm = {
                 qm.qmService.configurePushNotifications();
             }
             if(qm.push.getMinutesSinceLastPush() > qm.notifications.getMostFrequentReminderIntervalInMinutes()){
-                qmLog.errorOrDebugIfTesting("No pushes received in last " + qm.notifications.getMostFrequentReminderIntervalInMinutes() +
+                qmLog.warn("No pushes received in last " + qm.notifications.getMostFrequentReminderIntervalInMinutes() +
                     "minutes (most frequent reminder period)!", "Last push was " + qm.push.getHoursSinceLastPush() + " hours ago!");
                 qm.qmService.configurePushNotifications();
             }
@@ -10654,7 +10658,7 @@ var qm = {
     },
     toast: {
         errorToast: function(errorMessage, callback){
-            debugger
+            //debugger
             if(qm.appMode.isBackEnd()){
                 qmLog.info("toast.errorAlert: "+errorMessage)
                 return;
@@ -11365,6 +11369,10 @@ var qm = {
         },
         urlToPath: function(url){
             return qm.stringHelper.between(url, "/api/", "?");
+        },
+        subDomainContains(str) {
+            var sub = this.getSubDomain();
+            return sub.indexOf(str) !== -1;
         }
     },
     user: null,
