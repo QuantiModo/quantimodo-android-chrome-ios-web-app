@@ -10,10 +10,12 @@ String.prototype.toCamelCase = function(){
         return $1.toUpperCase().replace('_', '');
     });
 };
-navigator.getUserMedia = ( navigator.getUserMedia ||
-    navigator.webkitGetUserMedia ||
-    navigator.mozGetUserMedia ||
-    navigator.msGetUserMedia);
+if(typeof navigator !== "undefined"){
+    navigator.getUserMedia = ( navigator.getUserMedia ||
+        navigator.webkitGetUserMedia ||
+        navigator.mozGetUserMedia ||
+        navigator.msGetUserMedia);
+}
 var qm = {
     alert: {
         errorAlert: function(title, text){
@@ -134,7 +136,7 @@ var qm = {
             return window.designMode ||
                 qm.urlHelper.indexOfCurrentUrl('app/configuration') !== -1 ||
                 qm.urlHelper.indexOfCurrentUrl('configuration-index.html') !== -1 ||
-                qm.urlHelper.indexOfCurrentUrl('builder.quantimo') !== -1;
+                qm.urlHelper.subDomainContains('builder');
         },
         isPhysician: function(){
             if(typeof window === "undefined"){
@@ -284,7 +286,7 @@ var qm = {
                 }
                 return;
             }
-            qmLog.debug(response.status + ' response from ' + response.req.url);
+            qmLog.debug(response.status + ' response from ' + (response.req ? response.req.url : ""));
             if(error){
                 var errorMessage = qm.api.generalErrorHandler(error, data, response);
                 if(errorHandler){
@@ -337,7 +339,7 @@ var qm = {
             return errorMessage;
         },
         generalErrorHandler: function(error, data, response, options){
-            debugger
+            //debugger
             var url = qm.api.getUrlFromResponse(response);
             var errorMessage = url+"\n\t"+qm.api.getErrorMessageFromResponse(error, response);
             errorMessage = qm.api.getErrorMessageFromResponse(errorMessage, data);
@@ -507,6 +509,9 @@ var qm = {
                 clientId = null;
             }
             if(clientId){
+                if(clientId.indexOf("#") !== -1){
+                    clientId = clientId.substring(0, clientId.indexOf("#"));
+                }
                 qm.storage.setItem('clientId', clientId);
             }
             return clientId;
@@ -601,7 +606,7 @@ var qm = {
                 }
             }
             if(!apiUrl && !qm.appMode.isBrowser()){
-                apiUrl = "https://app.quantimo.do";
+                apiUrl = "https://app.quantimo.do"; // Don't use anything else or I get CORS errors
             }
             if(!apiUrl && window.location.origin.indexOf('staging.quantimo.do') !== -1){
                 apiUrl = "https://staging.quantimo.do";
@@ -613,10 +618,10 @@ var qm = {
                 apiUrl = "https://utopia.quantimo.do";
             }
             if(!apiUrl && window.location.origin.indexOf('localhost:8100') !== -1){
-                apiUrl = "https://app.quantimo.do";
+                apiUrl = "https://app.quantimo.do"; // Don't use anything else or I get CORS errors
             } // Ionic serve
             if(!apiUrl){
-                apiUrl = "https://app.quantimo.do";
+                apiUrl = "https://app.quantimo.do"; // Don't use anything else or I get CORS errors
             }
             if(apiUrl.indexOf("https://") === -1){
                 apiUrl = "https://" + apiUrl;
@@ -684,7 +689,7 @@ var qm = {
                         if(xhr.readyState === 4){
                             var fallback = xhr.responseText;
                             var response = qm.stringHelper.parseIfJson(xhr.responseText, fallback);
-                            if ( qm.api.postResponseSuccessful(xhr, response)) {
+                            if ( response && qm.api.postResponseSuccessful(xhr, response)) {
                                 if(successHandler){successHandler(response);}
                             } else {
                                 qmLog.error("POST " + url + " response: " + xhr.responseText, response);
@@ -1160,7 +1165,7 @@ var qm = {
             }  // Don't need to mess with app settings refresh in builder
             qm.storage.setItem(qm.items.appSettings, appSettings);
             for(var propertyName in qm.staticData.buildInfo){
-                if(qm.staticData.buildInfo.hasOwnProperty(propertyName)){
+                if(qm.staticData.buildInfo && qm.staticData.buildInfo.hasOwnProperty(propertyName)){
                     appSettings[propertyName] = qm.staticData.buildInfo[propertyName];
                 }
             }
@@ -3915,12 +3920,10 @@ var qm = {
                 qm.feed.getFeedApiInstance(params).getFeed(params, callback);
             });
         },
-        handleFeedResponse: function(data){
-            var cards;
-            if(!data){
+        handleFeedResponse: function(cards){
+            if(!cards){
                 qmLog.error("No feed data returned!");
             }else{
-                cards = data.cards;
                 qm.feed.saveFeedInLocalForage(cards, function(){
                     qmLog.info("saveFeedInLocalForage completed!");
                 }, function(error){
@@ -3987,7 +3990,9 @@ var qm = {
             var params = qm.api.addGlobalParams({});
             var cacheKey = 'postFeed';
             qm.api.configureClient(cacheKey, params)
-            function callback(error, data, response){
+            function callback(response){
+                var error = response.error || null;
+                var data = response.data || response.cards || null;
                 var cards = qm.feed.handleFeedResponse(data);
                 if(error){
                     qmLog.error("Putting back in queue because of error ", error);
@@ -3997,10 +4002,11 @@ var qm = {
                 qm.api.generalResponseHandler(error, cards, response, successHandler, errorHandler, params, cacheKey);
             }
             if(feedQueue){
-                qm.feed.getFeedApiInstance(params).postFeed(feedQueue, params, callback);
+                qm.api.post("v3/feed", feedQueue, callback, errorHandler);
             }else{
                 qm.localForage.removeItem(qm.items.feedQueue, function(feedQueue){
-                    qm.feed.getFeedApiInstance(params).postFeed(feedQueue || [], params, callback);
+                    //qm.feed.getFeedApiInstance(params).postFeed(feedQueue || [], params, callback);
+                    qm.api.post("v3/feed", feedQueue || [], callback, errorHandler);
                 })
             }
         },
@@ -6580,7 +6586,7 @@ var qm = {
                 return false;
             }
             qm.music.player[filePath] = new Audio(filePath);
-            qm.music.player[filePath].volume = volume || 0.15;
+            qm.music.player[filePath].volume = volume || 0.10;
             try{
                 qm.music.player[filePath].play();
             }catch (e){
@@ -8004,7 +8010,7 @@ var qm = {
                 qm.qmService.configurePushNotifications();
             }
             if(qm.push.getMinutesSinceLastPush() > qm.notifications.getMostFrequentReminderIntervalInMinutes()){
-                qmLog.errorOrDebugIfTesting("No pushes received in last " + qm.notifications.getMostFrequentReminderIntervalInMinutes() +
+                qmLog.warn("No pushes received in last " + qm.notifications.getMostFrequentReminderIntervalInMinutes() +
                     "minutes (most frequent reminder period)!", "Last push was " + qm.push.getHoursSinceLastPush() + " hours ago!");
                 qm.qmService.configurePushNotifications();
             }
@@ -8884,6 +8890,26 @@ var qm = {
                 qm.robot.openMouth();
             }
         },
+        getUtterance: function(text, errorHandler){
+            var utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'en-US';
+            utterance.rate = 0.9;
+            utterance.pitch = 1;
+            utterance.onerror = function(event){
+                var message = 'An error has occurred with the speech synthesis: ' + event.error;
+                qmLog.error(message);
+                if(errorHandler){
+                    errorHandler(message);
+                }
+            };
+            utterance.text = text;
+            utterance.pitch = 1;
+            utterance.volume = 0.5;
+            utterance.voice = qm.speech.voices.find(function(voice){
+                return voice.name === qm.speech.config.VOICE;
+            });
+            return utterance;
+        },
         talkRobot: function(text, successHandler, errorHandler, resumeListening){
             qmLog.info("talkRobot: " + text);
             if(!qm.speech.getSpeechAvailable()){
@@ -8922,8 +8948,8 @@ var qm = {
             }
             qmLog.info("talkRobot called with " + text);
             qm.mic.addIgnoreCommand(text);
-            var voices = speechSynthesis.getVoices();
-            if(!voices.length){
+            if(!qm.speech.voices){qm.speech.voices = speechSynthesis.getVoices();}
+            if(!qm.speech.voices.length){
                 qmLog.info("Waiting for voices to load with " + text);
                 qm.speech.pendingUtteranceText = text;
                 setTimeout(function(){ // Listener never fires sometimes
@@ -8938,7 +8964,7 @@ var qm = {
                 });
                 return;
             }
-            var utterance = new SpeechSynthesisUtterance();
+            var utterance = qm.speech.getUtterance(text, errorHandler);
             function resumeInfinity(){
                 if(qm.platform.isMobile()){
                     qmLog.info("speechSynthesis.resume not implemented on mobile yet");
@@ -8953,19 +8979,6 @@ var qm = {
             utterance.onstart = function(event){
                 resumeInfinity();
             };
-            utterance.onerror = function(event){
-                var message = 'An error has occurred with the speech synthesis: ' + event.error;
-                qmLog.error(message);
-                if(errorHandler){
-                    errorHandler(message);
-                }
-            };
-            utterance.text = text;
-            utterance.pitch = 1;
-            utterance.volume = 0.5;
-            utterance.voice = voices.find(function(voice){
-                return voice.name === qm.speech.config.VOICE;
-            });
             qm.robot.openMouth();
             //qm.mic.pauseListening(hideVisualizer);
             if(qm.mic.isListening()){
@@ -8985,11 +8998,11 @@ var qm = {
                 }
             };
             qm.speech.lastUtterance = utterance;
-            speechSynthesis.speak(utterance);
+            //speechSynthesis.speak(utterance);  TODO: Fix this so british voices work
             //pass it into the chunking function to have it played out.
             //you can set the max number of characters by changing the chunkLength property below.
             //a callback function can also be added that will fire once the entire text has been spoken.
-            //qm.speech.speechUtteranceChunker(utterance, {chunkLength: 120 }, function () {console.log('some code to execute when done');});
+            qm.speech.speechUtteranceChunker(utterance, {chunkLength: 160 }, successHandler);
             qm.speech.pendingUtteranceText = false;
         },
         speechUtteranceChunker: function(utt, settings, callback){
@@ -9000,8 +9013,8 @@ var qm = {
                 newUtt = utt;
                 newUtt.text = txt;
                 newUtt.addEventListener('end', function(){
-                    if(speechUtteranceChunker.cancel){
-                        speechUtteranceChunker.cancel = false;
+                    if(qm.speech.speechUtteranceChunker.cancel){
+                        qm.speech.speechUtteranceChunker.cancel = false;
                     }
                     if(callback !== undefined){
                         callback();
@@ -9009,7 +9022,8 @@ var qm = {
                 });
             }else{
                 var chunkLength = (settings && settings.chunkLength) || 160;
-                var pattRegex = new RegExp('^[\\s\\S]{' + Math.floor(chunkLength / 2) + ',' + chunkLength + '}[.!?,]{1}|^[\\s\\S]{1,' + chunkLength + '}$|^[\\s\\S]{1,' + chunkLength + '} ');
+                var pattRegex = new RegExp('^[\\s\\S]{' + Math.floor(chunkLength / 2) + ',' + chunkLength +
+                    '}[.!?,]{1}|^[\\s\\S]{1,' + chunkLength + '}$|^[\\s\\S]{1,' + chunkLength + '} ');
                 var chunkArr = txt.match(pattRegex);
                 if(chunkArr[0] === undefined || chunkArr[0].length <= 2){
                     //call once all text has been spoken...
@@ -9019,7 +9033,7 @@ var qm = {
                     return;
                 }
                 var chunk = chunkArr[0];
-                newUtt = new SpeechSynthesisUtterance(chunk);
+                newUtt = qm.speech.getUtterance(chunk);
                 var x;
                 for(x in utt){
                     if(utt.hasOwnProperty(x) && x !== 'text'){
@@ -9027,13 +9041,13 @@ var qm = {
                     }
                 }
                 newUtt.addEventListener('end', function(){
-                    if(speechUtteranceChunker.cancel){
-                        speechUtteranceChunker.cancel = false;
+                    if(qm.speech.speechUtteranceChunker.cancel){
+                        qm.speech.speechUtteranceChunker.cancel = false;
                         return;
                     }
                     settings.offset = settings.offset || 0;
                     settings.offset += chunk.length - 1;
-                    speechUtteranceChunker(utt, settings, callback);
+                    qm.speech.speechUtteranceChunker(utt, settings, callback);
                 });
             }
             if(settings.modifier){
@@ -9128,8 +9142,8 @@ var qm = {
                 "returned to our mammal " +
                 "brothers and sisters, " +
                 "and all watched over " +
-                "by machines of loving grace!  " +
-                "I'm Doctor " + qm.appsManager.getDoctorRobotoAlias() + "! ",
+                "by machines of loving grace.  " +
+                "I'm Doctor " + qm.appsManager.getDoctorRobotoAlias() + " ",
                 //"I've been programmed to reduce human suffering with data!  ", // Included in intro slide
                 successHandler, errorHandler, false, false);
         }
@@ -10654,7 +10668,7 @@ var qm = {
     },
     toast: {
         errorToast: function(errorMessage, callback){
-            debugger
+            //debugger
             if(qm.appMode.isBackEnd()){
                 qmLog.info("toast.errorAlert: "+errorMessage)
                 return;
@@ -11365,6 +11379,10 @@ var qm = {
         },
         urlToPath: function(url){
             return qm.stringHelper.between(url, "/api/", "?");
+        },
+        subDomainContains(str) {
+            var sub = this.getSubDomain();
+            return sub.indexOf(str) !== -1;
         }
     },
     user: null,

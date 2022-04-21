@@ -1,0 +1,10 @@
+{
+  "author": "Ian Jennings",
+  "name": "chat-engine-online-user-search",
+  "version": "0.0.8",
+  "main": "src/plugin.js",
+  "dependencies": {
+    "chat-engine": "^0.5.2",
+    "dotty": "0.0.2"
+  }
+}

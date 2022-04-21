@@ -50,14 +50,13 @@ scripts/certs/dist.p12
 supply_json_key_for_google_play.json
 src/configuration-index.html
 src/configuration/
-#*.css
 src/img/CS6.zip
 src/img/icons/*
 !src/img/icons/.gitkeep
 
 !src/chrome_extension/*
 src/js/configuration-app.js
-src/lib/
+!src/lib/
 src/manifest.json
 
 # Visual Studio Recommended Folder Exclusions
@@ -117,15 +116,12 @@ yarn-error\.log
 *.private_config.json
 GoogleService-Info.plist
 google-services.json
-!/src/css/study.css
 src/data/apiai/
 /lastCommitBuilt
 src/data/commits/
 tmp/
 sh.exe.stackdump
 .vscode/launch.json
-src/css/app.css
-src/css/app.min.css
 
 secrets/*
 .env*

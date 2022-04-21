@@ -30,6 +30,7 @@ export let paths = {
     sass: ["./src/scss/**/*.scss"],
     src: {
         appSettings: "src/data/appSettings.js",
+        data: "src/data",
         defaultPrivateConfig: "src/default.private_config.json",
         devCredentials: "src/dev-credentials.json",
         firebase: "src/lib/firebase/**/*",
@@ -39,6 +40,7 @@ export let paths = {
     },
     www: {
         appSettings: "src/data/appSettings.js",
+        data: "www/data",
         defaultPrivateConfig: "www/default.private_config.json",
         devCredentials: "www/dev-credentials.json",
         firebase: "www/lib/firebase/",
