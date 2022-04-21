@@ -1,0 +1,36 @@
+{
+  "name": "annyang",
+  "description": "A javascript library for adding voice commands to your site, using speech recognition",
+  "main": "dist/annyang.min.js",
+  "keywords": [
+    "annyang",
+    "annyang.js",
+    "speechrecognition",
+    "webkitspeechrecognition",
+    "voice",
+    "speech",
+    "recognition"
+  ],
+  "author": "Tal Ater <tal@talater.com> (https://www.talater.com/)",
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "Gruntfile.js",
+    "package.json",
+    "bower.json",
+    "demo",
+    "sites"
+  ],
+  "homepage": "https://github.com/TalAter/annyang",
+  "version": "2.6.1",
+  "_release": "2.6.1",
+  "_resolution": {
+    "type": "version",
+    "tag": "v2.6.1",
+    "commit": "eb02ae3f4c0f58f1b452a7e0ecf5cf6c71bfc735"
+  },
+  "_source": "https://github.com/TalAter/annyang.git",
+  "_target": "^2.6.1",
+  "_originalSource": "annyang"
+}

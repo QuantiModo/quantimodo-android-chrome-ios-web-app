@@ -1,0 +1,9 @@
+{
+  "author": "Ian Jennings",
+  "name": "chat-engine-random-username",
+  "version": "0.0.5",
+  "main": "src/plugin.js",
+  "dependencies": {
+    "chat-engine": "^0.5.2"
+  }
+}

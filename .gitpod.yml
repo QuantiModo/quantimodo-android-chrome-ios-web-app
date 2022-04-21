@@ -1,9 +1,36 @@
-image:
-  file: .gitpod.Dockerfile
+
+# image:
+#   file: .gitpod.Dockerfile
 tasks:
-  - command: gp await-port 3000 && sleep 3 && gp preview $(gp url 3000)/src/index.html
-  - init: npm install -g eslint bower && npm install
-    command: npm start
+  - command: gp await-port 5555 && sleep 3 && gp preview $(gp url 5555)/src/index.html
+  - init: npm install -g eslint bower && bower install
+    command: npm -g install bower && bower install
 ports:
-  - port: 3000
-    onOpen: ignore
+  - port: 5555
+    onOpen: open-browser
+vscode:
+  extensions:
+    - yandeu.five-server
+    - codezombiech.gitignore
+    - esbenp.prettier-vscode
+    - christian-kohler.path-intellisense
+    - eg2.vscode-npm-script
+    - christian-kohler.npm-intellisense
+    - buianhthang.gitflow
+    - KnisterPeter.vscode-github
+github:
+  prebuilds:
+    # enable for the master/default branch (defaults to true)
+    master: true
+    # enable for all branches in this repo (defaults to false)
+    branches: true
+    # enable for pull requests coming from this repo (defaults to true)
+    pullRequests: true
+    # enable for pull requests coming from forks (defaults to false)
+    pullRequestsFromForks: true
+    # add a "Review in Gitpod" button as a comment to pull requests (defaults to true)
+    addComment: true
+    # add a "Review in Gitpod" button to pull requests (defaults to false)
+    addBadge: false
+    # add a label once the prebuild is ready to pull requests (defaults to false)
+    addLabel: prebuilt-in-gitpod

@@ -1,0 +1,115 @@
+{
+  "bs_ie_8": {
+    "base": "BrowserStack",
+    "browser": "ie",
+    "browser_version": "8",
+    "os": "windows",
+    "os_version": "7"
+  },
+  "bs_ie_9": {
+    "base": "BrowserStack",
+    "browser": "ie",
+    "browser_version": "9",
+    "os": "windows",
+    "os_version": "7"
+  },
+  "bs_ie_10": {
+    "base": "BrowserStack",
+    "browser": "ie",
+    "browser_version": "10",
+    "os": "windows",
+    "os_version": "8"
+  },
+  "bs_ie_11": {
+    "base": "BrowserStack",
+    "browser": "ie",
+    "browser_version": "11",
+    "os": "windows",
+    "os_version": "10"
+  },
+  "bs_edge_14": {
+    "base": "BrowserStack",
+    "browser": "edge",
+    "browser_version": "14",
+    "os": "windows",
+    "os_version": "10"
+  },
+  "bs_edge_15": {
+    "base": "BrowserStack",
+    "browser": "edge",
+    "browser_version": "15",
+    "os": "windows",
+    "os_version": "10"
+  },
+  "bs_safari_5": {
+    "base": "BrowserStack",
+    "browser": "safari",
+    "browser_version": "5.1",
+    "os": "OS X",
+    "os_version": "lion"
+  },
+  "bs_safari_10": {
+    "base": "BrowserStack",
+    "browser": "safari",
+    "browser_version": "10.0",
+    "os": "OS X",
+    "os_version": "sierra"
+  },
+  "bs_opera_47": {
+    "base": "BrowserStack",
+    "browser": "opera",
+    "browser_version": "47",
+    "os": "OS X",
+    "os_version": "high sierra"
+  },
+  "bs_opera_48": {
+    "base": "BrowserStack",
+    "browser": "opera",
+    "browser_version": "48",
+    "os": "OS X",
+    "os_version": "high sierra"
+  },
+  "bs_iphone": {
+    "base": "BrowserStack",
+    "browser": "iphone",
+    "device": "iPhone 4S (6.0)",
+    "os": "ios",
+    "os_version": "6.0"
+  },
+  "bs_android": {
+    "base": "BrowserStack",
+    "browser": "Android Browser",
+    "device": "Samsung Galaxy S8 Plus",
+    "os": "android",
+    "os_version": "7.0",
+    "real_mobile": true
+  },
+  "bs_firefox_30": {
+    "base": "BrowserStack",
+    "browser": "firefox",
+    "browser_version": "30",
+    "os": "windows",
+    "os_version": "7"
+  },
+  "bs_firefox_56": {
+    "base": "BrowserStack",
+    "browser": "firefox",
+    "browser_version": "56",
+    "os": "windows",
+    "os_version": "10"
+  },
+  "bs_chrome_43": {
+    "base": "BrowserStack",
+    "browser": "chrome",
+    "browser_version": "43.0",
+    "os": "windows",
+    "os_version": "7"
+  },
+  "bs_chrome_61": {
+    "base": "BrowserStack",
+    "browser": "chrome",
+    "browser_version": "61.0",
+    "os": "windows",
+    "os_version": "10"
+  }
+}
