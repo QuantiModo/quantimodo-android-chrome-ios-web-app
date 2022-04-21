@@ -1,0 +1,26 @@
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular.js"></script>
+<script src="https://code.highcharts.com/stock/highstock.src.js"></script>
+<script src="https://code.highcharts.com/highcharts-more.js"></script>
+<script src="https://rawgithub.com/pablojim/highcharts-ng/master/src/highcharts-ng.js"></script>
+<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+
+<div ng-app="myapp">
+  <div ng-controller="myctrl" class="container">
+    <div class="row">
+      <div class="col-md-10">
+        <input ng-model="chartConfig.title.text">
+        <button ng-click="addSeries()">Add Series</button>
+        <button ng-click="addPoints()">Add Points to Random Series</button>
+        <button ng-click="removeRandomSeries()">Remove Random Series</button>
+        <button ng-click="swapChartType()">Toggle Polar</button>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-10">
+        <highchart id="chart1" config="chartConfig"></highchart>
+      </div>
+    </div>
+  </div>
+</div>
+
+<h3><a href="https://github.com/pablojim/highcharts-ng">See Highcharts-ng on github</a></h3>

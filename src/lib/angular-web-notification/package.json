@@ -1,0 +1,65 @@
+{
+  "name": "angular-web-notification",
+  "version": "1.2.31",
+  "description": "AngularJS service for displaying web notifications.",
+  "author": {
+    "name": "Sagie Gur-Ari",
+    "email": "sagiegurari@gmail.com"
+  },
+  "license": "Apache-2.0",
+  "homepage": "http://github.com/sagiegurari/angular-web-notification",
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/sagiegurari/angular-web-notification.git"
+  },
+  "bugs": {
+    "url": "http://github.com/sagiegurari/angular-web-notification/issues"
+  },
+  "keywords": [
+    "angularjs",
+    "web",
+    "notification"
+  ],
+  "main": "angular-web-notification.js",
+  "directories": {
+    "test": "test/spec",
+    "example": "example"
+  },
+  "scripts": {
+    "test": "grunt test",
+    "clean": "grunt cleanup",
+    "lint": "grunt lint",
+    "docs": "grunt docs",
+    "format": "grunt format",
+    "build": "grunt build",
+    "jstest": "grunt jstest",
+    "postpublish": "grunt post-publish",
+    "grunt": "grunt"
+  },
+  "husky": {
+    "hooks": {
+      "pre-push": "npm run build"
+    }
+  },
+  "dependencies": {
+    "simple-web-notification": "latest"
+  },
+  "devDependencies": {
+    "chai": "latest",
+    "grunt": "latest",
+    "grunt-cli": "latest",
+    "grunt-karma": "latest",
+    "husky": "latest",
+    "js-project-commons": "latest",
+    "karma": "latest",
+    "karma-chrome-launcher": "latest",
+    "karma-cli": "latest",
+    "karma-coverage": "latest",
+    "karma-mocha": "latest",
+    "karma-sinon-chai": "latest",
+    "lolex": "latest",
+    "mocha": "latest",
+    "sinon": "latest",
+    "sinon-chai": "latest"
+  }
+}

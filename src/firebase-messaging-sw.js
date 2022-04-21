@@ -20,7 +20,11 @@ importScripts(getIonicAppBaseUrl()+'js/qmHelpers.js');
 importScripts(getIonicAppBaseUrl()+'data/appSettings.js');
 importScripts(getIonicAppBaseUrl()+'data/qmStates.js');
 importScripts(getIonicAppBaseUrl()+'data/stateNames.js');
-importScripts(getIonicAppBaseUrl()+'data/buildInfo.js');
+try {
+    importScripts(getIonicAppBaseUrl()+'data/buildInfo.js');
+} catch (error) {
+    console.info("Error importing buildInfo.js: " + error);
+}
 importScripts(getIonicAppBaseUrl()+'data/units.js');
 importScripts(getIonicAppBaseUrl()+'data/variableCategories.js');
 importScripts(getIonicAppBaseUrl()+'data/commonVariables.js');

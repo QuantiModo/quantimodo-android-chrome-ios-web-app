@@ -1,0 +1,14 @@
+{
+  "name": "chat-engine-typing-indicator",
+  "homepage": "https://github.com/pubnub/chat-engine-typing-indicator",
+  "version": "0.0.7",
+  "_release": "0.0.7",
+  "_resolution": {
+    "type": "version",
+    "tag": "v0.0.7",
+    "commit": "6f8f6705d9192de122cb1b63049a3f0d2d12e7a6"
+  },
+  "_source": "https://github.com/pubnub/chat-engine-typing-indicator.git",
+  "_target": "^0.0.7",
+  "_originalSource": "https://github.com/pubnub/chat-engine-typing-indicator.git"
+}

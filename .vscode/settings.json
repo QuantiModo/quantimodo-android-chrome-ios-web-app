@@ -10,5 +10,6 @@
     "gulptasks.output.show": "Task Starts",
     "gulptasks.notifications.executed": true,
     "gulptasks.notifications.terminated": true,
-    "gulptasks.notifications.restarted": true
+    "gulptasks.notifications.restarted": true,
+    "fiveServer.navigate": true
   }

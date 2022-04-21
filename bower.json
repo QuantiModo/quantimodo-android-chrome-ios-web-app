@@ -3,6 +3,7 @@
   "private": false,
   "devDependencies": {},
   "dependencies": {
+    "md-color-picker": "^0.2.6",
     "angular": "1.5.9",
     "angular-animate": "1.5.9",
     "angular-aria": "1.5.9",

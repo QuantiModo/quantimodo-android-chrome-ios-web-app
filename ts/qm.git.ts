@@ -171,8 +171,9 @@ export function getBranchName() {
     // tslint:disable-next-line:max-line-length
     const name = process.env.CIRCLE_BRANCH || process.env.BUDDYBUILD_BRANCH || process.env.TRAVIS_BRANCH || process.env.GIT_BRANCH
     if (!name) {
-        throw new Error("Branch name not set!")
+        return"Branch name not set!"
     }
+    return name
 }
 export function createFeatureBranch(featureName: string) {
     const branchName = "feature/" + featureName
