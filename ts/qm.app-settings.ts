@@ -3,6 +3,7 @@ import * as env from "./env-helper"
 import * as fileHelper from "./qm.file-helper"
 import * as qmLog from "./qm.log"
 import * as timeHelper from "./qm.time-helper"
+import * as testHelpers from "./test-helpers"
 
 // tslint:disable-next-line:no-var-requires
 const qm = require("../src/js/qmHelpers.js")
@@ -27,30 +28,44 @@ function getRequestOptions(path: string) {
     }
     return options
 }
+function getBuildInfo() {
+    return {
+        androidVersionCode : qm.buildInfoHelper.buildInfo.versionNumbers.androidVersionCode,
+        buildLink : testHelpers.getBuildLink(),
+        buildServer : qmLog.getCurrentServerContext(),
+        builtAt : timeHelper.getUnixTimestampInSeconds(),
+        debugMode : isTruthy(process.env.APP_DEBUG),
+        versionNumber : qm.buildInfoHelper.buildInfo.versionNumbers.ionicApp,
+    }
+}
+export function saveAppSettings() {
+    api.AppSettingsService.getAppSettings(env.getQMClientIdOrException(), true)
+        .then(function(AppSettingsResponse) {
+            qm.staticData = AppSettingsResponse.staticData
+            const as: any = qm.staticData.appSettings
+            process.env.APP_DISPLAY_NAME = as.name  // Need env for Fastlane
+            process.env.APP_IDENTIFIER = as.additionalSettings.appIds.appIdentifier  // Need env for Fastlane
+            function addBuildInfoToAppSettings() {
+                as.buildServer = qmLog.getCurrentServerContext()
+                as.buildLink = testHelpers.getBuildLink()
+                as.versionNumber = qm.buildInfoHelper.buildInfo.versionNumbers.ionicApp
+                as.androidVersionCode = qm.buildInfoHelper.buildInfo.versionNumbers.androidVersionCode
+                as.debugMode = isTruthy(process.env.APP_DEBUG)
+                as.builtAt = timeHelper.getUnixTimestampInSeconds()
+            }
 
-api.AppSettingsService.getAppSettings(env.getQMClientIdOrException(), true)
-    .then(function(AppSettingsResponse) {
-        qm.staticData = AppSettingsResponse.staticData
-        process.env.APP_DISPLAY_NAME = qm.getAppDisplayName()  // Need env for Fastlane
-        process.env.APP_IDENTIFIER = qm.getAppIdentifier()  // Need env for Fastlane
-        function addBuildInfoToAppSettings() {
-            qm.getAppSettings().buildServer = qmLog.getCurrentServerContext()
-            qm.getAppSettings().buildLink = qm.buildInfoHelper.getBuildLink()
-            qm.getAppSettings().versionNumber = qm.buildInfoHelper.buildInfo.versionNumbers.ionicApp
-            qm.getAppSettings().androidVersionCode = qm.buildInfoHelper.buildInfo.versionNumbers.androidVersionCode
-            qm.getAppSettings().debugMode = isTruthy(process.env.APP_DEBUG)
-            qm.getAppSettings().builtAt = timeHelper.getUnixTimestampInSeconds()
-        }
-
-        addBuildInfoToAppSettings()
-        qmLog.info("Got app settings for " + qm.getAppDisplayName() + ". You can change your app settings at " +
-            getAppEditUrl())
-        const url = env.getAppHostName()
-        if(url) {
-            qm.getAppSettings().apiUrl = url.replace("https://", "")
-        }
-        return writeStaticDataFile()
-})
+            addBuildInfoToAppSettings()
+            qmLog.info("Got app settings for " + as.appDisplayName + ". You can change your app settings at " +
+                getAppEditUrl())
+            const url = env.getAppHostName()
+            if(url) {
+                as.apiUrl = url.replace("https://", "")
+            }
+            return writeAppSettingsToFile()
+        }).catch(function(error) {
+            qmLog.error(error)
+        })
+}
 function getAppEditUrl() {
     return getAppsListUrl() + "?clientId=" + qm.getClientId()
 }
@@ -61,12 +76,12 @@ function getAppDesignerUrl() {
     return "https://builder.quantimo.do/#/app/configuration?clientId=" + qm.getClientId()
 }
 
-function writeStaticDataFile() {
-    qm.staticData.buildInfo = qm.buildInfoHelper.getCurrentBuildInfo()
-    const content = "var staticData = "+ qmLog.prettyJSONStringify(qm.staticData)+
-        '; if(typeof window !== "undefined"){window.qm.staticData = staticData;} ' +
-        ' else if(typeof qm !== "undefined"){qm.staticData = staticData;} else {module.exports = staticData;} ' +
-        'if(typeof qm !== "undefined"){qm.stateNames = staticData.stateNames;}'
+function writeAppSettingsToFile() {
+    qm.staticData.buildInfo = getBuildInfo()
+    const content =
+        'if(typeof qm === "undefined"){if(typeof window === "undefined") {global.qm = {}; }else{window.qm = {};}}' +
+    'if(typeof qm.staticData === "undefined"){qm.staticData = {};}' +
+    "qm.staticData.appSettings = "+ qmLog.prettyJSONStringify(qm.staticData.appSettings)
     try {
         fileHelper.writeToFile(env.paths.www.appSettings, content)
     } catch(e) {

@@ -144,15 +144,16 @@ export function writeToFile(filePath: string, contents: any) {
         fs.mkdirSync(dirname)
     }
 
-    const absolutePath = getAbsolutePath(filePath)
+    // tslint:disable-next-line:prefer-const
+    let absolutePath = getAbsolutePath(filePath)
     ensureDirectoryExistence(absolutePath)
-    qmLog.debug("Writing to " + absolutePath)
+    qmLog.info("Writing to " + absolutePath)
     fs.writeFile(absolutePath, contents, (err) => {
         if (err) {
             deferred.reject(err)
         }
         // tslint:disable-next-line:no-console
-        qmLog.debug(absolutePath + "\n\tsaved!")
+        qmLog.info(absolutePath + " saved!")
         deferred.resolve(absolutePath)
     })
     return deferred.promise
