@@ -1,0 +1,29 @@
+# ghost-inspector
+
+on: pull_request
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    container:
+      image: node:12-alpine
+    steps:
+      - name: Wait for the Netlify Preview
+        uses: jakepartusch/wait-for-netlify-action@v1.3
+        id: netlify
+        with:
+          site_name: 'medimodo'
+          max_timeout: 120
+      - name: execute Ghost Inspector suite
+        uses: docker://ghostinspector/cli
+        with:
+          args: suite execute ${{ secrets.GI_SUITE }} \
+            --apiKey ${{ secrets.GI_API_KEY }} \
+            --startUrl ${{ steps.netlify.outputs.url }} \
+            --errorOnFail
+      - name: Lighthouse CI
+        run: |
+          npm install -g @lhci/cli@0.3.x
+          lhci autorun --upload.target=temporary-public-storage --collect.url=${{ steps.waitFor200.outputs.url }} || echo "LHCI failed!"
+        env:
+          LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}

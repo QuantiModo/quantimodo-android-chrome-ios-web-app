@@ -208,7 +208,8 @@ angular.module('starter').controller('ChatCtrl', ["$state", "$scope", "$rootScop
             removeCard: function(card){
                 card.hide = true;
                 qm.feed.deleteCardFromLocalForage(card, function(){
-                    cardHandlers.getCards();
+                    //cardHandlers.getCards();
+                    getMostRecentCardAndTalk();
                 });
                 qm.feed.undoFunction = function(){
                     card.hide = false;

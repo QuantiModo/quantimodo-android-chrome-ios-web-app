@@ -1,7 +1,6 @@
 {
   "chromeWebSecurity": false,
   "baseUrl": "https://app.quantimo.do",
-  "projectId": "ee8wan",
   "pageLoadTimeout": 60000,
   "videoCompression": false,
   "videoUploadOnPasses": false,

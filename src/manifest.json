@@ -1,0 +1,18 @@
+{
+  "manifest_version": 2,
+  "name": "QuantiModo",
+  "short_name": "quantimodo",
+  "description": "Better living through data.",
+  "start_url": "index.html",
+  "display": "standalone",
+  "icons": [
+    {
+      "src": "img/icons/icon_512.png",
+      "sizes": "5121x512",
+      "type": "image/png"
+    }
+  ],
+  "background_color": "#FF9800",
+  "theme_color": "#FF9800",
+  "gcm_sender_id": "1052648855194"
+}

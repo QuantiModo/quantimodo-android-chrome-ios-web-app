@@ -1,0 +1,14 @@
+{
+  "name": "chat-engine-random-username",
+  "homepage": "https://github.com/pubnub/chat-engine-random-username",
+  "version": "0.0.5",
+  "_release": "0.0.5",
+  "_resolution": {
+    "type": "version",
+    "tag": "v0.0.5",
+    "commit": "de093a2ff6b45a53cee859d42ad00aa92070e01f"
+  },
+  "_source": "https://github.com/pubnub/chat-engine-random-username.git",
+  "_target": "^0.0.5",
+  "_originalSource": "https://github.com/pubnub/chat-engine-random-username.git"
+}
