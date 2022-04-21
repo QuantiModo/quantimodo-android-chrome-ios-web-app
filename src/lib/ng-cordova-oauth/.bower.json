@@ -1,0 +1,38 @@
+{
+  "name": "ng-cordova-oauth",
+  "main": "dist/ng-cordova-oauth.js",
+  "homepage": "https://github.com/nraboy/ng-cordova-oauth",
+  "authors": [
+    "Nic Raboy <http://www.nraboy.com>"
+  ],
+  "description": "AngularJS oauth library for use with Apache Cordova projects",
+  "moduleType": [
+    "node"
+  ],
+  "keywords": [
+    "ng-cordova-oauth",
+    "ngcordova",
+    "angularjs",
+    "ionic",
+    "oauth",
+    "apache cordova",
+    "phonegap",
+    "ionic framework"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "_release": "c997b00092",
+  "_resolution": {
+    "type": "commit",
+    "commit": "c997b00092c5ba3fce25d23008b02d753c6aa07c"
+  },
+  "_source": "https://github.com/mikepsinn/ng-cordova-oauth.git",
+  "_target": "c997b00092c5ba3fce25d23008b02d753c6aa07c",
+  "_originalSource": "git+https://github.com/mikepsinn/ng-cordova-oauth.git"
+}

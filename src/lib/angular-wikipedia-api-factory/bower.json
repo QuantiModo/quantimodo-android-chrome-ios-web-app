@@ -1,0 +1,29 @@
+{
+  "name": "angular-wikipedia-api-factory",
+  "homepage": "https://github.com/JohnnyTheTank/angular-wikipedia-api-factory",
+  "authors": [
+    "Jonathan Hornung <jonathan.hornung@gmail.com>"
+  ],
+  "version": "0.2.4",
+  "description": "angular factory for wikipedia rest api connection",
+  "main": "dist/angular-wikipedia-api-factory.min.js",
+  "moduleType": [],
+  "keywords": [
+    "wikipedia",
+    "angularjs",
+    "rest",
+    "api",
+    "json"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "angular": "*"
+  }
+}

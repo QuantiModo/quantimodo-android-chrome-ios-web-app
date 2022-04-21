@@ -1,0 +1,28 @@
+{
+  "name": "d3-cloud",
+  "version": "1.2.5",
+  "main": "build/d3.layout.cloud.js",
+  "dependencies": {
+    "d3-dispatch": "1"
+  },
+  "ignore": [
+    ".DS_Store",
+    ".git",
+    ".gitignore",
+    ".npmignore",
+    "examples",
+    "index.js",
+    "node_modules",
+    "package.json"
+  ],
+  "homepage": "https://github.com/jasondavies/d3-cloud",
+  "_release": "1.2.5",
+  "_resolution": {
+    "type": "version",
+    "tag": "v1.2.5",
+    "commit": "4d0d5154a2084881844239615be579212d23699d"
+  },
+  "_source": "https://github.com/jasondavies/d3-cloud.git",
+  "_target": "~1.2.4",
+  "_originalSource": "d3-cloud"
+}

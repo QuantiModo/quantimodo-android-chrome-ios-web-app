@@ -39,7 +39,7 @@ angular.module('starter').controller('FeedCtrl', ["$state", "$scope", "$rootScop
                 return;
             }
             cardHandlers.getCards();
-            if(!$scope.state.cards){
+            if(!$scope.state.cards || !$scope.state.cards.length){
                 qmService.showBasicLoader();
             }
         });

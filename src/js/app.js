@@ -3,7 +3,7 @@
 /** @namespace window.qmLog */
 angular.module('starter',
     [
-        'ionic',
+        'ionic', 'mdColorPicker',
         //'ionic.service.core',
         //'ionic.service.push',
         //'ionic.service.analytics',
@@ -20,7 +20,7 @@ angular.module('starter',
         'jtt_wikipedia',
         'angular-clipboard',
         //'angular-google-analytics', // Analytics + uBlock origin extension breaks app
-        'angular-google-adsense',
+        //'angular-google-adsense',
         'ngMaterialDatePicker',
         'ngMaterial',
         'ngMessages',
@@ -217,6 +217,10 @@ angular.module('starter',
                 closeOnSelect: false
             };
             ionicDatePickerProvider.configDatePicker(datePickerObj);
+            var clientId = qm.api.getClientIdFromBuilderQueryOrSubDomain();
+            if(clientId){
+                qm.storage.setItem(qm.items.clientId, clientId);
+            }
             qmStates.forEach(function(state){
                     if(state.name === ''){
                         return;
@@ -225,15 +229,12 @@ angular.module('starter',
                         state.resolve = config_resolver;
                     }
                     var isBuilderState = state.views && state.views.menuContent.templateUrl.indexOf('configuration') !== -1;
-                    if(isBuilderState && !qm.appMode.isBuilder()){
-                        return;
+                    if(isBuilderState && state.views.menuContent.templateUrl.indexOf('builder-templates') === -1){
+                        state.views.menuContent.templateUrl = state.views.menuContent.templateUrl.replace('../../app-configuration/templates', 'builder-templates');
                     }
                     var isPhysicianState = state.views && state.views.menuContent.templateUrl.indexOf('physician') !== -1;
                     if(isPhysicianState && !qm.appMode.isPhysician()){
                         return;
-                    }
-                    if(isBuilderState && state.views.menuContent.templateUrl.indexOf('builder-templates') === -1){ // TODO: remove once API states.json is updated
-                        state.views.menuContent.templateUrl = state.views.menuContent.templateUrl.replace('../../app-configuration/templates', 'builder-templates');
                     }
                     $stateProvider.state(state.name, state);
                 });

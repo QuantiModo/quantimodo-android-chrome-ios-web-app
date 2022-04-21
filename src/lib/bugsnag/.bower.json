@@ -1,0 +1,16 @@
+{
+  "name": "bugsnag",
+  "main": "dist/bugsnag.js",
+  "license": "MIT",
+  "homepage": "https://github.com/bugsnag/bugsnag-js",
+  "version": "4.6.0",
+  "_release": "4.6.0",
+  "_resolution": {
+    "type": "version",
+    "tag": "v4.6.0",
+    "commit": "0412ab263d8a30fcdce192743ff61663cbddc614"
+  },
+  "_source": "https://github.com/bugsnag/bugsnag-js.git",
+  "_target": "4.6.0",
+  "_originalSource": "bugsnag"
+}

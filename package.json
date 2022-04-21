@@ -4,9 +4,6 @@
     "type": "git",
     "url": "https://github.com/QuantiModo/quantimodo-android-chrome-ios-web-app.git"
   },
-  "engines": {
-    "node": "10"
-  },
   "version": "1.0.0",
   "description": "Perfect your life!",
   "devDependencies": {
@@ -201,7 +198,7 @@
     "requireCurlyBraces": null
   },
   "scripts": {
-    "install": "nvm install 10.24.1 && nvm use 10.24.1 && npm install -g gulp bower ionic",
+    "install:global:packages": "nvm install 10.24.1 && nvm use 10.24.1 && npm install -g gulp bower ionic",
     "serve": "ionic serve src",
     "cy:open:development": "cypress install && cypress open --config-file cypress/config/cypress.development.json",
     "cy:open:localhost": "cypress install && cypress open --config-file cypress/config/cypress.localhost.json",
