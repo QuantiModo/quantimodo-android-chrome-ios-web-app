@@ -1,8 +1,6 @@
 // load type definitions that come with Cypress module
 /// <reference types="cypress" />
 describe('Mobile Connectors', function () {
-  let API_HOST = Cypress.env('API_HOST')
-  let apiUrl = `https://${API_HOST}`
   let selectors = {
     fitbit: {
       username: '.pa0 > #loginForm > .row > #email-input > #ember644',
@@ -31,7 +29,6 @@ describe('Mobile Connectors', function () {
     },
   }
   function goToMobileConnectPage () {
-    cy.log(`Using apiUrl: ${apiUrl}`)
     cy.visitApi(`/api/v1/connect/mobile?log=testuser&pwd=testing123`)
     //cy.checkForBrokenImages()  // Keeps falsely failing
   }
