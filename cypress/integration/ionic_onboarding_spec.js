@@ -1,3 +1,4 @@
+/* eslint-disable cypress/no-unnecessary-waiting */
 // load type definitions that come with Cypress module
 /// <reference types="cypress" />
 describe('Onboarding', function () {
@@ -36,7 +37,7 @@ describe('Onboarding', function () {
         .type('62025', { force: true })
     cy.get('body > div.popup-container.popup-showing.active > div > div.popup-buttons > button.button.ng-binding.button-positive')
         .click({ force: true })
-    cy.get("#circle-page-title").contains("Import");
+    cy.get("#circle-page-title").contains("Import")
     cy.toastContains("Connecting")
     skip()
     cy.get('#goToInboxButton').click({ force: true })

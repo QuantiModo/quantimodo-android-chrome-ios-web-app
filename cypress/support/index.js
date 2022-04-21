@@ -19,18 +19,22 @@ Cypress.on('uncaught:exception', (err, runnable) => {
         expect(err.message).to.include(expectedErrorMessage)
         return false
     }
+    // eslint-disable-next-line no-debugger
+    debugger
     cy.log(`Uncaught exception: ${err.message}`)
 })
 beforeEach(function(){ // runs before each test in the block
     let url = Cypress.config('baseUrl')
     if(!url){
+        // eslint-disable-next-line no-debugger
         debugger
         throw Error("baseUrl not set!")
     }
     cy.log(`baseUrl is ${url}`)
-    cy.log(`API_HOST is ${Cypress.env('API_HOST')}`)
+    cy.log(`API_HOST is ` + cy.getApiHost())
 })
 import addContext from 'mochawesome/addContext'
+// noinspection SpellCheckingInspection
 Cypress.on('test:after:run', (test, runnable) => {
     // https://medium.com/@nottyo/generate-a-beautiful-test-report-from-running-tests-on-cypress-io-371c00d7865a
     if(test.state === 'failed'){
@@ -63,7 +67,7 @@ function truncate(str, length, ending) {
 }
 Cypress.on('window:before:load', (win) => {
     if(allowLogging && Cypress.env('ELECTRON_ENABLE_LOGGING')) {
-        win.console.log = (...args) => {  // Needs ELECTRON_ENABLE_LOGGING=1
+        win.console.log = (...args) => { // Needs ELECTRON_ENABLE_LOGGING=1
             try {
                 let str = JSON.stringify(args)
                 if (str.indexOf("[bugsnag] Loaded") !== -1) {

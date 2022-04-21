@@ -6,7 +6,7 @@ describe('Embeddable', function () {
     'firstSearchResultCogButton': '#searchResultList > div:nth-child(1) > div > div.col-md-4.controls.text-center > span.fa.fa-cog',
     'firstSearchResultPlusButton': '#searchResultList > div:nth-child(1) > div > div.col-md-4.controls.text-center > span.fa.fa-plus',
   }
-  let API_HOST = Cypress.env('API_HOST')
+  let API_HOST = cy.getApiHost()
   let apiUrl = `https://${API_HOST}`
   let embedUrl = 'https://angularjs-embeddable.quantimo.do/?plugin=search-relationships'
 

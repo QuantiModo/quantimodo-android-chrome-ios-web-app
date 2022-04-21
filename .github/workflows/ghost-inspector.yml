@@ -1,6 +1,6 @@
 # ghost-inspector
 
-on: push
+on: pull_request
 
 jobs:
   test:
