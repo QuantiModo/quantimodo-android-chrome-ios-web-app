@@ -1,4 +1,6 @@
-# .github/workflows/main.yml
+# .github/workflows/ghost-inspector.yml
+
+on: push
 
 jobs:
   test:
