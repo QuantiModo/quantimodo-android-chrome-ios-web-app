@@ -1,0 +1,30 @@
+{
+    "opts": {
+        "template": "./_docs/docdash",
+        "destination": "./docs/",
+        "recurse": true,
+        "tutorials": "./guide/",
+        "readme": "./README.md"
+    },
+    "docdash": {
+        "static": true,
+        "sort": true
+    },
+    "tags": {
+        "allowUnknownTags": true,
+        "dictionaries": ["jsdoc","closure"]
+    },
+    "plugins": [
+        "plugins/markdown",
+        "./_docs/doc_plugins/ceplugin.js",
+        "./_docs/doc_plugins/ceextend.js"
+    ],
+    "templates": {
+        "default": {
+            "includeDate": false,
+            "staticFiles": {
+                "include": ["./guide/static"]
+            }
+        }
+    }
+}

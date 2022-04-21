@@ -1,29 +1,70 @@
-# QuantiModo Ionic App
+<!-- PROJECT TITLE -->
+<h1 align="center">CuRoBoT</h1>
 
-A app for collecting, aggregating, and analyzing health data to identify the most effective ways to optimize your health and happiness. 
+An app for collecting, aggregating, and analyzing health data to identify the most effective ways to optimize your health and happiness. 
 
-# [DEMO](https://web.quantimo.do)
+<details>
+<summary>Table of Contents</summary>
 
-# Quick Start
+- [Project Demo](#demo)
+- [API](#api)
+- [Features and Screenshots](#features-and-screenshots)
+- [Technology Stack](#technology-stack)
+- [Local Development](#local-development)
+- [Getting Involved](#get-involved)
+- [License](#license)
+
+</details>
+
+## Demo
+
+Try the [demo](https://app.curedao.org)
+
+## API
+
+For more info about the types of data you can store and get from the API, try out our
+[Interactive API Explorer](https://curedao.readme.io) with the access token `demo`.
+
+## Quick Start
+
+1. Fork the project
+2. Click the `Open in Gitpod` button below in YOUR forked repo.
+3. Allow Gitpod to open port 5555.  It should then open the project in a new tab. 
+
 [![Open in Gitpod](https://camo.githubusercontent.com/1eb1ddfea6092593649f0117f7262ffa8fbd3017/68747470733a2f2f676974706f642e696f2f627574746f6e2f6f70656e2d696e2d676974706f642e737667)](https://gitpod-referer.now.sh/api/gitpod-referer-redirect)
 
-### Local Development
-1. Fork this repository.
-1. Install [Node.js](http://nodejs.org/).  (Windows Developers: We recommend [Visual Studio Community](https://taco.visualstudio.com/), which automatically installs everything you need!)
-1. Install the latest Cordova and Ionic command-line tools in your terminal with `npm install -g gulp cordova@6.5.0 ionic@2.2.3 bower cordova-hot-code-push-cli`. # Adding plugins from Github doesn't work on cordova@7.0.0
-(Mac Users:  Avoid using `sudo` with your npm commands if possible as it tends to cause problems.)
-1. Run `npm install` in the root of this repository.
-1. Create your application at [app.quantimo.do/api/v2/apps](https://builder.quantimo.do).
-1. Run `gulp devSetup` in the root of this repository, follow the prompts, and you should see your app at
-[http://localhost:8100/#/](http://localhost:8100/#/) or similar.
-1. Need help?  Please [create an issue](https://github.com/QuantiModo/quantimodo-android-chrome-ios-web-app/issues) or contact us at [help.quantimo.do](http://help.quantimo.do).
+## Local Development
 
-## QuantiModo API
-For more info about the types of data you can store and get from the QuantiModo API, try out our
-[Interactive API Explorer](https://docs.quantimo.do)
+**Step 1** 
+:wrench: Fork the project
 
+**Step 2**
+:octocat: Clone your forked version
 
-## Screenshots
+```bash
+$ git clone https://github.com/your_username/curobot.git
+```
+
+**Step 3**
+:hammer: Install [Node.js](http://nodejs.org/).  (Windows Developers: We recommend [Visual Studio Code](https://code.visualstudio.com/) with the [recommended extensions](.vscode/extensions.json), which automatically installs everything you need!)
+
+**Step 5**
+ :running: Run `npm install -g bower` and `bower install` in the root of this repository.
+
+**Step 6**
+:ticket: Create your application and get your client ID [here](https://builder.quantimo.do).
+
+**Step 7** -
+Make a copy of .env.example in the root called .env and add your client id to it
+
+**Step 8** -
+If you're using VSCode or Gitpod, right click on src/index.html and click "Open with FiveServer"
+
+**Step 9**
+ :raising_hand: Need help?  Please [create an issue](/issues) or [contact us](http://help.quantimo.do)
+ 
+ ## Features and Screenshots
+
 <p align="center">
 <img src="https://raw.githubusercontent.com/QuantiModo/quantimodo-android-chrome-ios-web-app/develop/resources-shared/screenshots/5.5-inch%20(iPhone%206%2B)%20-%20History%20Screenshot%201.jpg" width="300">
 &nbsp
@@ -34,11 +75,31 @@ For more info about the types of data you can store and get from the QuantiModo 
 <img src="https://raw.githubusercontent.com/QuantiModo/quantimodo-android-chrome-ios-web-app/develop/resources-shared/screenshots/5.5-inch%20(iPhone%206+)%20-%20predictors%20Screenshot%201.jpg" width="300">
 <br><br>
 <img src="https://raw.githubusercontent.com/QuantiModo/quantimodo-android-chrome-ios-web-app/develop/resources-shared/screenshots/5.5-inch%20(iPhone%206+)%20-%20reminder%20inbox%20Screenshot%201.jpg?" width="300">
-
+<img src="https://user-images.githubusercontent.com/2808553/138347736-f3cbea7a-85fe-4288-921a-78a05b93026d.png" width="300">
 </p>
-    
-![QM-Android-notifications-mockup](https://user-images.githubusercontent.com/2808553/138347736-f3cbea7a-85fe-4288-921a-78a05b93026d.png)
-![nutrition-facts-vs-outcome-labels](https://user-images.githubusercontent.com/2808553/138347864-d6dce08e-9845-40ab-ac20-87d19342eaf6.png)
+
+## Technology Stack
+
+| Technology   | Description                                                              |
+| ------------ | ------------------------------------------------------------------------ |
+| JavaScript   | High-Level Programming Language                      |
+| TypeScript      | JavaScript with syntax for types                   |
+| CSS      | Cascading Style Sheets                                |
+| SCSS      | Syntactically Awesome Style Sheet                        |
+| Angular.js      |  front-end web framework                           |
+| HTML      | HyperText Markup Language                                |
+| Cypress      | standard in front-end testing                         |
+| Gitpod      | platform for remote development                        |
+
+## Get Involved
+
+[CONTRIBUTING](https://www.curedao.org/join-us)
+
+## License
+
+[![GitLicense](https://img.shields.io/badge/License-GNU-blue.svg)](https://github.com/cure-dao/curobot/blob/develop/LICENSE.md)
+
+
 
 
 

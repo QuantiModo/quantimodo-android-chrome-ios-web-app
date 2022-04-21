@@ -1,0 +1,25 @@
+sudo: required
+dist: trusty
+language: node_js
+node_js:
+- '8'
+env:
+  global:
+  - CC_TEST_REPORTER_ID: 6f5024bb1ebb518893991cf5d77e75e4819eaa6128fe21bf85ef3bf135cd49d2
+  - BROWSER_STACK_USERNAME: bugsnagplatforms1
+  - secure: "X29QA8LjTZL9RHnoiYlprpIbv264e//KjL3Q4A/vWZ8QbIRD2MY8w9wuIfQEYHLGa7kf1EAGPoH/Ka3raj7s5+J4hOeCeMC0ZWUWdAem35FE7zGm8wJrCKFK5GD9LF+1LRxK+gBfKfeaJkwcbjv7tl0DEW1JNC9PS4cpI0DRJzM="
+addons:
+  chrome: stable
+  browserstack:
+    username: bugsnagplatforms1
+    access_key:
+     secure: "lB2aZc0HzuinyhSJyP98lzDJTbZsroEOJTrS/flnLLsHb/C096zjhwkWexHnfmNIPaY5SB2FF0G6zcnknlmsXg5TgxQiK7bdyJmkcAetGi+cSKnGaBq7GZXVhbWh++MRnddQDGV6jrSr7aqrWf85ncq3L4//9BTV6uAhDBWu2bo="
+before_script:
+- curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64
+  > ./bin/cc-test-reporter
+- chmod +x ./bin/cc-test-reporter
+script:
+- if [[ $BROWSER_STACK_ACCESS_KEY ]]; then npm run test; else npm run test:basic;
+  fi
+after_script:
+- if [ $TRAVIS_TEST_RESULT == 0 ]; then ./bin/report-coverage; fi
