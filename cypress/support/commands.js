@@ -1,3 +1,4 @@
+/* eslint-disable cypress/no-unnecessary-waiting,cypress/no-assigning-return-values */
 // ***********************************************
 // This example commands.js shows you how to
 // create various custom commands and overwrite
@@ -27,19 +28,34 @@ let logLevel = Cypress.env('LOG_LEVEL') || 'info'
 const PERMANENT_TEST_USER_ACCESS_TOKEN_FOR_18535 = '42ff4170172357b7312bb127fb58d5ea464943c1'
 const ACCESS_TOKEN_TO_GET_OR_CREATE_REFERRER_SPECIFIC_USER = 'test-token'
 let accessToken = Cypress.env('ACCESS_TOKEN') || PERMANENT_TEST_USER_ACCESS_TOKEN_FOR_18535 || ACCESS_TOKEN_TO_GET_OR_CREATE_REFERRER_SPECIFIC_USER
-let API_HOST = Cypress.env('API_HOST') // API_HOST must be a quantimo.do domain so cypress can clear cookies
 let baseUrl = Cypress.config('baseUrl')
 let testUserName = 'testuser'
 let testUserPassword = 'testing123'
 cy.getOAuthAppUrl = function (){
     let oauthAppBaseUrl = Cypress.env('OAUTH_APP_HOST')
     if(oauthAppBaseUrl.indexOf("http") === -1){
-        oauthAppBaseUrl = "https://" + oauthAppBaseUrl
+        if(oauthAppBaseUrl.indexOf("localhost") !== -1) {
+            oauthAppBaseUrl = "http://" + oauthAppBaseUrl
+        } else {
+            oauthAppBaseUrl = "https://" + oauthAppBaseUrl
+        }
     }
     return oauthAppBaseUrl
 }
 cy.oauthAppIsHTTPS = function (){
     return cy.getOAuthAppUrl().indexOf("https://") === 0
+}
+cy.getApiHost = function () {
+    cy.log(`=== getApiHost ===`)
+    const host = Cypress.env('API_HOST')
+    const configInstructions = "cypress open --config-file cypress/config/cypress.development.json"
+    if(!host || host === 'undefined'){
+        throw 'Please set API_HOST in the cypress/configs folder and provide the config like\n\t' + configInstructions
+    }
+    if(host.indexOf('quantimo.do') === -1){
+        throw "API_HOST must be a quantimo.do domain so cypress can clear cookies but is " + host + ".  API_HOST is defined in the cypress/configs directory"
+    }
+    return host
 }
 Cypress.Commands.add('goToApiLoginPageAndLogin', (email = testUserName, password = testUserPassword) => {
     cy.log(`=== goToApiLoginPageAndLogin as ${email} ===`)
@@ -86,7 +102,7 @@ Cypress.Commands.add('loginWithAccessTokenIfNecessary', (path = '/#/app/reminder
     }
 })
 Cypress.Commands.add('visitIonicAndSetApiUrl', (path = '/#/app/reminders-inbox') => {
-    path = UpdateQueryString('apiUrl', API_HOST, path)
+    path = UpdateQueryString('apiUrl', cy.getApiHost(), path)
     path = UpdateQueryString('logLevel', logLevel, path)
     if(Cypress.env('LOGROCKET')){ path = UpdateQueryString('logrocket', 1, path) }
     let url = path
@@ -99,16 +115,15 @@ Cypress.Commands.add('visitWithApiUrlParam', (url, options = {}) => {
     if(!options.qs){
         options.qs = {}
     }
-    options.qs.apiUrl = API_HOST
+    options.qs.apiUrl = cy.getApiHost()
     cy.visit(url, options)
 })
 // noinspection JSUnusedLocalSymbols
 Cypress.Commands.add('visitApi', (url, options = {}) => {
     cy.log(`=== visitApi at ${url} ===`)
-    if(!API_HOST || API_HOST === 'undefined'){ throw 'Please set API_HOST env!' }
     if(!options.qs){ options.qs = {} }
     options.qs.XDEBUG_SESSION_START = 'PHPSTORM'
-    cy.visit("https://" + API_HOST + url, options)
+    cy.visit("https://" + cy.getApiHost() + url, options)
 })
 Cypress.Commands.add('containsCaseInsensitive', (selector, content) => {
     function caseInsensitive(str){

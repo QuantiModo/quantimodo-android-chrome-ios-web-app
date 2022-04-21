@@ -363,7 +363,8 @@ qm.staticData.appSettings ={
 					"image": {
 						"url": "img/intro/doctor-frown-factors.png"
 					},
-					"bodyText": "Indeed, your doctor has access to less than 1% of the relevant information when they use intuition to determine the best ways to treat your symptoms!",
+					"bodyText": "Indeed, humans have access to less than 1% of the relevant information when they use" +
+						" intuition to determine the best ways to treat your symptoms!",
 					"$$hashKey": "object:1748"
 				},
 				{
@@ -399,7 +400,8 @@ qm.staticData.appSettings ={
 					"image": {
 						"url": "img/intro/inbox.svg"
 					},
-					"bodyText": "By taking just a few minutes each day, you can easily record your diet and symptoms in the Reminder Inbox.  The more data you give me, the smarter I get!  Your data doesn't have to be perfect to be valuable, but it's important to track regularly. ",
+					"bodyText": "By taking just a few minutes each day, you can easily record your diet and symptoms" +
+						" in the Reminder Inbox.  The more data you give me, the smarter I get.  Your data doesn't have to be perfect to be valuable, but it's important to track regularly. ",
 					"$$hashKey": "object:1751"
 				},
 				{

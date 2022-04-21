@@ -33,5 +33,6 @@ declare namespace Cypress {
         toastContains(str: string): Chainable<Element>
         getOAuthAppUrl(): string
         oauthAppIsHTTPS(): boolean
+        getApiHost(): string
     }
 }

@@ -1,0 +1,11 @@
+.idea
+.c9
+target
+.temp
+.travis.yml
+.atom.*.yml
+Gruntfile.js
+bower_components
+.github
+test
+example
