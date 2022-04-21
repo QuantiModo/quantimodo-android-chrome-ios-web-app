@@ -3,6 +3,8 @@
 /** @namespace qm.chrome */
 /* global AppSettings TweenMax, Power1, Sine, Linear, Power3, TimelineMax, Power2 */
 /* eslint-env browser */
+import * as qmLog from "../../ts/qm.log";
+
 String.prototype.toCamelCase = function(){
     return this.replace(/(\_[a-z])/g, function($1){
         return $1.toUpperCase().replace('_', '');
