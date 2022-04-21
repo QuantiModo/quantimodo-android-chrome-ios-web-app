@@ -107,7 +107,7 @@
     "ansi-colors": "4.1.1",
     "api": "^4.2.1",
     "app-root-path": "3.0.0",
-    "async": "2.6.3",
+    "async": "2.6.4",
     "body-parser": "1.19.0",
     "bower": "1.8.12",
     "bugsnag": "2.4.3",
