@@ -1,0 +1,5 @@
+node_modules
+.nyc_output
+coverage
+bin/cc-test-reporter
+types/test/fixtures/app.*

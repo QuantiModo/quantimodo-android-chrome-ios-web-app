@@ -1,0 +1,9 @@
+{
+  "author": "Ian Jennings",
+  "name": "chat-engine-typing-indicator",
+  "version": "0.0.7",
+  "main": "src/plugin.js",
+  "dependencies": {
+    "chat-engine": "^0.5.2"
+  }
+}

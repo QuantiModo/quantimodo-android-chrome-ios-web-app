@@ -4,9 +4,6 @@
     "type": "git",
     "url": "https://github.com/QuantiModo/quantimodo-android-chrome-ios-web-app.git"
   },
-  "engines": {
-    "node": "10"
-  },
   "version": "1.0.0",
   "description": "Perfect your life!",
   "devDependencies": {
@@ -105,8 +102,9 @@
     "@types/rimraf": "2.0.5",
     "@types/underscore.string": "0.0.38",
     "ansi-colors": "4.1.1",
+    "api": "^4.2.1",
     "app-root-path": "3.0.0",
-    "async": "2.6.3",
+    "async": "2.6.4",
     "body-parser": "1.19.0",
     "bower": "1.8.12",
     "bugsnag": "2.4.3",
@@ -176,7 +174,7 @@
     "request-promise": "4.2.6",
     "run-sequence": "2.2.1",
     "shelljs": "0.8.4",
-    "simple-git": "1.126.0",
+    "simple-git": "3.3.0",
     "superagent": "6.1.0",
     "sw-precache": "5.2.1",
     "sweetalert2": "10.16.9",
@@ -201,7 +199,7 @@
     "requireCurlyBraces": null
   },
   "scripts": {
-    "install": "nvm install 10.24.1 && nvm use 10.24.1 && npm install -g gulp bower ionic",
+    "install:global:packages": "nvm install 10.24.1 && nvm use 10.24.1 && npm install -g gulp bower ionic",
     "serve": "ionic serve src",
     "cy:open:development": "cypress install && cypress open --config-file cypress/config/cypress.development.json",
     "cy:open:localhost": "cypress install && cypress open --config-file cypress/config/cypress.localhost.json",
