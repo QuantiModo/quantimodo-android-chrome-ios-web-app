@@ -1,0 +1,21 @@
+# .github/workflows/main.yml
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    container:
+      image: node:12-alpine
+    steps:
+      - name: Wait for the Netlify Preview
+        uses: jakepartusch/wait-for-netlify-action@v1
+        id: netlify
+        with:
+          site_name: 'medimodo'
+          max_timeout: 120
+      - name: execute Ghost Inspector suite
+        uses: docker://ghostinspector/cli
+        with:
+          args: suite execute ${{ secrets.GI_SUITE }} \
+            --apiKey ${{ secrets.GI_API_KEY }} \
+            --startUrl ${{ steps.netlify.outputs.url }} \
+            --errorOnFail
