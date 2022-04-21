@@ -102,7 +102,7 @@ angular.module('starter').controller('IntroCtrl', ["$scope", "$state", "$ionicSl
                 //qmLog.debug($state.current.name + ' initializing...');
             }
             var disableSpeech = !qm.speech.getSpeechAvailable() || useFuturisticBackground() === false;
-            disableSpeech = true; // TODO: Add testing and fix issues with Chrome
+            //disableSpeech = true; // TODO: Add testing and fix issues with Chrome
             if(disableSpeech){
                 $scope.state.setSpeechEnabled(false);
             }
@@ -180,7 +180,7 @@ angular.module('starter').controller('IntroCtrl', ["$scope", "$state", "$ionicSl
             $scope.state.hideSplashText = $scope.myIntro.slideIndex !== 0;
             qm.speech.talkRobot(
                 //slide.title + ".  " +
-                slide.bodyText + ".  "
+                slide.bodyText
                 , $scope.myIntro.next
                 , function(error){
                     qmLog.info("Could not read intro slide because: " + error);

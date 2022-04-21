@@ -350,7 +350,7 @@ angular.module('starter')// Parent Controller - This controller runs before ever
                 if(typeof analytics !== 'undefined'){
                     analytics.trackView($state.current.name);
                 }
-                qmService.adSense.showOrHide();
+                //qmService.adSense.showOrHide();
                 qmService.adBanner.showOrHide($stateParams);
                 //qmService.login.deleteAfterLoginStateIfItMatchesCurrentState();
                 $scope.closeMenu();

@@ -2,7 +2,7 @@
 /** @namespace window.qmLog */
 /** @namespace window.qm.notifications */
 /** @namespace window.qm.storage */
-/* global chcp $ionicDeploy qm.stateNames chcp qm.stateNames */
+/* global chcp $ionicDeploy qm.staticData.stateNames chcp qm.staticData.stateNames */
 angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$ionicPopup", "$state", "$timeout",
     "$ionicPlatform", "$mdDialog", "$mdToast", "$cordovaGeolocation", "CacheFactory", "$ionicLoading",
     //"Analytics", // Analytics + uBlock origin extension breaks app
@@ -655,8 +655,8 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                             }
                             qmLog.authDebug("qmApiMobileConnect login: Setting final_callback_url to " + final_callback_url);
                             var url = qm.api.getQuantiModoUrl('api/v1/connectors/' + connector.name + '/connect?client_id=' +
-                                qm.api.getClientId() + '&final_callback_url=' + encodeURIComponent(final_callback_url) +
-                                '&client_secret=' + qm.api.getClientSecret());
+                                qm.api.getClientId() + '&final_callback_url=' + encodeURIComponent(final_callback_url))
+                                //+ '&client_secret=' + qm.api.getClientSecret());
                             if(options){
                                 url = qm.urlHelper.addUrlQueryParamsToUrlString(options, url)
                             }
@@ -710,7 +710,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     params.final_callback_url = window.location.href;
                     if(qm.platform.isChromeExtension()){params.final_callback_url = chrome.identity.getRedirectURL();}
                     params.clientId = qm.api.getClientId();
-                    if(qm.api.getClientSecret()){params.clientSecret = qm.api.getClientSecret();}
+                    //if(qm.api.getClientSecret()){params.clientSecret = qm.api.getClientSecret();}
                     if(qm.auth.getAccessTokenFromUrlUserOrStorage()){params.accessToken = qm.auth.getAccessTokenFromUrlUserOrStorage();}
                     url = qm.urlHelper.addUrlQueryParamsToUrlString(params, url);
                     console.info('Going to ' + url);
@@ -2900,6 +2900,7 @@ angular.module('starter').factory('qmService', ["$http", "$q", "$rootScope", "$i
                     }
                     return true;
                 }
+                card.hide = true;
                 qm.feed.addToFeedQueueAndRemoveFromFeed(card);
                 return false; // Don't close if clicking top variable name
             },
