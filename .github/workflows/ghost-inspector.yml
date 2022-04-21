@@ -1,5 +1,5 @@
 # ghost-inspector
-
+name: Ghost Inspector Tests
 on: pull_request
 
 jobs:
