@@ -9,6 +9,10 @@
       "usernamehw.remove-empty-lines",
       "buianhthang.gitflow",
       "arturock.gitstash",
-      "KnisterPeter.vscode-github"
+      "knisterpeter.vscode-github",
+      "felipecaputo.git-project-manager",
+      "mhutchie.git-graph",
+      "pinage404.git-extension-pack",
+      "eamodio.gitlens"
     ]
 }
