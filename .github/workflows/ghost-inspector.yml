@@ -6,7 +6,7 @@ jobs:
   test:
     runs-on: ubuntu-latest
     container:
-      image: node:12-alpine
+      image: node:20-alpine
     steps:
       - name: Wait for the Netlify Preview
         uses: jakepartusch/wait-for-netlify-action@v1.3
